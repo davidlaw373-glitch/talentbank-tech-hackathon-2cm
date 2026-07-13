@@ -80,10 +80,10 @@ export function CoverNav() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="sm">
-            Sign in
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/login">Log in</Link>
           </Button>
-          <Button size="sm">Get started</Button>
+          <Button asChild size="sm"><Link href="/register">Register</Link></Button>
         </div>
 
         <Button
@@ -116,8 +116,8 @@ export function CoverNav() {
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2 pt-2 border-t">
-              <Button variant="outline">Sign in</Button>
-              <Button>Get started</Button>
+              <Button asChild variant="outline"><Link href="/login" onClick={() => setOpen(false)}>Log in</Link></Button>
+              <Button asChild><Link href="/register" onClick={() => setOpen(false)}>Register</Link></Button>
             </div>
           </nav>
         </div>

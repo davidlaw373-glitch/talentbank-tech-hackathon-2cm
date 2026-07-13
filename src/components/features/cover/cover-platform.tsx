@@ -9,7 +9,6 @@ import { AnimatedCounter } from "@/components/common/animated-counter";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type Match = {
   id: string;

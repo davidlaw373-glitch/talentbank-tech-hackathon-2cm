@@ -29,7 +29,7 @@ const PATHS: Path[] = [
     description:
       "Build a verified profile, get AI match scores, and track every application in one place.",
     cta: "Create profile",
-    href: "#start",
+    href: "/register",
   },
   {
     id: "employer",

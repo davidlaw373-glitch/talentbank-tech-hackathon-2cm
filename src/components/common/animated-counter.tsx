@@ -29,9 +29,11 @@ export function AnimatedCounter({
     const node = ref.current;
     if (!node || played) return;
     if (typeof IntersectionObserver === "undefined") {
-      setDisplay(value);
-      setPlayed(true);
-      return;
+      const frame = requestAnimationFrame(() => {
+        setDisplay(value);
+        setPlayed(true);
+      });
+      return () => cancelAnimationFrame(frame);
     }
     const observer = new IntersectionObserver(
       (entries) => {

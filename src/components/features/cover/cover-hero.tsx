@@ -90,13 +90,13 @@ export function CoverHero() {
           style={{ animationDelay: "780ms" }}
         >
           <Button asChild size="lg">
-            <Link href="#start">
-              Get started
+            <Link href="/candidate/dashboard">
+              Enter Candidate experience
               <ArrowRight />
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="#roles">Explore the platform</Link>
+            <Link href="/register">Create Candidate account</Link>
           </Button>
         </div>
 
