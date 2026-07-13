@@ -1,0 +1,483 @@
+# Page function
+
+# CareerOS 页面规划与功能整合
+
+## 1. 登录 / 注册页面（Authentication）
+
+### Functions
+
+- 求职者注册
+- 招聘者注册
+- 大学账号注册
+- Email 验证
+- 登录
+- 登出
+- 忘记密码
+- 重设密码
+- Google Login / SSO
+- Role-Based Access Control（Candidate / Employer / University）
+
+---
+
+# Candidate Module
+
+## 2. Candidate Dashboard（求职者仪表板）
+
+### Functions
+
+- 查看个人求职数据概览
+- 查看申请状态统计
+- 查看面试进度
+- 查看职位匹配推荐
+- 查看通知
+- 查看 AI Career Insights
+- 查看收藏职位
+
+---
+
+## 3. Candidate Profile（个人资料页面）
+
+### Functions
+
+- 查看个人资料
+- 编辑个人基本资料
+- 新增/编辑学历资料
+- 新增/编辑工作经历
+- 新增/删除技能
+- 上传作品集（Portfolio）
+- 上传证书
+- 上传履历（Resume）
+- 修改履历
+- 删除履历
+
+### Advanced Functions
+
+- Co-Authored Profile Dashboard
+- University Verified Achievements
+- Self-Reported Projects
+- Skill Translator（AI 自动识别技能）
+- Privacy Controls
+
+---
+
+## 4. Resume & AI Resume Assistant（履历中心）
+
+### Functions
+
+- 上传履历
+- 更新履历
+- 删除履历
+- 履历分析
+
+### AI Functions
+
+- Resume Score Analysis
+- Grammar Check
+- Spelling Check
+- Smart Phrasing Suggestions
+- Tailored Resume Builder
+- AI Cover Letter Generator
+
+---
+
+## 5. Job Discovery（职位搜索）
+
+### Functions
+
+- 浏览职位列表
+- 搜索职位
+- 筛选职位
+- 排序职位
+- 收藏职位
+- 取消收藏职位
+
+### Advanced Functions
+
+- AI Fit Score Indicator
+- Job Match Score
+- Geolocational Economic Lens
+- Personalized Job Recommendation
+
+---
+
+## 6. Job Details（职位详情）
+
+### Functions
+
+- 查看职位详情
+- 查看职位要求
+- 查看薪资福利
+- 查看公司资讯
+- 查看企业简介
+- 查看职位匹配度
+
+---
+
+## 7. Job Application（职位申请）
+
+### Functions
+
+- 提交申请
+- 上传附件
+- 取消申请
+- 查看申请纪录
+- 查看申请详情
+- 查看申请状态
+
+---
+
+## 8. Application Tracker（申请追踪）
+
+### Functions
+
+- 查看申请状态
+    - Saved
+    - Applied
+    - Interviewing
+    - Offered
+    - Rejected
+
+### Advanced Functions
+
+- Rejection Analysis
+- AI Feedback Parsing
+
+---
+
+## 9. Interview Management（面试管理）
+
+### Functions
+
+- 接收面试邀请
+- 查看面试资料
+- 查看面试准备内容
+- 确认出席
+- 申请改期
+- 查看改期状态
+- 取消面试
+- 查看最终录取结果
+- 查看面试反馈
+- 查看失败原因
+
+### Advanced Functions
+
+- Meeting Manager
+- Calendar Sync
+- Company Research Summary
+- Mock Interview Questions
+
+---
+
+## 10. Career Path Navigator（职业路径规划）
+
+### Functions
+
+- Career Recommendation
+- Skill Gap Analysis
+- Missing Skills Detection
+- Learning Roadmap
+- Project Recommendation
+- Job Match Analysis
+
+### AI Functions
+
+- Live Market Mapping
+- Career Trajectory Prediction
+- Step-by-Step Skill Bridging
+- Certification Recommendation
+- University Elective Recommendation
+
+---
+
+## 11. Notifications（通知中心）
+
+### Functions
+
+- 查看通知列表
+- 标记已读
+- 接收申请状态通知
+- 接收面试通知
+- 接收录取通知
+- 接收拒绝通知
+
+---
+
+# Employer Module
+
+## 12. Employer Dashboard（招聘者仪表板）
+
+### Functions
+
+- 查看招聘统计
+- 查看职位统计
+- 查看申请统计
+- 查看录取统计
+- 查看候选名单
+- 查看通知
+
+---
+
+## 13. Company Profile（企业资料）
+
+### Functions
+
+- 查看公司资料
+- 编辑公司资料
+- 上传 Company Logo
+- 编辑企业简介
+- 编辑产业类别
+- 编辑官网与地址
+
+---
+
+## 14. Job Management（职位管理）
+
+### Functions
+
+- 新增职位
+- 编辑职位
+- 删除职位
+- 查看职位列表
+- 查看职位详情
+- 开启/关闭职位
+- 设定职位需求
+- 设定员工福利
+
+### AI Functions
+
+- Smart Job Creator
+- Requirement Weighting Matrix
+- AI Budget & Market Validator
+
+---
+
+## 15. Candidate Management（申请者管理）
+
+### Functions
+
+- 查看申请列表
+- 查看申请详情
+- 下载履历
+- 筛选申请者
+- 排序申请者
+- 标记审核中
+- 加入候选名单
+- 移除候选名单
+
+### AI Functions
+
+- AI Candidate Summary
+- Candidate Match Analysis
+- Blind Screening Mode
+
+---
+
+## 16. Interview Management（招聘方面试管理）
+
+### Functions
+
+- 发起面试邀请
+- 指定面试资料
+- 查看面试安排
+- 修改面试时间
+- 取消面试
+- 查看改期申请
+- 批准改期
+- 拒绝改期
+- 记录面试结果
+- 填写面试反馈
+
+---
+
+## 17. Offer & Rejection Management（录取管理）
+
+### Functions
+
+- 发出录取通知
+- 发出拒绝通知
+- 查看录取统计
+
+### AI Functions
+
+- One-Click Structured Feedback
+- AI Generated Rejection Feedback
+- Candidate Skill Gap Report
+
+---
+
+## 18. Talent Re-Engagement（人才再招募）
+
+### Functions
+
+- 收藏候选人
+- 查看收藏候选人
+- 移除收藏候选人
+- 查看历史互动纪录
+- 重新联系候选人
+
+### AI Functions
+
+- Automated Maturation Alerts
+- Skill-Maturity Forecasting
+- Candidate Progress Monitoring
+- One-Click Re-Engagement
+
+---
+
+# University Module
+
+## 19. University Dashboard（大学仪表板）
+
+### Functions
+
+- 查看毕业生统计
+- 查看就业率
+- 查看产业分布
+- 查看职位分布
+- 查看通知
+
+---
+
+## 20. Graduate Management（毕业生管理）
+
+### Functions
+
+- 新增毕业生资料
+- 查看毕业生资料
+- 修改毕业生资料
+- 删除毕业生资料
+
+---
+
+## 21. Verification Pipeline（学历验证中心）
+
+### Functions
+
+- 同步学生数据
+- 同步课程完成记录
+- 同步 Capstone Project
+- 验证学生技能
+- 验证学术成就
+
+### Advanced Functions
+
+- Secure Ledger
+- Bulk Sync
+- Verification Workflow
+- API Integration
+
+---
+
+## 22. Dispute Resolution（认证争议处理）
+
+### Functions
+
+- 提交认证争议
+- 查看争议状态
+- 审核争议
+- 更新认证结果
+
+---
+
+## 23. Employment Tracking（就业追踪）
+
+### Functions
+
+- 查看毕业生就业状态
+- 查看任职公司
+- 查看职位分布
+- 查看产业分布
+- 查看就业率
+- 查看平均求职时间
+
+---
+
+## 24. Analytics & Reports（分析报表）
+
+### Functions
+
+- 生成就业报告
+- 导出 PDF 报告
+- 导出 Excel 报告
+
+### AI Functions
+
+- Employment Trend Analysis
+- Skill Demand Analysis
+- Curriculum Improvement Suggestions
+
+---
+
+## 25. Insights Dashboard（教育洞察中心）
+
+### Functions
+
+- Alumni Employment Dashboard
+- Employer Demand Heatmap
+- Graduate Outcome Analysis
+
+### AI Functions
+
+- Curriculum Alignment AI
+- Skills Gap Intelligence
+- Industry Demand Forecast
+
+---
+
+# Shared Module
+
+## 26. Company / University Public Profile
+
+### Functions
+
+- 浏览企业资料
+- 浏览大学资料
+- 查看行业类别
+- 查看专长领域
+- 查看公司地点
+- 查看开放职位
+
+---
+
+## 27. Notification Center
+
+### Functions
+
+- 查看通知
+- 标记已读
+- Email Notification
+- System Notification
+- Interview Notification
+- Application Status Notification
+
+---
+
+# 建议最终页面数量
+
+| 模块 | 页面数 |
+| --- | --- |
+| Authentication | 1 |
+| Candidate | 10 |
+| Employer | 7 |
+| University | 6 |
+| Shared | 3 |
+| **Total** | **27 Pages** |
+
+其中若项目时间有限，建议 MVP 优先开发：
+
+1. Authentication
+2. Candidate Dashboard
+3. Candidate Profile
+4. Job Discovery
+5. Job Details
+6. Job Application
+7. Employer Dashboard
+8. Company Profile
+9. Job Management
+10. Candidate Management
+11. Interview Management
+12. University Dashboard
+13. Graduate Management
+14. Notification Center
+
+共约 14 个核心页面即可完成完整系统 Demonstration。
