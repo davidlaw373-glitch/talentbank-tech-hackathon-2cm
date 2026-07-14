@@ -5,13 +5,12 @@ import {
   BadgeCheck,
   Sparkles,
   ArrowRight,
+  ArrowUpRight,
   Check,
-  Circle,
   MapPin,
   Building2,
   Clock,
   TrendingUp,
-  User,
   GraduationCap,
   FolderGit2,
   FileText,
@@ -90,12 +89,14 @@ const STATS = [
     value: applications.length,
     icon: Briefcase,
     delta: "+2 this week",
+    tone: "positive" as const,
   },
   {
     label: "Interview pipeline",
     value: applications.filter((a) => a.status === "Interview").length,
     icon: CalendarClock,
     delta: "1 next week",
+    tone: "positive" as const,
   },
   {
     label: "Profile strength",
@@ -103,6 +104,8 @@ const STATS = [
     icon: Sparkles,
     suffix: "%",
     delta: "Top 18% of candidates",
+    tone: "positive" as const,
+    hero: true,
   },
   {
     label: "Average match",
@@ -112,6 +115,7 @@ const STATS = [
     icon: TrendingUp,
     suffix: "%",
     delta: "Across 3 open roles",
+    tone: "neutral" as const,
   },
 ];
 
@@ -164,10 +168,17 @@ export function DashboardOverview() {
       >
         {STATS.map((s) => {
           const Icon = s.icon;
+          const isPositive = s.tone === "positive";
           return (
-            <Card key={s.label} className="lift-on-hover">
+            <Card
+              key={s.label}
+              className={cn(
+                "lift-on-hover",
+                s.hero && "ring-1 ring-primary/20"
+              )}
+            >
               <CardContent className="space-y-3 p-5 sm:p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
                 <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
@@ -176,7 +187,17 @@ export function DashboardOverview() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{s.label}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p
+                    className={cn(
+                      "mt-0.5 flex items-center gap-1 text-xs",
+                      isPositive
+                        ? "font-medium text-primary"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {isPositive && (
+                      <ArrowUpRight className="h-3 w-3" aria-hidden />
+                    )}
                     {s.delta}
                   </p>
                 </div>
@@ -223,7 +244,7 @@ export function DashboardOverview() {
               </div>
               <div className="h-2.5 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-foreground animate-progress"
+                  className="h-full rounded-full bg-primary animate-progress"
                   style={{
                     width: `${Math.round((done / total) * 100)}%`,
                   }}
@@ -247,7 +268,7 @@ export function DashboardOverview() {
                       className={cn(
                         "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
                         item.done
-                          ? "bg-foreground text-background"
+                          ? "bg-primary text-primary-foreground"
                           : "border border-foreground/30 text-foreground/50"
                       )}
                       aria-hidden
@@ -441,7 +462,7 @@ export function DashboardOverview() {
                             <span className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
                               {isCurrent && (
                                 <span
-                                  className="absolute inset-0 rounded-full border-2 border-foreground animate-pulse-ring-soft"
+                                  className="absolute inset-0 rounded-full border-2 border-primary animate-pulse-ring-soft"
                                   aria-hidden
                                 />
                               )}
@@ -449,9 +470,9 @@ export function DashboardOverview() {
                                 className={cn(
                                   "relative flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold",
                                   step.complete &&
-                                    "bg-foreground text-background",
+                                    "bg-primary text-primary-foreground",
                                   isCurrent &&
-                                    "border-2 border-foreground bg-background text-foreground animate-pulse-soft",
+                                    "border-2 border-primary bg-background text-primary animate-pulse-soft",
                                   !step.complete &&
                                     !isCurrent &&
                                     "border border-border bg-background text-muted-foreground"
@@ -467,7 +488,7 @@ export function DashboardOverview() {
                                 {step.complete ? (
                                   <Check className="h-3 w-3" />
                                 ) : isCurrent ? (
-                                  <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+                                  <span className="inline-block h-2 w-2 rounded-full bg-primary" />
                                 ) : (
                                   i + 1
                                 )}
@@ -478,7 +499,7 @@ export function DashboardOverview() {
                                 className={cn(
                                   "text-sm font-medium",
                                   step.complete && "text-muted-foreground line-through",
-                                  isCurrent && "text-foreground",
+                                  isCurrent && "text-primary",
                                   !step.complete &&
                                     !isCurrent &&
                                     "text-muted-foreground"
@@ -486,7 +507,7 @@ export function DashboardOverview() {
                               >
                                 {step.label}
                                 {isCurrent && (
-                                  <span className="ml-2 text-xs font-medium text-foreground">
+                                  <span className="ml-2 text-xs font-medium text-primary">
                                     · In progress
                                   </span>
                                 )}
@@ -612,7 +633,7 @@ export function DashboardOverview() {
                         className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted"
                       >
                         <div
-                          className="h-full rounded-full bg-foreground/80"
+                          className="h-full rounded-full bg-primary"
                           style={{ width: `${job.matchScore}%` }}
                         />
                       </div>
@@ -633,24 +654,38 @@ export function DashboardOverview() {
             <CardDescription>Your latest CareerOS updates.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <ol className="space-y-3">
-              {recentActivity.map((activity) => (
-                <li
-                  key={activity.message}
-                  className="relative flex items-start gap-3"
-                >
-                  <span
-                    aria-hidden
-                    className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-foreground/60"
-                  />
-                  <div>
-                    <p className="text-sm">{activity.message}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {activity.timestamp}
-                    </p>
-                  </div>
-                </li>
-              ))}
+            <ol className="relative space-y-4">
+              {recentActivity.map((activity, i) => {
+                const isLatest = i === 0;
+                const isLast = i === recentActivity.length - 1;
+                return (
+                  <li
+                    key={activity.message}
+                    className="relative flex items-start gap-3"
+                  >
+                    {/* Connector line */}
+                    {!isLast && (
+                      <span
+                        aria-hidden
+                        className="absolute left-[3px] top-3 h-full w-px bg-border"
+                      />
+                    )}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "relative z-10 mt-1.5 flex h-2 w-2 shrink-0 rounded-full",
+                        isLatest ? "bg-primary" : "bg-muted-foreground/40"
+                      )}
+                    />
+                    <div>
+                      <p className="text-sm">{activity.message}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {activity.timestamp}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
             </ol>
           </CardContent>
         </Card>
