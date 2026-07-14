@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,7 @@ type CursorGlowProps = {
 
 export function CursorGlow({ className }: CursorGlowProps) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const [enabled, setEnabled] = useState(false);
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   const raf = useRef<number | null>(null);
@@ -20,6 +21,7 @@ export function CursorGlow({ className }: CursorGlowProps) {
       typeof window.matchMedia === "function"
         ? window.matchMedia("(pointer: fine)").matches
         : true;
+    setEnabled(fine);
     if (!fine) return;
 
     const node = ref.current;
@@ -59,6 +61,8 @@ export function CursorGlow({ className }: CursorGlowProps) {
     };
   }, []);
 
+  if (!enabled) return null;
+
   return (
     <div
       ref={ref}
@@ -74,7 +78,7 @@ export function CursorGlow({ className }: CursorGlowProps) {
         } as React.CSSProperties
       }
     >
-      {/* Outer soft halo */}
+      {/* Outer soft halo — sage */}
       <div
         className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
@@ -83,11 +87,11 @@ export function CursorGlow({ className }: CursorGlowProps) {
           width: 720,
           height: 720,
           background:
-            "radial-gradient(circle, oklch(0.78 0.16 165 / 0.35) 0%, oklch(0.78 0.16 165 / 0) 60%)",
+            "radial-gradient(circle, rgba(163, 177, 138, 0.35) 0%, rgba(163, 177, 138, 0) 60%)",
           filter: "blur(40px)",
         }}
       />
-      {/* Mid glow */}
+      {/* Mid glow — deep green */}
       <div
         className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
@@ -96,11 +100,11 @@ export function CursorGlow({ className }: CursorGlowProps) {
           width: 420,
           height: 420,
           background:
-            "radial-gradient(circle, oklch(0.85 0.18 165 / 0.45) 0%, oklch(0.85 0.18 165 / 0) 65%)",
+            "radial-gradient(circle, rgba(88, 129, 87, 0.55) 0%, rgba(88, 129, 87, 0) 65%)",
           filter: "blur(20px)",
         }}
       />
-      {/* Bright core */}
+      {/* Bright core — forest */}
       <div
         className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
@@ -109,7 +113,7 @@ export function CursorGlow({ className }: CursorGlowProps) {
           width: 160,
           height: 160,
           background:
-            "radial-gradient(circle, oklch(0.95 0.2 165 / 0.7) 0%, oklch(0.95 0.2 165 / 0) 70%)",
+            "radial-gradient(circle, rgba(58, 90, 64, 0.65) 0%, rgba(58, 90, 64, 0) 70%)",
           filter: "blur(8px)",
         }}
       />

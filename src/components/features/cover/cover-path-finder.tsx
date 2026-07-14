@@ -106,8 +106,8 @@ export function CoverPathFinder() {
             <span className="text-muted-foreground">here to there.</span>
           </h2>
           <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-            Pick where you are today. CareerOS maps the AI-suggested path
-            forward — skills, roles, and a real timeline.
+            Pick where you are today. We&apos;ll show you the skills to
+            learn, the role to aim for, and how long it may take.
           </p>
         </ScrollReveal>
 

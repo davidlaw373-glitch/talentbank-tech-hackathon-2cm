@@ -2,13 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Activity, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  GraduationCap,
+  BadgeCheck,
+  Briefcase,
+  Check,
+  Circle,
+} from "lucide-react";
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { AnimatedCounter } from "@/components/common/animated-counter";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Match = {
   id: string;
@@ -16,6 +28,7 @@ type Match = {
   role: string;
   score: number;
   city: string;
+  delta: number;
 };
 
 const SEED_MATCHES: Match[] = [
@@ -25,6 +38,7 @@ const SEED_MATCHES: Match[] = [
     role: "Senior Frontend · Helio",
     score: 94,
     city: "Singapore",
+    delta: 2,
   },
   {
     id: "m2",
@@ -32,6 +46,7 @@ const SEED_MATCHES: Match[] = [
     role: "ML Engineer · Lumen",
     score: 91,
     city: "London",
+    delta: -1,
   },
   {
     id: "m3",
@@ -39,6 +54,7 @@ const SEED_MATCHES: Match[] = [
     role: "Staff PM · Vertex",
     score: 89,
     city: "Seoul",
+    delta: 3,
   },
   {
     id: "m4",
@@ -46,6 +62,7 @@ const SEED_MATCHES: Match[] = [
     role: "Data Engineer · Atlas",
     score: 87,
     city: "Madrid",
+    delta: 1,
   },
   {
     id: "m5",
@@ -53,16 +70,73 @@ const SEED_MATCHES: Match[] = [
     role: "Mobile Lead · Polaris",
     score: 86,
     city: "Tokyo",
+    delta: -2,
+  },
+  {
+    id: "m6",
+    candidate: "K. Andersson",
+    role: "Backend Lead · Lumen",
+    score: 84,
+    city: "Stockholm",
+    delta: 0,
   },
 ];
 
 const SIGNAL_LINES = [
-  "New role posted: Senior Frontend at Helio",
+  "New role posted · Senior Frontend at Helio",
   "3 candidates moved to interview",
-  "AI flagged 12 strong matches",
-  "Credential verified: M. Okafor · Imperial",
-  "Offer accepted: S. Park → Vertex",
-  "Curriculum signal: +41% LLM evaluation",
+  "AI flagged 12 strong matches in the last hour",
+  "Credential verified · M. Okafor · Imperial",
+  "Offer accepted · S. Park → Vertex",
+  "Curriculum signal · +41% demand for LLM evaluation",
+  "Hiring team shortlisted 8 candidates at Lumen",
+  "New university onboarded · IIT Delhi",
+];
+
+const STATS = [
+  {
+    label: "Placements",
+    value: 1247,
+    trend: 12,
+    icon: Briefcase,
+    suffix: "",
+  },
+  {
+    label: "Verified profiles",
+    value: 86420,
+    trend: 8,
+    icon: BadgeCheck,
+    suffix: "",
+  },
+  {
+    label: "Universities",
+    value: 184,
+    trend: 4,
+    icon: GraduationCap,
+    suffix: "",
+  },
+  {
+    label: "Active matches",
+    value: 247,
+    trend: -3,
+    icon: Users,
+    suffix: "",
+  },
+];
+
+type ChecklistItem = {
+  id: string;
+  label: string;
+  hint: string;
+  done: boolean;
+};
+
+const CHECKLIST: ChecklistItem[] = [
+  { id: "skills", label: "Add your skills", hint: "12 added", done: true },
+  { id: "resume", label: "Upload your resume", hint: "PDF · 2 pages", done: true },
+  { id: "credential", label: "Verify a credential", hint: "Boosts match by ~18%", done: true },
+  { id: "portfolio", label: "Link a portfolio", hint: "GitHub, Figma, or a site", done: false },
+  { id: "goals", label: "Set career goals", hint: "Powers path navigator", done: false },
 ];
 
 export function CoverPlatform() {
@@ -76,11 +150,14 @@ export function CoverPlatform() {
         const next = [...prev];
         const head = next.shift();
         if (!head) return prev;
-        const newScore = Math.max(78, Math.min(96, head.score + (Math.random() > 0.5 ? 1 : -1)));
+        const delta =
+          Math.random() > 0.5 ? 1 : -1;
+        const newScore = Math.max(78, Math.min(96, head.score + delta));
         const newMatch: Match = {
           ...head,
           id: `t-${Date.now()}`,
           score: newScore,
+          delta,
         };
         next.push(newMatch);
         return next;
@@ -90,6 +167,10 @@ export function CoverPlatform() {
     }, 2400);
     return () => clearInterval(id);
   }, []);
+
+  const total = CHECKLIST.length;
+  const done = CHECKLIST.filter((c) => c.done).length;
+  const pct = Math.round((done / total) * 100);
 
   return (
     <section
@@ -106,6 +187,7 @@ export function CoverPlatform() {
       </div>
 
       <div className="container mx-auto px-6 py-20 md:py-28">
+        {/* Header */}
         <ScrollReveal className="mx-auto max-w-2xl text-center">
           <CoverEyebrow>CareerOS in action</CoverEyebrow>
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
@@ -118,11 +200,51 @@ export function CoverPlatform() {
           </p>
         </ScrollReveal>
 
-        <ScrollReveal delay={120} className="mt-12">
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
-            {/* Live match feed */}
-            <div className="lg:col-span-3 overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
-              <div className="flex items-center justify-between border-b px-5 py-4">
+        {/* Stat row */}
+        <ScrollReveal delay={80} className="mt-12">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+            {STATS.map((s) => {
+              const Icon = s.icon;
+              const up = s.trend > 0;
+              return (
+                <div
+                  key={s.label}
+                  className="lift-on-hover rounded-2xl border bg-card p-5 text-card-foreground sm:p-6"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
+                      <Icon className="h-4 w-4" aria-hidden />
+                    </div>
+                    <Badge
+                      variant={up ? "secondary" : "outline"}
+                      className="gap-0.5"
+                    >
+                      {up ? (
+                        <TrendingUp className="h-3 w-3" aria-hidden />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" aria-hidden />
+                      )}
+                      {Math.abs(s.trend)}%
+                    </Badge>
+                  </div>
+                  <div className="mt-4 text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                    <AnimatedCounter value={s.value} />
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {s.label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </ScrollReveal>
+
+        {/* Main 2-col: matches + profile progress */}
+        <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-5">
+          {/* Live matches */}
+          <ScrollReveal delay={140} className="lg:col-span-3">
+            <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
+              <div className="flex items-center justify-between border-b px-6 py-4">
                 <div className="flex items-center gap-2">
                   <span className="relative inline-flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
@@ -132,8 +254,8 @@ export function CoverPlatform() {
                     Live matches
                   </h3>
                 </div>
-                <Badge variant="secondary">
-                  <Activity className="mr-1 h-3 w-3" />
+                <Badge variant="secondary" className="gap-1">
+                  <Activity className="h-3 w-3" aria-hidden />
                   Real-time
                 </Badge>
               </div>
@@ -141,30 +263,43 @@ export function CoverPlatform() {
                 {matches.map((m) => (
                   <li
                     key={m.id}
-                    className="flex items-center gap-3 px-5 py-3.5 text-sm transition-colors hover:bg-muted/40"
+                    className="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/40"
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-semibold">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
                       {m.candidate
                         .split(" ")
                         .map((p) => p[0])
                         .join("")}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate font-medium">{m.candidate}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">
+                        {m.candidate}
+                      </p>
                       <p className="truncate text-xs text-muted-foreground">
                         {m.role} · {m.city}
                       </p>
                     </div>
-                    <div className="flex items-baseline gap-0.5">
-                      <span
-                        key={`${m.id}-${tick}`}
-                        className="animate-reveal text-base font-semibold tabular-nums"
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={m.delta > 0 ? "secondary" : "outline"}
+                        className="hidden h-5 gap-0 px-1.5 text-[10px] sm:inline-flex"
                       >
-                        {m.score}
-                      </span>
-                      <span className="text-xs text-muted-foreground">/100</span>
+                        {m.delta > 0 ? "+" : m.delta < 0 ? "" : "±"}
+                        {m.delta !== 0 ? Math.abs(m.delta) : ""}
+                      </Badge>
+                      <div className="flex items-baseline gap-0.5">
+                        <span
+                          key={`${m.id}-${tick}`}
+                          className="animate-reveal text-lg font-semibold tabular-nums"
+                        >
+                          {m.score}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          /100
+                        </span>
+                      </div>
                     </div>
-                    <div className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-muted sm:block">
+                    <div className="hidden h-1.5 w-24 overflow-hidden rounded-full bg-muted sm:block">
                       <div
                         className="h-full rounded-full bg-foreground/80 animate-progress"
                         style={{ width: `${m.score}%` }}
@@ -174,75 +309,126 @@ export function CoverPlatform() {
                 ))}
               </ul>
             </div>
+          </ScrollReveal>
 
-            {/* Signals + metrics */}
-            <div className="flex flex-col gap-5 lg:col-span-2">
-              <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
-                <div className="flex items-center justify-between border-b px-5 py-4">
+          {/* Profile progress */}
+          <ScrollReveal delay={200} className="lg:col-span-2">
+            <div className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
+              <div className="border-b px-6 py-5">
+                <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold tracking-tight">
-                    Platform signal
+                    Your profile
                   </h3>
-                  <Badge variant="outline">
-                    <TrendingUp className="mr-1 h-3 w-3" />
-                    +18% wk
-                  </Badge>
+                  <Badge variant="outline">{pct}% complete</Badge>
                 </div>
-                <div className="px-5 py-4">
-                  <p
-                    key={signalIndex}
-                    className="animate-reveal text-sm font-medium"
-                  >
-                    {SIGNAL_LINES[signalIndex]}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Updated just now
-                  </p>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-foreground animate-progress"
+                    style={{ width: `${pct}%` }}
+                  />
                 </div>
-                <div className="grid grid-cols-3 border-t">
-                  <div className="border-r px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Placements
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold tabular-nums">
-                      <AnimatedCounter value={1247} />
-                    </p>
-                  </div>
-                  <div className="border-r px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Verified
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold tabular-nums">
-                      <AnimatedCounter value={86420} />
-                    </p>
-                  </div>
-                  <div className="px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Universities
-                    </p>
-                    <p className="mt-1 text-2xl font-semibold tabular-nums">
-                      <AnimatedCounter value={184} />
-                    </p>
-                  </div>
-                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {done} of {total} sections complete · a stronger profile
+                  means stronger matches
+                </p>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border bg-foreground p-6 text-background shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70">
-                  Take it for a spin
-                </p>
-                <p className="mt-2 text-lg font-semibold tracking-tight sm:text-xl">
-                  See CareerOS work on a real profile in 60 seconds.
-                </p>
+              <ul className="flex-1 divide-y">
+                {CHECKLIST.map((item) => (
+                  <li
+                    key={item.id}
+                    className={cn(
+                      "flex items-center gap-3 px-6 py-3 transition-colors hover:bg-muted/40",
+                      item.done && "opacity-70"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "flex h-6 w-6 shrink-0 items-center justify-center rounded-full",
+                        item.done
+                          ? "bg-foreground text-background"
+                          : "border border-foreground/30 text-foreground/40"
+                      )}
+                      aria-hidden
+                    >
+                      {item.done ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Circle className="h-2 w-2 fill-current" />
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className={cn(
+                          "truncate text-sm font-medium",
+                          item.done && "text-muted-foreground"
+                        )}
+                      >
+                        {item.label}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {item.hint}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="border-t p-4">
                 <Button
                   asChild
-                  variant="secondary"
-                  className="mt-4 w-full justify-between bg-background text-foreground hover:bg-background/90"
+                  className="w-full justify-between"
                 >
                   <Link href="#start">
-                    Try the demo
+                    Complete your profile
                     <ArrowRight />
                   </Link>
                 </Button>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* Platform signals row */}
+        <ScrollReveal delay={260} className="mt-5">
+          <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between border-b px-6 py-4">
+              <div className="flex items-center gap-2">
+                <span className="relative inline-flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
+                </span>
+                <h3 className="text-sm font-semibold tracking-tight">
+                  Platform signal
+                </h3>
+              </div>
+              <Badge variant="outline" className="gap-1">
+                <TrendingUp className="h-3 w-3" aria-hidden />
+                +18% wk
+              </Badge>
+            </div>
+            <div
+              className="relative overflow-hidden"
+              style={{
+                maskImage:
+                  "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+                WebkitMaskImage:
+                  "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
+              }}
+            >
+              <div className="flex animate-ticker gap-8 whitespace-nowrap px-6 py-4">
+                {[...SIGNAL_LINES, ...SIGNAL_LINES, ...SIGNAL_LINES].map(
+                  (line, i) => (
+                    <span
+                      key={`${line}-${i}`}
+                      className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground"
+                      aria-hidden={i >= SIGNAL_LINES.length}
+                    >
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground/40" />
+                      {line}
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </div>

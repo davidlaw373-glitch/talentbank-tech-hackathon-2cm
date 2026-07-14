@@ -27,7 +27,7 @@ const PATHS: Path[] = [
     icon: UserRound,
     title: "I'm looking for work",
     description:
-      "Build a verified profile, get AI match scores, and track every application in one place.",
+      "Create a profile, see your match score for every job, and keep track of where you've applied.",
     cta: "Create profile",
     href: "/register",
   },
@@ -36,7 +36,7 @@ const PATHS: Path[] = [
     icon: Briefcase,
     title: "I'm hiring",
     description:
-      "Post a role, review ranked candidates with AI summaries, and run structured interviews.",
+      "Post a role, see ranked candidates with AI summaries, and run interviews with a shared scorecard.",
     cta: "Post a job",
     href: "#roles",
   },
@@ -45,7 +45,7 @@ const PATHS: Path[] = [
     icon: GraduationCap,
     title: "I'm from a university",
     description:
-      "Issue verified credentials, track graduate outcomes, and align your curriculum with demand.",
+      "Issue verified credentials to students, see where they land after graduation, and update courses to match hiring demand.",
     cta: "Partner with us",
     href: "#start",
   },
