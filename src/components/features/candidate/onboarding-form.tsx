@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Loader2,
   Sparkles,
   User,
   MapPin,
@@ -40,11 +41,17 @@ const STEPS: StepperStep[] = [
 export function OnboardingForm() {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleNext = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (stepIndex < STEPS.length - 1) setStepIndex(stepIndex + 1);
-    else router.push("/candidate/dashboard");
+    if (stepIndex < STEPS.length - 1) {
+      setStepIndex(stepIndex + 1);
+      return;
+    }
+    // Demo only: nothing is saved — simulate finishing setup before navigating.
+    setIsSubmitting(true);
+    window.setTimeout(() => router.push("/candidate/dashboard"), 900);
   };
 
   const handleBack = () => {
@@ -265,9 +272,18 @@ export function OnboardingForm() {
             <ArrowLeft />
             Back
           </Button>
-          <Button type="submit">
-            {stepIndex === STEPS.length - 1 ? "Complete setup" : "Continue"}
-            <ArrowRight />
+          <Button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" aria-hidden />
+                Completing…
+              </>
+            ) : (
+              <>
+                {stepIndex === STEPS.length - 1 ? "Complete setup" : "Continue"}
+                <ArrowRight />
+              </>
+            )}
           </Button>
         </div>
       </form>

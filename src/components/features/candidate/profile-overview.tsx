@@ -32,6 +32,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { VERIFICATION_TONE } from "@/lib/status";
 
 type VerificationStatus = "Verified" | "Pending" | "Not started";
 
@@ -206,8 +207,8 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-10 text-center">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-        <Icon className="h-5 w-5 text-muted-foreground" aria-hidden />
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+        <Icon className="h-5 w-5 text-primary" aria-hidden />
       </div>
       <div>
         <p className="text-sm font-medium">{title}</p>
@@ -803,21 +804,22 @@ export function ProfileOverview() {
                       aria-label={`Status: ${item.status}. Click to change.`}
                       className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
-                      <Badge
-                        variant={
-                          item.status === "Verified"
-                            ? "secondary"
-                            : item.status === "Pending"
-                              ? "outline"
-                              : "outline"
-                        }
-                        className={cn(
-                          "cursor-pointer",
-                          item.status === "Not started" && "opacity-60"
-                        )}
-                      >
-                        {item.status}
-                      </Badge>
+                      {(() => {
+                        const tone = VERIFICATION_TONE[item.status];
+                        const ToneIcon = tone.icon;
+                        return (
+                          <Badge
+                            variant={tone.variant}
+                            className={cn(
+                              "cursor-pointer gap-1",
+                              item.status === "Not started" && "opacity-60"
+                            )}
+                          >
+                            <ToneIcon className="h-3 w-3" aria-hidden />
+                            {tone.label}
+                          </Badge>
+                        );
+                      })()}
                     </button>
                     <Button
                       size="icon"

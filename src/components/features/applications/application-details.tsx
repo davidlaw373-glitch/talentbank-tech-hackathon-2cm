@@ -19,20 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { APPLICATION_STATUS_TONE } from "@/lib/status";
 import { cn } from "@/lib/utils";
 
-const STATUS_TONE: Record<
-  Application["status"],
-  { variant: "default" | "secondary" | "outline"; label: string }
-> = {
-  Submitted: { variant: "outline", label: "Submitted" },
-  "In review": { variant: "outline", label: "In review" },
-  Interview: { variant: "secondary", label: "Interview" },
-  Offer: { variant: "default", label: "Offer" },
-};
-
 export function ApplicationDetails({ application }: { application: Application }) {
-  const tone = STATUS_TONE[application.status];
+  const tone = APPLICATION_STATUS_TONE[application.status];
+  const StatusIcon = tone.icon;
   const completed = application.timeline.filter((t) => t.complete).length;
   const totalSteps = application.timeline.length;
   const currentIndex = application.timeline.findIndex((t) => !t.complete);
@@ -58,7 +50,10 @@ export function ApplicationDetails({ application }: { application: Application }
             Back to tracker
           </Link>
         </Button>
-        <Badge variant={tone.variant}>{tone.label}</Badge>
+        <Badge variant={tone.variant} className="gap-1">
+          <StatusIcon className="h-3 w-3" aria-hidden />
+          {tone.label}
+        </Badge>
       </div>
 
       {/* Header */}
@@ -103,7 +98,7 @@ export function ApplicationDetails({ application }: { application: Application }
           {currentIndex >= 0 && (
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Stage {currentIndex + 1} of {totalSteps} ·{" "}
-              <span className="font-medium text-foreground">
+              <span className="font-medium text-primary">
                 {application.stage}
               </span>{" "}
               is in progress
@@ -209,9 +204,9 @@ export function ApplicationDetails({ application }: { application: Application }
                       className={cn(
                         "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold",
                         step.complete &&
-                          "bg-foreground text-background",
+                          "bg-primary text-primary-foreground",
                         isCurrent &&
-                          "border-2 border-foreground bg-background text-foreground animate-pulse-soft",
+                          "border-2 border-primary bg-background text-primary animate-pulse-soft",
                         !step.complete &&
                           !isCurrent &&
                           "border border-border bg-background text-muted-foreground"
@@ -221,7 +216,7 @@ export function ApplicationDetails({ application }: { application: Application }
                       {step.complete ? (
                         <Check className="h-3 w-3" />
                       ) : isCurrent ? (
-                        <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+                        <span className="inline-block h-2 w-2 rounded-full bg-primary" />
                       ) : (
                         step._i + 1
                       )}
@@ -237,7 +232,7 @@ export function ApplicationDetails({ application }: { application: Application }
                       >
                         {step.label}
                         {isCurrent && (
-                          <span className="ml-2 text-xs font-medium text-foreground">
+                          <span className="ml-2 text-xs font-medium text-primary">
                             · In progress
                           </span>
                         )}

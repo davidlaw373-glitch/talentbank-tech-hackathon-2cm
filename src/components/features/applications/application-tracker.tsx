@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { applications } from "@/data/applications";
-import type { Application, ApplicationStatus } from "@/types/candidate";
+import type { Application } from "@/types/candidate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,17 +28,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { APPLICATION_STATUS_TONE } from "@/lib/status";
 import { cn } from "@/lib/utils";
-
-const STATUS_TONE: Record<
-  ApplicationStatus,
-  { variant: "default" | "secondary" | "outline"; label: string }
-> = {
-  Submitted: { variant: "outline", label: "Submitted" },
-  "In review": { variant: "outline", label: "In review" },
-  Interview: { variant: "secondary", label: "Interview" },
-  Offer: { variant: "default", label: "Offer" },
-};
 
 function ApplicationProgress({ application }: { application: Application }) {
   const completed = application.timeline.filter((t) => t.complete).length;
@@ -55,7 +46,7 @@ function ApplicationProgress({ application }: { application: Application }) {
           {hasActive && (
             <>
               {" · "}
-              <span className="font-medium text-foreground">
+              <span className="font-medium text-primary">
                 Stage {currentIndex + 1} active
               </span>
             </>
@@ -82,7 +73,7 @@ function ApplicationProgress({ application }: { application: Application }) {
               {isComplete && (
                 <span
                   className={cn(
-                    "absolute inset-y-0 left-0 w-full rounded-full bg-foreground/70",
+                    "absolute inset-y-0 left-0 w-full rounded-full bg-primary",
                     i <= completed && "animate-progress-x"
                   )}
                   style={
@@ -94,7 +85,7 @@ function ApplicationProgress({ application }: { application: Application }) {
               )}
               {isCurrent && (
                 <>
-                  <span className="absolute inset-y-0 left-0 w-full rounded-full bg-foreground/30" />
+                  <span className="absolute inset-y-0 left-0 w-full rounded-full bg-primary/30" />
                   <span className="animate-shimmer-bar pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-background/60 to-transparent" />
                 </>
               )}
@@ -183,7 +174,7 @@ export function ApplicationTracker() {
           return (
             <Card key={s.label} className="lift-on-hover">
               <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
                 <div>
@@ -231,8 +222,8 @@ export function ApplicationTracker() {
           {/* List */}
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-12 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                <Filter className="h-5 w-5 text-muted-foreground" aria-hidden />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                <Filter className="h-5 w-5 text-primary" aria-hidden />
               </div>
               <div>
                 <p className="text-sm font-medium">No applications match</p>
@@ -244,7 +235,8 @@ export function ApplicationTracker() {
           ) : (
             <ul className="space-y-3">
               {filtered.map((app) => {
-                const tone = STATUS_TONE[app.status];
+                const tone = APPLICATION_STATUS_TONE[app.status];
+                const StatusIcon = tone.icon;
                 return (
                   <li key={app.id}>
                     <Link
@@ -252,7 +244,7 @@ export function ApplicationTracker() {
                       className="lift-on-hover block rounded-lg border bg-card p-5 transition-colors hover:bg-accent"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                           <Building2
                             className="h-5 w-5"
                             aria-hidden
@@ -263,7 +255,10 @@ export function ApplicationTracker() {
                             <p className="truncate text-sm font-semibold">
                               {app.jobTitle}
                             </p>
-                            <Badge variant={tone.variant}>{tone.label}</Badge>
+                            <Badge variant={tone.variant} className="gap-1">
+                              <StatusIcon className="h-3 w-3" aria-hidden />
+                              {tone.label}
+                            </Badge>
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
@@ -276,7 +271,7 @@ export function ApplicationTracker() {
                             <span>Applied {app.appliedDate}</span>
                             <span>· {app.stage}</span>
                           </div>
-                          <div className="rounded-md border-l-2 border-foreground/40 bg-muted/40 p-2.5 text-xs leading-relaxed">
+                          <div className="rounded-md border-l-2 border-primary/50 bg-muted/40 p-2.5 text-xs leading-relaxed">
                             <span className="font-semibold">Update: </span>
                             {app.update}
                           </div>

@@ -55,14 +55,14 @@ function NotificationRow({
       <div
         className={cn(
           "flex items-start gap-3 rounded-lg border p-4 transition-colors",
-          !read && "border-foreground/30 bg-muted/30"
+          !read && "border-primary/30 bg-primary/5"
         )}
       >
         <div
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
             !read
-              ? "bg-foreground text-background"
+              ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground"
           )}
           aria-hidden
@@ -226,8 +226,8 @@ export function NotificationsCenter() {
       {list.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-              <Filter className="h-5 w-5 text-muted-foreground" aria-hidden />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+              <Filter className="h-5 w-5 text-primary" aria-hidden />
             </div>
             <div>
               <p className="text-sm font-medium">No notifications match</p>

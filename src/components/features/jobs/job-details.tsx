@@ -27,14 +27,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-
-function matchTone(score: number) {
-  if (score >= 90) return { label: "Strong fit", variant: "default" as const };
-  if (score >= 80) return { label: "Good fit", variant: "secondary" as const };
-  if (score >= 70) return { label: "Possible", variant: "outline" as const };
-  return { label: "Stretch", variant: "outline" as const };
-}
+import { matchTone } from "@/lib/status";
 
 export function JobDetails({ job }: { job: Job }) {
   const [saved, setSaved] = useState(false);
@@ -81,7 +74,7 @@ export function JobDetails({ job }: { job: Job }) {
       {/* Header */}
       <header className="space-y-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <Briefcase className="h-6 w-6" aria-hidden />
           </div>
           <div className="space-y-1">
@@ -238,7 +231,7 @@ export function JobDetails({ job }: { job: Job }) {
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-foreground animate-progress-x"
+                  className="h-full rounded-full bg-primary animate-progress-x"
                   style={{ width: `${job.matchScore}%` }}
                 />
               </div>

@@ -32,14 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-
-function matchTone(score: number) {
-  if (score >= 90) return { label: "Strong fit", variant: "default" as const };
-  if (score >= 80) return { label: "Good fit", variant: "secondary" as const };
-  if (score >= 70) return { label: "Possible", variant: "outline" as const };
-  return { label: "Stretch", variant: "outline" as const };
-}
+import { matchTone } from "@/lib/status";
 
 type SortKey = "match" | "recent";
 
@@ -121,7 +114,7 @@ export function JobDiscovery() {
           return (
             <Card key={s.label} className="lift-on-hover">
               <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
                 <div>
@@ -224,9 +217,9 @@ export function JobDiscovery() {
         {filteredJobs.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                 <Filter
-                  className="h-5 w-5 text-muted-foreground"
+                  className="h-5 w-5 text-primary"
                   aria-hidden
                 />
               </div>
@@ -249,7 +242,7 @@ export function JobDiscovery() {
                   className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Briefcase className="h-5 w-5" aria-hidden />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -314,7 +307,7 @@ export function JobDiscovery() {
                       </span>
                       <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full rounded-full bg-foreground/80"
+                          className="h-full rounded-full bg-primary"
                           style={{ width: `${job.matchScore}%` }}
                         />
                       </div>

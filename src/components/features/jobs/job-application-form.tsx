@@ -25,12 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-
-function matchTone(score: number) {
-  if (score >= 90) return { label: "Strong fit", variant: "default" as const };
-  if (score >= 80) return { label: "Good fit", variant: "secondary" as const };
-  return { label: "Possible", variant: "outline" as const };
-}
+import { matchTone } from "@/lib/status";
 
 const STEPS: StepperStep[] = [
   { id: "review", label: "Review profile" },
@@ -74,7 +69,7 @@ export function JobApplicationForm({
       <div className="mx-auto max-w-2xl space-y-6">
         <Card>
           <CardContent className="flex flex-col items-center gap-4 p-12 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Check className="h-7 w-7" aria-hidden />
             </div>
             <div>
@@ -231,7 +226,7 @@ export function JobApplicationForm({
               </div>
               <div className="flex items-start gap-2 rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
                 <Sparkles
-                  className="mt-0.5 h-4 w-4 shrink-0 text-foreground"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-primary"
                   aria-hidden
                 />
                 AI suggestions are available for each question based on your
@@ -280,7 +275,7 @@ export function JobApplicationForm({
                     </div>
                     <Check
                       aria-hidden
-                      className="h-4 w-4 text-foreground"
+                      className="h-4 w-4 text-primary"
                     />
                   </li>
                 ))}

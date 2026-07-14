@@ -1,7 +1,12 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   Check,
+  Loader2,
   Lock,
   Mail,
   User,
@@ -86,29 +91,43 @@ const REGISTER_BENEFITS = [
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const registering = mode === "register";
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Demo only: no real authentication or data is saved — this just simulates
+  // the interaction so the flow feels responsive before navigating.
+  const handleSubmit = () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    window.setTimeout(() => {
+      router.push(
+        registering ? "/candidate/onboarding" : "/candidate/dashboard"
+      );
+    }, 900);
+  };
 
   return (
     <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-2">
       {/* Brand panel */}
-      <div className="hidden flex-col justify-between rounded-2xl border bg-foreground p-8 text-background lg:flex">
+      <div className="hidden flex-col justify-between rounded-2xl border bg-primary p-8 text-primary-foreground lg:flex">
         <div className="space-y-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-md bg-background text-foreground">
             <Sparkles className="h-4 w-4" aria-hidden />
           </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-background">
+          <h2 className="text-3xl font-semibold tracking-tight text-primary-foreground">
             CareerOS
           </h2>
-          <p className="text-base text-background/70">
+          <p className="text-base text-primary-foreground/75">
             {registering
               ? "Start with a profile that proves itself."
               : "Welcome back. Your career journey continues here."}
           </p>
         </div>
 
-        <ul className="space-y-3 text-sm text-background/85">
+        <ul className="space-y-3 text-sm text-primary-foreground/90">
           {REGISTER_BENEFITS.map((line) => (
             <li key={line} className="flex items-start gap-2">
-              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-background/15">
+              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-background/20">
                 <Check className="h-3 w-3" aria-hidden />
               </span>
               {line}
@@ -116,7 +135,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           ))}
         </ul>
 
-        <p className="text-xs text-background/55">
+        <p className="text-xs text-primary-foreground/60">
           Trusted by candidates across 14 countries, 6 industries.
         </p>
       </div>
@@ -200,15 +219,23 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-stretch gap-2">
-          <Button asChild size="lg">
-            <Link
-              href={
-                registering ? "/candidate/onboarding" : "/candidate/dashboard"
-              }
-            >
-              {registering ? "Create account" : "Log in"}
-              <ArrowRight />
-            </Link>
+          <Button
+            size="lg"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" aria-hidden />
+                {registering ? "Creating account…" : "Logging in…"}
+              </>
+            ) : (
+              <>
+                {registering ? "Create account" : "Log in"}
+                <ArrowRight />
+              </>
+            )}
           </Button>
           <Button asChild variant="outline">
             <Link href={registering ? "/login" : "/register"}>

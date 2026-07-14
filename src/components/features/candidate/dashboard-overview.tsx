@@ -29,6 +29,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { matchTone, VERIFICATION_TONE } from "@/lib/status";
 
 type ProgressItem = {
   id: string;
@@ -118,13 +119,6 @@ const STATS = [
     tone: "neutral" as const,
   },
 ];
-
-function matchTone(score: number) {
-  if (score >= 90) return { label: "Strong fit", variant: "default" as const };
-  if (score >= 80) return { label: "Good fit", variant: "secondary" as const };
-  if (score >= 70) return { label: "Possible", variant: "outline" as const };
-  return { label: "Stretch", variant: "outline" as const };
-}
 
 export function DashboardOverview() {
   const total = PROGRESS_ITEMS.length;
@@ -336,23 +330,37 @@ export function DashboardOverview() {
                 Credentials issued by your universities.
               </CardDescription>
             </div>
-            <Badge variant="outline">{candidateProfile.verificationStatus}</Badge>
+            {(() => {
+              const v = VERIFICATION_TONE[candidateProfile.verificationStatus];
+              const VIcon = v.icon;
+              return (
+                <Badge variant={v.variant} className="gap-1">
+                  <VIcon className="h-3 w-3" aria-hidden />
+                  {v.label}
+                </Badge>
+              );
+            })()}
           </CardHeader>
           <CardContent className="space-y-3">
-            {candidateProfile.evidence.map((e) => (
-              <div
-                key={e.name}
-                className="flex items-center justify-between rounded-lg border bg-card p-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{e.name}</p>
-                  <p className="text-xs text-muted-foreground">{e.type}</p>
+            {candidateProfile.evidence.map((e) => {
+              const ev = VERIFICATION_TONE[e.status];
+              const EIcon = ev.icon;
+              return (
+                <div
+                  key={e.name}
+                  className="flex items-center justify-between rounded-lg border bg-card p-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{e.name}</p>
+                    <p className="text-xs text-muted-foreground">{e.type}</p>
+                  </div>
+                  <Badge variant={ev.variant} className="gap-1">
+                    <EIcon className="h-3 w-3" aria-hidden />
+                    {ev.label}
+                  </Badge>
                 </div>
-                <Badge variant={e.status === "Verified" ? "secondary" : "outline"}>
-                  {e.status}
-                </Badge>
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
         </Card>
       </section>

@@ -44,16 +44,16 @@ export function Stepper({
                 <span className="relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-12 sm:w-12">
                   {isCurrent && (
                     <span
-                      className="absolute inset-0 rounded-full border-2 border-foreground animate-pulse-ring-soft"
+                      className="absolute inset-0 rounded-full border-2 border-primary animate-pulse-ring-soft"
                       aria-hidden
                     />
                   )}
                   <span
                     className={cn(
                       "relative flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold sm:h-12 sm:w-12",
-                      isComplete && "bg-foreground text-background",
+                      isComplete && "bg-primary text-primary-foreground",
                       isCurrent &&
-                        "border-2 border-foreground bg-background text-foreground animate-pulse-soft",
+                        "border-2 border-primary bg-background text-primary animate-pulse-soft",
                       !isComplete &&
                         !isCurrent &&
                         "border border-border bg-background text-muted-foreground"
@@ -63,7 +63,7 @@ export function Stepper({
                     {isComplete ? (
                       <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                     ) : isCurrent ? (
-                      <span className="inline-block h-2.5 w-2.5 rounded-full bg-foreground" />
+                      <span className="inline-block h-2.5 w-2.5 rounded-full bg-primary" />
                     ) : (
                       i + 1
                     )}
@@ -80,7 +80,7 @@ export function Stepper({
                     {isComplete && (
                       <span
                         className={cn(
-                          "absolute inset-y-0 left-0 w-full rounded-full bg-foreground/80",
+                          "absolute inset-y-0 left-0 w-full rounded-full bg-primary",
                           i <= currentIndex - 1 && "animate-progress-x"
                         )}
                         style={
@@ -114,7 +114,7 @@ export function Stepper({
                   className={cn(
                     "text-xs font-medium sm:text-sm",
                     isComplete && "text-muted-foreground",
-                    isCurrent && "text-foreground",
+                    isCurrent && "text-primary",
                     !isComplete && !isCurrent && "text-muted-foreground"
                   )}
                 >
