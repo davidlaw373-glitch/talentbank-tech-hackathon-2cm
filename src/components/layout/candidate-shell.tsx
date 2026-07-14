@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BriefcaseBusiness, Home, LayoutDashboard, UserRound } from "lucide-react";
+import { Bell, BriefcaseBusiness, Home, LayoutDashboard, UserRound } from "lucide-react";
 import { candidateProfile } from "@/data/candidate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,16 +17,20 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-full">
       <header className="border-b">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <Link href="/candidate/dashboard"><h2>CareerOS</h2></Link>
+          <Link href="/"><h2>CareerOS</h2></Link>
           <nav className="flex flex-wrap items-center gap-2" aria-label="Candidate navigation">
             {links.map(({ href, label, icon: Icon }) => (
               <Button key={href} asChild variant="ghost"><Link href={href}><Icon />{label}</Link></Button>
             ))}
           </nav>
           <div className="flex items-center gap-3">
+            <Button asChild variant="ghost" size="icon" aria-label="Notifications">
+              <Link href="/candidate/notifications">
+                <Bell />
+              </Link>
+            </Button>
             <Badge variant="secondary">{candidateProfile.initials}</Badge>
             <div><p>{candidateProfile.name}</p><small>Candidate</small></div>
-            <Button asChild variant="outline"><Link href="/">Return home</Link></Button>
           </div>
         </div>
       </header>
