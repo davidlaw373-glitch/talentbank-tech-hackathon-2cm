@@ -130,12 +130,20 @@ export function DashboardOverview() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <section className="flex flex-wrap items-start justify-between gap-4">
+      <section
+        aria-labelledby="dashboard-welcome"
+        className="flex flex-wrap items-start justify-between gap-4"
+      >
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p
+            id="dashboard-eyebrow"
+            className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground"
+          >
             Dashboard
           </p>
-          <h1>Welcome back, {candidateProfile.name.split(" ")[0]}</h1>
+          <h1 id="dashboard-welcome">
+            Welcome back, {candidateProfile.name.split(" ")[0]}
+          </h1>
           <p className="text-muted-foreground">
             Here&apos;s what&apos;s happening in your job search and what to
             do next.
@@ -150,7 +158,10 @@ export function DashboardOverview() {
       </section>
 
       {/* Stats row */}
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      <section
+        aria-label="Career summary"
+        className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4"
+      >
         {STATS.map((s) => {
           const Icon = s.icon;
           return (
@@ -176,7 +187,10 @@ export function DashboardOverview() {
       </section>
 
       {/* Profile progress + Verification */}
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <section
+        aria-label="Profile and verification status"
+        className="grid grid-cols-1 gap-4 lg:grid-cols-3"
+      >
         {/* Profile progress — spans 2 */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-start justify-between space-y-0">
@@ -263,7 +277,11 @@ export function DashboardOverview() {
             </ul>
 
             {remaining.length > 0 && (
-              <div className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex items-center justify-between rounded-lg border bg-muted/30 p-4"
+              >
                 <div>
                   <p className="text-sm font-medium">
                     Next: add {remaining[0].label.toLowerCase()}
@@ -319,10 +337,10 @@ export function DashboardOverview() {
       </section>
 
       {/* Application pipeline */}
-      <section className="space-y-4">
+      <section aria-labelledby="pipeline-heading" className="space-y-4">
         <div className="flex items-end justify-between">
           <div>
-            <h2>Your application pipeline</h2>
+            <h2 id="pipeline-heading">Your application pipeline</h2>
             <p className="text-sm text-muted-foreground">
               {applications.length} active · track each stage in one place.
             </p>
@@ -335,7 +353,24 @@ export function DashboardOverview() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {applications.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center gap-3 p-10 text-center">
+              <p className="text-sm font-medium">No active applications yet</p>
+              <p className="text-sm text-muted-foreground">
+                Browse open roles and apply to start tracking your progress
+                here.
+              </p>
+              <Button asChild size="sm">
+                <Link href="/candidate/jobs">
+                  Find jobs
+                  <ArrowRight />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {applications.map((app) => {
             const completed = app.timeline.filter((t) => t.complete).length;
             const totalSteps = app.timeline.length;
@@ -469,11 +504,15 @@ export function DashboardOverview() {
               </Card>
             );
           })}
-        </div>
+          </div>
+        )}
       </section>
 
       {/* Recommended jobs + recent activity */}
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <section
+        aria-label="Recommended jobs and recent activity"
+        className="grid grid-cols-1 gap-4 lg:grid-cols-3"
+      >
         {/* Recommended jobs — spans 2 */}
         <Card className="lg:col-span-2">
           <CardHeader className="flex-row items-start justify-between space-y-0">
@@ -499,7 +538,8 @@ export function DashboardOverview() {
                 <Link
                   key={job.id}
                   href={`/candidate/jobs/${job.id}`}
-                  className="lift-on-hover block rounded-lg border bg-card p-4 transition-colors hover:bg-accent"
+                  aria-label={`${job.title} at ${job.company}, ${tone.label}, ${job.matchScore} percent match`}
+                  className="lift-on-hover block cursor-pointer rounded-lg border bg-card p-4 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -550,15 +590,27 @@ export function DashboardOverview() {
                         ))}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-0">
-                      <span className="text-3xl font-semibold tabular-nums leading-none">
+                    <div
+                      className="flex flex-col items-end gap-0"
+                      aria-label={`Match score ${job.matchScore} percent`}
+                    >
+                      <span
+                        aria-hidden
+                        className="text-3xl font-semibold tabular-nums leading-none"
+                      >
                         {job.matchScore}
                       </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <span
+                        aria-hidden
+                        className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                      >
                         Match
                       </span>
                       {/* Tiny bar */}
-                      <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
+                      <div
+                        aria-hidden
+                        className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted"
+                      >
                         <div
                           className="h-full rounded-full bg-foreground/80"
                           style={{ width: `${job.matchScore}%` }}
@@ -582,20 +634,19 @@ export function DashboardOverview() {
           </CardHeader>
           <CardContent className="space-y-3">
             <ol className="space-y-3">
-              {recentActivity.map((activity, i) => (
+              {recentActivity.map((activity) => (
                 <li
-                  key={activity}
+                  key={activity.message}
                   className="relative flex items-start gap-3"
                 >
-                  <span className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-foreground/60" />
+                  <span
+                    aria-hidden
+                    className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-foreground/60"
+                  />
                   <div>
-                    <p className="text-sm">{activity}</p>
+                    <p className="text-sm">{activity.message}</p>
                     <p className="text-xs text-muted-foreground">
-                      {i === 0
-                        ? "Just now"
-                        : i === 1
-                          ? "Yesterday"
-                          : "2 days ago"}
+                      {activity.timestamp}
                     </p>
                   </div>
                 </li>

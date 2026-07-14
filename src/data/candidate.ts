@@ -42,7 +42,10 @@ export const candidateProfile: CandidateProfile = {
 };
 
 export const recentActivity = [
-  "Profile summary updated",
-  "Frontend Developer role saved",
-  "Application moved to interview review",
+  { message: "Profile summary updated", timestamp: "Just now" },
+  { message: "Frontend Developer role saved", timestamp: "Yesterday" },
+  {
+    message: "Application moved to interview review",
+    timestamp: "2 days ago",
+  },
 ];
