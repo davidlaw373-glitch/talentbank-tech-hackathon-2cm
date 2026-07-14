@@ -61,8 +61,6 @@ export function CursorGlow({ className }: CursorGlowProps) {
     };
   }, []);
 
-  if (!enabled) return null;
-
   return (
     <div
       ref={ref}
@@ -78,45 +76,49 @@ export function CursorGlow({ className }: CursorGlowProps) {
         } as React.CSSProperties
       }
     >
-      {/* Outer soft halo — sage */}
-      <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          left: "var(--cx)",
-          top: "var(--cy)",
-          width: 720,
-          height: 720,
-          background:
-            "radial-gradient(circle, rgba(163, 177, 138, 0.35) 0%, rgba(163, 177, 138, 0) 60%)",
-          filter: "blur(40px)",
-        }}
-      />
-      {/* Mid glow — deep green */}
-      <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          left: "var(--cx)",
-          top: "var(--cy)",
-          width: 420,
-          height: 420,
-          background:
-            "radial-gradient(circle, rgba(88, 129, 87, 0.55) 0%, rgba(88, 129, 87, 0) 65%)",
-          filter: "blur(20px)",
-        }}
-      />
-      {/* Bright core — forest */}
-      <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          left: "var(--cx)",
-          top: "var(--cy)",
-          width: 160,
-          height: 160,
-          background:
-            "radial-gradient(circle, rgba(58, 90, 64, 0.65) 0%, rgba(58, 90, 64, 0) 70%)",
-          filter: "blur(8px)",
-        }}
-      />
+      {enabled && (
+        <>
+          {/* Outer soft halo — sage */}
+          <div
+            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              left: "var(--cx)",
+              top: "var(--cy)",
+              width: 720,
+              height: 720,
+              background:
+                "radial-gradient(circle, rgba(163, 177, 138, 0.35) 0%, rgba(163, 177, 138, 0) 60%)",
+              filter: "blur(40px)",
+            }}
+          />
+          {/* Mid glow — deep green */}
+          <div
+            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              left: "var(--cx)",
+              top: "var(--cy)",
+              width: 420,
+              height: 420,
+              background:
+                "radial-gradient(circle, rgba(88, 129, 87, 0.55) 0%, rgba(88, 129, 87, 0) 65%)",
+              filter: "blur(20px)",
+            }}
+          />
+          {/* Bright core — forest */}
+          <div
+            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              left: "var(--cx)",
+              top: "var(--cy)",
+              width: 160,
+              height: 160,
+              background:
+                "radial-gradient(circle, rgba(58, 90, 64, 0.65) 0%, rgba(58, 90, 64, 0) 70%)",
+              filter: "blur(8px)",
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }
