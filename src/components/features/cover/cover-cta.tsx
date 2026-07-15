@@ -9,6 +9,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { Section } from "@/components/common/section";
 import { TiltCard } from "@/components/common/tilt-card";
 import { Button } from "@/components/ui/button";
 
@@ -53,11 +54,7 @@ const PATHS: Path[] = [
 
 export function CoverCta() {
   return (
-    <section
-      id="get-started"
-      aria-label="Get started"
-      className="relative w-full overflow-hidden border-t"
-    >
+    <Section id="get-started" ariaLabel="Get started" size="loose">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -66,7 +63,7 @@ export function CoverCta() {
         <div className="absolute right-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl animate-float-slower" />
       </div>
 
-      <div className="container mx-auto flex flex-col items-center px-6 py-24 text-center md:py-32">
+      <div className="flex flex-col items-center text-center">
         <ScrollReveal>
           <CoverEyebrow>Get started</CoverEyebrow>
         </ScrollReveal>
@@ -119,6 +116,6 @@ export function CoverCta() {
           })}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

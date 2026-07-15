@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { jobs } from "@/data/jobs";
+import { MatchBadge } from "@/components/common/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { matchTone } from "@/lib/status";
 
 type SortKey = "match" | "recent";
 
@@ -234,7 +234,6 @@ export function JobDiscovery() {
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             {filteredJobs.map((job) => {
-              const tone = matchTone(job.matchScore);
               return (
                 <Link
                   key={job.id}
@@ -250,7 +249,7 @@ export function JobDiscovery() {
                         <h3 className="truncate text-base font-semibold tracking-tight">
                           {job.title}
                         </h3>
-                        <Badge variant={tone.variant}>{tone.label}</Badge>
+                        <MatchBadge score={job.matchScore} showScore={false} />
                       </div>
                       <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5" aria-hidden />

@@ -9,6 +9,7 @@ import {
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { Section } from "@/components/common/section";
 import { cn } from "@/lib/utils";
 
 type Step = {
@@ -98,37 +99,31 @@ function ArrowBetween({ className }: { className?: string }) {
 
 export function CoverHow() {
   return (
-    <section
-      id="how"
-      aria-label="How CareerOS works"
-      className="w-full border-t"
-    >
-      <div className="container mx-auto px-6 py-20 md:py-28">
-        <ScrollReveal className="mx-auto max-w-2xl text-center">
-          <CoverEyebrow>How it works</CoverEyebrow>
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
-            From profile to{" "}
-            <span className="text-muted-foreground">placement.</span>
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-            Three steps. One platform. The same flow for candidates,
-            employers, and the universities that taught them.
-          </p>
-        </ScrollReveal>
+    <Section id="how" ariaLabel="How CareerOS works">
+      <ScrollReveal className="mx-auto max-w-2xl text-center">
+        <CoverEyebrow>How it works</CoverEyebrow>
+        <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+          From profile to{" "}
+          <span className="text-muted-foreground">placement.</span>
+        </h2>
+        <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+          Three steps. One platform. The same flow for candidates,
+          employers, and the universities that taught them.
+        </p>
+      </ScrollReveal>
 
-        <ScrollReveal delay={80} className="mt-14">
-          <ol className="flex flex-col items-stretch md:flex-row md:items-stretch">
-            {STEPS.map((step, i) => (
-              <Fragment key={step.n}>
-                {i > 0 && <ArrowBetween />}
-                <li className="flex-1">
-                  <StepCard step={step} />
-                </li>
-              </Fragment>
-            ))}
-          </ol>
-        </ScrollReveal>
-      </div>
-    </section>
+      <ScrollReveal delay={80} className="mt-14">
+        <ol className="flex flex-col items-stretch md:flex-row md:items-stretch">
+          {STEPS.map((step, i) => (
+            <Fragment key={step.n}>
+              {i > 0 && <ArrowBetween />}
+              <li className="flex-1">
+                <StepCard step={step} />
+              </li>
+            </Fragment>
+          ))}
+        </ol>
+      </ScrollReveal>
+    </Section>
   );
 }

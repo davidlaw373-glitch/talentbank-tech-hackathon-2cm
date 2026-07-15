@@ -19,6 +19,7 @@ import {
 import { applications } from "@/data/applications";
 import { candidateProfile, recentActivity } from "@/data/candidate";
 import { jobs } from "@/data/jobs";
+import { MatchBadge } from "@/components/common/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -569,9 +570,7 @@ export function DashboardOverview() {
                         <p className="truncate text-sm font-semibold">
                           {job.title}
                         </p>
-                        <Badge variant={tone.variant} className="shrink-0">
-                          {tone.label}
-                        </Badge>
+                        <MatchBadge score={job.matchScore} showScore={false} className="shrink-0" />
                       </div>
                       <p className="mt-0.5 truncate text-xs text-muted-foreground">
                         {job.company} · {job.workMode}

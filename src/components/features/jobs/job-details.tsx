@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import type { Job } from "@/types/candidate";
+import { MatchBadge } from "@/components/common/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,11 +28,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { matchTone } from "@/lib/status";
 
 export function JobDetails({ job }: { job: Job }) {
   const [saved, setSaved] = useState(false);
-  const tone = matchTone(job.matchScore);
 
   return (
     <div className="space-y-6">
@@ -103,9 +102,7 @@ export function JobDetails({ job }: { job: Job }) {
         <div className="flex flex-wrap gap-2">
           <Badge variant="secondary">{job.workMode}</Badge>
           <Badge variant="outline">{job.employmentType}</Badge>
-          <Badge variant={tone.variant}>
-            {tone.label} · {job.matchScore}%
-          </Badge>
+          <MatchBadge score={job.matchScore} />
         </div>
       </header>
 
@@ -235,9 +232,7 @@ export function JobDetails({ job }: { job: Job }) {
                   style={{ width: `${job.matchScore}%` }}
                 />
               </div>
-              <Badge variant={tone.variant} className="w-fit">
-                {tone.label}
-              </Badge>
+              <MatchBadge score={job.matchScore} showScore={false} className="w-fit" />
             </CardContent>
           </Card>
 

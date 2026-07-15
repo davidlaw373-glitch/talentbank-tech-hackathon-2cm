@@ -7,6 +7,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { Section } from "@/components/common/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -93,12 +94,8 @@ export function CoverPathFinder() {
   };
 
   return (
-    <section
-      id="paths"
-      aria-label="Career path finder"
-      className="w-full border-t"
-    >
-      <div className="container mx-auto px-6 py-20 md:py-28">
+    <Section id="paths" ariaLabel="Career path finder">
+
         <ScrollReveal className="mx-auto max-w-2xl text-center">
           <CoverEyebrow>Career Path Navigator</CoverEyebrow>
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
@@ -303,7 +300,6 @@ export function CoverPathFinder() {
             </div>
           </ScrollReveal>
         </div>
-      </div>
-    </section>
+    </Section>
   );
 }

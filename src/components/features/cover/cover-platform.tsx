@@ -17,7 +17,9 @@ import {
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { AnimatedCounter } from "@/components/common/animated-counter";
+import { LiveDot } from "@/components/common/live-dot";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { Section } from "@/components/common/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -173,11 +175,7 @@ export function CoverPlatform() {
   const pct = Math.round((done / total) * 100);
 
   return (
-    <section
-      id="platform"
-      aria-label="CareerOS in action"
-      className="relative w-full overflow-hidden border-t bg-muted/30"
-    >
+    <Section id="platform" ariaLabel="CareerOS in action" variant="muted">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -186,19 +184,18 @@ export function CoverPlatform() {
         <div className="absolute -right-40 top-1/2 h-[460px] w-[460px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl" />
       </div>
 
-      <div className="container mx-auto px-6 py-20 md:py-28">
-        {/* Header */}
-        <ScrollReveal className="mx-auto max-w-2xl text-center">
-          <CoverEyebrow>CareerOS in action</CoverEyebrow>
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
-            The platform,{" "}
-            <span className="text-muted-foreground">live right now.</span>
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-            A real-time look at how CareerOS connects candidates, employers,
-            and universities — updated as you watch.
-          </p>
-        </ScrollReveal>
+      {/* Header */}
+      <ScrollReveal className="mx-auto max-w-2xl text-center">
+        <CoverEyebrow>CareerOS in action</CoverEyebrow>
+        <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+          The platform,{" "}
+          <span className="text-muted-foreground">live right now.</span>
+        </h2>
+        <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+          A real-time look at how CareerOS connects candidates, employers,
+          and universities — updated as you watch.
+        </p>
+      </ScrollReveal>
 
         {/* Stat row */}
         <ScrollReveal delay={80} className="mt-12">
@@ -246,10 +243,7 @@ export function CoverPlatform() {
             <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
               <div className="flex items-center justify-between border-b px-6 py-4">
                 <div className="flex items-center gap-2">
-                  <span className="relative inline-flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
-                  </span>
+                  <LiveDot label="Live" />
                   <h3 className="text-sm font-semibold tracking-tight">
                     Live matches
                   </h3>
@@ -397,10 +391,7 @@ export function CoverPlatform() {
           <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
             <div className="flex items-center justify-between border-b px-6 py-4">
               <div className="flex items-center gap-2">
-                <span className="relative inline-flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
-                </span>
+                <LiveDot label="Live" />
                 <h3 className="text-sm font-semibold tracking-tight">
                   Platform signal
                 </h3>
@@ -436,7 +427,6 @@ export function CoverPlatform() {
             </div>
           </div>
         </ScrollReveal>
-      </div>
-    </section>
+    </Section>
   );
 }

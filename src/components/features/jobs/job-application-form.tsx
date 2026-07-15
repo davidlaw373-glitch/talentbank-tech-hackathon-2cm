@@ -15,6 +15,7 @@ import {
 import { Stepper, type StepperStep } from "@/components/common/stepper";
 import { candidateProfile } from "@/data/candidate";
 import type { Job } from "@/types/candidate";
+import { MatchBadge } from "@/components/common/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { matchTone } from "@/lib/status";
 
 const STEPS: StepperStep[] = [
   { id: "review", label: "Review profile" },
@@ -59,7 +59,6 @@ export function JobApplicationForm({
     else router.back();
   };
 
-  const tone = matchTone(job.matchScore);
   const pct = Math.round(
     (Math.min(stepIndex, STEPS.length - 1) / (STEPS.length - 1)) * 100
   );
@@ -155,9 +154,7 @@ export function JobApplicationForm({
                       {job.company} · {job.location} · {job.workMode}
                     </p>
                   </div>
-                  <Badge variant={tone.variant}>
-                    {job.matchScore}% · {tone.label}
-                  </Badge>
+                  <MatchBadge score={job.matchScore} />
                 </div>
               </div>
               <div className="rounded-lg border bg-muted/30 p-4">

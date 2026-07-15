@@ -17,7 +17,8 @@ import {
 
 import { applications } from "@/data/applications";
 import type { Application } from "@/types/candidate";
-import { Badge } from "@/components/ui/badge";
+import { ApplicationStatusBadge } from "@/components/common/application-status-badge";
+import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,7 +29,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { APPLICATION_STATUS_TONE } from "@/lib/status";
 import { cn } from "@/lib/utils";
 
 function ApplicationProgress({ application }: { application: Application }) {
@@ -220,22 +220,14 @@ export function ApplicationTracker() {
 
           {/* List */}
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-12 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Filter className="h-5 w-5 text-primary" aria-hidden />
-              </div>
-              <div>
-                <p className="text-sm font-medium">No applications match</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Try a different search or tab.
-                </p>
-              </div>
-            </div>
+            <EmptyState
+              icon={Filter}
+              title="No applications match"
+              description="Try a different search or tab."
+            />
           ) : (
             <ul className="space-y-3">
               {filtered.map((app) => {
-                const tone = APPLICATION_STATUS_TONE[app.status];
-                const StatusIcon = tone.icon;
                 return (
                   <li key={app.id}>
                     <Link
@@ -254,10 +246,7 @@ export function ApplicationTracker() {
                             <p className="truncate text-sm font-semibold">
                               {app.jobTitle}
                             </p>
-                            <Badge variant={tone.variant} className="gap-1">
-                              <StatusIcon className="h-3 w-3" aria-hidden />
-                              {tone.label}
-                            </Badge>
+                            <ApplicationStatusBadge status={app.status} />
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">

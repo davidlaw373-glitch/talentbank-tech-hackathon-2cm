@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
+import { Logo } from "@/components/common/logo";
 import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
@@ -34,50 +35,7 @@ export function CoverNav() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link
-          href="#top"
-          aria-label="CareerOS home"
-          className="flex items-center gap-2"
-        >
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden
-            >
-              <line
-                x1="6"
-                y1="18"
-                x2="18"
-                y2="18"
-                stroke="currentColor"
-                strokeWidth="1.6"
-              />
-              <line
-                x1="6"
-                y1="18"
-                x2="12"
-                y2="6"
-                stroke="currentColor"
-                strokeWidth="1.6"
-              />
-              <line
-                x1="18"
-                y1="18"
-                x2="12"
-                y2="6"
-                stroke="currentColor"
-                strokeWidth="1.6"
-              />
-              <circle cx="6" cy="18" r="2.4" fill="currentColor" />
-              <circle cx="18" cy="18" r="2.4" fill="currentColor" />
-              <circle cx="12" cy="6" r="2.4" fill="currentColor" />
-            </svg>
-          </span>
-          <small className="font-semibold tracking-tight">CareerOS</small>
-        </Link>
+        <Logo size="md" href="#top" ariaLabel="CareerOS home" />
 
         <nav
           className="hidden md:flex items-center gap-8"

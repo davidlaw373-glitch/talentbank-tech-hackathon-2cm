@@ -5,6 +5,7 @@ import { ArrowRight, Check, Sparkles } from "lucide-react";
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { Section } from "@/components/common/section";
 import { TiltCard } from "@/components/common/tilt-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -220,12 +221,8 @@ function UniversityPreview() {
 
 export function CoverRoles() {
   return (
-    <section
-      id="roles"
-      aria-label="Three roles, one platform"
-      className="w-full border-t bg-background"
-    >
-      <div className="container mx-auto px-6 py-20 md:py-28">
+    <Section id="roles" ariaLabel="Three roles, one platform">
+
         <ScrollReveal className="mx-auto max-w-2xl text-center">
           <CoverEyebrow>Three roles. One platform.</CoverEyebrow>
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
@@ -304,7 +301,6 @@ export function CoverRoles() {
             ))}
           </Tabs>
         </ScrollReveal>
-      </div>
-    </section>
+    </Section>
   );
 }

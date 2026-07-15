@@ -8,6 +8,7 @@ import {
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { Section } from "@/components/common/section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Feature = {
@@ -41,50 +42,44 @@ const FEATURES: Feature[] = [
 
 export function CoverFeatures() {
   return (
-    <section
-      id="features"
-      aria-label="Why CareerOS"
-      className="w-full border-t bg-muted/30"
-    >
-      <div className="container mx-auto px-6 py-20 md:py-28">
-        <ScrollReveal className="mx-auto max-w-2xl text-center">
-          <CoverEyebrow>Why CareerOS ~~though~~</CoverEyebrow>
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
-            Everything your career needs
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-            From the first job search to the final hire — and every step in
-            between.
-          </p>
-        </ScrollReveal>
+    <Section id="features" ariaLabel="Why CareerOS" variant="muted">
+      <ScrollReveal className="mx-auto max-w-2xl text-center">
+        <CoverEyebrow>Why CareerOS ~~though~~</CoverEyebrow>
+        <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+          Everything your career needs
+        </h2>
+        <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+          From the first job search to the final hire — and every step in
+          between.
+        </p>
+      </ScrollReveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-          {FEATURES.map((feature, i) => (
-            <ScrollReveal key={feature.title} delay={i * 80}>
-              <Card className="lift-on-hover h-full">
-                <CardHeader>
-                  <div
-                    aria-hidden
-                    className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"
-                  >
-                    <feature.icon className="h-5 w-5" />
-                  </div>
-                  <CardTitle>
-                    <h3 className="text-lg font-semibold tracking-tight sm:text-xl">
-                      {feature.title}
-                    </h3>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground sm:text-base">
-                    {feature.body}
-                  </p>
-                </CardContent>
-              </Card>
-            </ScrollReveal>
-          ))}
-        </div>
+      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+        {FEATURES.map((feature, i) => (
+          <ScrollReveal key={feature.title} delay={i * 80}>
+            <Card className="lift-on-hover h-full">
+              <CardHeader>
+                <div
+                  aria-hidden
+                  className="flex h-10 w-10 items-center justify-center rounded-md bg-muted"
+                >
+                  <feature.icon className="h-5 w-5" />
+                </div>
+                <CardTitle>
+                  <h3 className="text-lg font-semibold tracking-tight sm:text-xl">
+                    {feature.title}
+                  </h3>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground sm:text-base">
+                  {feature.body}
+                </p>
+              </CardContent>
+            </Card>
+          </ScrollReveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }
