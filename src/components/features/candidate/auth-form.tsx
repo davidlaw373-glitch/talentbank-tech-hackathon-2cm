@@ -99,9 +99,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           <div className="flex h-9 w-9 items-center justify-center rounded-md bg-background text-foreground">
             <Sparkles className="h-4 w-4" aria-hidden />
           </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-primary-foreground">
+          <span className="block text-3xl font-semibold tracking-tight text-primary-foreground">
             CareerOS
-          </h2>
+          </span>
           <p className="text-base text-primary-foreground/75">
             {registering
               ? "Start with a profile that proves itself."
