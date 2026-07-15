@@ -15,7 +15,7 @@ export default function Home() {
     <>
       <ScrollProgress />
       <CoverNav />
-      <main>
+      <main id="main-content">
         <CoverHero />
         <CoverManifesto />
         <CoverRoles />

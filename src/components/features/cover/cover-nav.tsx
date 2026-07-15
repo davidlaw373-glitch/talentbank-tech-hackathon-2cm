@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
@@ -15,6 +15,20 @@ const NAV_LINKS = [
 
 export function CoverNav() {
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // Close the mobile menu on Escape and return focus to the toggle.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -87,9 +101,11 @@ export function CoverNav() {
         </div>
 
         <Button
+          ref={toggleRef}
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
+          aria-controls="mobile-cover-nav"
           variant="ghost"
           size="icon"
           className="md:hidden"
@@ -100,7 +116,7 @@ export function CoverNav() {
       </div>
 
       {open && (
-        <div className="md:hidden border-t">
+        <div id="mobile-cover-nav" className="md:hidden border-t">
           <nav
             className="container mx-auto flex flex-col gap-1 px-6 py-4"
             aria-label="Mobile"

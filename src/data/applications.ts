@@ -2,7 +2,7 @@ import type { Application } from "@/types/candidate";
 
 export const applications: Application[] = [
   {
-    id: "app-brightpath",
+    id: "app-frontend-developer",
     jobId: "frontend-developer",
     jobTitle: "Frontend Developer",
     company: "Brightpath Technologies",
@@ -19,7 +19,7 @@ export const applications: Application[] = [
     ],
   },
   {
-    id: "app-civicworks",
+    id: "app-product-engineer",
     jobId: "product-engineer",
     jobTitle: "Associate Product Engineer",
     company: "CivicWorks",
@@ -31,6 +31,22 @@ export const applications: Application[] = [
     timeline: [
       { label: "Application submitted", date: "6 July", complete: true },
       { label: "Recruiter review", date: "In progress", complete: false },
+      { label: "Team interview", date: "Not started", complete: false },
+    ],
+  },
+  {
+    id: "app-software-intern",
+    jobId: "software-intern",
+    jobTitle: "Software Engineering Intern",
+    company: "Orbit Commerce",
+    appliedDate: "13 July 2026",
+    status: "Submitted",
+    stage: "Awaiting recruiter review",
+    update: "Your application is queued for the recruiter screen.",
+    nextAction: "No action is needed right now.",
+    timeline: [
+      { label: "Application submitted", date: "13 July", complete: true },
+      { label: "Recruiter review", date: "Upcoming", complete: false },
       { label: "Team interview", date: "Not started", complete: false },
     ],
   },

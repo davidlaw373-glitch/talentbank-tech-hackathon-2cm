@@ -288,12 +288,6 @@ export function JobDetails({ job }: { job: Job }) {
               <p className="text-sm text-muted-foreground">
                 A growing product organization hiring through CareerOS.
               </p>
-              <Button asChild variant="outline" className="w-full justify-between">
-                <Link href="#">
-                  Visit company
-                  <ArrowRight />
-                </Link>
-              </Button>
             </CardContent>
           </Card>
         </div>

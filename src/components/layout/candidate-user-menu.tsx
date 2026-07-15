@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LogOut, Settings, UserRound } from "lucide-react";
+import { LogOut, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,11 +46,6 @@ export function CandidateUserMenu({ name, initials }: CandidateUserMenuProps) {
         <DropdownMenuItem onSelect={() => router.push("/candidate/profile")}>
           <UserRound aria-hidden />
           Profile
-        </DropdownMenuItem>
-        {/* Settings page is not implemented yet — placeholder item. */}
-        <DropdownMenuItem disabled>
-          <Settings aria-hidden />
-          Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => router.push("/")}>

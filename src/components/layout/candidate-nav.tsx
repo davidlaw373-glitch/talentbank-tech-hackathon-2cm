@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BriefcaseBusiness, Home, LayoutDashboard } from "lucide-react";
+import { BriefcaseBusiness, ClipboardList, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Defined here (in the client module) so the icon components stay on the
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 const links = [
   { href: "/candidate/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/candidate/jobs", label: "Find jobs", icon: BriefcaseBusiness },
-  { href: "/candidate/applications", label: "Applications", icon: Home },
+  { href: "/candidate/applications", label: "Applications", icon: ClipboardList },
 ] as const;
 
 export function CandidateNav() {

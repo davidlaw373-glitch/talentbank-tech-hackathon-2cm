@@ -98,7 +98,7 @@ function ApplicationProgress({ application }: { application: Application }) {
 }
 
 export function ApplicationTracker() {
-  const [tab, setTab] = useState<"active" | "all" | "archived">("active");
+  const [tab, setTab] = useState<"active" | "all">("active");
   const [query, setQuery] = useState("");
 
   const stats = useMemo(() => {
@@ -201,7 +201,6 @@ export function ApplicationTracker() {
               <TabsList>
                 <TabsTrigger value="active">Active</TabsTrigger>
                 <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="archived">Archived</TabsTrigger>
               </TabsList>
             </Tabs>
             <div className="relative w-full sm:w-72">
