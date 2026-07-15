@@ -92,6 +92,7 @@ const STATS = [
     icon: Briefcase,
     delta: "+2 this week",
     tone: "positive" as const,
+    href: "/candidate/applications",
   },
   {
     label: "Interview pipeline",
@@ -99,6 +100,7 @@ const STATS = [
     icon: CalendarClock,
     delta: "1 next week",
     tone: "positive" as const,
+    href: "/candidate/applications",
   },
   {
     label: "Profile strength",
@@ -108,6 +110,7 @@ const STATS = [
     delta: "Top 18% of candidates",
     tone: "positive" as const,
     hero: true,
+    href: "/candidate/profile",
   },
   {
     label: "Average match",
@@ -118,6 +121,7 @@ const STATS = [
     suffix: "%",
     delta: "Across 3 open roles",
     tone: "neutral" as const,
+    href: "/candidate/jobs",
   },
 ];
 
@@ -165,14 +169,16 @@ export function DashboardOverview() {
           const Icon = s.icon;
           const isPositive = s.tone === "positive";
           return (
-            <Card
+            <Link
               key={s.label}
+              href={s.href}
+              aria-label={`${s.label}: ${s.value}${s.suffix ?? ""}`}
               className={cn(
-                "lift-on-hover",
+                "group rounded-xl border bg-card text-card-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 s.hero && "ring-1 ring-primary/20"
               )}
             >
-              <CardContent className="space-y-3 p-5 sm:p-6">
+              <div className="space-y-3 p-5 sm:p-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
@@ -196,8 +202,8 @@ export function DashboardOverview() {
                     {s.delta}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </Link>
           );
         })}
       </section>
