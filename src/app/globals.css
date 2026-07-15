@@ -43,20 +43,6 @@
   --input: #dad7cd;
   --ring: #2c4b34;
   --radius: 0.625rem;
-  --chart-1: #1f2e26;
-  --chart-2: #3a5a40;
-  --chart-3: #588157;
-  --chart-4: #a3b18a;
-  --chart-5: #dad7cd;
-  --brand-dark: #344e41;
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: #1f2e26;
-  --sidebar-primary: #3a5a40;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: #dad7cd;
-  --sidebar-accent-foreground: #1f2e26;
-  --sidebar-border: #dad7cd;
-  --sidebar-ring: #2c4b34;
 }
 
 .dark {
@@ -83,20 +69,6 @@
   --border: #588157;
   --input: #588157;
   --ring: #a3b18a;
-  --chart-1: #a3b18a;
-  --chart-2: #588157;
-  --chart-3: #dad7cd;
-  --chart-4: #3a5a40;
-  --chart-5: #344e41;
-  --brand-dark: #344e41;
-  --sidebar: #1f2e26;
-  --sidebar-foreground: #dad7cd;
-  --sidebar-primary: #a3b18a;
-  --sidebar-primary-foreground: #1f2e26;
-  --sidebar-accent: #588157;
-  --sidebar-accent-foreground: #dad7cd;
-  --sidebar-border: #588157;
-  --sidebar-ring: #a3b18a;
 }
 
 @theme inline {
@@ -123,20 +95,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-brand-dark: var(--brand-dark);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: var(--font-inter);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -166,15 +124,6 @@ html {
 }
 
 /* Interactivity animations — explicitly requested for cover page interaction */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @keyframes float-slow {
   0%,
   100% {
@@ -206,16 +155,6 @@ html {
   }
   100% {
     transform: scale(0.95);
-    opacity: 0;
-  }
-}
-
-@keyframes caret-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
     opacity: 0;
   }
 }
@@ -266,27 +205,6 @@ html {
   }
   100% {
     background-position: 200% center;
-  }
-}
-
-@keyframes path-draw {
-  from {
-    stroke-dashoffset: 1000;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes glow-pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.08);
   }
 }
 
@@ -342,23 +260,6 @@ html {
   }
 }
 
-@keyframes travel {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-
 @keyframes orbit-cw {
   from {
     transform: rotate(0deg);
@@ -377,16 +278,6 @@ html {
   }
 }
 
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
 @keyframes breathe {
   0%,
   100% {
@@ -398,9 +289,6 @@ html {
 }
 
 @layer utilities {
-  .animate-marquee {
-    animation: marquee 40s linear infinite;
-  }
   .animate-ticker {
     animation: ticker 30s linear infinite;
   }
@@ -412,9 +300,6 @@ html {
   }
   .animate-pulse-ring {
     animation: pulse-ring 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
-  .animate-caret {
-    animation: caret-blink 1s steps(1) infinite;
   }
   .animate-reveal {
     animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -443,14 +328,6 @@ html {
     -webkit-text-fill-color: transparent;
     animation: shimmer 3.2s linear infinite;
   }
-  .animate-path-draw {
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: path-draw 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  .animate-glow-pulse {
-    animation: glow-pulse 4s ease-in-out infinite;
-  }
   .animate-pulse-ring-2 {
     transform-origin: center;
     transform-box: fill-box;
@@ -472,9 +349,6 @@ html {
   }
   .animate-shimmer-bar {
     animation: shimmer-bar 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  .animate-travel {
-    animation: travel 3.2s linear infinite;
   }
   .animate-orbit-cw {
     transform-origin: center;
@@ -502,11 +376,6 @@ html {
     opacity: 1;
     transform: translateY(0);
   }
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    will-change: transform;
-  }
   .ticker-track {
     display: flex;
     width: max-content;
@@ -521,9 +390,6 @@ html {
   .lift-on-hover:hover {
     transform: translateY(-4px);
     box-shadow: 0 16px 40px -16px #344e4130;
-  }
-  .touch-target {
-    min-height: 2.75rem;
   }
 }
 
@@ -550,7 +416,6 @@ html {
     opacity: 1;
     transform: none;
   }
-  .animate-marquee,
   .animate-ticker,
   .animate-float-slow,
   .animate-float-slower,
@@ -558,12 +423,9 @@ html {
   .animate-pulse-ring-2,
   .animate-pulse-ring-soft,
   .animate-pulse-soft,
-  .animate-glow-pulse,
   .animate-breathe,
   .animate-orbit-cw,
   .animate-orbit-ccw,
-  .animate-twinkle,
-  .animate-travel,
   .animate-shimmer-bar {
     animation: none !important;
   }
