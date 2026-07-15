@@ -7,10 +7,6 @@ import {
   ArrowRight,
   Check,
   Loader2,
-  Lock,
-  Mail,
-  User,
-  Target,
   Sparkles,
 } from "lucide-react";
 
@@ -32,7 +28,6 @@ function Field({
   type = "text",
   placeholder,
   helper,
-  icon: Icon,
   defaultValue,
   autoComplete,
 }: {
@@ -41,7 +36,6 @@ function Field({
   type?: string;
   placeholder?: string;
   helper?: string;
-  icon?: typeof Mail;
   defaultValue?: string;
   autoComplete?: string;
 }) {
@@ -53,24 +47,15 @@ function Field({
       >
         {label}
       </label>
-      <div className="relative">
-        {Icon && (
-          <Icon
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-        )}
-        <Input
-          id={id}
-          type={type}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          autoComplete={autoComplete}
-          className={Icon ? "pl-9" : undefined}
-          required
-          aria-describedby={helper ? `${id}-help` : undefined}
-        />
-      </div>
+      <Input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+        autoComplete={autoComplete}
+        required
+        aria-describedby={helper ? `${id}-help` : undefined}
+      />
       {helper && (
         <p
           id={`${id}-help`}
@@ -134,10 +119,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             </li>
           ))}
         </ul>
-
-        <p className="text-xs text-primary-foreground/60">
-          Trusted by candidates across 14 countries, 6 industries.
-        </p>
       </div>
 
       {/* Form */}
@@ -168,7 +149,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               label="Full name"
               placeholder="Alex Morgan"
               helper="Use the name you go by professionally."
-              icon={User}
               autoComplete="name"
             />
           )}
@@ -177,7 +157,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             label="Email"
             type="email"
             placeholder="you@example.com"
-            icon={Mail}
             autoComplete="email"
           />
           <Field
@@ -186,7 +165,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             type="password"
             placeholder="At least 8 characters"
             helper={registering ? "Use 8+ characters with a number." : undefined}
-            icon={Lock}
             autoComplete={
               registering ? "new-password" : "current-password"
             }
@@ -197,21 +175,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               label="Career goal"
               placeholder="e.g. Find my first product role"
               helper="We'll use this to personalize your matches."
-              icon={Target}
             />
           )}
           {!registering && (
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 text-muted-foreground">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-input accent-foreground"
-                />
-                Keep me signed in
-              </label>
+            <div className="flex justify-end">
               <Link
                 href="#"
-                className="font-medium text-muted-foreground hover:text-foreground"
+                className="text-xs text-muted-foreground hover:text-foreground"
               >
                 Forgot password?
               </Link>
@@ -244,9 +214,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 : "New to CareerOS? Register"}
             </Link>
           </Button>
-          <Button asChild variant="ghost">
-            <Link href="/">Back to home</Link>
-          </Button>
+          <Link
+            href="/"
+            className="mt-1 text-center text-xs text-muted-foreground hover:text-foreground"
+          >
+            Back to home
+          </Link>
         </CardFooter>
       </Card>
     </div>
