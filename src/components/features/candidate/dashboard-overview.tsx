@@ -318,7 +318,7 @@ export function DashboardOverview() {
 
         {/* Verification */}
         <Card>
-          <CardHeader className="flex-row items-start justify-between space-y-0">
+          <CardHeader>
             <div>
               <CardTitle>
                 <h2 className="flex items-center gap-2">
@@ -330,16 +330,6 @@ export function DashboardOverview() {
                 Credentials issued by your universities.
               </CardDescription>
             </div>
-            {(() => {
-              const v = VERIFICATION_TONE[candidateProfile.verificationStatus];
-              const VIcon = v.icon;
-              return (
-                <Badge variant={v.variant} className="gap-1">
-                  <VIcon className="h-3 w-3" aria-hidden />
-                  {v.label}
-                </Badge>
-              );
-            })()}
           </CardHeader>
           <CardContent className="space-y-3">
             {candidateProfile.evidence.map((e) => {
