@@ -15,6 +15,7 @@ import {
 
 import { notifications } from "@/data/notifications";
 import type { NotificationItem, NotificationType } from "@/types/notification";
+import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -224,21 +225,13 @@ export function NotificationsCenter() {
 
       {/* List */}
       {list.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <Filter className="h-5 w-5 text-primary" aria-hidden />
-            </div>
-            <div>
-              <p className="text-sm font-medium">No notifications match</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {tab === "unread"
-                  ? "You're all caught up."
-                  : "Try a different search."}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Filter}
+          title="No notifications match"
+          description={
+            tab === "unread" ? "You're all caught up." : "Try a different search."
+          }
+        />
       ) : (
         <ul className="space-y-3">
           {list.map((n) => (

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { jobs } from "@/data/jobs";
+import { EmptyState } from "@/components/common/empty-state";
 import { MatchBadge } from "@/components/common/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -215,22 +216,11 @@ export function JobDiscovery() {
         </div>
 
         {filteredJobs.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Filter
-                  className="h-5 w-5 text-primary"
-                  aria-hidden
-                />
-              </div>
-              <div>
-                <p className="text-sm font-medium">No roles match those filters</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Try a broader search or change the work mode.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Filter}
+            title="No roles match those filters"
+            description="Try a broader search or change the work mode."
+          />
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             {filteredJobs.map((job) => {
