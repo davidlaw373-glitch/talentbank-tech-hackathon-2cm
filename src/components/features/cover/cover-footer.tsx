@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Sparkles } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 const COLUMNS: { heading: string; links: string[] }[] = [
@@ -33,41 +35,7 @@ export function CoverFooter() {
               className="flex items-center gap-2"
             >
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden
-                >
-                  <line
-                    x1="6"
-                    y1="18"
-                    x2="18"
-                    y2="18"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  />
-                  <line
-                    x1="6"
-                    y1="18"
-                    x2="12"
-                    y2="6"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  />
-                  <line
-                    x1="18"
-                    y1="18"
-                    x2="12"
-                    y2="6"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  />
-                  <circle cx="6" cy="18" r="2.4" fill="currentColor" />
-                  <circle cx="18" cy="18" r="2.4" fill="currentColor" />
-                  <circle cx="12" cy="6" r="2.4" fill="currentColor" />
-                </svg>
+                <Sparkles className="h-3.5 w-3.5" aria-hidden />
               </span>
               <small className="font-semibold tracking-tight">CareerOS</small>
             </Link>
@@ -84,13 +52,16 @@ export function CoverFooter() {
               </h4>
               <ul className="flex flex-col gap-2">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <Link
-                      href="#"
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
+                  <li key={link} className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
                       {link}
-                    </Link>
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="h-5 px-1.5 text-[10px] font-normal"
+                    >
+                      Soon
+                    </Badge>
                   </li>
                 ))}
               </ul>
@@ -103,15 +74,9 @@ export function CoverFooter() {
         <div className="flex flex-col items-start justify-between gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center">
           <small>© {new Date().getFullYear()} CareerOS. All rights reserved.</small>
           <div className="flex items-center gap-4">
-            <Link href="#" className="hover:text-foreground">
-              Privacy
-            </Link>
-            <Link href="#" className="hover:text-foreground">
-              Terms
-            </Link>
-            <Link href="#" className="hover:text-foreground">
-              Cookies
-            </Link>
+            <span>Privacy</span>
+            <span>Terms</span>
+            <span>Cookies</span>
           </div>
         </div>
       </div>

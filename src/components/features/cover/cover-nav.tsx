@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { label: "Employers", href: "#employers" },
   { label: "Universities", href: "#universities" },
   { label: "Features", href: "#features" },
+  { label: "Get started", href: "#get-started" },
 ];
 
 export function CoverNav() {

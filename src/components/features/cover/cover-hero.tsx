@@ -1,17 +1,28 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles, Workflow } from "lucide-react";
 
-import { AnimatedCounter } from "@/components/common/animated-counter";
 import { CursorGlow } from "@/components/common/cursor-glow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const STATS = [
-  { value: 4.5, suffix: "M+", label: "verified profiles" },
-  { value: 12, suffix: " days", label: "median time-to-hire" },
-  { value: 180, suffix: "+", label: "university partners" },
+const PILLARS = [
+  {
+    icon: Workflow,
+    title: "AI match scoring",
+    body: "Every role scored against your verified profile.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "University-verified",
+    body: "Credentials signed by your institution.",
+  },
+  {
+    icon: Sparkles,
+    title: "Structured interviews",
+    body: "Shared scorecards for fair hiring.",
+  },
 ];
 
 const TITLE_WORDS: { word: string; muted: boolean }[] = [
@@ -91,7 +102,7 @@ export function CoverHero() {
         >
           <Button asChild size="lg">
             <Link href="/candidate/dashboard">
-              Enter Candidate experience
+              View demo dashboard
               <ArrowRight />
             </Link>
           </Button>
@@ -102,41 +113,25 @@ export function CoverHero() {
 
         <ScrollReveal className="mt-16 w-full max-w-5xl">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {STATS.map((stat) => (
-              <div
-                key={stat.label}
-                className="lift-on-hover flex flex-col items-center gap-2 rounded-xl border bg-card p-8 text-card-foreground"
-              >
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-semibold tracking-tight sm:text-5xl">
-                    <AnimatedCounter
-                      value={stat.value}
-                      decimals={Number.isInteger(stat.value) ? 0 : 1}
-                    />
-                  </span>
-                  <span className="text-2xl font-semibold tracking-tight text-muted-foreground sm:text-3xl">
-                    {stat.suffix}
-                  </span>
+            {PILLARS.map((pillar) => {
+              const Icon = pillar.icon;
+              return (
+                <div
+                  key={pillar.title}
+                  className="lift-on-hover flex flex-col items-center gap-3 rounded-xl border bg-card p-8 text-card-foreground"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </div>
+                  <h2 className="text-base font-semibold tracking-tight">
+                    {pillar.title}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {pillar.body}
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </ScrollReveal>
-
-        <ScrollReveal
-          delay={150}
-          className="mt-10 flex flex-col items-center gap-2"
-        >
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="relative inline-flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" />
-              AI career insights live across 200+ signals
-            </span>
+              );
+            })}
           </div>
         </ScrollReveal>
       </div>

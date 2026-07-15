@@ -47,14 +47,14 @@ const PATHS: Path[] = [
     description:
       "Issue verified credentials to students, see where they land after graduation, and update courses to match hiring demand.",
     cta: "Partner with us",
-    href: "#start",
+    href: "#get-started",
   },
 ];
 
 export function CoverCta() {
   return (
     <section
-      id="start"
+      id="get-started"
       aria-label="Get started"
       className="relative w-full overflow-hidden border-t"
     >

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Sparkles } from "lucide-react";
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
@@ -209,32 +209,12 @@ function UniversityPreview() {
       </div>
 
       <div className="mt-4 flex items-center gap-2 rounded-md bg-muted/50 p-2.5 text-xs">
-        <SparkleIcon />
+        <Sparkles className="h-3.5 w-3.5" aria-hidden />
         <span>
           Demand up 41% for LLM evaluation — consider a new elective.
         </span>
       </div>
     </PreviewShell>
-  );
-}
-
-function SparkleIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M12 2v6m0 8v6m10-10h-6M8 12H2m15.07-7.07l-4.24 4.24m-2.83 2.83l-4.24 4.24m11.31 0l-4.24-4.24m-2.83-2.83l-4.24-4.24"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 

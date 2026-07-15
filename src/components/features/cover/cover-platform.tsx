@@ -272,10 +272,13 @@ export function CoverPlatform() {
                         .join("")}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
+                      <p className="truncate text-sm font-medium" title={m.candidate}>
                         {m.candidate}
                       </p>
-                      <p className="truncate text-xs text-muted-foreground">
+                      <p
+                        className="truncate text-xs text-muted-foreground"
+                        title={`${m.role} · ${m.city}`}
+                      >
                         {m.role} · {m.city}
                       </p>
                     </div>
