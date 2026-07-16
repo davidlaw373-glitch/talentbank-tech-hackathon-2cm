@@ -1,7 +1,9 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Building2,
   Check,
+  Globe2,
   Lock,
   Mail,
   User,
@@ -84,8 +86,25 @@ const REGISTER_BENEFITS = [
   "Shared interview scorecards for fairness",
 ];
 
-export function AuthForm({ mode }: { mode: "login" | "register" }) {
+const EMPLOYER_REGISTER_BENEFITS = [
+  "A structured pipeline for every open role",
+  "Candidate shortlists with consistent hiring signals",
+  "One shared view for interviews and offers",
+];
+
+export function AuthForm({
+  mode,
+  audience = "candidate",
+}: {
+  mode: "login" | "register";
+  audience?: "candidate" | "employer";
+}) {
   const registering = mode === "register";
+  const employer = audience === "employer";
+  const dashboardHref = employer ? "/employer/dashboard" : "/candidate/dashboard";
+  const loginHref = employer ? "/employer/login" : "/login";
+  const registerHref = employer ? "/employer/register" : "/register";
+  const benefits = employer ? EMPLOYER_REGISTER_BENEFITS : REGISTER_BENEFITS;
 
   return (
     <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-2">
@@ -100,13 +119,17 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           </h2>
           <p className="text-base text-background/70">
             {registering
-              ? "Start with a profile that proves itself."
-              : "Welcome back. Your career journey continues here."}
+              ? employer
+                ? "Build a hiring workspace your team can trust."
+                : "Start with a profile that proves itself."
+              : employer
+                ? "Welcome back. Your hiring work continues here."
+                : "Welcome back. Your career journey continues here."}
           </p>
         </div>
 
         <ul className="space-y-3 text-sm text-background/85">
-          {REGISTER_BENEFITS.map((line) => (
+          {benefits.map((line) => (
             <li key={line} className="flex items-start gap-2">
               <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-background/15">
                 <Check className="h-3 w-3" aria-hidden />
@@ -117,7 +140,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         </ul>
 
         <p className="text-xs text-background/55">
-          Trusted by candidates across 14 countries, 6 industries.
+          {employer
+            ? "Built for thoughtful hiring teams across Malaysia."
+            : "Trusted by candidates across 14 countries, 6 industries."}
         </p>
       </div>
 
@@ -133,24 +158,32 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               </CardTitle>
               <CardDescription>
                 {registering
-                  ? "Build a verified profile and discover relevant roles."
-                  : "Log in to continue your CareerOS journey."}
+                  ? employer
+                    ? "Set up your team workspace and start hiring with structure."
+                    : "Build a verified profile and discover relevant roles."
+                  : employer
+                    ? "Log in to continue your hiring work."
+                    : "Log in to continue your CareerOS journey."}
               </CardDescription>
             </div>
             <Badge variant="secondary">
-              {registering ? "Candidate" : "Login"}
+              {employer ? "Employer" : registering ? "Candidate" : "Login"}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {registering && (
             <Field
-              id="name"
-              label="Full name"
-              placeholder="Alex Morgan"
-              helper="Use the name you go by professionally."
-              icon={User}
-              autoComplete="name"
+              id={employer ? "company-name" : "name"}
+              label={employer ? "Company name" : "Full name"}
+              placeholder={employer ? "Meridian Byte Labs" : "Alex Morgan"}
+              helper={
+                employer
+                  ? "Use the organization name candidates will recognize."
+                  : "Use the name you go by professionally."
+              }
+              icon={employer ? Building2 : User}
+              autoComplete={employer ? "organization" : "name"}
             />
           )}
           <Field
@@ -174,11 +207,19 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           />
           {registering && (
             <Field
-              id="goal"
-              label="Career goal"
-              placeholder="e.g. Find my first product role"
-              helper="We'll use this to personalize your matches."
-              icon={Target}
+              id={employer ? "website" : "goal"}
+              label={employer ? "Company website" : "Career goal"}
+              type={employer ? "url" : "text"}
+              placeholder={
+                employer ? "https://meridianbyte.my" : "e.g. Find my first product role"
+              }
+              helper={
+                employer
+                  ? "This helps candidates recognize your organization."
+                  : "We'll use this to personalize your matches."
+              }
+              icon={employer ? Globe2 : Target}
+              autoComplete={employer ? "url" : undefined}
             />
           )}
           {!registering && (
@@ -203,18 +244,24 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           <Button asChild size="lg">
             <Link
               href={
-                registering ? "/candidate/onboarding" : "/candidate/dashboard"
+                registering && !employer ? "/candidate/onboarding" : dashboardHref
               }
             >
-              {registering ? "Create account" : "Log in"}
+              {registering
+                ? employer
+                  ? "Create employer account"
+                  : "Create account"
+                : "Log in"}
               <ArrowRight />
             </Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href={registering ? "/login" : "/register"}>
+            <Link href={registering ? loginHref : registerHref}>
               {registering
                 ? "Already registered? Log in"
-                : "New to CareerOS? Register"}
+                : employer
+                  ? "New employer? Register"
+                  : "New to CareerOS? Register"}
             </Link>
           </Button>
           <Button asChild variant="ghost">
