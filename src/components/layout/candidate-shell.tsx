@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, BriefcaseBusiness, Home, LayoutDashboard, UserRound } from "lucide-react";
+import { Bell, BriefcaseBusiness, Home, LayoutDashboard } from "lucide-react";
 import { candidateProfile } from "@/data/candidate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 
 const links = [
   { href: "/candidate/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/candidate/profile", label: "Profile", icon: UserRound },
   { href: "/candidate/jobs", label: "Find jobs", icon: BriefcaseBusiness },
   { href: "/candidate/applications", label: "Applications", icon: Home },
 ];
