@@ -60,12 +60,12 @@ export function CoverHero() {
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <CursorGlow />
-        <div className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-muted/60 blur-3xl animate-float-slow" />
-        <div className="absolute -right-24 top-40 h-96 w-96 rounded-full bg-accent/40 blur-3xl animate-float-slower" />
-        <div className="absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 rounded-full bg-muted/40 blur-3xl animate-float-slow" />
+        <div className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-muted/60 blur-3xl" />
+        <div className="absolute -right-24 top-40 h-96 w-96 rounded-full bg-accent/40 blur-3xl" />
+        <div className="absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 rounded-full bg-muted/40 blur-3xl" />
       </div>
 
-      <div className="container mx-auto flex flex-col items-center px-6 pt-16 pb-20 text-center md:pt-24 md:pb-28">
+      <div className="container mx-auto flex flex-col items-center px-6 pt-20 pb-24 text-center md:pt-32 md:pb-36">
         <div className="animate-reveal">
           <CoverEyebrow>Career Operating System</CoverEyebrow>
         </div>
@@ -130,7 +130,7 @@ export function CoverHero() {
         >
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="relative inline-flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/15" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
             </span>
             <span className="flex items-center gap-1.5">

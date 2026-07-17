@@ -96,7 +96,7 @@ export function CoverPathFinder() {
     <section
       id="paths"
       aria-label="Career path finder"
-      className="w-full border-t"
+      className="w-full border-t bg-muted/40"
     >
       <div className="container mx-auto px-6 py-20 md:py-28">
         <ScrollReveal className="mx-auto max-w-2xl text-center">

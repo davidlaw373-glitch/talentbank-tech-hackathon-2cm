@@ -128,61 +128,12 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Interactivity animations — explicitly requested for cover page interaction */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+/* Sticky-header offset for anchor jumps — keeps section headings visible below the h-16 nav */
+section[id] {
+  scroll-margin-top: 5rem;
 }
 
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(20px, -20px) scale(1.05);
-  }
-}
-
-@keyframes float-slower {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-25px, 15px) scale(1.08);
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.7;
-  }
-  70% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-}
-
-@keyframes caret-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
+/* One-shot entrance animations — no infinite loops */
 @keyframes reveal-up {
   from {
     opacity: 0;
@@ -194,16 +145,16 @@ html {
   }
 }
 
-@keyframes ticker {
-  0% {
-    transform: translateX(0);
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
   }
-  100% {
-    transform: translateX(-50%);
+  to {
+    transform: scaleX(1);
   }
 }
 
-@keyframes progress-fill {
+@keyframes progress-fill-x {
   from {
     transform: scaleX(0);
   }
@@ -241,29 +192,17 @@ html {
   }
 }
 
-@keyframes glow-pulse {
+@keyframes caret-blink {
   0%,
   100% {
-    opacity: 0.35;
-    transform: scale(1);
+    opacity: 1;
   }
   50% {
-    opacity: 0.6;
-    transform: scale(1.08);
-  }
-}
-
-@keyframes pulse-ring-2 {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(2.6);
     opacity: 0;
   }
 }
 
+<<<<<<< Updated upstream
 @keyframes travel {
   0% {
     offset-distance: 0%;
@@ -316,25 +255,33 @@ html {
   }
   50% {
     transform: scale(1.012);
+=======
+/* Current-step indicators — soft pulse halo + dot pulse */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+>>>>>>> Stashed changes
   }
 }
 
 @layer utilities {
-  .animate-marquee {
-    animation: marquee 40s linear infinite;
-  }
-  .animate-ticker {
-    animation: ticker 30s linear infinite;
-  }
-  .animate-float-slow {
-    animation: float-slow 12s ease-in-out infinite;
-  }
-  .animate-float-slower {
-    animation: float-slower 16s ease-in-out infinite;
-  }
-  .animate-pulse-ring {
-    animation: pulse-ring 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
   .animate-caret {
     animation: caret-blink 1s steps(1) infinite;
   }
@@ -344,6 +291,10 @@ html {
   .animate-progress {
     transform-origin: left;
     animation: progress-fill 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-progress-x {
+    transform-origin: left;
+    animation: progress-fill-x 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .animate-word {
     display: inline-block;
@@ -370,6 +321,7 @@ html {
     stroke-dashoffset: 1000;
     animation: path-draw 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+<<<<<<< Updated upstream
   .animate-glow-pulse {
     animation: glow-pulse 4s ease-in-out infinite;
   }
@@ -395,6 +347,17 @@ html {
     transform-origin: center;
     transform-box: view-box;
     animation: breathe 6s ease-in-out infinite;
+=======
+  .animate-pulse-soft {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  .animate-pulse-ring-soft {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: pulse-ring-soft 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+>>>>>>> Stashed changes
   }
   .reveal-on-scroll {
     opacity: 0;
@@ -442,4 +405,24 @@ html {
     opacity: 1;
     transform: none;
   }
+<<<<<<< Updated upstream
 }
+=======
+  .animate-caret,
+  .animate-shimmer {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+}
+>>>>>>> Stashed changes

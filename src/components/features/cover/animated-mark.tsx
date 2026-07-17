@@ -137,7 +137,7 @@ export function AnimatedMark({
       height={size}
       viewBox="0 0 380 300"
       fill="none"
-      className={cn("text-foreground animate-breathe", className)}
+      className={cn("text-foreground", className)}
       role={showLabels ? "img" : undefined}
       aria-label="CareerOS connects Candidates, Employers, and Universities"
     >
@@ -175,9 +175,6 @@ export function AnimatedMark({
           )}
           style={{
             transitionDelay: `${0.4 + (i % 5) * 0.1}s`,
-            animation: drawn
-              ? `twinkle ${2 + (i % 3) * 0.6}s ease-in-out ${i * 0.2}s infinite`
-              : undefined,
           }}
         />
       ))}
@@ -203,7 +200,6 @@ export function AnimatedMark({
           strokeWidth="0.8"
           strokeOpacity="0.18"
           strokeDasharray="3 4"
-          className={drawn ? "animate-orbit-cw" : ""}
         />
       </g>
 
@@ -228,7 +224,6 @@ export function AnimatedMark({
           strokeWidth="0.8"
           strokeOpacity="0.14"
           strokeDasharray="2 5"
-          className={drawn ? "animate-orbit-ccw" : ""}
         />
       </g>
 
@@ -259,28 +254,6 @@ export function AnimatedMark({
         );
       })}
 
-      {/* Data flow dots — travel along edges */}
-      {drawn &&
-        EDGES.map((edge, i) => (
-          <circle
-            key={`flow-${i}`}
-            r="2.5"
-            fill="currentColor"
-            className="animate-flow"
-            style={{
-              animationDelay: `${1.2 + i * 0.5}s`,
-            }}
-          >
-            <animateMotion
-              dur="3s"
-              repeatCount="indefinite"
-              begin={`${1.2 + i * 0.5}s`}
-            >
-              <mpath href={`#${edge.id}`} />
-            </animateMotion>
-          </circle>
-        ))}
-
       {/* Soft halos behind nodes */}
       {NODES.map((n) => (
         <circle
@@ -297,7 +270,7 @@ export function AnimatedMark({
         />
       ))}
 
-      {/* Pulse rings on nodes */}
+      {/* Static rings on nodes */}
       {NODES.map((n) => (
         <circle
           key={`pulse-${n.id}`}
@@ -307,13 +280,12 @@ export function AnimatedMark({
           fill="none"
           stroke="currentColor"
           strokeWidth="1"
-          strokeOpacity="0.4"
-          className="animate-pulse-ring-2"
-          style={{
-            transformOrigin: `${n.x}px ${n.y}px`,
-            transformBox: "view-box",
-            animationDelay: `${n.delay + 1.4}s`,
-          }}
+          strokeOpacity="0.3"
+          className={cn(
+            "transition-opacity duration-700",
+            drawn ? "opacity-100" : "opacity-0"
+          )}
+          style={{ transitionDelay: `${n.delay + 1.4}s` }}
         />
       ))}
 

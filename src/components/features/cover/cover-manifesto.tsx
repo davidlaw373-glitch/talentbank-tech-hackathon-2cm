@@ -7,7 +7,7 @@ export function CoverManifesto() {
     <section
       id="manifesto"
       aria-label="Why we built CareerOS"
-      className="relative w-full overflow-hidden border-t"
+      className="relative w-full overflow-hidden border-t bg-muted/40"
     >
       <div
         aria-hidden

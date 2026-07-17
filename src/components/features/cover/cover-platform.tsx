@@ -126,7 +126,7 @@ export function CoverPlatform() {
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div className="flex items-center gap-2">
                   <span className="relative inline-flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/40 animate-pulse-ring" />
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/15" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
                   </span>
                   <h3 className="text-sm font-semibold tracking-tight">
@@ -246,6 +246,43 @@ export function CoverPlatform() {
                 </Button>
               </div>
             </div>
+<<<<<<< Updated upstream
+=======
+          </ScrollReveal>
+        </div>
+
+        {/* Platform signals row */}
+        <ScrollReveal delay={260} className="mt-5">
+          <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between border-b px-6 py-4">
+              <div className="flex items-center gap-2">
+                <span className="relative inline-flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/15" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
+                </span>
+                <h3 className="text-sm font-semibold tracking-tight">
+                  Platform signal
+                </h3>
+              </div>
+              <Badge variant="outline" className="gap-1">
+                <TrendingUp className="h-3 w-3" aria-hidden />
+                +18% wk
+              </Badge>
+            </div>
+            <div className="relative overflow-hidden">
+              <div className="flex gap-8 overflow-x-auto whitespace-nowrap px-6 py-4">
+                {SIGNAL_LINES.map((line) => (
+                  <span
+                    key={line}
+                    className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground"
+                  >
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground/40" />
+                    {line}
+                  </span>
+                ))}
+              </div>
+            </div>
+>>>>>>> Stashed changes
           </div>
         </ScrollReveal>
       </div>

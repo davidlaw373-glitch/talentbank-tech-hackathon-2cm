@@ -29,25 +29,41 @@ const PATHS: Path[] = [
     description:
       "Build a verified profile, get AI match scores, and track every application in one place.",
     cta: "Create profile",
+<<<<<<< Updated upstream
     href: "#start",
+=======
+    href: "/register?next=/candidate/onboarding",
+>>>>>>> Stashed changes
   },
   {
     id: "employer",
     icon: Briefcase,
     title: "I'm hiring",
     description:
+<<<<<<< Updated upstream
       "Post a role, review ranked candidates with AI summaries, and run structured interviews.",
     cta: "Post a job",
     href: "#roles",
+=======
+      "Post a role, see ranked candidates with AI summaries, and run interviews with a shared scorecard.",
+    cta: "Open employer workspace",
+    href: "/login?next=/employer",
+>>>>>>> Stashed changes
   },
   {
     id: "university",
     icon: GraduationCap,
     title: "I'm from a university",
     description:
+<<<<<<< Updated upstream
       "Issue verified credentials, track graduate outcomes, and align your curriculum with demand.",
     cta: "Partner with us",
     href: "#start",
+=======
+      "Issue verified credentials to students, see where they land after graduation, and update courses to match hiring demand.",
+    cta: "Open university workspace",
+    href: "/login?next=/university",
+>>>>>>> Stashed changes
   },
 ];
 
@@ -56,14 +72,14 @@ export function CoverCta() {
     <section
       id="start"
       aria-label="Get started"
-      className="relative w-full overflow-hidden border-t"
+      className="relative w-full overflow-hidden border-t bg-secondary text-secondary-foreground"
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
       >
-        <div className="absolute left-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-muted/40 blur-3xl animate-float-slow" />
-        <div className="absolute right-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl animate-float-slower" />
+        <div className="absolute left-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-muted/40 blur-3xl" />
+        <div className="absolute right-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl" />
       </div>
 
       <div className="container mx-auto flex flex-col items-center px-6 py-24 text-center md:py-32">
@@ -79,7 +95,7 @@ export function CoverCta() {
         </ScrollReveal>
 
         <ScrollReveal delay={160}>
-          <p className="mt-4 max-w-xl text-base text-muted-foreground sm:text-lg">
+          <p className="mt-4 max-w-xl text-base sm:text-lg">
             Three ways to begin. Each path takes about a minute to set up.
           </p>
         </ScrollReveal>
