@@ -54,9 +54,9 @@
   --accent-soft: #ece4cb;
 
   /* ── Highlight (warm complementary accent for CTAs, charts, badges) ─ */
-  --highlight: #b87a3a;
+  --highlight: #d68a2e;
   --highlight-foreground: #ffffff;
-  --highlight-soft: #f1d9b8;
+  --highlight-soft: #f8d8a8;
 
   /* ── Component borders & interactive states ─────────────────────────── */
   --border: #344e41;
@@ -66,14 +66,18 @@
   --ring-offset: #dad7cd;
 
   /* ── Semantic system states ─────────────────────────────────────────── */
-  --success: #3a5a40;
-  --success-foreground: #f5f1e6;
-  --warning: #b58a3a;
+  /* Bumped from the original muted earthy tones to vivid-but-readable
+     values that match the vibrancy of the dark-mode palette. Foreground
+     tokens flipped to white where the brighter swatch no longer supports
+     dark text at AA. */
+  --success: #2f7d3c;
+  --success-foreground: #ffffff;
+  --warning: #d69121;
   --warning-foreground: #1a1a1a;
-  --destructive: #964538;
-  --destructive-foreground: #f5f1e6;
-  --info: #3a5a40;
-  --info-foreground: #f5f1e6;
+  --destructive: #c13828;
+  --destructive-foreground: #ffffff;
+  --info: #2f7d3c;
+  --info-foreground: #ffffff;
 
   --radius: 0.625rem;
 
@@ -151,14 +155,18 @@
   --info-foreground: #ece4cb;
 
   /* ── Chart palette ──────────────────────────────────────────────────── */
-  --chart-1: #8aa66e;
-  --chart-2: #d49554;
-  --chart-3: #6a8a4e;
-  --chart-4: #c45a45;
+  /* Bumped to brighter, more saturated values so the green / orange / red
+     accents (cover-how steps, pipeline bars, score swatches) feel as
+     punchy against the dark sage surfaces as the light-mode counterparts
+     feel against cream. */
+  --chart-1: #a3c47c;
+  --chart-2: #ecaa5a;
+  --chart-3: #8fbf72;
+  --chart-4: #e06444;
   --chart-5: #ece4cb;
-  --chart-6: #a89a7e;
-  --chart-7: #d4b878;
-  --chart-8: #8c9a82;
+  --chart-6: #c2b48a;
+  --chart-7: #e6c478;
+  --chart-8: #a4b594;
 
   /* ── Sidebar ────────────────────────────────────────────────────────── */
   --sidebar: #344e41;
