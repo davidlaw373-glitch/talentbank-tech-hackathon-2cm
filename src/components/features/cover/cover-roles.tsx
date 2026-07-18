@@ -7,6 +7,10 @@ import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { Section } from "@/components/common/section";
 import { TiltCard } from "@/components/common/tilt-card";
+import {
+  WaitlistDialog,
+  type WaitlistAudience,
+} from "@/components/common/waitlist-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,6 +24,9 @@ type Role = {
   description: string;
   benefits: string[];
   cta: string;
+  /** Candidate roles link straight to registration; others join a waitlist. */
+  href?: string;
+  waitlist?: WaitlistAudience;
   preview: React.ReactNode;
 };
 
@@ -37,6 +44,7 @@ const ROLES: Role[] = [
       "Track every job you've applied to in one view",
     ],
     cta: "I'm looking for work",
+    href: "/register",
     preview: <CandidatePreview />,
   },
   {
@@ -52,6 +60,7 @@ const ROLES: Role[] = [
       "Use the same scorecard with every interviewer",
     ],
     cta: "I'm hiring",
+    waitlist: "employer",
     preview: <EmployerPreview />,
   },
   {
@@ -67,6 +76,7 @@ const ROLES: Role[] = [
       "Get suggestions for new courses based on hiring demand",
     ],
     cta: "Partner with us",
+    waitlist: "university",
     preview: <UniversityPreview />,
   },
 ];
@@ -110,9 +120,9 @@ function CandidatePreview() {
               className={cn(
                 "h-1.5 rounded-full",
                 v >= 1
-                  ? "bg-foreground/80"
+                  ? "bg-primary/80"
                   : v >= 0.75
-                    ? "bg-foreground/45"
+                    ? "bg-primary/45"
                     : "bg-muted-foreground/20"
               )}
             />
@@ -198,7 +208,7 @@ function UniversityPreview() {
             <span className="w-20 text-muted-foreground">{row.label}</span>
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full bg-foreground/80 animate-progress"
+                className="h-full rounded-full bg-primary animate-progress"
                 style={{ width: `${row.pct}%` }}
               />
             </div>
@@ -244,7 +254,7 @@ export function CoverRoles() {
                 <TabsTrigger
                   key={role.id}
                   value={role.id}
-                  className="flex-1 rounded-md border bg-background px-4 py-3 text-sm font-medium data-[state=active]:border-foreground data-[state=active]:bg-foreground data-[state=active]:text-background sm:text-base"
+                  className="flex-1 rounded-md border bg-background px-4 py-3 text-sm font-medium data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground sm:text-base"
                 >
                   {role.label}
                 </TabsTrigger>
@@ -259,7 +269,7 @@ export function CoverRoles() {
               >
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
                   <TiltCard className="rounded-2xl">
-                    <div className="lift-on-hover rounded-2xl border bg-card p-3">
+                    <div className="rounded-2xl border bg-card p-3">
                       {role.preview}
                     </div>
                   </TiltCard>
@@ -288,12 +298,21 @@ export function CoverRoles() {
                       ))}
                     </ul>
                     <div>
-                      <Button asChild>
-                        <Link href="#start">
-                          {role.cta}
-                          <ArrowRight />
-                        </Link>
-                      </Button>
+                      {role.href ? (
+                        <Button asChild>
+                          <Link href={role.href}>
+                            {role.cta}
+                            <ArrowRight />
+                          </Link>
+                        </Button>
+                      ) : (
+                        <WaitlistDialog audience={role.waitlist ?? "employer"}>
+                          <Button>
+                            {role.cta}
+                            <ArrowRight />
+                          </Button>
+                        </WaitlistDialog>
+                      )}
                     </div>
                   </div>
                 </div>

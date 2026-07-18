@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 /*
  * Brand palette (decorative / large-text roles)
  *   #dad7cd  light blue-gray    surfaces, dividers, muted areas
@@ -43,32 +41,6 @@
   --input: #dad7cd;
   --ring: #2c4b34;
   --radius: 0.625rem;
-}
-
-.dark {
-  --background: #1f2e26;
-  --foreground: #dad7cd;
-  --card: #344e41;
-  --card-foreground: #dad7cd;
-  --popover: #344e41;
-  --popover-foreground: #dad7cd;
-  --primary: #a3b18a;
-  --primary-foreground: #1f2e26;
-  --secondary: #588157;
-  --secondary-foreground: #dad7cd;
-  --muted: #344e41;
-  --muted-foreground: #a3b18a;
-  --accent: #588157;
-  --accent-foreground: #dad7cd;
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --success: #4ade80;
-  --success-foreground: #052e16;
-  --warning: #fbbf24;
-  --warning-foreground: #451a03;
-  --border: #588157;
-  --input: #588157;
-  --ring: #a3b18a;
 }
 
 @theme inline {
@@ -124,10 +96,17 @@
   p {
     line-height: 1.65;
   }
-}
-
-html {
-  scroll-behavior: smooth;
+  /* Global heading scale — Tailwind v4 preflight resets headings, so page
+     titles across the app would otherwise render as body text. */
+  h1 {
+    @apply text-2xl font-semibold tracking-tight sm:text-3xl;
+  }
+  h2 {
+    @apply text-xl font-semibold tracking-tight sm:text-2xl;
+  }
+  h3 {
+    @apply text-base font-semibold tracking-tight;
+  }
 }
 
 /* Interactivity animations — explicitly requested for cover page interaction */
@@ -195,6 +174,16 @@ html {
   }
 }
 
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 @keyframes word-rise {
   from {
     opacity: 0;
@@ -203,15 +192,6 @@ html {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
   }
 }
 
@@ -226,18 +206,6 @@ html {
   }
 }
 
-@keyframes pulse-soft {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-}
-
 @keyframes pulse-ring-soft {
   0% {
     transform: scale(1);
@@ -246,15 +214,6 @@ html {
   100% {
     transform: scale(1.8);
     opacity: 0;
-  }
-}
-
-@keyframes progress-fill-x {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
   }
 }
 
@@ -321,38 +280,15 @@ html {
     transform: translateY(0.4em);
     animation: word-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      var(--muted-foreground) 0%,
-      var(--foreground) 50%,
-      var(--muted-foreground) 100%
-    );
-    background-size: 200% auto;
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 3.2s linear infinite;
-  }
   .animate-pulse-ring-2 {
     transform-origin: center;
     transform-box: fill-box;
     animation: pulse-ring-2 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
   }
-  .animate-pulse-soft {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: pulse-soft 2s ease-in-out infinite;
-  }
   .animate-pulse-ring-soft {
     transform-origin: center;
     transform-box: fill-box;
     animation: pulse-ring-soft 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-  }
-  .animate-progress-x {
-    transform-origin: left;
-    animation: progress-fill-x 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .animate-shimmer-bar {
     animation: shimmer-bar 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -372,16 +308,20 @@ html {
     transform-box: view-box;
     animation: breathe 6s ease-in-out infinite;
   }
-  .reveal-on-scroll {
-    opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .reveal-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
+  /* Only hide pre-reveal content when scripting is available to bring it
+     back — otherwise a no-JS / failed-hydration page would stay blank. */
+  @media (scripting: enabled) {
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   .ticker-track {
     display: flex;
@@ -429,7 +369,6 @@ html {
   .animate-pulse-ring,
   .animate-pulse-ring-2,
   .animate-pulse-ring-soft,
-  .animate-pulse-soft,
   .animate-breathe,
   .animate-orbit-cw,
   .animate-orbit-ccw,
@@ -441,11 +380,5 @@ html {
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
-  }
-}
-
-@media (min-width: 1024px) {
-  html {
-    font-size: 16px;
   }
 }

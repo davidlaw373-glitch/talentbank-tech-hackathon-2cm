@@ -2,25 +2,22 @@ import Link from "next/link";
 import {
   Briefcase,
   CalendarClock,
-  BadgeCheck,
   Sparkles,
   ArrowRight,
   ArrowUpRight,
-  Check,
   MapPin,
   Building2,
   Clock,
   TrendingUp,
-  GraduationCap,
-  FolderGit2,
-  FileText,
 } from "lucide-react";
 
 import { applications } from "@/data/applications";
-import { candidateProfile, recentActivity } from "@/data/candidate";
+import { candidateProfile } from "@/data/candidate";
 import { jobs } from "@/data/jobs";
+import { getProfileCompletion } from "@/lib/profile-completion";
+import { ApplicationProgress } from "@/components/common/application-progress";
+import { ApplicationStatusBadge } from "@/components/common/application-status-badge";
 import { MatchBadge } from "@/components/common/match-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,105 +27,55 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { matchTone, VERIFICATION_TONE } from "@/lib/status";
-
-type ProgressItem = {
-  id: string;
-  label: string;
-  hint: string;
-  done: boolean;
-  icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
-};
-
-const PROGRESS_ITEMS: ProgressItem[] = [
-  {
-    id: "basics",
-    label: "Basic info",
-    hint: "Name, summary and contact details",
-    done: true,
-    icon: FileText,
-  },
-  {
-    id: "skills",
-    label: "Skills",
-    hint: "5 skills added",
-    done: true,
-    icon: Sparkles,
-  },
-  {
-    id: "experience",
-    label: "Work experience",
-    hint: "1 role on file",
-    done: true,
-    icon: Briefcase,
-  },
-  {
-    id: "education",
-    label: "Education",
-    hint: "University of Malaya · BSc CS",
-    done: true,
-    icon: GraduationCap,
-  },
-  {
-    id: "projects",
-    label: "Projects & portfolio",
-    hint: "Add a project to lift your match scores",
-    done: false,
-    icon: FolderGit2,
-  },
-  {
-    id: "verification",
-    label: "Verified credentials",
-    hint: "1 document pending review",
-    done: false,
-    icon: BadgeCheck,
-  },
-];
-
-const STATS = [
-  {
-    label: "Active applications",
-    value: applications.length,
-    icon: Briefcase,
-    delta: "+2 this week",
-    tone: "positive" as const,
-    href: "/candidate/applications",
-  },
-  {
-    label: "Interview pipeline",
-    value: applications.filter((a) => a.status === "Interview").length,
-    icon: CalendarClock,
-    delta: "1 next week",
-    tone: "positive" as const,
-    href: "/candidate/applications",
-  },
-  {
-    label: "Profile strength",
-    value: candidateProfile.profileCompletion,
-    icon: Sparkles,
-    suffix: "%",
-    delta: "Top 18% of candidates",
-    tone: "positive" as const,
-    hero: true,
-    href: "/candidate/profile",
-  },
-  {
-    label: "Average match",
-    value: Math.round(
-      jobs.reduce((acc, j) => acc + j.matchScore, 0) / jobs.length
-    ),
-    icon: TrendingUp,
-    suffix: "%",
-    delta: "Across 3 open roles",
-    tone: "neutral" as const,
-    href: "/candidate/jobs",
-  },
-];
+import { matchTone } from "@/lib/status";
 
 export function DashboardOverview() {
-  const total = PROGRESS_ITEMS.length;
-  const done = PROGRESS_ITEMS.filter((i) => i.done).length;
-  const remaining = PROGRESS_ITEMS.filter((i) => !i.done);
+  const completion = getProfileCompletion(candidateProfile);
+
+  // The single most urgent thing: the application furthest along that still
+  // needs the candidate's attention (interview-stage beats earlier stages).
+  const nextUp =
+    applications.find((a) => a.status === "Interview") ?? applications[0];
+
+  const STATS = [
+    {
+      label: "Active applications",
+      value: applications.length,
+      icon: Briefcase,
+      delta: "+2 this week",
+      tone: "positive" as const,
+      href: "/candidate/applications",
+    },
+    {
+      label: "Interview pipeline",
+      value: applications.filter((a) => a.status === "Interview").length,
+      icon: CalendarClock,
+      delta: "1 next week",
+      tone: "positive" as const,
+      href: "/candidate/applications",
+    },
+    {
+      label: "Profile strength",
+      value: completion.pct,
+      icon: Sparkles,
+      suffix: "%",
+      delta: "Top 18% of candidates",
+      tone: "positive" as const,
+      hero: true,
+      href: "/candidate/profile",
+    },
+    {
+      label: "Average match",
+      value: Math.round(
+        jobs.reduce((acc, j) => acc + j.matchScore, 0) / jobs.length
+      ),
+      icon: TrendingUp,
+      suffix: "%",
+      delta: `Across ${jobs.length} open roles`,
+      tone: "neutral" as const,
+      href: "/candidate/jobs",
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -138,10 +85,7 @@ export function DashboardOverview() {
         className="flex flex-wrap items-start justify-between gap-4"
       >
         <div className="space-y-2">
-          <p
-            id="dashboard-eyebrow"
-            className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground"
-          >
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Dashboard
           </p>
           <h1 id="dashboard-welcome">
@@ -208,161 +152,111 @@ export function DashboardOverview() {
         })}
       </section>
 
-      {/* Profile progress + Verification */}
+      {/* Next up + profile completion */}
       <section
-        aria-label="Profile and verification status"
+        aria-label="Next actions"
         className="grid grid-cols-1 gap-4 lg:grid-cols-3"
       >
-        {/* Profile progress — spans 2 */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex-row items-start justify-between space-y-0">
-            <div>
-              <CardTitle>
-                <h2 className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" aria-hidden />
-                  Profile progress
-                </h2>
-              </CardTitle>
+        {/* Next up — the one thing to do right now */}
+        {nextUp && (
+          <Card className="border-primary/30 bg-primary/5 lg:col-span-2">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <CalendarClock className="h-4 w-4 text-primary" aria-hidden />
+                <CardTitle>
+                  <h2>Next up for you</h2>
+                </CardTitle>
+              </div>
               <CardDescription>
-                Complete each section to keep your profile accurate and your
-                matches strong.
+                The most important thing in your search right now.
               </CardDescription>
-            </div>
-            <Badge variant="secondary">
-              {done} of {total} · {Math.round((done / total) * 100)}%
-            </Badge>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Progress bar */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">
-                  {Math.round((done / total) * 100)}% complete
-                </span>
-                <span className="text-muted-foreground">
-                  {total - done} section{total - done === 1 ? "" : "s"} to go
-                </span>
-              </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-primary animate-progress"
-                  style={{
-                    width: `${Math.round((done / total) * 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Checklist — matches the actual profile page sections */}
-            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {PROGRESS_ITEMS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <li
-                    key={item.id}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent",
-                      item.done && "opacity-70"
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-                        item.done
-                          ? "bg-primary text-primary-foreground"
-                          : "border border-foreground/30 text-foreground/50"
-                      )}
-                      aria-hidden
-                    >
-                      {item.done ? (
-                        <Check className="h-3.5 w-3.5" />
-                      ) : (
-                        <Icon className="h-3.5 w-3.5" />
-                      )}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p
-                        className={cn(
-                          "truncate text-sm font-medium",
-                          item.done && "text-muted-foreground"
-                        )}
-                      >
-                        {item.label}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {item.hint}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-
-            {remaining.length > 0 && (
-              <div
-                role="status"
-                aria-live="polite"
-                className="flex items-center justify-between rounded-lg border bg-muted/30 p-4"
-              >
-                <div>
-                  <p className="text-sm font-medium">
-                    Next: add {remaining[0].label.toLowerCase()}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {remaining[0].hint}
-                  </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-background">
+                    <Building2 className="h-5 w-5" aria-hidden />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold">{nextUp.jobTitle}</p>
+                    <p className="truncate text-sm text-muted-foreground">
+                      {nextUp.company} · {nextUp.stage}
+                    </p>
+                  </div>
                 </div>
-                <Button asChild size="sm">
-                  <Link href="/candidate/profile">
-                    Continue
+                <ApplicationStatusBadge status={nextUp.status} />
+              </div>
+              <p className="rounded-lg border bg-background p-3 text-sm">
+                {nextUp.nextAction}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild>
+                  <Link href={`/candidate/applications/${nextUp.id}`}>
+                    Review application
                     <ArrowRight />
                   </Link>
                 </Button>
+                <Button asChild variant="outline">
+                  <Link href={`/candidate/jobs/${nextUp.jobId}`}>
+                    Re-read the role
+                  </Link>
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Verification */}
+        {/* Profile completion — slim, links to profile for the real work */}
         <Card>
           <CardHeader>
-            <div>
-              <CardTitle>
-                <h2 className="flex items-center gap-2">
-                  <BadgeCheck className="h-4 w-4" aria-hidden />
-                  Verification
-                </h2>
-              </CardTitle>
-              <CardDescription>
-                Credentials issued by your universities.
-              </CardDescription>
-            </div>
+            <CardTitle>
+              <h2 className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" aria-hidden />
+                Profile strength
+              </h2>
+            </CardTitle>
+            <CardDescription>
+              {completion.done} of {completion.total} sections complete
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {candidateProfile.evidence.map((e) => {
-              const ev = VERIFICATION_TONE[e.status];
-              const EIcon = ev.icon;
-              return (
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium tabular-nums">
+                  {completion.pct}%
+                </span>
+                <span className="text-muted-foreground">
+                  {completion.total - completion.done} to go
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  key={e.name}
-                  className="flex items-center justify-between rounded-lg border bg-card p-3"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{e.name}</p>
-                    <p className="text-xs text-muted-foreground">{e.type}</p>
-                  </div>
-                  <Badge variant={ev.variant} className="gap-1">
-                    <EIcon className="h-3 w-3" aria-hidden />
-                    {ev.label}
-                  </Badge>
-                </div>
-              );
-            })}
+                  className="h-full rounded-full bg-primary animate-progress"
+                  style={{ width: `${completion.pct}%` }}
+                />
+              </div>
+            </div>
+            {completion.next && (
+              <div className="rounded-lg border bg-muted/30 p-3">
+                <p className="text-sm font-medium">
+                  Next: {completion.next.label.toLowerCase()}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {completion.next.hint}
+                </p>
+              </div>
+            )}
+            <Button asChild variant="outline" className="w-full justify-between">
+              <Link href="/candidate/profile">
+                Continue profile
+                <ArrowRight />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </section>
 
-      {/* Application pipeline */}
+      {/* Application pipeline — compact segmented bars */}
       <section aria-labelledby="pipeline-heading" className="space-y-4">
         <div className="flex items-end justify-between">
           <div>
@@ -396,302 +290,105 @@ export function DashboardOverview() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {applications.map((app) => {
-            const completed = app.timeline.filter((t) => t.complete).length;
-            const totalSteps = app.timeline.length;
-            const pct = Math.round((completed / totalSteps) * 100);
-            // First index with complete=false is the "current" stage
-            const currentIndex = app.timeline.findIndex((t) => !t.complete);
-            return (
-              <Card key={app.id} className="lift-on-hover">
-                <CardContent className="space-y-5 p-5 sm:p-6">
-                  {/* Header */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {applications.map((app) => (
+              <Link
+                key={app.id}
+                href={`/candidate/applications/${app.id}`}
+                className="lift-on-hover block rounded-xl border bg-card text-card-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                aria-label={`${app.jobTitle} at ${app.company}, ${app.status}`}
+              >
+                <div className="space-y-4 p-5">
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-                          <Building2
-                            className="h-4 w-4"
-                            aria-hidden
-                          />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">
-                            {app.jobTitle}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {app.company}
-                          </p>
-                        </div>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                        <Building2 className="h-4 w-4" aria-hidden />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">
+                          {app.jobTitle}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {app.company}
+                        </p>
                       </div>
                     </div>
-                    <Badge
-                      variant={
-                        app.status === "Interview" ? "secondary" : "outline"
-                      }
-                    >
-                      {app.status}
-                    </Badge>
+                    <ApplicationStatusBadge status={app.status} />
                   </div>
-
-                  {/* Stage + next action */}
-                  <div className="rounded-lg border bg-muted/30 p-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Current stage
-                    </p>
-                    <p className="mt-1 text-sm font-medium">{app.stage}</p>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {app.nextAction}
-                    </p>
-                  </div>
-
-                  {/* Timeline stepper */}
-                  <div>
-                    <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
-                      <span>
-                        {completed}/{totalSteps} stages
-                      </span>
-                      <span className="font-medium tabular-nums">
-                        {pct}%
-                      </span>
-                    </div>
-                    <ol className="space-y-2.5">
-                      {app.timeline.map((step, i) => {
-                        const isCurrent = i === currentIndex;
-                        return (
-                          <li
-                            key={`${app.id}-${i}`}
-                            className="flex items-start gap-3"
-                          >
-                            <span className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                              {isCurrent && (
-                                <span
-                                  className="absolute inset-0 rounded-full border-2 border-primary animate-pulse-ring-soft"
-                                  aria-hidden
-                                />
-                              )}
-                              <span
-                                className={cn(
-                                  "relative flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold",
-                                  step.complete &&
-                                    "bg-primary text-primary-foreground",
-                                  isCurrent &&
-                                    "border-2 border-primary bg-background text-primary animate-pulse-soft",
-                                  !step.complete &&
-                                    !isCurrent &&
-                                    "border border-border bg-background text-muted-foreground"
-                                )}
-                                aria-label={
-                                  step.complete
-                                    ? `${step.label} — complete`
-                                    : isCurrent
-                                      ? `${step.label} — in progress`
-                                      : `${step.label} — upcoming`
-                                }
-                              >
-                                {step.complete ? (
-                                  <Check className="h-3 w-3" />
-                                ) : isCurrent ? (
-                                  <span className="inline-block h-2 w-2 rounded-full bg-primary" />
-                                ) : (
-                                  i + 1
-                                )}
-                              </span>
-                            </span>
-                            <div className="-mt-0.5 flex-1">
-                              <p
-                                className={cn(
-                                  "text-sm font-medium",
-                                  step.complete && "text-muted-foreground line-through",
-                                  isCurrent && "text-primary",
-                                  !step.complete &&
-                                    !isCurrent &&
-                                    "text-muted-foreground"
-                                )}
-                              >
-                                {step.label}
-                                {isCurrent && (
-                                  <span className="ml-2 text-xs font-medium text-primary">
-                                    · In progress
-                                  </span>
-                                )}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {step.date}
-                              </p>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                  <p className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      {app.stage}
+                    </span>
+                    {" · "}
+                    {app.nextAction}
+                  </p>
+                  <ApplicationProgress application={app} />
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </section>
 
-      {/* Recommended jobs + recent activity */}
-      <section
-        aria-label="Recommended jobs and recent activity"
-        className="grid grid-cols-1 gap-4 lg:grid-cols-3"
-      >
-        {/* Recommended jobs — spans 2 */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex-row items-start justify-between space-y-0">
-            <div>
-              <CardTitle>
-                <h2>Recommended for you</h2>
-              </CardTitle>
-              <CardDescription>
-                Based on your skills, goals, and live market data.
-              </CardDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/candidate/jobs">
-                See all
-                <ArrowRight />
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {jobs.slice(0, 3).map((job) => {
-              const tone = matchTone(job.matchScore);
-              return (
-                <Link
-                  key={job.id}
-                  href={`/candidate/jobs/${job.id}`}
-                  aria-label={`${job.title} at ${job.company}, ${tone.label}, ${job.matchScore} percent match`}
-                  className="lift-on-hover block cursor-pointer rounded-lg border bg-card p-4 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted">
-                      <Briefcase className="h-5 w-5" aria-hidden />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-semibold">
-                          {job.title}
-                        </p>
-                        <MatchBadge score={job.matchScore} showScore={false} className="shrink-0" />
-                      </div>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {job.company} · {job.workMode}
+      {/* Recommended jobs */}
+      <section aria-labelledby="recommended-heading" className="space-y-4">
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 id="recommended-heading">Recommended for you</h2>
+            <p className="text-sm text-muted-foreground">
+              Based on your skills, goals, and live market data.
+            </p>
+          </div>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/candidate/jobs">
+              See all
+              <ArrowRight />
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {jobs.slice(0, 3).map((job) => {
+            const tone = matchTone(job.matchScore);
+            return (
+              <Link
+                key={job.id}
+                href={`/candidate/jobs/${job.id}`}
+                aria-label={`${job.title} at ${job.company}, ${tone.label}, ${job.matchScore} percent match`}
+                className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Briefcase className="h-5 w-5" aria-hidden />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-semibold">
+                        {job.title}
                       </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" aria-hidden />
-                          {job.location}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" aria-hidden />
-                          {job.posted}
-                        </span>
-                      </div>
-                      {/* Match breakdown */}
-                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        {job.matchingSkills.slice(0, 4).map((skill) => (
-                          <Badge key={skill} variant="secondary" className="text-[10px]">
-                            {skill}
-                          </Badge>
-                        ))}
-                        {job.matchingSkills.length > 4 && (
-                          <span className="text-[10px] text-muted-foreground">
-                            +{job.matchingSkills.length - 4} more
-                          </span>
-                        )}
-                        {job.missingSkills.slice(0, 2).map((skill) => (
-                          <Badge
-                            key={skill}
-                            variant="outline"
-                            className="text-[10px] opacity-70"
-                          >
-                            + {skill}
-                          </Badge>
-                        ))}
-                      </div>
                     </div>
-                    <div
-                      className="flex flex-col items-end gap-0"
-                      aria-label={`Match score ${job.matchScore} percent`}
-                    >
-                      <span
-                        aria-hidden
-                        className="text-3xl font-semibold tabular-nums leading-none"
-                      >
-                        {job.matchScore}
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                      {job.company} · {job.workMode}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" aria-hidden />
+                        {job.location}
                       </span>
-                      <span
-                        aria-hidden
-                        className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-                      >
-                        Match
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" aria-hidden />
+                        {job.posted}
                       </span>
-                      {/* Tiny bar */}
-                      <div
-                        aria-hidden
-                        className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted"
-                      >
-                        <div
-                          className="h-full rounded-full bg-primary"
-                          style={{ width: `${job.matchScore}%` }}
-                        />
-                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <MatchBadge score={job.matchScore} />
                     </div>
                   </div>
-                </Link>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        {/* Recent activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2>Recent activity</h2>
-            </CardTitle>
-            <CardDescription>Your latest CareerOS updates.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <ol className="relative space-y-4">
-              {recentActivity.map((activity, i) => {
-                const isLatest = i === 0;
-                const isLast = i === recentActivity.length - 1;
-                return (
-                  <li
-                    key={activity.message}
-                    className="relative flex items-start gap-3"
-                  >
-                    {/* Connector line */}
-                    {!isLast && (
-                      <span
-                        aria-hidden
-                        className="absolute left-[3px] top-3 h-full w-px bg-border"
-                      />
-                    )}
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "relative z-10 mt-1.5 flex h-2 w-2 shrink-0 rounded-full",
-                        isLatest ? "bg-primary" : "bg-muted-foreground/40"
-                      )}
-                    />
-                    <div>
-                      <p className="text-sm">{activity.message}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {activity.timestamp}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </CardContent>
-        </Card>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </section>
     </div>
   );

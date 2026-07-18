@@ -7,4 +7,6 @@ export type NotificationItem = {
   message: string;
   timestamp: string;
   read: boolean;
+  /** Deep-link target — where the notification takes you when opened. */
+  href: string;
 };

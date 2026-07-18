@@ -8,11 +8,11 @@ import { Logo } from "@/components/common/logo";
 import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
-  { label: "Candidates", href: "#candidates" },
-  { label: "Employers", href: "#employers" },
-  { label: "Universities", href: "#universities" },
+  { label: "Who it's for", href: "#roles" },
+  { label: "Platform", href: "#platform" },
+  { label: "How it works", href: "#how" },
+  { label: "Career paths", href: "#paths" },
   { label: "Features", href: "#features" },
-  { label: "Get started", href: "#get-started" },
 ];
 
 export function CoverNav() {

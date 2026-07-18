@@ -8,8 +8,6 @@ export type CandidateProfile = {
   email: string;
   phone: string;
   summary: string;
-  profileCompletion: number;
-  verificationStatus: VerificationStatus;
   skills: string[];
   education: Array<{ institution: string; qualification: string; period: string }>;
   experience: Array<{ company: string; role: string; period: string; description: string }>;

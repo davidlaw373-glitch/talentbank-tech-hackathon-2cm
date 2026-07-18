@@ -1,29 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Sparkles, Workflow } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { CursorGlow } from "@/components/common/cursor-glow";
-import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const PILLARS = [
-  {
-    icon: Workflow,
-    title: "AI match scoring",
-    body: "Every role scored against your verified profile.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "University-verified",
-    body: "Credentials signed by your institution.",
-  },
-  {
-    icon: Sparkles,
-    title: "Structured interviews",
-    body: "Shared scorecards for fair hiring.",
-  },
-];
 
 const TITLE_WORDS: { word: string; muted: boolean }[] = [
   { word: "One", muted: false },
@@ -101,39 +82,15 @@ export function CoverHero() {
           style={{ animationDelay: "780ms" }}
         >
           <Button asChild size="lg">
-            <Link href="/candidate/dashboard">
-              View demo dashboard
+            <Link href="/register">
+              Create candidate account
               <ArrowRight />
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="/register">Create Candidate account</Link>
+            <Link href="/candidate/dashboard">View demo dashboard</Link>
           </Button>
         </div>
-
-        <ScrollReveal className="mt-16 w-full max-w-5xl">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {PILLARS.map((pillar) => {
-              const Icon = pillar.icon;
-              return (
-                <div
-                  key={pillar.title}
-                  className="lift-on-hover flex flex-col items-center gap-3 rounded-xl border bg-card p-8 text-card-foreground"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" aria-hidden />
-                  </div>
-                  <h2 className="text-base font-semibold tracking-tight">
-                    {pillar.title}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    {pillar.body}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </ScrollReveal>
       </div>
     </section>
   );

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
 type TiltCardProps = {
@@ -11,6 +13,9 @@ type TiltCardProps = {
   scale?: number;
 };
 
+/** Hover tilt with glare. The RAF loop only runs while the pointer is over
+ *  the card and stops once the tilt settles — never idle-spins. Disabled
+ *  for touch pointers and reduced-motion users. */
 export function TiltCard({
   children,
   className,
@@ -20,12 +25,12 @@ export function TiltCard({
   const ref = useRef<HTMLDivElement | null>(null);
   const [transform, setTransform] = useState("");
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
+  const finePointer = useMediaQuery("(pointer: fine)");
+  const reducedMotion = useReducedMotion();
+  const enabled = finePointer && !reducedMotion;
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const fine = window.matchMedia?.("(pointer: fine)").matches;
-    if (!fine) return;
-
+    if (!enabled) return;
     const node = ref.current;
     if (!node) return;
 
@@ -38,10 +43,29 @@ export function TiltCard({
     const tick = () => {
       currentX += (targetX - currentX) * 0.15;
       currentY += (targetY - currentY) * 0.15;
+      if (
+        Math.abs(targetX - currentX) < 0.01 &&
+        Math.abs(targetY - currentY) < 0.01
+      ) {
+        // Settled — snap and stop the loop.
+        currentX = targetX;
+        currentY = targetY;
+        setTransform(
+          targetX === 0 && targetY === 0
+            ? ""
+            : `perspective(1200px) rotateX(${currentY}deg) rotateY(${currentX}deg) scale(${scale})`
+        );
+        raf = null;
+        return;
+      }
       setTransform(
         `perspective(1200px) rotateX(${currentY}deg) rotateY(${currentX}deg) scale(${scale})`
       );
       raf = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (raf === null) raf = requestAnimationFrame(tick);
     };
 
     const onMove = (e: MouseEvent) => {
@@ -55,41 +79,44 @@ export function TiltCard({
         y: y * 100,
         opacity: 0.18,
       });
+      start();
     };
 
     const onLeave = () => {
       targetX = 0;
       targetY = 0;
       setGlare((g) => ({ ...g, opacity: 0 }));
+      start();
     };
 
     node.addEventListener("mousemove", onMove);
     node.addEventListener("mouseleave", onLeave);
-    raf = requestAnimationFrame(tick);
 
     return () => {
       node.removeEventListener("mousemove", onMove);
       node.removeEventListener("mouseleave", onLeave);
-      if (raf) cancelAnimationFrame(raf);
+      if (raf !== null) cancelAnimationFrame(raf);
     };
-  }, [max, scale]);
+  }, [enabled, max, scale]);
 
   return (
     <div
       ref={ref}
-      className={cn("relative will-change-transform", className)}
+      className={cn("relative", enabled && "will-change-transform", className)}
       style={{ transform }}
     >
       {children}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, #ffffff80, transparent 50%)`,
-          opacity: glare.opacity,
-          mixBlendMode: "overlay",
-        }}
-      />
+      {enabled && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, #ffffff80, transparent 50%)`,
+            opacity: glare.opacity,
+            mixBlendMode: "overlay",
+          }}
+        />
+      )}
     </div>
   );
 }

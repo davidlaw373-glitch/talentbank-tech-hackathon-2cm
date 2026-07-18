@@ -53,7 +53,7 @@ export function Stepper({
                       "relative flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold sm:h-12 sm:w-12",
                       isComplete && "bg-primary text-primary-foreground",
                       isCurrent &&
-                        "border-2 border-primary bg-background text-primary animate-pulse-soft",
+                        "border-2 border-primary bg-background text-primary",
                       !isComplete &&
                         !isCurrent &&
                         "border border-border bg-background text-muted-foreground"
@@ -61,12 +61,26 @@ export function Stepper({
                     aria-current={isCurrent ? "step" : undefined}
                   >
                     {isComplete ? (
-                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
                     ) : isCurrent ? (
-                      <span className="inline-block h-2.5 w-2.5 rounded-full bg-primary" />
+                      <span
+                        className="inline-block h-2.5 w-2.5 rounded-full bg-primary"
+                        aria-hidden
+                      />
                     ) : (
                       i + 1
                     )}
+                    {/* The visible labels row below is aria-hidden (it aligns
+                        with a separate flex grid), so expose the step name
+                        here for screen readers. */}
+                    <span className="sr-only">
+                      {step.label}
+                      {isComplete
+                        ? " — complete"
+                        : isCurrent
+                          ? " — current step"
+                          : " — upcoming"}
+                    </span>
                   </span>
                 </span>
               </li>
@@ -81,7 +95,7 @@ export function Stepper({
                       <span
                         className={cn(
                           "absolute inset-y-0 left-0 w-full rounded-full bg-primary",
-                          i <= currentIndex - 1 && "animate-progress-x"
+                          i <= currentIndex - 1 && "animate-progress"
                         )}
                         style={
                           i > currentIndex - 1
@@ -121,7 +135,7 @@ export function Stepper({
                   {step.label}
                 </p>
                 {step.meta && (
-                  <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:text-xs">
+                  <p className="mt-0.5 text-[11px] uppercase tracking-[0.18em] text-muted-foreground sm:text-xs">
                     {step.meta}
                   </p>
                 )}

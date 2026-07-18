@@ -10,8 +10,6 @@ import {
   Filter,
   MapPin,
   Search,
-  Sparkles,
-  TrendingUp,
 } from "lucide-react";
 
 import { jobs } from "@/data/jobs";
@@ -22,9 +20,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -77,8 +72,9 @@ export function JobDiscovery() {
           </p>
           <h1>Discover jobs</h1>
           <p className="text-muted-foreground">
-            Explore opportunities matched to your skills, goals, and live
-            market data.
+            {stats.total} open roles · {stats.avg}% average match ·{" "}
+            {stats.strong} strong fit{stats.strong === 1 ? "" : "s"} for your
+            profile
           </p>
         </div>
         <Button asChild variant="outline">
@@ -89,56 +85,14 @@ export function JobDiscovery() {
         </Button>
       </header>
 
-      {/* Stat row */}
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {[
-          {
-            label: "Open roles",
-            value: stats.total,
-            icon: Briefcase,
-            delta: "Across all filters",
-          },
-          {
-            label: "Average match",
-            value: `${stats.avg}%`,
-            icon: Sparkles,
-            delta: "Based on your profile",
-          },
-          {
-            label: "Strong fits",
-            value: stats.strong,
-            icon: TrendingUp,
-            delta: "Match score 90+",
-          },
-        ].map((s) => {
-          const Icon = s.icon;
-          return (
-            <Card key={s.label} className="lift-on-hover">
-              <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold tracking-tight tabular-nums">
-                    {s.value}
-                  </p>
-                  <p className="text-sm font-medium">{s.label}</p>
-                  <p className="text-xs text-muted-foreground">{s.delta}</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </section>
-
       {/* Filters */}
       <Card>
-        <CardContent className="space-y-4 p-5">
+        <CardContent className="p-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="flex flex-1 flex-col gap-1.5">
               <label
                 htmlFor="job-search"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
               >
                 Search
               </label>
@@ -160,7 +114,7 @@ export function JobDiscovery() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="work-mode-filter"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
               >
                 Work mode
               </label>
@@ -180,7 +134,7 @@ export function JobDiscovery() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="sort"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
               >
                 Sort by
               </label>
@@ -228,7 +182,8 @@ export function JobDiscovery() {
                 <Link
                   key={job.id}
                   href={`/candidate/jobs/${job.id}`}
-                  className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent"
+                  aria-label={`${job.title} at ${job.company}, ${job.matchScore} percent match`}
+                  className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -253,7 +208,7 @@ export function JobDiscovery() {
                           <Badge
                             key={skill}
                             variant="secondary"
-                            className="text-[10px]"
+                            className="text-[11px]"
                           >
                             {skill}
                           </Badge>
@@ -262,44 +217,39 @@ export function JobDiscovery() {
                           <Badge
                             key={skill}
                             variant="outline"
-                            className="text-[10px] opacity-70"
+                            className="text-[11px] opacity-70"
                           >
                             + {skill}
                           </Badge>
                         ))}
                       </div>
-                      <div className="mt-4 flex items-center justify-between gap-3">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" aria-hidden />
-                            {job.location}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" aria-hidden />
-                            {job.posted}
-                          </span>
-                        </div>
-                        <Button asChild size="sm">
-                          <span>
-                            View
-                            <ArrowRight />
-                          </span>
-                        </Button>
+                      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" aria-hidden />
+                          {job.location}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" aria-hidden />
+                          {job.posted}
+                        </span>
+                        <span className="flex items-center gap-1 text-foreground/70">
+                          View role
+                          <ArrowRight className="h-3 w-3" aria-hidden />
+                        </span>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
+                    {/* Single score readout — the badge above carries the
+                        fit label, this carries the number. */}
+                    <div
+                      className="flex flex-col items-end gap-1"
+                      aria-hidden
+                    >
                       <span className="text-3xl font-semibold tabular-nums leading-none">
                         {job.matchScore}
                       </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         Match
                       </span>
-                      <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-primary"
-                          style={{ width: `${job.matchScore}%` }}
-                        />
-                      </div>
                     </div>
                   </div>
                 </Link>

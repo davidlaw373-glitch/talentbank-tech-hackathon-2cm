@@ -57,7 +57,7 @@ export function CoverFeatures() {
       <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
         {FEATURES.map((feature, i) => (
           <ScrollReveal key={feature.title} delay={i * 80}>
-            <Card className="lift-on-hover h-full">
+            <Card className="h-full">
               <CardHeader>
                 <div
                   aria-hidden

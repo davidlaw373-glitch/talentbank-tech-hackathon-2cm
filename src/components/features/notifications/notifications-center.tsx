@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
   Bell,
   Briefcase,
   Check,
@@ -21,9 +22,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,19 +41,23 @@ const typeMeta: Record<
 function NotificationRow({
   notification,
   read,
+  onOpen,
   onToggleRead,
 }: {
   notification: NotificationItem;
   read: boolean;
+  onOpen: () => void;
   onToggleRead: () => void;
 }) {
   const Meta = typeMeta[notification.type];
   const Icon = Meta.icon;
   return (
     <li>
-      <div
+      <Link
+        href={notification.href}
+        onClick={onOpen}
         className={cn(
-          "flex items-start gap-3 rounded-lg border p-4 transition-colors",
+          "group flex items-start gap-3 rounded-lg border p-4 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           !read && "border-primary/30 bg-primary/5"
         )}
       >
@@ -95,19 +97,27 @@ function NotificationRow({
           <p className="mt-1 text-sm text-muted-foreground">
             {notification.message}
           </p>
-          <div className="mt-3 flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onToggleRead}
-              aria-label={read ? "Mark as unread" : "Mark as read"}
-            >
-              <Check />
-              {read ? "Mark unread" : "Mark read"}
-            </Button>
-          </div>
         </div>
-      </div>
+        <div className="flex shrink-0 items-center gap-1 self-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleRead();
+            }}
+            aria-label={read ? "Mark as unread" : "Mark as read"}
+            className="h-8 w-8 text-muted-foreground"
+          >
+            <Check aria-hidden />
+          </Button>
+          <ArrowRight
+            className="h-4 w-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:text-muted-foreground"
+            aria-hidden
+          />
+        </div>
+      </Link>
     </li>
   );
 }
@@ -151,6 +161,10 @@ export function NotificationsCenter() {
     setReadState((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const markRead = (id: string) => {
+    setReadState((prev) => ({ ...prev, [id]: true }));
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -184,7 +198,7 @@ export function NotificationsCenter() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="space-y-4 p-5">
+        <CardContent className="p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Tabs
               value={tab}
@@ -197,7 +211,7 @@ export function NotificationsCenter() {
                   {unreadCount > 0 && (
                     <Badge
                       variant="secondary"
-                      className="ml-1 h-4 min-w-4 px-1 text-[10px]"
+                      className="ml-1 h-4 min-w-4 px-1 text-[11px]"
                     >
                       {unreadCount}
                     </Badge>
@@ -239,6 +253,7 @@ export function NotificationsCenter() {
               key={n.id}
               notification={n}
               read={readState[n.id] ?? n.read}
+              onOpen={() => markRead(n.id)}
               onToggleRead={() => toggle(n.id)}
             />
           ))}

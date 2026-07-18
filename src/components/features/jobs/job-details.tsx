@@ -228,7 +228,7 @@ export function JobDetails({ job }: { job: Job }) {
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary animate-progress-x"
+                  className="h-full rounded-full bg-primary animate-progress"
                   style={{ width: `${job.matchScore}%` }}
                 />
               </div>
@@ -244,25 +244,25 @@ export function JobDetails({ job }: { job: Job }) {
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Employment
                 </p>
                 <p className="mt-1 font-medium">{job.employmentType}</p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Work mode
                 </p>
                 <p className="mt-1 font-medium">{job.workMode}</p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Salary
                 </p>
                 <p className="mt-1 font-medium">{job.salary}</p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Posted
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 font-medium">

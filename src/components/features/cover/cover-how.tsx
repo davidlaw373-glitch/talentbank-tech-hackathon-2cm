@@ -47,7 +47,7 @@ const STEPS: Step[] = [
 function StepCard({ step }: { step: Step }) {
   const Icon = step.icon;
   return (
-    <article className="lift-on-hover flex h-full flex-col gap-4 rounded-2xl border bg-card p-6 text-card-foreground sm:p-8">
+    <article className="flex h-full flex-col gap-4 rounded-2xl border bg-card p-6 text-card-foreground sm:p-8">
       <div className="flex items-center justify-between">
         <span
           className="text-4xl font-semibold tracking-tight tabular-nums"
@@ -56,7 +56,7 @@ function StepCard({ step }: { step: Step }) {
           {step.n}
         </span>
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-foreground text-background"
+          className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground"
           aria-hidden
         >
           <Icon className="h-5 w-5" />

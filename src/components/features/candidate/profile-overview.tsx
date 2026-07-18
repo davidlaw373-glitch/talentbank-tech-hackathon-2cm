@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Plus,
   Pencil,
@@ -13,9 +13,12 @@ import {
   BadgeCheck,
   Check,
   X,
+  Loader2,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import { candidateProfile } from "@/data/candidate";
+import { getProfileCompletion } from "@/lib/profile-completion";
+import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,12 +28,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { VERIFICATION_TONE } from "@/lib/status";
 
@@ -74,162 +79,146 @@ type ProfileFormState = {
   summary: string;
 };
 
+// State initializes from the shared fixture so every surface tells the same
+// story. Demo only: edits live in local state and are never persisted.
 const PROFILE_DEFAULT: ProfileFormState = {
-  name: "Alex Morgan",
-  title: "Frontend Developer",
-  location: "Kuala Lumpur, Malaysia",
-  email: "alex.morgan@example.com",
-  phone: "+60 12 345 6789",
-  summary:
-    "Product-minded frontend developer who enjoys turning complex workflows into accessible, dependable experiences.",
+  name: candidateProfile.name,
+  title: candidateProfile.title,
+  location: candidateProfile.location,
+  email: candidateProfile.email,
+  phone: candidateProfile.phone,
+  summary: candidateProfile.summary,
 };
 
-const INITIAL_EXPERIENCE: Experience[] = [
-  {
-    id: "exp-1",
-    company: "Northstar Labs",
-    role: "Frontend Developer Intern",
-    period: "Jan–Jun 2024",
-    description:
-      "Built reusable product interfaces and improved core accessibility checks.",
-  },
-];
+const INITIAL_EXPERIENCE: Experience[] = candidateProfile.experience.map(
+  (e, i) => ({ id: `exp-${i}`, ...e })
+);
+const INITIAL_EDUCATION: Education[] = candidateProfile.education.map(
+  (e, i) => ({ id: `edu-${i}`, ...e })
+);
+const INITIAL_PROJECTS: Project[] = candidateProfile.projects.map((p, i) => ({
+  id: `prj-${i}`,
+  ...p,
+}));
+const INITIAL_EVIDENCE: Evidence[] = candidateProfile.evidence.map((e, i) => ({
+  id: `ev-${i}`,
+  ...e,
+}));
+const INITIAL_SKILLS: string[] = [...candidateProfile.skills];
 
-const INITIAL_EDUCATION: Education[] = [
-  {
-    id: "edu-1",
-    institution: "University of Malaya",
-    qualification: "BSc Computer Science",
-    period: "2020–2024",
-  },
-];
-
-const INITIAL_PROJECTS: Project[] = [];
-
-const INITIAL_SKILLS: string[] = [
-  "TypeScript",
-  "React",
-  "Next.js",
-  "Accessibility",
-  "Product discovery",
-];
-
-const INITIAL_EVIDENCE: Evidence[] = [
-  {
-    id: "ev-1",
-    name: "Computer Science degree",
-    type: "Education",
-    status: "Verified",
-  },
-  {
-    id: "ev-2",
-    name: "Northstar Labs internship",
-    type: "Experience",
-    status: "Pending",
-  },
-  {
-    id: "ev-3",
-    name: "Project portfolio",
-    type: "Portfolio",
-    status: "Verified",
-  },
-];
-
-function FieldRow({
+function LabeledInput({
+  id,
   label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        {label}
-      </small>
-      {children}
-    </div>
-  );
-}
-
-function Input({
   value,
   onChange,
   placeholder,
 }: {
+  id: string;
+  label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
 }) {
   return (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
-    />
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="block text-xs font-medium text-muted-foreground">
+        {label}
+      </label>
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
+    </div>
   );
 }
 
-function Textarea({
+function LabeledTextarea({
+  id,
+  label,
   value,
   onChange,
   placeholder,
   rows = 3,
 }: {
+  id: string;
+  label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   rows?: number;
 }) {
   return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      className="w-full resize-none rounded-md border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
-    />
-  );
-}
-
-function EmptyState({
-  icon: Icon,
-  title,
-  description,
-  action,
-}: {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  action: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-10 text-center">
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-        <Icon className="h-5 w-5 text-primary" aria-hidden />
-      </div>
-      <div>
-        <p className="text-sm font-medium">{title}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
-      </div>
-      {action}
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="block text-xs font-medium text-muted-foreground">
+        {label}
+      </label>
+      <Textarea
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={rows}
+        className="resize-none"
+      />
     </div>
   );
 }
 
-function EditableItem({
-  onEdit,
+/** A list item with real inline editing: Edit swaps the view for a draft
+ *  form; Save commits to parent state, Cancel discards. New items mount in
+ *  editing mode via `startEditing`. */
+function EditableItem<T extends { id: string }>({
+  item,
+  startEditing = false,
+  onSave,
   onDelete,
-  children,
   label,
+  renderView,
+  renderForm,
 }: {
-  onEdit: () => void;
+  item: T;
+  startEditing?: boolean;
+  onSave: (draft: T) => void;
   onDelete: () => void;
-  children: React.ReactNode;
   label: string;
+  renderView: (item: T) => React.ReactNode;
+  renderForm: (draft: T, setDraft: (d: T) => void) => React.ReactNode;
 }) {
+  const [editing, setEditing] = useState(startEditing);
+  const [draft, setDraft] = useState<T>(item);
+
+  const startEdit = () => {
+    setDraft(item);
+    setEditing(true);
+  };
+  const cancel = () => setEditing(false);
+  const save = () => {
+    onSave(draft);
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <div className="rounded-lg border border-primary/30 bg-card p-4">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {renderForm(draft, setDraft)}
+        </div>
+        <div className="mt-4 flex items-center justify-end gap-2">
+          <Button variant="outline" size="sm" onClick={cancel}>
+            <X aria-hidden />
+            Cancel
+          </Button>
+          <Button size="sm" onClick={save}>
+            <Check aria-hidden />
+            Save
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="group relative rounded-lg border bg-card p-4">
       <div
@@ -240,7 +229,7 @@ function EditableItem({
         <Button
           size="sm"
           variant="outline"
-          onClick={onEdit}
+          onClick={startEdit}
           className="h-8 gap-1.5 px-2 text-xs"
           aria-label={`Edit ${label}`}
         >
@@ -258,7 +247,7 @@ function EditableItem({
           Remove
         </Button>
       </div>
-      <div className="sm:pr-32">{children}</div>
+      <div className="sm:pr-32">{renderView(item)}</div>
     </div>
   );
 }
@@ -273,19 +262,19 @@ export function ProfileOverview() {
   const [education, setEducation] = useState<Education[]>(INITIAL_EDUCATION);
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [evidence, setEvidence] = useState<Evidence[]>(INITIAL_EVIDENCE);
+  /** Ids of evidence items going through the simulated verification flow. */
+  const [verifyingIds, setVerifyingIds] = useState<string[]>([]);
+  /** Ids of freshly added items — they mount in editing mode, once. */
+  const [freshIds, setFreshIds] = useState<string[]>([]);
 
-  const totalSections = 6;
-  const done = useMemo(() => {
-    let d = 2; // profile basics + skills always present
-    if (experience.length > 0) d++;
-    if (education.length > 0) d++;
-    if (projects.length > 0) d++;
-    if (evidence.some((e) => e.status === "Verified")) d++;
-    return Math.min(d, totalSections);
-  }, [experience.length, education.length, projects.length, evidence]);
-  const pct = Math.round((done / totalSections) * 100);
+  const completion = getProfileCompletion({
+    skills,
+    experience,
+    education,
+    projects,
+    evidence,
+  });
 
-  // Add handlers
   const addSkill = () => {
     const v = newSkill.trim();
     if (!v) return;
@@ -299,41 +288,28 @@ export function ProfileOverview() {
 
   const addExperience = () => {
     const id = `exp-${Date.now()}`;
+    setFreshIds((f) => [...f, id]);
     setExperience((e) => [
       ...e,
-      {
-        id,
-        company: "New company",
-        role: "New role",
-        period: "Year–Year",
-        description: "Describe the work you did here.",
-      },
+      { id, company: "", role: "", period: "", description: "" },
     ]);
   };
 
   const addEducation = () => {
     const id = `edu-${Date.now()}`;
+    setFreshIds((f) => [...f, id]);
     setEducation((e) => [
       ...e,
-      {
-        id,
-        institution: "New institution",
-        qualification: "Degree or program",
-        period: "Year–Year",
-      },
+      { id, institution: "", qualification: "", period: "" },
     ]);
   };
 
   const addProject = () => {
     const id = `prj-${Date.now()}`;
+    setFreshIds((f) => [...f, id]);
     setProjects((p) => [
       ...p,
-      {
-        id,
-        name: "New project",
-        description: "What is it and what did you build?",
-        skills: [],
-      },
+      { id, name: "", description: "", skills: [] },
     ]);
   };
 
@@ -345,22 +321,19 @@ export function ProfileOverview() {
     ]);
   };
 
-  const toggleEvidenceStatus = (id: string) => {
+  // Demo only: simulates the institution verifying the credential — the item
+  // flips to Pending with a spinner, then to Verified after a short delay.
+  const requestVerification = (id: string) => {
     setEvidence((ev) =>
-      ev.map((e) =>
-        e.id === id
-          ? {
-              ...e,
-              status:
-                e.status === "Not started"
-                  ? "Pending"
-                  : e.status === "Pending"
-                    ? "Verified"
-                    : "Not started",
-            }
-          : e
-      )
+      ev.map((e) => (e.id === id ? { ...e, status: "Pending" } : e))
     );
+    setVerifyingIds((ids) => [...ids, id]);
+    window.setTimeout(() => {
+      setEvidence((ev) =>
+        ev.map((e) => (e.id === id ? { ...e, status: "Verified" } : e))
+      );
+      setVerifyingIds((ids) => ids.filter((x) => x !== id));
+    }, 2500);
   };
 
   const saveProfile = () => {
@@ -387,7 +360,7 @@ export function ProfileOverview() {
             capabilities and evidence.
           </p>
         </div>
-        <Badge variant="secondary">{pct}% complete</Badge>
+        <Badge variant="secondary">{completion.pct}% complete</Badge>
       </header>
 
       {/* Profile card */}
@@ -410,17 +383,17 @@ export function ProfileOverview() {
                 setEditingProfile(true);
               }}
             >
-              <Pencil />
+              <Pencil aria-hidden />
               Edit
             </Button>
           ) : (
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={cancelProfile}>
-                <X />
+                <X aria-hidden />
                 Cancel
               </Button>
               <Button size="sm" onClick={saveProfile}>
-                <Check />
+                <Check aria-hidden />
                 Save
               </Button>
             </div>
@@ -429,62 +402,62 @@ export function ProfileOverview() {
         <CardContent className="space-y-4">
           {editingProfile ? (
             <div className="grid gap-4 sm:grid-cols-2">
-              <FieldRow label="Full name">
-                <Input
-                  value={draft.name}
-                  onChange={(v) => setDraft({ ...draft, name: v })}
-                />
-              </FieldRow>
-              <FieldRow label="Title">
-                <Input
-                  value={draft.title}
-                  onChange={(v) => setDraft({ ...draft, title: v })}
-                />
-              </FieldRow>
-              <FieldRow label="Location">
-                <Input
-                  value={draft.location}
-                  onChange={(v) => setDraft({ ...draft, location: v })}
-                />
-              </FieldRow>
-              <FieldRow label="Email">
-                <Input
-                  value={draft.email}
-                  onChange={(v) => setDraft({ ...draft, email: v })}
-                />
-              </FieldRow>
-              <FieldRow label="Phone">
-                <Input
-                  value={draft.phone}
-                  onChange={(v) => setDraft({ ...draft, phone: v })}
-                />
-              </FieldRow>
+              <LabeledInput
+                id="profile-name"
+                label="Full name"
+                value={draft.name}
+                onChange={(v) => setDraft({ ...draft, name: v })}
+              />
+              <LabeledInput
+                id="profile-title"
+                label="Title"
+                value={draft.title}
+                onChange={(v) => setDraft({ ...draft, title: v })}
+              />
+              <LabeledInput
+                id="profile-location"
+                label="Location"
+                value={draft.location}
+                onChange={(v) => setDraft({ ...draft, location: v })}
+              />
+              <LabeledInput
+                id="profile-email"
+                label="Email"
+                value={draft.email}
+                onChange={(v) => setDraft({ ...draft, email: v })}
+              />
+              <LabeledInput
+                id="profile-phone"
+                label="Phone"
+                value={draft.phone}
+                onChange={(v) => setDraft({ ...draft, phone: v })}
+              />
               <div className="sm:col-span-2">
-                <FieldRow label="Summary">
-                  <Textarea
-                    value={draft.summary}
-                    onChange={(v) => setDraft({ ...draft, summary: v })}
-                    rows={3}
-                  />
-                </FieldRow>
+                <LabeledTextarea
+                  id="profile-summary"
+                  label="Summary"
+                  value={draft.summary}
+                  onChange={(v) => setDraft({ ...draft, summary: v })}
+                  rows={3}
+                />
               </div>
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <small className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Name
                 </small>
                 <p className="mt-1 text-sm font-medium">{profile.name}</p>
               </div>
               <div>
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <small className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Title
                 </small>
                 <p className="mt-1 text-sm font-medium">{profile.title}</p>
               </div>
               <div>
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <small className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Location
                 </small>
                 <p className="mt-1 flex items-center gap-1.5 text-sm font-medium">
@@ -493,7 +466,7 @@ export function ProfileOverview() {
                 </p>
               </div>
               <div>
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <small className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Contact
                 </small>
                 <p className="mt-1 flex items-center gap-1.5 text-sm">
@@ -506,7 +479,7 @@ export function ProfileOverview() {
                 </p>
               </div>
               <div className="sm:col-span-2">
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <small className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Summary
                 </small>
                 <p className="mt-1 text-sm">{profile.summary}</p>
@@ -537,7 +510,7 @@ export function ProfileOverview() {
                 </CardDescription>
               </div>
               <Button size="sm" onClick={addExperience}>
-                <Plus />
+                <Plus aria-hidden />
                 Add
               </Button>
             </CardHeader>
@@ -549,7 +522,7 @@ export function ProfileOverview() {
                   description="Add a role to power matching for relevant jobs."
                   action={
                     <Button size="sm" onClick={addExperience}>
-                      <Plus />
+                      <Plus aria-hidden />
                       Add experience
                     </Button>
                   }
@@ -558,22 +531,65 @@ export function ProfileOverview() {
                 experience.map((item) => (
                   <EditableItem
                     key={item.id}
-                    label={`${item.role} at ${item.company}`}
-                    onEdit={() => {
-                      /* prototype: stay read-only in this build */
+                    item={item}
+                    startEditing={freshIds.includes(item.id)}
+                    label={item.role || "New role"}
+                    onSave={(d) => {
+                      setExperience((e) =>
+                        e.map((x) => (x.id === d.id ? d : x))
+                      );
+                      setFreshIds((f) => f.filter((x) => x !== d.id));
                     }}
                     onDelete={() =>
                       setExperience((e) => e.filter((x) => x.id !== item.id))
                     }
-                  >
-                    <p className="text-sm font-semibold">{item.role}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.company} · {item.period}
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {item.description}
-                    </p>
-                  </EditableItem>
+                    renderView={(x) => (
+                      <>
+                        <p className="text-sm font-semibold">{x.role}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {x.company} · {x.period}
+                        </p>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {x.description}
+                        </p>
+                      </>
+                    )}
+                    renderForm={(d, setD) => (
+                      <>
+                        <LabeledInput
+                          id={`${d.id}-role`}
+                          label="Role"
+                          value={d.role}
+                          onChange={(v) => setD({ ...d, role: v })}
+                          placeholder="Frontend Developer Intern"
+                        />
+                        <LabeledInput
+                          id={`${d.id}-company`}
+                          label="Company"
+                          value={d.company}
+                          onChange={(v) => setD({ ...d, company: v })}
+                          placeholder="Northstar Labs"
+                        />
+                        <LabeledInput
+                          id={`${d.id}-period`}
+                          label="Period"
+                          value={d.period}
+                          onChange={(v) => setD({ ...d, period: v })}
+                          placeholder="Jan–Jun 2024"
+                        />
+                        <div className="sm:col-span-2">
+                          <LabeledTextarea
+                            id={`${d.id}-description`}
+                            label="What you did"
+                            value={d.description}
+                            onChange={(v) => setD({ ...d, description: v })}
+                            placeholder="Built reusable product interfaces…"
+                            rows={2}
+                          />
+                        </div>
+                      </>
+                    )}
+                  />
                 ))
               )}
             </CardContent>
@@ -591,7 +607,7 @@ export function ProfileOverview() {
                 </CardDescription>
               </div>
               <Button size="sm" onClick={addEducation}>
-                <Plus />
+                <Plus aria-hidden />
                 Add
               </Button>
             </CardHeader>
@@ -603,7 +619,7 @@ export function ProfileOverview() {
                   description="Degrees unlock higher match scores."
                   action={
                     <Button size="sm" onClick={addEducation}>
-                      <Plus />
+                      <Plus aria-hidden />
                       Add education
                     </Button>
                   }
@@ -612,19 +628,52 @@ export function ProfileOverview() {
                 education.map((item) => (
                   <EditableItem
                     key={item.id}
-                    label={`${item.qualification} at ${item.institution}`}
-                    onEdit={() => {
-                      /* prototype */
+                    item={item}
+                    startEditing={freshIds.includes(item.id)}
+                    label={item.qualification || "New qualification"}
+                    onSave={(d) => {
+                      setEducation((e) =>
+                        e.map((x) => (x.id === d.id ? d : x))
+                      );
+                      setFreshIds((f) => f.filter((x) => x !== d.id));
                     }}
                     onDelete={() =>
                       setEducation((e) => e.filter((x) => x.id !== item.id))
                     }
-                  >
-                    <p className="text-sm font-semibold">{item.qualification}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.institution} · {item.period}
-                    </p>
-                  </EditableItem>
+                    renderView={(x) => (
+                      <>
+                        <p className="text-sm font-semibold">{x.qualification}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {x.institution} · {x.period}
+                        </p>
+                      </>
+                    )}
+                    renderForm={(d, setD) => (
+                      <>
+                        <LabeledInput
+                          id={`${d.id}-qualification`}
+                          label="Qualification"
+                          value={d.qualification}
+                          onChange={(v) => setD({ ...d, qualification: v })}
+                          placeholder="BSc Computer Science"
+                        />
+                        <LabeledInput
+                          id={`${d.id}-institution`}
+                          label="Institution"
+                          value={d.institution}
+                          onChange={(v) => setD({ ...d, institution: v })}
+                          placeholder="University of Malaya"
+                        />
+                        <LabeledInput
+                          id={`${d.id}-period`}
+                          label="Period"
+                          value={d.period}
+                          onChange={(v) => setD({ ...d, period: v })}
+                          placeholder="2020–2024"
+                        />
+                      </>
+                    )}
+                  />
                 ))
               )}
             </CardContent>
@@ -642,7 +691,7 @@ export function ProfileOverview() {
                 </CardDescription>
               </div>
               <Button size="sm" onClick={addProject}>
-                <Plus />
+                <Plus aria-hidden />
                 Add
               </Button>
             </CardHeader>
@@ -654,7 +703,7 @@ export function ProfileOverview() {
                   description="Portfolios boost match scores by ~12%."
                   action={
                     <Button size="sm" onClick={addProject}>
-                      <Plus />
+                      <Plus aria-hidden />
                       Add a project
                     </Button>
                   }
@@ -663,28 +712,72 @@ export function ProfileOverview() {
                 projects.map((item) => (
                   <EditableItem
                     key={item.id}
-                    label={item.name}
-                    onEdit={() => {
-                      /* prototype */
+                    item={item}
+                    startEditing={freshIds.includes(item.id)}
+                    label={item.name || "New project"}
+                    onSave={(d) => {
+                      setProjects((p) =>
+                        p.map((x) => (x.id === d.id ? d : x))
+                      );
+                      setFreshIds((f) => f.filter((x) => x !== d.id));
                     }}
                     onDelete={() =>
                       setProjects((p) => p.filter((x) => x.id !== item.id))
                     }
-                  >
-                    <p className="text-sm font-semibold">{item.name}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {item.description}
-                    </p>
-                    {item.skills.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {item.skills.map((s) => (
-                          <Badge key={s} variant="outline">
-                            {s}
-                          </Badge>
-                        ))}
-                      </div>
+                    renderView={(x) => (
+                      <>
+                        <p className="text-sm font-semibold">{x.name}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {x.description}
+                        </p>
+                        {x.skills.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {x.skills.map((s) => (
+                              <Badge key={s} variant="outline">
+                                {s}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     )}
-                  </EditableItem>
+                    renderForm={(d, setD) => (
+                      <>
+                        <LabeledInput
+                          id={`${d.id}-name`}
+                          label="Project name"
+                          value={d.name}
+                          onChange={(v) => setD({ ...d, name: v })}
+                          placeholder="Community Skills Exchange"
+                        />
+                        <LabeledInput
+                          id={`${d.id}-skills`}
+                          label="Skills used (comma separated)"
+                          value={d.skills.join(", ")}
+                          onChange={(v) =>
+                            setD({
+                              ...d,
+                              skills: v
+                                .split(",")
+                                .map((s) => s.trim())
+                                .filter(Boolean),
+                            })
+                          }
+                          placeholder="Next.js, TypeScript"
+                        />
+                        <div className="sm:col-span-2">
+                          <LabeledTextarea
+                            id={`${d.id}-description`}
+                            label="What is it?"
+                            value={d.description}
+                            onChange={(v) => setD({ ...d, description: v })}
+                            placeholder="A responsive platform that connects mentors…"
+                            rows={2}
+                          />
+                        </div>
+                      </>
+                    )}
+                  />
                 ))
               )}
             </CardContent>
@@ -722,7 +815,7 @@ export function ProfileOverview() {
                       aria-label={`Remove ${skill}`}
                       className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-foreground/20"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-3 w-3" aria-hidden />
                     </button>
                   </Badge>
                 ))}
@@ -735,8 +828,11 @@ export function ProfileOverview() {
 
               {/* Add skill form */}
               <div className="flex flex-col gap-2 sm:flex-row">
-                <input
-                  type="text"
+                <label htmlFor="new-skill" className="sr-only">
+                  Add a skill
+                </label>
+                <Input
+                  id="new-skill"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyDown={(e) => {
@@ -746,10 +842,9 @@ export function ProfileOverview() {
                     }
                   }}
                   placeholder="Add a skill (e.g. TypeScript)"
-                  className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
                 <Button onClick={addSkill}>
-                  <Plus />
+                  <Plus aria-hidden />
                   Add skill
                 </Button>
               </div>
@@ -766,12 +861,12 @@ export function ProfileOverview() {
                   <h2>Verification and supporting evidence</h2>
                 </CardTitle>
                 <CardDescription>
-                  Click a status badge to cycle through Not started → Pending
-                  → Verified.
+                  Request verification for a credential — your institution
+                  confirms it, usually within a day.
                 </CardDescription>
               </div>
               <Button size="sm" onClick={addEvidence}>
-                <Plus />
+                <Plus aria-hidden />
                 Add
               </Button>
             </CardHeader>
@@ -783,57 +878,68 @@ export function ProfileOverview() {
                   description="Issued credentials strengthen your match score."
                   action={
                     <Button size="sm" onClick={addEvidence}>
-                      <Plus />
+                      <Plus aria-hidden />
                       Add evidence
                     </Button>
                   }
                 />
               ) : (
-                evidence.map((item) => (
-                  <div
-                    key={item.id}
-                    className="group flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">{item.type}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleEvidenceStatus(item.id)}
-                      aria-label={`Status: ${item.status}. Click to change.`}
-                      className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                evidence.map((item) => {
+                  const tone = VERIFICATION_TONE[item.status];
+                  const ToneIcon = tone.icon;
+                  const verifying = verifyingIds.includes(item.id);
+                  return (
+                    <div
+                      key={item.id}
+                      className="group flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3"
                     >
-                      {(() => {
-                        const tone = VERIFICATION_TONE[item.status];
-                        const ToneIcon = tone.icon;
-                        return (
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{item.name}</p>
+                        <p className="text-xs text-muted-foreground">{item.type}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {verifying ? (
+                          <Badge variant="warning" className="gap-1">
+                            <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
+                            Verifying…
+                          </Badge>
+                        ) : (
                           <Badge
                             variant={tone.variant}
                             className={cn(
-                              "cursor-pointer gap-1",
+                              "gap-1",
                               item.status === "Not started" && "opacity-60"
                             )}
                           >
                             <ToneIcon className="h-3 w-3" aria-hidden />
                             {tone.label}
                           </Badge>
-                        );
-                      })()}
-                    </button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 text-destructive opacity-0 transition-opacity group-hover:opacity-100"
-                      aria-label="Delete evidence"
-                      onClick={() =>
-                        setEvidence((ev) => ev.filter((x) => x.id !== item.id))
-                      }
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                ))
+                        )}
+                        {item.status === "Not started" && !verifying && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => requestVerification(item.id)}
+                            aria-label={`Request verification for ${item.name}`}
+                          >
+                            Request verification
+                          </Button>
+                        )}
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 text-destructive opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
+                          aria-label={`Delete ${item.name}`}
+                          onClick={() =>
+                            setEvidence((ev) => ev.filter((x) => x.id !== item.id))
+                          }
+                        >
+                          <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </CardContent>
           </Card>

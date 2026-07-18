@@ -7,95 +7,22 @@ import {
   Briefcase,
   Building2,
   CalendarClock,
-  Check,
-  Circle,
   Filter,
   Search,
   Sparkles,
-  TrendingUp,
 } from "lucide-react";
 
 import { applications } from "@/data/applications";
-import type { Application } from "@/types/candidate";
+import { ApplicationProgress } from "@/components/common/application-progress";
 import { ApplicationStatusBadge } from "@/components/common/application-status-badge";
 import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-
-function ApplicationProgress({ application }: { application: Application }) {
-  const completed = application.timeline.filter((t) => t.complete).length;
-  const total = application.timeline.length;
-  const pct = Math.round((completed / total) * 100);
-  const currentIndex = application.timeline.findIndex((t) => !t.complete);
-  const hasActive = currentIndex >= 0;
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">
-          {completed} of {total} stages
-          {hasActive && (
-            <>
-              {" · "}
-              <span className="font-medium text-primary">
-                Stage {currentIndex + 1} active
-              </span>
-            </>
-          )}
-        </span>
-        <span className="font-semibold tabular-nums">{pct}%</span>
-      </div>
-      <div className="flex items-center gap-1">
-        {application.timeline.map((step, i) => {
-          const isComplete = step.complete;
-          const isCurrent = i === currentIndex;
-          return (
-            <div
-              key={i}
-              className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-muted"
-              aria-label={
-                isComplete
-                  ? `${step.label} complete`
-                  : isCurrent
-                    ? `${step.label} in progress`
-                    : `${step.label} upcoming`
-              }
-            >
-              {isComplete && (
-                <span
-                  className={cn(
-                    "absolute inset-y-0 left-0 w-full rounded-full bg-primary",
-                    i <= completed && "animate-progress-x"
-                  )}
-                  style={
-                    i > completed
-                      ? { width: 0 }
-                      : { animationDelay: `${i * 80}ms` }
-                  }
-                />
-              )}
-              {isCurrent && (
-                <>
-                  <span className="absolute inset-y-0 left-0 w-full rounded-full bg-primary/30" />
-                  <span className="animate-shimmer-bar pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-background/60 to-transparent" />
-                </>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export function ApplicationTracker() {
   const [tab, setTab] = useState<"active" | "all">("active");
@@ -155,24 +82,21 @@ export function ApplicationTracker() {
             label: "Active",
             value: stats.active,
             icon: Briefcase,
-            tone: "secondary" as const,
           },
           {
             label: "Interviews",
             value: stats.interviews,
             icon: CalendarClock,
-            tone: "secondary" as const,
           },
           {
             label: "Offers",
             value: stats.offers,
             icon: Sparkles,
-            tone: "default" as const,
           },
         ].map((s) => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="lift-on-hover">
+            <Card key={s.label}>
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" aria-hidden />

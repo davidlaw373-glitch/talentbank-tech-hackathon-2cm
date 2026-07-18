@@ -133,7 +133,7 @@ export function CoverPathFinder() {
                       className={cn(
                         "flex h-10 w-10 shrink-0 items-center justify-center rounded-md",
                         active
-                          ? "bg-foreground text-background"
+                          ? "bg-primary text-primary-foreground"
                           : "bg-muted text-foreground"
                       )}
                     >
@@ -141,7 +141,7 @@ export function CoverPathFinder() {
                     </div>
                     <div className="flex-1 text-left">
                       <p
-                        className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                        className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
                         aria-hidden
                       >
                         {path.nickname}
@@ -195,7 +195,7 @@ export function CoverPathFinder() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                     <div className="flex-1 rounded-lg border bg-background p-4">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         You are here
                       </p>
                       <p className="mt-1.5 text-sm font-medium sm:text-base">
@@ -231,8 +231,8 @@ export function CoverPathFinder() {
                         />
                       </svg>
                     </div>
-                    <div className="flex-1 rounded-lg border bg-foreground p-4 text-background">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">
+                    <div className="flex-1 rounded-lg border bg-primary p-4 text-primary-foreground">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-70">
                         Next step
                       </p>
                       <p className="mt-1.5 text-sm font-medium sm:text-base">
@@ -259,7 +259,7 @@ export function CoverPathFinder() {
                 {/* Metrics row */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg border bg-background p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       Estimated time
                     </p>
                     <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums">
@@ -267,7 +267,7 @@ export function CoverPathFinder() {
                     </p>
                   </div>
                   <div className="rounded-lg border bg-background p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       AI match for you
                     </p>
                     <div className="mt-1.5 flex items-baseline gap-1">
@@ -278,7 +278,7 @@ export function CoverPathFinder() {
                     </div>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full bg-foreground/80 animate-progress"
+                        className="h-full rounded-full bg-primary animate-progress"
                         style={{ width: `${selected.match}%` }}
                       />
                     </div>
@@ -287,7 +287,7 @@ export function CoverPathFinder() {
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <Button asChild>
-                    <Link href="#start">
+                    <Link href="/register">
                       Get my full roadmap
                       <ArrowRight />
                     </Link>

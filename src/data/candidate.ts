@@ -9,8 +9,6 @@ export const candidateProfile: CandidateProfile = {
   phone: "+60 12 345 6789",
   summary:
     "Product-minded frontend developer who enjoys turning complex workflows into accessible, dependable experiences.",
-  profileCompletion: 82,
-  verificationStatus: "Pending",
   skills: ["TypeScript", "React", "Next.js", "Accessibility", "Product discovery"],
   education: [
     {
@@ -27,25 +25,9 @@ export const candidateProfile: CandidateProfile = {
       description: "Built reusable product interfaces and improved core accessibility checks.",
     },
   ],
-  projects: [
-    {
-      name: "Community Skills Exchange",
-      description: "A responsive platform that connects mentors with early-career learners.",
-      skills: ["Next.js", "TypeScript", "User research"],
-    },
-  ],
+  projects: [],
   evidence: [
     { name: "Computer Science degree", type: "Education", status: "Verified" },
     { name: "Northstar Labs internship", type: "Experience", status: "Pending" },
-    { name: "Project portfolio", type: "Portfolio", status: "Verified" },
   ],
 };
-
-export const recentActivity = [
-  { message: "Profile summary updated", timestamp: "Just now" },
-  { message: "Frontend Developer role saved", timestamp: "Yesterday" },
-  {
-    message: "Application moved to interview review",
-    timestamp: "2 days ago",
-  },
-];

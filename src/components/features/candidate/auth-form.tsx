@@ -78,6 +78,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const registering = mode === "register";
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResetNote, setShowResetNote] = useState(false);
 
   // Demo only: no real authentication or data is saved — this just simulates
   // the interaction so the flow feels responsive before navigating.
@@ -137,9 +138,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                   : "Log in to continue your CareerOS journey."}
               </CardDescription>
             </div>
-            <Badge variant="secondary">
-              {registering ? "Candidate" : "Login"}
-            </Badge>
+            <Badge variant="secondary">Candidate</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -169,22 +168,25 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               registering ? "new-password" : "current-password"
             }
           />
-          {registering && (
-            <Field
-              id="goal"
-              label="Career goal"
-              placeholder="e.g. Find my first product role"
-              helper="We'll use this to personalize your matches."
-            />
-          )}
           {!registering && (
-            <div className="flex justify-end">
-              <Link
-                href="#"
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Forgot password?
-              </Link>
+            <div className="space-y-2">
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowResetNote((v) => !v)}
+                  aria-expanded={showResetNote}
+                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Forgot password?
+                </button>
+              </div>
+              {showResetNote && (
+                <p className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
+                  This demo build skips password reset — just hit{" "}
+                  <span className="font-medium text-foreground">Log in</span>{" "}
+                  to explore the candidate experience.
+                </p>
+              )}
             </div>
           )}
         </CardContent>

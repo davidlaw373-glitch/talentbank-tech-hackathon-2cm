@@ -128,13 +128,13 @@ export function ApplicationDetails({ application }: { application: Application }
 
             <div className="grid grid-cols-1 gap-3 border-t pt-4 sm:grid-cols-3">
               <div className="rounded-lg border bg-muted/30 p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Status
                 </p>
                 <p className="mt-1 text-sm font-medium">{application.status}</p>
               </div>
               <div className="rounded-lg border bg-muted/30 p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Applied
                 </p>
                 <p className="mt-1 text-sm font-medium">
@@ -142,7 +142,7 @@ export function ApplicationDetails({ application }: { application: Application }
                 </p>
               </div>
               <div className="rounded-lg border bg-muted/30 p-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Progress
                 </p>
                 <p className="mt-1 text-sm font-medium tabular-nums">
@@ -202,11 +202,11 @@ export function ApplicationDetails({ application }: { application: Application }
                   >
                     <span
                       className={cn(
-                        "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold",
+                        "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold",
                         step.complete &&
                           "bg-primary text-primary-foreground",
                         isCurrent &&
-                          "border-2 border-primary bg-background text-primary animate-pulse-soft",
+                          "border-2 border-primary bg-background text-primary",
                         !step.complete &&
                           !isCurrent &&
                           "border border-border bg-background text-muted-foreground"

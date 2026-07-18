@@ -11,6 +11,10 @@ import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { Section } from "@/components/common/section";
 import { TiltCard } from "@/components/common/tilt-card";
+import {
+  WaitlistDialog,
+  type WaitlistAudience,
+} from "@/components/common/waitlist-dialog";
 import { Button } from "@/components/ui/button";
 
 type Path = {
@@ -19,7 +23,9 @@ type Path = {
   title: string;
   description: string;
   cta: string;
-  href: string;
+  /** Candidate path links straight to registration; others join a waitlist. */
+  href?: string;
+  waitlist?: WaitlistAudience;
 };
 
 const PATHS: Path[] = [
@@ -39,7 +45,7 @@ const PATHS: Path[] = [
     description:
       "Post a role, see ranked candidates with AI summaries, and run interviews with a shared scorecard.",
     cta: "Post a job",
-    href: "#roles",
+    waitlist: "employer",
   },
   {
     id: "university",
@@ -48,7 +54,7 @@ const PATHS: Path[] = [
     description:
       "Issue verified credentials to students, see where they land after graduation, and update courses to match hiring demand.",
     cta: "Partner with us",
-    href: "#get-started",
+    waitlist: "university",
   },
 ];
 
@@ -87,8 +93,8 @@ export function CoverCta() {
             return (
               <ScrollReveal key={path.id} delay={i * 100}>
                 <TiltCard className="h-full">
-                  <div className="lift-on-hover group flex h-full flex-col items-start gap-5 rounded-2xl border bg-card p-6 text-left text-card-foreground sm:p-8">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-foreground text-background transition-transform group-hover:scale-110">
+                  <div className="group flex h-full flex-col items-start gap-5 rounded-2xl border bg-card p-6 text-left text-card-foreground sm:p-8">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-transform group-hover:scale-110">
                       <Icon className="h-6 w-6" />
                     </div>
                     <div className="flex-1">
@@ -99,16 +105,28 @@ export function CoverCta() {
                         {path.description}
                       </p>
                     </div>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full justify-between"
-                    >
-                      <Link href={path.href}>
-                        {path.cta}
-                        <ArrowRight className="transition-transform group-hover:translate-x-1" />
-                      </Link>
-                    </Button>
+                    {path.href ? (
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="w-full justify-between"
+                      >
+                        <Link href={path.href}>
+                          {path.cta}
+                          <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                        </Link>
+                      </Button>
+                    ) : (
+                      <WaitlistDialog audience={path.waitlist ?? "employer"}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between"
+                        >
+                          {path.cta}
+                          <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                        </Button>
+                      </WaitlistDialog>
+                    )}
                   </div>
                 </TiltCard>
               </ScrollReveal>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 
 import { Stepper, type StepperStep } from "@/components/common/stepper";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { candidateProfile } from "@/data/candidate";
-import type { Job } from "@/types/candidate";
 import { MatchBadge } from "@/components/common/match-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,18 @@ const STEPS: StepperStep[] = [
   { id: "submit", label: "Submit" },
 ];
 
+// Demo AI suggestions — a real build would generate these from the profile
+// and the job description. Tailored per question, written in the
+// candidate's voice.
+const AI_SUGGESTIONS = {
+  interest:
+    "I'm excited about this role because it combines accessible product work with a collaborative team culture. My experience building responsive interfaces with React and TypeScript maps directly to what you're building, and the hybrid setup in Kuala Lumpur fits how I do my best work.",
+  example:
+    "I recently built a responsive community platform with Next.js and TypeScript, focusing on accessibility and clear user flows. I owned the component library, raised our Lighthouse accessibility score to 100, and shipped weekly with a small cross-functional team.",
+} as const;
+
+type AnswerField = keyof typeof AI_SUGGESTIONS;
+
 export function JobApplicationForm({
   job,
 }: {
@@ -46,8 +58,46 @@ export function JobApplicationForm({
   };
 }) {
   const router = useRouter();
+  const reducedMotion = useReducedMotion();
   const [stepIndex, setStepIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<AnswerField, string>>({
+    interest: "",
+    example: "",
+  });
+  const [generating, setGenerating] = useState<AnswerField | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const submitted = stepIndex === STEPS.length;
+
+  // Clear any in-flight typewriter interval on unmount.
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) window.clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  // Demo "AI generation" — types the suggestion into the field character by
+  // character (instantly when reduced motion is preferred).
+  const generateAnswer = (field: AnswerField) => {
+    if (generating) return;
+    const text = AI_SUGGESTIONS[field];
+    if (reducedMotion) {
+      setAnswers((a) => ({ ...a, [field]: text }));
+      return;
+    }
+    setGenerating(field);
+    setAnswers((a) => ({ ...a, [field]: "" }));
+    let i = 0;
+    intervalRef.current = window.setInterval(() => {
+      i += 3;
+      const next = text.slice(0, i);
+      setAnswers((a) => ({ ...a, [field]: next }));
+      if (i >= text.length) {
+        if (intervalRef.current) window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        setGenerating(null);
+      }
+    }, 18);
+  };
 
   const handleNext = (e?: FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
@@ -95,25 +145,34 @@ export function JobApplicationForm({
     );
   }
 
+  const answerFields: {
+    id: AnswerField;
+    label: string;
+    placeholder: string;
+  }[] = [
+    {
+      id: "interest",
+      label: "Why are you interested in this role?",
+      placeholder: "Tell the hiring team what draws you to this role…",
+    },
+    {
+      id: "example",
+      label: "Share one relevant example",
+      placeholder: "A project, feature, or result you're proud of…",
+    },
+  ];
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Apply
-          </p>
-          <h1>Apply for this role</h1>
-          <p className="text-muted-foreground">
-            {job.title} at {job.company}
-          </p>
-        </div>
-        <Button asChild variant="ghost" size="sm" onClick={handleBack}>
-          <span>
-            <ArrowLeft />
-            {stepIndex === 0 ? "Back" : "Previous"}
-          </span>
-        </Button>
+      <header className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Apply
+        </p>
+        <h1>Apply for this role</h1>
+        <p className="text-muted-foreground">
+          {job.title} at {job.company}
+        </p>
       </header>
 
       {/* Stepper */}
@@ -158,7 +217,7 @@ export function JobApplicationForm({
                 </div>
               </div>
               <div className="rounded-lg border bg-muted/30 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Applicant
                 </p>
                 <h3 className="mt-1">{candidateProfile.name}</h3>
@@ -171,7 +230,7 @@ export function JobApplicationForm({
                     <Badge
                       key={skill}
                       variant="secondary"
-                      className="text-[10px]"
+                      className="text-[11px]"
                     >
                       {skill}
                     </Badge>
@@ -193,41 +252,47 @@ export function JobApplicationForm({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <div className="space-y-2">
-                <label
-                  htmlFor="interest"
-                  className="block text-sm font-medium text-foreground"
-                >
-                  Why are you interested in this role?
-                </label>
-                <Textarea
-                  id="interest"
-                  rows={4}
-                  defaultValue="I am excited to contribute my frontend experience while learning from a collaborative product team."
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="example"
-                  className="block text-sm font-medium text-foreground"
-                >
-                  Share one relevant example
-                </label>
-                <Textarea
-                  id="example"
-                  rows={4}
-                  defaultValue="I recently built a responsive community platform with Next.js and TypeScript, focusing on accessibility and clear user flows."
-                  required
-                />
-              </div>
+              {answerFields.map((field) => (
+                <div key={field.id} className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor={field.id}
+                      className="block text-sm font-medium text-foreground"
+                    >
+                      {field.label}
+                    </label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => generateAnswer(field.id)}
+                      disabled={generating !== null}
+                      aria-busy={generating === field.id}
+                      className="h-7 gap-1.5 px-2 text-xs"
+                    >
+                      <Sparkles className="h-3 w-3" aria-hidden />
+                      {generating === field.id ? "Writing…" : "Generate with AI"}
+                    </Button>
+                  </div>
+                  <Textarea
+                    id={field.id}
+                    rows={4}
+                    value={answers[field.id]}
+                    onChange={(e) =>
+                      setAnswers((a) => ({ ...a, [field.id]: e.target.value }))
+                    }
+                    placeholder={field.placeholder}
+                    required
+                  />
+                </div>
+              ))}
               <div className="flex items-start gap-2 rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
                 <Sparkles
                   className="mt-0.5 h-4 w-4 shrink-0 text-primary"
                   aria-hidden
                 />
-                AI suggestions are available for each question based on your
-                profile.
+                AI drafts from your verified profile — always review and edit
+                before sending.
               </div>
             </CardContent>
           </Card>
@@ -257,22 +322,30 @@ export function JobApplicationForm({
                     label: "Skills",
                     value: `${candidateProfile.skills.length} listed`,
                   },
-                  { label: "Why this role", value: "Your answer (filled)" },
-                  { label: "Example", value: "Your answer (filled)" },
+                  {
+                    label: "Why this role",
+                    value: answers.interest,
+                  },
+                  {
+                    label: "Example",
+                    value: answers.example,
+                  },
                 ].map((row) => (
                   <li
                     key={row.label}
-                    className="flex items-center justify-between rounded-lg border bg-muted/30 p-3"
+                    className="flex items-start justify-between gap-3 rounded-lg border bg-muted/30 p-3"
                   >
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         {row.label}
                       </p>
-                      <p className="mt-1 text-sm font-medium">{row.value}</p>
+                      <p className="mt-1 line-clamp-2 text-sm font-medium">
+                        {row.value}
+                      </p>
                     </div>
                     <Check
                       aria-hidden
-                      className="h-4 w-4 text-primary"
+                      className="mt-1 h-4 w-4 shrink-0 text-primary"
                     />
                   </li>
                 ))}
@@ -286,7 +359,7 @@ export function JobApplicationForm({
             <ArrowLeft />
             {stepIndex === 0 ? "Cancel" : "Back"}
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={generating !== null}>
             {stepIndex === STEPS.length - 1 ? "Submit application" : "Continue"}
             <ArrowRight />
           </Button>

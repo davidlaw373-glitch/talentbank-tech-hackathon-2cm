@@ -1,65 +1,79 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
 type CursorGlowProps = {
   className?: string;
 };
 
+/** Pointer-following ambient glow. The RAF loop only runs while the pointer
+ *  is moving and stops once the glow settles — never idle-spins. Disabled
+ *  entirely for touch pointers and reduced-motion users. */
 export function CursorGlow({ className }: CursorGlowProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [enabled, setEnabled] = useState(false);
-  const target = useRef({ x: 0, y: 0 });
-  const current = useRef({ x: 0, y: 0 });
-  const raf = useRef<number | null>(null);
+  const finePointer = useMediaQuery("(pointer: fine)");
+  const reducedMotion = useReducedMotion();
+  const enabled = finePointer && !reducedMotion;
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const fine =
-      typeof window.matchMedia === "function"
-        ? window.matchMedia("(pointer: fine)").matches
-        : true;
-    setEnabled(fine);
-    if (!fine) return;
-
+    if (!enabled) return;
     const node = ref.current;
     if (!node) return;
-    const rect = node.getBoundingClientRect();
-    current.current = { x: rect.width / 2, y: rect.height / 2 };
-    target.current = { x: rect.width / 2, y: rect.height / 2 };
 
-    const onMove = (e: MouseEvent) => {
-      if (!node) return;
-      const r = node.getBoundingClientRect();
-      target.current = { x: e.clientX - r.left, y: e.clientY - r.top };
-    };
+    const rect = node.getBoundingClientRect();
+    let cx = rect.width / 2;
+    let cy = rect.height / 2;
+    let tx = cx;
+    let ty = cy;
+    let raf: number | null = null;
 
     const tick = () => {
-      current.current.x += (target.current.x - current.current.x) * 0.15;
-      current.current.y += (target.current.y - current.current.y) * 0.15;
-      if (node) {
-        node.style.setProperty("--cx", `${current.current.x}px`);
-        node.style.setProperty("--cy", `${current.current.y}px`);
+      cx += (tx - cx) * 0.15;
+      cy += (ty - cy) * 0.15;
+      if (Math.abs(tx - cx) < 0.1 && Math.abs(ty - cy) < 0.1) {
+        // Settled — snap to target and stop the loop.
+        node.style.setProperty("--cx", `${tx}px`);
+        node.style.setProperty("--cy", `${ty}px`);
+        raf = null;
+        return;
       }
-      raf.current = requestAnimationFrame(tick);
+      node.style.setProperty("--cx", `${cx}px`);
+      node.style.setProperty("--cy", `${cy}px`);
+      raf = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (raf === null) raf = requestAnimationFrame(tick);
+    };
+
+    const onMove = (e: MouseEvent) => {
+      const r = node.getBoundingClientRect();
+      tx = e.clientX - r.left;
+      ty = e.clientY - r.top;
+      start();
     };
 
     const onLeave = () => {
-      target.current = { x: -9999, y: -9999 };
+      tx = -9999;
+      ty = -9999;
+      start();
     };
 
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseleave", onLeave);
-    raf.current = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
-      if (raf.current) cancelAnimationFrame(raf.current);
+      if (raf !== null) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
     <div
@@ -76,49 +90,45 @@ export function CursorGlow({ className }: CursorGlowProps) {
         } as React.CSSProperties
       }
     >
-      {enabled && (
-        <>
-          {/* Outer soft halo — sage */}
-          <div
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              left: "var(--cx)",
-              top: "var(--cy)",
-              width: 720,
-              height: 720,
-              background:
-                "radial-gradient(circle, rgba(163, 177, 138, 0.35) 0%, rgba(163, 177, 138, 0) 60%)",
-              filter: "blur(40px)",
-            }}
-          />
-          {/* Mid glow — deep green */}
-          <div
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              left: "var(--cx)",
-              top: "var(--cy)",
-              width: 420,
-              height: 420,
-              background:
-                "radial-gradient(circle, rgba(88, 129, 87, 0.55) 0%, rgba(88, 129, 87, 0) 65%)",
-              filter: "blur(20px)",
-            }}
-          />
-          {/* Bright core — forest */}
-          <div
-            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              left: "var(--cx)",
-              top: "var(--cy)",
-              width: 160,
-              height: 160,
-              background:
-                "radial-gradient(circle, rgba(58, 90, 64, 0.65) 0%, rgba(58, 90, 64, 0) 70%)",
-              filter: "blur(8px)",
-            }}
-          />
-        </>
-      )}
+      {/* Outer soft halo — sage */}
+      <div
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          left: "var(--cx)",
+          top: "var(--cy)",
+          width: 720,
+          height: 720,
+          background:
+            "radial-gradient(circle, rgba(163, 177, 138, 0.35) 0%, rgba(163, 177, 138, 0) 60%)",
+          filter: "blur(40px)",
+        }}
+      />
+      {/* Mid glow — deep green */}
+      <div
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          left: "var(--cx)",
+          top: "var(--cy)",
+          width: 420,
+          height: 420,
+          background:
+            "radial-gradient(circle, rgba(88, 129, 87, 0.55) 0%, rgba(88, 129, 87, 0) 65%)",
+          filter: "blur(20px)",
+        }}
+      />
+      {/* Bright core — forest */}
+      <div
+        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          left: "var(--cx)",
+          top: "var(--cy)",
+          width: 160,
+          height: 160,
+          background:
+            "radial-gradient(circle, rgba(58, 90, 64, 0.65) 0%, rgba(58, 90, 64, 0) 70%)",
+          filter: "blur(8px)",
+        }}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
 type AnimatedMarkProps = {
@@ -107,6 +108,8 @@ export function AnimatedMark({
 }: AnimatedMarkProps) {
   const ref = useRef<SVGSVGElement | null>(null);
   const [drawn, setDrawn] = useState(false);
+  // SMIL <animateMotion> isn't covered by CSS reduced-motion queries.
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (autoplay) {
@@ -261,15 +264,12 @@ export function AnimatedMark({
 
       {/* Data flow dots — travel along edges */}
       {drawn &&
+        !reducedMotion &&
         EDGES.map((edge, i) => (
           <circle
             key={`flow-${i}`}
             r="2.5"
             fill="currentColor"
-            className="animate-flow"
-            style={{
-              animationDelay: `${1.2 + i * 0.5}s`,
-            }}
           >
             <animateMotion
               dur="3s"
