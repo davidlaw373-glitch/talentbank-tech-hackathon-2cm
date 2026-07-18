@@ -1,5 +1,4 @@
 import { ScrollProgress } from "@/components/common/scroll-progress";
-import { SkipLink } from "@/components/common/skip-link";
 import { CoverCta } from "@/components/features/cover/cover-cta";
 import { CoverFeatures } from "@/components/features/cover/cover-features";
 import { CoverFooter } from "@/components/features/cover/cover-footer";
@@ -14,7 +13,6 @@ import { CoverRoles } from "@/components/features/cover/cover-roles";
 export default function Home() {
   return (
     <>
-      <SkipLink />
       <ScrollProgress />
       <CoverNav />
       <main id="main-content" tabIndex={-1}>

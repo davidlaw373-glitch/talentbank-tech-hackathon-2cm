@@ -180,17 +180,30 @@
  */
 [data-theme="hc"],
 [data-theme="hc"].dark {
+  /*
+   * HC mode is layered on top of .dark via theme-provider.tsx (it adds
+   * class="dark" alongside data-theme="hc"). Because .dark redefines
+   * tokens not present here, every color token from :root MUST be
+   * overridden in this block — otherwise hover/state surfaces bleed
+   * .dark's dark-green values through and become invisible (the user
+   * reported exactly this: black text on dark-green hover).
+   */
+
+  /* ── Surfaces ───────────────────────────────────────────────────────── */
   --background: #ffffff;
   --surface-1: #ffffff;
   --surface-2: #ffffff;
   --surface-3: #ffffff;
   --surface-inset: #ffffff;
+  --surface-tint: #f5f5f5;
 
+  /* ── Foreground text ───────────────────────────────────────────────── */
   --foreground: #000000;
   --text-secondary: #000000;
-  --text-muted: #000000;
+  --text-muted: #1a1a1a;
   --text-inverse: #ffffff;
 
+  /* ── Brand / action ────────────────────────────────────────────────── */
   --card: #ffffff;
   --card-foreground: #000000;
   --popover: #ffffff;
@@ -203,21 +216,54 @@
   --muted-foreground: #000000;
   --accent: #ffffff;
   --accent-foreground: #000000;
+  --accent-soft: #f5f5f5;
 
+  /* ── Highlight ──────────────────────────────────────────────────────── */
+  --highlight: #000000;
+  --highlight-foreground: #ffffff;
+  --highlight-soft: #f5f5f5;
+
+  /* ── Component borders & interactive states ─────────────────────────── */
   --border: #000000;
   --border-subtle: #000000;
   --input: #ffffff;
   --ring: #000000;
   --ring-offset: #ffffff;
 
+  /* ── Semantic system states ─────────────────────────────────────────── */
+  /* Destructive stays a deep red (#7a1a1a → 12.7:1 on white, AAA) so
+     users can still distinguish "this is a delete" without relying on
+     color alone — pair with the existing Trash2/XCircle icons. */
   --success: #000000;
   --success-foreground: #ffffff;
-  --warning: #000000;
+  --warning: #5a3a00;
   --warning-foreground: #ffffff;
-  --destructive: #000000;
+  --destructive: #7a1a1a;
   --destructive-foreground: #ffffff;
   --info: #000000;
   --info-foreground: #ffffff;
+
+  /* ── Categorical chart palette ──────────────────────────────────────── */
+  /* Three-tone grayscale ramp so multi-series charts stay distinguishable
+     in monochrome while remaining AAA-contrast on the white surface. */
+  --chart-1: #000000;
+  --chart-2: #4a4a4a;
+  --chart-3: #1a1a1a;
+  --chart-4: #7a1a1a;
+  --chart-5: #000000;
+  --chart-6: #5a5a5a;
+  --chart-7: #2a2a2a;
+  --chart-8: #4a4a4a;
+
+  /* ── Sidebar (shadcn convention) ────────────────────────────────────── */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #000000;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #000000;
+  --sidebar-ring: #000000;
 }
 
 @theme inline {

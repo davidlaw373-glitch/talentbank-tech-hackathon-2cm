@@ -7,6 +7,7 @@ export default function EmployerNotificationsPage() {
       source={employerNotifications}
       heading="Notifications"
       description="Hiring activity, interview updates, and talent pool alerts for your team."
+      storageKey="careeros.notifications.employer"
     />
   );
 }

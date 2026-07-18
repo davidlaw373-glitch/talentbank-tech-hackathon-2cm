@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
+import { cn } from "@/lib/utils";
 
 const STAGES: CandidateStage[] = [
   "New",
@@ -47,6 +48,18 @@ const STAGES: CandidateStage[] = [
   "Offer",
   "Hired",
 ];
+
+// Stage → chart palette swatch. Goes from cool sage (early) to warm
+// copper (hired), so the pipeline reads as a gradient of progress.
+const STAGE_SWATCH: Record<CandidateStage, string> = {
+  New: "bg-chart-1",
+  Screening: "bg-chart-3",
+  Shortlisted: "bg-chart-7",
+  Interviewing: "bg-chart-2",
+  Offer: "bg-chart-8",
+  Hired: "bg-highlight",
+  Rejected: "bg-destructive",
+};
 
 const STAGE_ADVANCE: Record<CandidateStage, CandidateStage | null> = {
   New: "Screening",
@@ -189,31 +202,40 @@ export default function EmployerDashboardPage() {
             value: liveJobs.length,
             icon: Briefcase,
             delta: "Live postings",
+            swatch: "bg-accent-soft text-foreground",
           },
           {
             label: "Active candidates",
             value: employerProfile.activeCandidates,
             icon: Users,
             delta: "Across all roles",
+            swatch: "bg-chart-1/20 text-foreground",
           },
           {
             label: "Hires this quarter",
             value: employerProfile.hiresThisQuarter,
             icon: Sparkles,
             delta: "Q3 2026",
+            swatch: "bg-chart-2/20 text-foreground",
           },
           {
             label: "Avg days to hire",
             value: employerProfile.avgTimeToHire,
             icon: Clock,
             delta: "Days, last 90 days",
+            swatch: "bg-highlight-soft text-foreground",
           },
         ].map((s) => {
           const Icon = s.icon;
           return (
             <Card key={s.label} className="lift-on-hover">
               <CardContent className="space-y-3 p-5 sm:p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg",
+                    s.swatch,
+                  )}
+                >
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
                 <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
@@ -264,7 +286,10 @@ export default function EmployerDashboardPage() {
                 <span
                   key={row.stage}
                   aria-hidden
-                  className="h-full bg-chart-1 first:rounded-l-full last:rounded-r-full"
+                  className={cn(
+                    "h-full first:rounded-l-full last:rounded-r-full",
+                    STAGE_SWATCH[row.stage],
+                  )}
                   style={{ width: `${pct}%` }}
                 />
               );
@@ -276,6 +301,13 @@ export default function EmployerDashboardPage() {
                 key={row.stage}
                 className="flex items-center gap-1.5"
               >
+                <span
+                  aria-hidden
+                  className={cn(
+                    "h-2 w-2 rounded-full",
+                    STAGE_SWATCH[row.stage],
+                  )}
+                />
                 <span className="text-sm font-semibold tabular-nums text-foreground">
                   {row.count}
                 </span>

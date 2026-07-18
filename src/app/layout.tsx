@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { SkipLink } from "@/components/common/skip-link";
+import Script from "next/script";
 import { ToastProvider } from "@/components/common/toast";
 import {
   ThemeProvider,
@@ -31,21 +31,22 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
-      <head>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         {/*
          * Apply theme before React hydrates so first paint matches the
          * user's stored choice or system pref. Prevents flash-of-wrong-theme.
+         * `next/script` with strategy="beforeInteractive" is the canonical
+         * Next.js way to inject a blocking pre-hydration script — the plain
+         * <script> tag in a React component is ignored by Turbopack.
          */}
-        <script
-          dangerouslySetInnerHTML={{ __html: themeInitScript }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+        >
+          {themeInitScript}
+        </Script>
         <ThemeProvider>
-          <ToastProvider>
-            <SkipLink />
-            {children}
-          </ToastProvider>
+          <ToastProvider>{children}</ToastProvider>
         </ThemeProvider>
       </body>
     </html>

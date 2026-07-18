@@ -17,11 +17,13 @@ import {
 } from "lucide-react";
 
 import { universityProfile } from "@/data/university";
-import { notifications } from "@/data/notifications";
+import { universityNotifications } from "@/data/notifications";
+import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 import { UserMenu } from "@/components/common/user-menu";
 import { cn } from "@/lib/utils";
 
@@ -39,11 +41,13 @@ const links = [
   { href: "/university/analytics", label: "Analytics", icon: LineChart },
 ];
 
-const universityUnread = notifications.filter((n) => !n.read).length;
-
 export function UniversityShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  // Shared with the notifications page — same source data, same storage key.
+  const { unreadCount: universityUnread } = useNotificationReadState(universityNotifications, {
+    storageKey: "careeros.notifications.university",
+  });
   const isActive = (href: string) => {
     if (pathname === href) return true;
     // Section roots like /university must not match nested routes, otherwise
@@ -98,6 +102,7 @@ export function UniversityShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <NotificationBell href="/university/notifications" unreadCount={universityUnread} />
             <UserMenu
               name={universityProfile.institutionName}

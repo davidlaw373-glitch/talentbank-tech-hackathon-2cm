@@ -60,8 +60,15 @@ function statusVariant(status: TalentPoolStatus) {
 }
 
 function scoreTone(score: number) {
-  if (score >= 50) return "text-foreground";
-  return "text-muted-foreground";
+  if (score >= 75) return "text-chart-1"; // strong — sage
+  if (score >= 50) return "text-highlight"; // mid — warm copper
+  return "text-muted-foreground"; // weak — recede
+}
+
+function scoreBarClass(score: number) {
+  if (score >= 75) return "bg-chart-1";
+  if (score >= 50) return "bg-highlight";
+  return "bg-muted-foreground/40";
 }
 
 export type TalentPoolRowProps = {
@@ -209,6 +216,19 @@ export function TalentPoolRow({
             >
               {entry.reEngagementScore}
             </p>
+            {/* Compact semantic bar so the score reads at a glance */}
+            <div
+              aria-hidden
+              className="mt-1 h-1 w-16 overflow-hidden rounded-full bg-muted"
+            >
+              <span
+                className={cn(
+                  "block h-full rounded-full",
+                  scoreBarClass(entry.reEngagementScore),
+                )}
+                style={{ width: `${entry.reEngagementScore}%` }}
+              />
+            </div>
             <small className="text-muted-foreground">
               Re-engagement score
             </small>

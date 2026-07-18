@@ -65,15 +65,24 @@ function NotificationRow({
     <li>
       <div
         className={cn(
-          "flex items-start gap-3 rounded-lg border p-4 transition-colors",
-          !read && "border-highlight bg-highlight-soft",
+          "relative flex items-start gap-3 overflow-hidden rounded-lg border p-4 transition-colors",
+          !read
+            ? "border-highlight/40 bg-highlight-soft/60"
+            : "border-border bg-card",
         )}
       >
+        {/* Color stripe on the leading edge — semantic cue that this is new */}
+        {!read ? (
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 w-1 bg-highlight"
+          />
+        ) : null}
         <div
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
             !read
-              ? "bg-foreground text-background"
+              ? "bg-highlight text-highlight-foreground"
               : "bg-muted text-muted-foreground",
           )}
           aria-hidden
@@ -126,14 +135,17 @@ export function NotificationsCenter({
   source,
   heading,
   description,
+  storageKey,
 }: {
   source: NotificationItem[];
   heading: string;
   description: string;
+  /** Per-role storage key — keeps read state isolated and shared with the shell bell. */
+  storageKey: string;
 }) {
   const { isRead, toggle, markAll, unreadCount } = useNotificationReadState(
     source,
-    { storageKey: "careeros.notifications.readState" },
+    { storageKey },
   );
   const [tab, setTab] = useState<"all" | "unread" | "read">("all");
   const [query, setQuery] = useState("");
@@ -166,9 +178,18 @@ export function NotificationsCenter({
         </div>
         <div className="flex items-center gap-2">
           {unreadCount > 0 ? (
-            <Badge variant="secondary">{unreadCount} unread</Badge>
+            <Badge variant="default" className="gap-1">
+              <span
+                aria-hidden
+                className="h-1.5 w-1.5 rounded-full bg-highlight-foreground"
+              />
+              {unreadCount} unread
+            </Badge>
           ) : (
-            <Badge variant="outline">All caught up</Badge>
+            <Badge variant="secondary" className="gap-1">
+              <CheckCircle2 className="h-3 w-3" aria-hidden />
+              All caught up
+            </Badge>
           )}
           <Button
             variant="outline"

@@ -46,6 +46,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PageHeading } from "@/components/common/page-heading";
+import { cn } from "@/lib/utils";
 
 const STATUS_ORDER: VerificationRecordStatus[] = [
   "Verified",
@@ -59,6 +60,15 @@ const STATUS_ICON: Record<VerificationRecordStatus, React.ComponentType<{ classN
   "Pending review": Clock,
   "Action required": AlertCircle,
   Disputed: AlertCircle,
+};
+
+// Per-status semantic swatch — verified is sage, pending is muted
+// amber, action-required is highlight copper, disputed is destructive.
+const STATUS_SWATCH: Record<VerificationRecordStatus, string> = {
+  Verified: "bg-chart-1",
+  "Pending review": "bg-chart-7",
+  "Action required": "bg-highlight",
+  Disputed: "bg-destructive",
 };
 
 function countByStatus() {
@@ -152,7 +162,7 @@ export default function UniversityDashboardPage() {
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         <Card className="lift-on-hover">
           <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft">
               <Users className="h-4 w-4" aria-hidden />
             </div>
             <div className="text-3xl font-semibold tabular-nums">
@@ -163,7 +173,7 @@ export default function UniversityDashboardPage() {
         </Card>
         <Card className="lift-on-hover">
           <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-1/20">
               <GraduationCap className="h-4 w-4" aria-hidden />
             </div>
             <div className="text-3xl font-semibold tabular-nums">
@@ -174,7 +184,7 @@ export default function UniversityDashboardPage() {
         </Card>
         <Card className="lift-on-hover">
           <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-highlight-soft">
               <Briefcase className="h-4 w-4" aria-hidden />
             </div>
             <div className="text-3xl font-semibold tabular-nums">
@@ -185,7 +195,7 @@ export default function UniversityDashboardPage() {
         </Card>
         <Card className="lift-on-hover">
           <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-2/20">
               <Clock className="h-4 w-4" aria-hidden />
             </div>
             <div className="text-3xl font-semibold tabular-nums">
@@ -196,7 +206,7 @@ export default function UniversityDashboardPage() {
         </Card>
         <Card className="lift-on-hover">
           <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-3/20">
               <ShieldCheck className="h-4 w-4" aria-hidden />
             </div>
             <div className="text-3xl font-semibold tabular-nums">
@@ -250,7 +260,10 @@ export default function UniversityDashboardPage() {
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full rounded-full bg-foreground animate-progress-x"
+                      className={cn(
+                        "h-full rounded-full animate-progress-x",
+                        STATUS_SWATCH[status],
+                      )}
                       style={{ width: `${pct}%` }}
                     />
                   </div>

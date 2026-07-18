@@ -7,6 +7,7 @@ export default function UniversityNotificationsPage() {
       source={universityNotifications}
       heading="Notifications"
       description="Credential syncs, dispute activity, graduate updates, and report readiness."
+      storageKey="careeros.notifications.university"
     />
   );
 }

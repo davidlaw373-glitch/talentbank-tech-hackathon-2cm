@@ -73,18 +73,18 @@ export function CoverCta() {
 
       <div className="container mx-auto flex flex-col items-center px-6 py-24 text-center md:py-32">
         <ScrollReveal>
-          <CoverEyebrow>Get started</CoverEyebrow>
+          <CoverEyebrow tone="dark">Get started</CoverEyebrow>
         </ScrollReveal>
 
         <ScrollReveal delay={80}>
           <h2 className="mt-5 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
             Pick your path to{" "}
-            <span className="text-muted-foreground">CareerOS</span>
+            <span className="text-secondary-foreground/70">CareerOS</span>
           </h2>
         </ScrollReveal>
 
         <ScrollReveal delay={160}>
-          <p className="mt-4 max-w-xl text-base sm:text-lg">
+          <p className="mt-4 max-w-xl text-base text-secondary-foreground/85 sm:text-lg">
             Three ways to begin. Each path takes about a minute to set up.
           </p>
         </ScrollReveal>

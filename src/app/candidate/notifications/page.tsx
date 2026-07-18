@@ -7,6 +7,7 @@ export default function CandidateNotificationsPage() {
       source={notifications}
       heading="Notifications"
       description="Updates about your applications, new job matches, and account activity."
+      storageKey="careeros.notifications.candidate"
     />
   );
 }

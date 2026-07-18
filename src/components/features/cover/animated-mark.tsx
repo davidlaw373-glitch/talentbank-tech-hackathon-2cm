@@ -9,6 +9,15 @@ type AnimatedMarkProps = {
   size?: number;
   showLabels?: boolean;
   autoplay?: boolean;
+  /**
+   * Color tone for the constellation.
+   *   - "auto"   → inherits text-foreground (default; works on cream backgrounds
+   *               and in dark/HC modes)
+   *   - "light"  → uses text-secondary-foreground (white in light mode, cream
+   *               in dark mode). High-contrast on the sage `bg-secondary`
+   *               sections where dark forest foreground would blend in.
+   */
+  tone?: "auto" | "light";
 };
 
 const NODES = [
@@ -25,21 +34,21 @@ const EDGES = [
 
 // Constellation stars — scattered around the three main nodes
 const STARS = [
-  { x: 30, y: 80, r: 1.2, o: 0.4 },
-  { x: 90, y: 30, r: 0.8, o: 0.3 },
-  { x: 150, y: 100, r: 1, o: 0.35 },
-  { x: 240, y: 30, r: 0.8, o: 0.3 },
-  { x: 290, y: 90, r: 1.2, o: 0.4 },
-  { x: 350, y: 50, r: 1, o: 0.35 },
-  { x: 370, y: 150, r: 0.8, o: 0.3 },
-  { x: 30, y: 180, r: 1, o: 0.35 },
-  { x: 10, y: 260, r: 0.8, o: 0.3 },
-  { x: 370, y: 260, r: 1, o: 0.35 },
-  { x: 80, y: 280, r: 0.6, o: 0.25 },
-  { x: 300, y: 280, r: 0.6, o: 0.25 },
-  { x: 120, y: 160, r: 0.6, o: 0.2 },
-  { x: 260, y: 160, r: 0.6, o: 0.2 },
-  { x: 190, y: 200, r: 0.8, o: 0.3 },
+  { x: 30, y: 80, r: 1.6, o: 0.55 },
+  { x: 90, y: 30, r: 1.2, o: 0.45 },
+  { x: 150, y: 100, r: 1.4, o: 0.5 },
+  { x: 240, y: 30, r: 1.2, o: 0.45 },
+  { x: 290, y: 90, r: 1.6, o: 0.55 },
+  { x: 350, y: 50, r: 1.4, o: 0.5 },
+  { x: 370, y: 150, r: 1.2, o: 0.45 },
+  { x: 30, y: 180, r: 1.4, o: 0.5 },
+  { x: 10, y: 260, r: 1.2, o: 0.45 },
+  { x: 370, y: 260, r: 1.4, o: 0.5 },
+  { x: 80, y: 280, r: 1, o: 0.4 },
+  { x: 300, y: 280, r: 1, o: 0.4 },
+  { x: 120, y: 160, r: 1, o: 0.35 },
+  { x: 260, y: 160, r: 1, o: 0.35 },
+  { x: 190, y: 200, r: 1.2, o: 0.45 },
 ];
 
 function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
@@ -49,10 +58,10 @@ function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
 function PersonIcon() {
   return (
     <g>
-      <circle cx="0" cy="-3" r="2.5" fill="var(--background)" />
+      <circle cx="0" cy="-3" r="2.5" fill="var(--secondary)" />
       <path
         d="M -5,5 a 5,4 0 0,1 10,0"
-        fill="var(--background)"
+        fill="var(--secondary)"
       />
     </g>
   );
@@ -67,11 +76,11 @@ function BriefcaseIcon() {
         width="10"
         height="8"
         rx="1"
-        fill="var(--background)"
+        fill="var(--secondary)"
       />
       <path
         d="M -2,-2 v -2 h 4 v 2"
-        stroke="var(--background)"
+        stroke="var(--secondary)"
         strokeWidth="1"
         fill="none"
       />
@@ -82,10 +91,10 @@ function BriefcaseIcon() {
 function CapIcon() {
   return (
     <g>
-      <path d="M -7,0 L 0,-3 L 7,0 L 0,3 Z" fill="var(--background)" />
+      <path d="M -7,0 L 0,-3 L 7,0 L 0,3 Z" fill="var(--secondary)" />
       <path
         d="M -4,1.5 v 3 M 4,1.5 v 3"
-        stroke="var(--background)"
+        stroke="var(--secondary)"
         strokeWidth="1"
         fill="none"
       />
@@ -101,9 +110,10 @@ const ICONS: Record<string, () => React.JSX.Element> = {
 
 export function AnimatedMark({
   className,
-  size = 420,
+  size = 560,
   showLabels = true,
   autoplay = true,
+  tone = "auto",
 }: AnimatedMarkProps) {
   const ref = useRef<SVGSVGElement | null>(null);
   const [drawn, setDrawn] = useState(false);
@@ -137,7 +147,10 @@ export function AnimatedMark({
       height={size}
       viewBox="0 0 380 300"
       fill="none"
-      className={cn("text-foreground", className)}
+      className={cn(
+        tone === "light" ? "text-secondary-foreground" : "text-foreground",
+        className,
+      )}
       role={showLabels ? "img" : undefined}
       aria-label="CareerOS connects Candidates, Employers, and Universities"
     >
@@ -203,8 +216,8 @@ export function AnimatedMark({
           rx="170"
           ry="45"
           stroke="currentColor"
-          strokeWidth="0.8"
-          strokeOpacity="0.18"
+          strokeWidth="1.8"
+          strokeOpacity="0.55"
           strokeDasharray="3 4"
         />
       </g>
@@ -227,8 +240,8 @@ export function AnimatedMark({
           rx="135"
           ry="115"
           stroke="currentColor"
-          strokeWidth="0.8"
-          strokeOpacity="0.14"
+          strokeWidth="1.8"
+          strokeOpacity="0.45"
           strokeDasharray="2 5"
         />
       </g>
@@ -246,9 +259,9 @@ export function AnimatedMark({
             x2={b.x}
             y2={b.y}
             stroke="currentColor"
-            strokeWidth="1.4"
+            strokeWidth="2"
             strokeLinecap="round"
-            strokeOpacity="0.5"
+            strokeOpacity="0.75"
             strokeDasharray={drawn ? "6 6" : length}
             strokeDashoffset={drawn ? 0 : length}
             className={drawn ? "animate-edge-flow" : ""}
@@ -270,7 +283,7 @@ export function AnimatedMark({
           key={`halo-${n.id}`}
           cx={n.x}
           cy={n.y}
-          r={36}
+          r={42}
           fill="url(#nodeHalo)"
           className={cn(
             "transition-opacity duration-700",
@@ -286,11 +299,11 @@ export function AnimatedMark({
           key={`pulse-${n.id}`}
           cx={n.x}
           cy={n.y}
-          r="14"
+          r="18"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1"
-          strokeOpacity="0.3"
+          strokeWidth="2"
+          strokeOpacity="0.75"
           className={cn(
             "transition-opacity duration-700",
             drawn ? "opacity-100" : "opacity-0"
@@ -314,7 +327,7 @@ export function AnimatedMark({
             <circle
               cx={n.x}
               cy={n.y}
-              r="18"
+              r="22"
               fill="currentColor"
               className={drawn ? "animate-node-pulse" : ""}
               style={{
@@ -345,10 +358,10 @@ export function AnimatedMark({
             >
               <text
                 x={n.x}
-                y={isTop ? n.y - 32 : n.y + 42}
+                y={isTop ? n.y - 38 : n.y + 50}
                 textAnchor="middle"
-                fontSize="13"
-                fontWeight="600"
+                fontSize="15"
+                fontWeight="700"
                 fill="currentColor"
                 fontFamily="var(--font-inter), Inter, sans-serif"
               >

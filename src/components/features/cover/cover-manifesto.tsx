@@ -7,7 +7,7 @@ export function CoverManifesto() {
     <section
       id="manifesto"
       aria-label="Why we built CareerOS"
-      className="relative w-full overflow-hidden border-t bg-secondary"
+      className="relative w-full overflow-hidden border-t bg-secondary text-secondary-foreground"
     >
       <div
         aria-hidden
@@ -24,21 +24,23 @@ export function CoverManifesto() {
               {/* Large decorative quote mark */}
               <span
                 aria-hidden
-                className="absolute -left-2 -top-8 font-serif text-[120px] leading-none text-foreground/15 sm:-left-4 sm:-top-10 sm:text-[160px]"
+                className="absolute -left-2 -top-8 font-serif text-[120px] leading-none text-secondary-foreground/20 sm:-left-4 sm:-top-10 sm:text-[160px]"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 &ldquo;
               </span>
               <div className="relative">
-                <CoverEyebrow align="start">Why we built CareerOS</CoverEyebrow>
+                <CoverEyebrow align="start" tone="dark">
+                  Why we built CareerOS
+                </CoverEyebrow>
                 <h2 className="mt-6 text-3xl font-semibold leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">
                   Hiring tools were built for the{" "}
-                  <span className="text-muted-foreground">company.</span>
+                  <span className="text-secondary-foreground/70">company.</span>
                   <br />
                   CareerOS is built for the{" "}
-                  <span className="text-muted-foreground">person.</span>
+                  <span className="text-secondary-foreground/70">person.</span>
                 </h2>
-                <div className="mt-6 flex flex-col gap-4 text-base text-muted-foreground sm:text-lg">
+                <div className="mt-6 flex flex-col gap-4 text-base text-secondary-foreground/85 sm:text-lg">
                   <p>
                     The best careers aren&apos;t found in job posts.
                     They&apos;re built on real work, real credentials, and
@@ -62,9 +64,9 @@ export function CoverManifesto() {
             <div className="relative">
               <div
                 aria-hidden
-                className="absolute inset-0 -z-10 rounded-full bg-surface-tint blur-2xl"
+                className="absolute inset-0 -z-10 rounded-full bg-surface-tint/40 blur-2xl"
               />
-              <AnimatedMark size={420} className="w-full max-w-md" />
+              <AnimatedMark size={560} tone="light" className="w-full max-w-xl" />
             </div>
           </ScrollReveal>
         </div>

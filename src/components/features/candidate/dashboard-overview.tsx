@@ -95,12 +95,14 @@ const STATS = [
     value: applications.length,
     icon: Briefcase,
     delta: "+2 this week",
+    swatch: "bg-accent-soft text-foreground",
   },
   {
     label: "Interview pipeline",
     value: applications.filter((a) => a.status === "Interview").length,
     icon: CalendarClock,
     delta: "1 next week",
+    swatch: "bg-highlight-soft text-foreground",
   },
   {
     label: "Profile strength",
@@ -108,6 +110,7 @@ const STATS = [
     icon: Sparkles,
     suffix: "%",
     delta: "Top 18% of candidates",
+    swatch: "bg-chart-1/20 text-foreground",
   },
   {
     label: "Average match",
@@ -117,6 +120,7 @@ const STATS = [
     icon: TrendingUp,
     suffix: "%",
     delta: "Across 3 open roles",
+    swatch: "bg-chart-2/20 text-foreground",
   },
 ];
 
@@ -230,7 +234,12 @@ export function DashboardOverview() {
           return (
             <Card key={s.label} className="lift-on-hover">
               <CardContent className="space-y-3 p-5 sm:p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <div
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg",
+                    s.swatch,
+                  )}
+                >
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
                 <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">

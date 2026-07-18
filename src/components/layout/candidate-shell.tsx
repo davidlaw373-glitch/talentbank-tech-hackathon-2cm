@@ -18,10 +18,12 @@ import {
 
 import { candidateProfile } from "@/data/candidate";
 import { notifications } from "@/data/notifications";
+import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 import { UserMenu } from "@/components/common/user-menu";
 import { cn } from "@/lib/utils";
 
@@ -35,13 +37,19 @@ const links = [
   { href: "/candidate/path-navigator", label: "Path finder", icon: RouteIcon },
 ];
 
-const candidateUnread = notifications.filter((n) => !n.read).length;
-
 export function CandidateShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  // Use the same hook + storage key as the notifications page so the bell
+  // badge and the "Mark read" toggles share one source of truth.
+  const { unreadCount: candidateUnread } = useNotificationReadState(notifications, {
+    storageKey: "careeros.notifications.candidate",
+  });
+  const isActive = (href: string) => {
+    if (pathname === href) return true;
+    if (href.split("/").filter(Boolean).length <= 1) return false;
+    return pathname.startsWith(href + "/");
+  };
 
   return (
     <div className="min-h-full">
@@ -83,6 +91,7 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <NotificationBell href="/candidate/notifications" unreadCount={candidateUnread} />
             <UserMenu
               name={candidateProfile.name}

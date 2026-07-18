@@ -60,15 +60,15 @@ export function CoverFeatures() {
     <section
       id="features"
       aria-label="Why CareerOS"
-      className="w-full border-t bg-secondary"
+      className="w-full border-t bg-secondary text-secondary-foreground"
     >
       <div className="container mx-auto px-6 py-20 md:py-28">
         <ScrollReveal className="mx-auto max-w-2xl text-center">
-          <CoverEyebrow>Why CareerOS</CoverEyebrow>
+          <CoverEyebrow tone="dark">Why CareerOS</CoverEyebrow>
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
             Everything your career needs
           </h2>
-          <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+          <p className="mt-4 text-base text-secondary-foreground/85 sm:text-lg">
             From the first job search to the final hire — and every step in
             between.
           </p>
@@ -77,7 +77,7 @@ export function CoverFeatures() {
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {FEATURES.map((feature, i) => (
             <ScrollReveal key={feature.title} delay={i * 80}>
-              <Card className="lift-on-hover relative h-full overflow-hidden">
+              <Card className="lift-on-hover relative h-full overflow-hidden bg-card text-card-foreground">
                 <span
                   aria-hidden
                   className={`absolute inset-x-0 top-0 h-1 ${feature.accent}`}

@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type PoolSummaryProps = {
   entries: TalentPoolEntry[];
@@ -32,30 +33,35 @@ export function PoolSummary({ entries }: PoolSummaryProps) {
     value: string | number;
     icon: LucideIcon;
     delta: string;
+    swatch: string;
   }> = [
     {
       label: "Saved candidates",
       value: total,
       icon: Users,
       delta: "Across all sources",
+      swatch: "bg-accent-soft text-foreground",
     },
     {
       label: "Avg re-engagement",
       value: `${avgScore}%`,
       icon: Sparkles,
       delta: "Model signal",
+      swatch: "bg-chart-1/20 text-foreground",
     },
     {
       label: "Never contacted",
       value: neverContacted,
       icon: Mail,
       delta: "Awaiting first touch",
+      swatch: "bg-highlight-soft text-foreground",
     },
     {
       label: "Stale entries",
       value: stale,
       icon: Clock,
       delta: "Re-evaluate or archive",
+      swatch: "bg-chart-2/20 text-foreground",
     },
   ];
 
@@ -69,7 +75,12 @@ export function PoolSummary({ entries }: PoolSummaryProps) {
         return (
           <Card key={s.label} className="lift-on-hover">
             <CardContent className="space-y-3 p-5 sm:p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+              <div
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-lg",
+                  s.swatch,
+                )}
+              >
                 <Icon className="h-5 w-5" aria-hidden />
               </div>
               <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
