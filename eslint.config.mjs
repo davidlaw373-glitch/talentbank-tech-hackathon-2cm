@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Project-local: Claude worktrees from prior agent runs.
+    ".claude/**",
   ]),
 ]);
 

@@ -9,7 +9,6 @@ import { AnimatedCounter } from "@/components/common/animated-counter";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type Match = {
   id: string;
@@ -20,41 +19,11 @@ type Match = {
 };
 
 const SEED_MATCHES: Match[] = [
-  {
-    id: "m1",
-    candidate: "A. Khan",
-    role: "Senior Frontend · Helio",
-    score: 94,
-    city: "Singapore",
-  },
-  {
-    id: "m2",
-    candidate: "M. Okafor",
-    role: "ML Engineer · Lumen",
-    score: 91,
-    city: "London",
-  },
-  {
-    id: "m3",
-    candidate: "S. Park",
-    role: "Staff PM · Vertex",
-    score: 89,
-    city: "Seoul",
-  },
-  {
-    id: "m4",
-    candidate: "R. Diaz",
-    role: "Data Engineer · Atlas",
-    score: 87,
-    city: "Madrid",
-  },
-  {
-    id: "m5",
-    candidate: "T. Yamamoto",
-    role: "Mobile Lead · Polaris",
-    score: 86,
-    city: "Tokyo",
-  },
+  { id: "m1", candidate: "A. Khan", role: "Senior Frontend · Helio", score: 94, city: "Singapore" },
+  { id: "m2", candidate: "M. Okafor", role: "ML Engineer · Lumen", score: 91, city: "London" },
+  { id: "m3", candidate: "S. Park", role: "Staff PM · Vertex", score: 89, city: "Seoul" },
+  { id: "m4", candidate: "R. Diaz", role: "Data Engineer · Atlas", score: 87, city: "Madrid" },
+  { id: "m5", candidate: "T. Yamamoto", role: "Mobile Lead · Polaris", score: 86, city: "Tokyo" },
 ];
 
 const SIGNAL_LINES = [
@@ -77,12 +46,11 @@ export function CoverPlatform() {
         const next = [...prev];
         const head = next.shift();
         if (!head) return prev;
-        const newScore = Math.max(78, Math.min(96, head.score + (Math.random() > 0.5 ? 1 : -1)));
-        const newMatch: Match = {
-          ...head,
-          id: `t-${Date.now()}`,
-          score: newScore,
-        };
+        const newScore = Math.max(
+          78,
+          Math.min(96, head.score + (Math.random() > 0.5 ? 1 : -1)),
+        );
+        const newMatch: Match = { ...head, id: `t-${Date.now()}`, score: newScore };
         next.push(newMatch);
         return next;
       });
@@ -96,14 +64,12 @@ export function CoverPlatform() {
     <section
       id="platform"
       aria-label="CareerOS in action"
-      className="relative w-full overflow-hidden border-t bg-muted/30"
+      className="relative w-full overflow-hidden border-t bg-background"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute -left-40 top-1/2 h-[460px] w-[460px] -translate-y-1/2 rounded-full bg-muted/40 blur-3xl" />
-        <div className="absolute -right-40 top-1/2 h-[460px] w-[460px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="animate-float-slow absolute -left-40 top-1/2 h-[460px] w-[460px] -translate-y-1/2 rounded-full bg-chart-2/25 blur-3xl" />
+        <div className="animate-float-slower absolute -right-40 top-1/2 h-[460px] w-[460px] -translate-y-1/2 rounded-full bg-chart-4/25 blur-3xl" />
+        <div className="animate-float-slow absolute left-1/3 top-1/4 h-72 w-72 rounded-full bg-chart-7/20 blur-3xl" />
       </div>
 
       <div className="container mx-auto px-6 py-20 md:py-28">
@@ -122,7 +88,7 @@ export function CoverPlatform() {
         <ScrollReveal delay={120} className="mt-12">
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
             {/* Live match feed */}
-            <div className="lg:col-span-3 overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
+            <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm lg:col-span-3">
               <div className="flex items-center justify-between border-b px-5 py-4">
                 <div className="flex items-center gap-2">
                   <span className="relative inline-flex h-2 w-2">
@@ -142,7 +108,7 @@ export function CoverPlatform() {
                 {matches.map((m) => (
                   <li
                     key={m.id}
-                    className="flex items-center gap-3 px-5 py-3.5 text-sm transition-colors hover:bg-muted/40"
+                    className="flex items-center gap-3 px-5 py-3.5 text-sm transition-colors hover:bg-accent-soft"
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-semibold">
                       {m.candidate
@@ -150,7 +116,7 @@ export function CoverPlatform() {
                         .map((p) => p[0])
                         .join("")}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{m.candidate}</p>
                       <p className="truncate text-xs text-muted-foreground">
                         {m.role} · {m.city}
@@ -167,7 +133,7 @@ export function CoverPlatform() {
                     </div>
                     <div className="hidden h-1.5 w-20 overflow-hidden rounded-full bg-muted sm:block">
                       <div
-                        className="h-full rounded-full bg-foreground/80 animate-progress"
+                        className="h-full rounded-full bg-chart-1 animate-progress"
                         style={{ width: `${m.score}%` }}
                       />
                     </div>
@@ -228,7 +194,7 @@ export function CoverPlatform() {
               </div>
 
               <div className="overflow-hidden rounded-2xl border bg-foreground p-6 text-background shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] opacity-70">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em]">
                   Take it for a spin
                 </p>
                 <p className="mt-2 text-lg font-semibold tracking-tight sm:text-xl">
@@ -246,43 +212,6 @@ export function CoverPlatform() {
                 </Button>
               </div>
             </div>
-<<<<<<< Updated upstream
-=======
-          </ScrollReveal>
-        </div>
-
-        {/* Platform signals row */}
-        <ScrollReveal delay={260} className="mt-5">
-          <div className="overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm">
-            <div className="flex items-center justify-between border-b px-6 py-4">
-              <div className="flex items-center gap-2">
-                <span className="relative inline-flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-foreground/15" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground/60" />
-                </span>
-                <h3 className="text-sm font-semibold tracking-tight">
-                  Platform signal
-                </h3>
-              </div>
-              <Badge variant="outline" className="gap-1">
-                <TrendingUp className="h-3 w-3" aria-hidden />
-                +18% wk
-              </Badge>
-            </div>
-            <div className="relative overflow-hidden">
-              <div className="flex gap-8 overflow-x-auto whitespace-nowrap px-6 py-4">
-                {SIGNAL_LINES.map((line) => (
-                  <span
-                    key={line}
-                    className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground"
-                  >
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground/40" />
-                    {line}
-                  </span>
-                ))}
-              </div>
-            </div>
->>>>>>> Stashed changes
           </div>
         </ScrollReveal>
       </div>

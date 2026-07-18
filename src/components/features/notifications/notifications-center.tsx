@@ -17,14 +17,12 @@ import {
 } from "lucide-react";
 
 import type { NotificationItem, NotificationType } from "@/types/notification";
+import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -68,7 +66,7 @@ function NotificationRow({
       <div
         className={cn(
           "flex items-start gap-3 rounded-lg border p-4 transition-colors",
-          !read && "border-foreground/30 bg-muted/30",
+          !read && "border-highlight bg-highlight-soft",
         )}
       >
         <div
@@ -133,17 +131,18 @@ export function NotificationsCenter({
   heading: string;
   description: string;
 }) {
-  const [readState, setReadState] = useState<Record<string, boolean>>(
-    Object.fromEntries(source.map((n) => [n.id, n.read])),
+  const { isRead, toggle, markAll, unreadCount } = useNotificationReadState(
+    source,
+    { storageKey: "careeros.notifications.readState" },
   );
   const [tab, setTab] = useState<"all" | "unread" | "read">("all");
   const [query, setQuery] = useState("");
 
   const list = useMemo(() => {
     return source.filter((n) => {
-      const isRead = readState[n.id] ?? n.read;
-      if (tab === "unread" && isRead) return false;
-      if (tab === "read" && !isRead) return false;
+      const read = isRead(n);
+      if (tab === "unread" && read) return false;
+      if (tab === "read" && !read) return false;
       if (query.trim()) {
         const q = query.toLowerCase();
         return (
@@ -153,23 +152,7 @@ export function NotificationsCenter({
       }
       return true;
     });
-  }, [source, readState, tab, query]);
-
-  const unreadCount = useMemo(
-    () =>
-      source.filter((n) => !(readState[n.id] ?? n.read)).length,
-    [readState],
-  );
-
-  const markAll = () => {
-    const next = { ...readState };
-    for (const n of source) next[n.id] = true;
-    setReadState(next);
-  };
-
-  const toggle = (id: string) => {
-    setReadState((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  }, [source, isRead, tab, query]);
 
   return (
     <div className="space-y-6">
@@ -260,7 +243,7 @@ export function NotificationsCenter({
             <NotificationRow
               key={n.id}
               notification={n}
-              read={readState[n.id] ?? n.read}
+              read={isRead(n)}
               onToggleRead={() => toggle(n.id)}
             />
           ))}

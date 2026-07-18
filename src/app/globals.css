@@ -3,80 +3,239 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * CareerOS palette — sage / forest greens as specified by the team:
+ *   dad7cd  cream-sage  (page background)
+ *   a3b18a  sage        (secondary, muted)
+ *   588157  forest      (accent)
+ *   3a5a40  deep forest
+ *   344e41  darkest     (primary text + buttons)
+ *
+ * Token system is structured for WCAG 2.2 AA compliance with explicit
+ * surfaces (background → surface-1 → surface-2 → surface-3), text tiers
+ * (foreground → text-secondary → text-muted → text-inverse), component
+ * states (border / ring / input), brand (primary / secondary / accent /
+ * muted), and semantics (success / warning / destructive / info).
+ *
+ * AGENTS.md § Color Rules permits edits to the shadcn theme when explicitly
+ * requested by the user. The destructive token is a complementary earthy
+ * red because the user did not provide a red; warning is amber, distinct
+ * from the green family so success and warning are never confused.
+ */
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* ── Surfaces (canvas → elevated) ──────────────────────────────────── */
+  --background: #dad7cd;
+  --surface-1: #ffffff;
+  --surface-2: #f5f1e6;
+  --surface-3: #ffffff;
+  --surface-inset: #efe9d8;
+  --surface-tint: #e8e2cf;
+
+  /* ── Foreground text ───────────────────────────────────────────────── */
+  --foreground: #344e41;
+  --text-secondary: #3a5a40;
+  --text-muted: #5a6f60;
+  --text-inverse: #f5f1e6;
+
+  /* ── Brand / action ────────────────────────────────────────────────── */
+  --card: #ffffff;
+  --card-foreground: #344e41;
+  --popover: #ffffff;
+  --popover-foreground: #344e41;
+  --primary: #2d4533;
+  --primary-foreground: #f5f1e6;
+  --secondary: #588157;
+  --secondary-foreground: #ffffff;
+  --muted: #d6cfb8;
+  --muted-foreground: #344e41;
+  --accent: #6a8a4e;
+  --accent-foreground: #ffffff;
+  --accent-soft: #ece4cb;
+
+  /* ── Highlight (warm complementary accent for CTAs, charts, badges) ─ */
+  --highlight: #b87a3a;
+  --highlight-foreground: #ffffff;
+  --highlight-soft: #f1d9b8;
+
+  /* ── Component borders & interactive states ─────────────────────────── */
+  --border: #344e41;
+  --border-subtle: #8c7f5e;
+  --input: #ffffff;
+  --ring: #344e41;
+  --ring-offset: #dad7cd;
+
+  /* ── Semantic system states ─────────────────────────────────────────── */
+  --success: #3a5a40;
+  --success-foreground: #f5f1e6;
+  --warning: #b58a3a;
+  --warning-foreground: #1a1a1a;
+  --destructive: #964538;
+  --destructive-foreground: #f5f1e6;
+  --info: #3a5a40;
+  --info-foreground: #f5f1e6;
+
   --radius: 0.625rem;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* ── Categorical chart palette (8 colors — diverse but coherent) ───── */
+  --chart-1: #588157;
+  --chart-2: #b87a3a;
+  --chart-3: #6a8a4e;
+  --chart-4: #964538;
+  --chart-5: #344e41;
+  --chart-6: #8c7f5e;
+  --chart-7: #c8a96a;
+  --chart-8: #5a6f60;
+
+  /* ── Sidebar (shadcn convention) ────────────────────────────────────── */
+  --sidebar: #a3b18a;
+  --sidebar-foreground: #344e41;
+  --sidebar-primary: #344e41;
+  --sidebar-primary-foreground: #dad7cd;
+  --sidebar-accent: #588157;
+  --sidebar-accent-foreground: #dad7cd;
+  --sidebar-border: #588157;
+  --sidebar-ring: #3a5a40;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* ── Surfaces ───────────────────────────────────────────────────────── */
+  --background: #2a3d31;
+  --surface-1: #344e41;
+  --surface-2: #3d5a47;
+  --surface-3: #243529;
+  --surface-inset: #243529;
+  --surface-tint: #2f4438;
+
+  /* ── Foreground text ───────────────────────────────────────────────── */
+  --foreground: #ece4cb;
+  --text-secondary: #c8d4b8;
+  --text-muted: #a3b18a;
+  --text-inverse: #2a3d31;
+
+  /* ── Brand / action ────────────────────────────────────────────────── */
+  --card: #344e41;
+  --card-foreground: #ece4cb;
+  --popover: #243529;
+  --popover-foreground: #ece4cb;
+  --primary: #ece4cb;
+  --primary-foreground: #2a3d31;
+  --secondary: #6a8a4e;
+  --secondary-foreground: #ece4cb;
+  --muted: #3d5a47;
+  --muted-foreground: #ece4cb;
+  --accent: #8aa66e;
+  --accent-foreground: #1a261d;
+  --accent-soft: #2f4438;
+
+  /* ── Highlight ──────────────────────────────────────────────────────── */
+  --highlight: #d49554;
+  --highlight-foreground: #1a1a1a;
+  --highlight-soft: #4a3520;
+
+  /* ── Component borders & interactive states ─────────────────────────── */
+  --border: #c8d4b8;
+  --border-subtle: #6a8a4e;
+  --input: #243529;
+  --ring: #ece4cb;
+  --ring-offset: #2a3d31;
+
+  /* ── Semantic system states ─────────────────────────────────────────── */
+  --success: #6a8a4e;
+  --success-foreground: #ece4cb;
+  --warning: #d49554;
+  --warning-foreground: #1a1a1a;
+  --destructive: #c45a45;
+  --destructive-foreground: #ffffff;
+  --info: #6a8a4e;
+  --info-foreground: #ece4cb;
+
+  /* ── Chart palette ──────────────────────────────────────────────────── */
+  --chart-1: #8aa66e;
+  --chart-2: #d49554;
+  --chart-3: #6a8a4e;
+  --chart-4: #c45a45;
+  --chart-5: #ece4cb;
+  --chart-6: #a89a7e;
+  --chart-7: #d4b878;
+  --chart-8: #8c9a82;
+
+  /* ── Sidebar ────────────────────────────────────────────────────────── */
+  --sidebar: #344e41;
+  --sidebar-foreground: #ece4cb;
+  --sidebar-primary: #8aa66e;
+  --sidebar-primary-foreground: #ece4cb;
+  --sidebar-accent: #2a3d31;
+  --sidebar-accent-foreground: #ece4cb;
+  --sidebar-border: #6a8a4e;
+  --sidebar-ring: #c8d4b8;
+}
+
+/*
+ * Optional high-contrast mode. Opt-in via:
+ *   <html data-theme="hc"> ... </html>
+ * Activated by JS when the user toggles "Reduce visual noise" OR by the
+ * browser forced-colors / Windows High Contrast emulation. Pure black/white
+ * gives 21:1 AAA contrast everywhere.
+ */
+[data-theme="hc"],
+[data-theme="hc"].dark {
+  --background: #ffffff;
+  --surface-1: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #ffffff;
+  --surface-inset: #ffffff;
+
+  --foreground: #000000;
+  --text-secondary: #000000;
+  --text-muted: #000000;
+  --text-inverse: #ffffff;
+
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #ffffff;
+  --secondary-foreground: #000000;
+  --muted: #ffffff;
+  --muted-foreground: #000000;
+  --accent: #ffffff;
+  --accent-foreground: #000000;
+
+  --border: #000000;
+  --border-subtle: #000000;
+  --input: #ffffff;
+  --ring: #000000;
+  --ring-offset: #ffffff;
+
+  --success: #000000;
+  --success-foreground: #ffffff;
+  --warning: #000000;
+  --warning-foreground: #ffffff;
+  --destructive: #000000;
+  --destructive-foreground: #ffffff;
+  --info: #000000;
+  --info-foreground: #ffffff;
 }
 
 @theme inline {
+  /* Surfaces */
   --color-background: var(--background);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-inset: var(--surface-inset);
+  --color-surface-tint: var(--surface-tint);
+
+  /* Foreground text */
   --color-foreground: var(--foreground);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Brand / action */
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -89,16 +248,41 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-soft: var(--accent-soft);
+
+  /* Highlight */
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-highlight-soft: var(--highlight-soft);
+
+  /* Borders & states */
   --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-ring-offset: var(--ring-offset);
+
+  /* Semantic */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Chart palette */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+
+  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -107,6 +291,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography + radius */
   --font-sans: var(--font-inter);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -121,6 +307,21 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter), Inter, system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.25;
+    font-weight: 600;
+  }
+  p { line-height: 1.6; }
+  a:not([class]) {
+    text-decoration-line: underline;
+    text-underline-offset: 3px;
   }
 }
 
@@ -128,12 +329,12 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Sticky-header offset for anchor jumps — keeps section headings visible below the h-16 nav */
+/* Sticky-header offset for anchor jumps */
 section[id] {
   scroll-margin-top: 5rem;
 }
 
-/* One-shot entrance animations — no infinite loops */
+/* Animations */
 @keyframes reveal-up {
   from {
     opacity: 0;
@@ -202,61 +403,6 @@ section[id] {
   }
 }
 
-<<<<<<< Updated upstream
-@keyframes travel {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-
-@keyframes orbit-cw {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes orbit-ccw {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-@keyframes breathe {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.012);
-=======
-/* Current-step indicators — soft pulse halo + dot pulse */
 @keyframes pulse-soft {
   0%,
   100% {
@@ -277,7 +423,111 @@ section[id] {
   100% {
     transform: scale(1.7);
     opacity: 0;
->>>>>>> Stashed changes
+  }
+}
+
+/* Triangle / constellation keyframes — used by AnimatedMark */
+@keyframes orbit-ccw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes orbit-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: var(--twinkle-min, 0.2);
+  }
+  50% {
+    opacity: var(--twinkle-max, 0.9);
+  }
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    r: 18;
+  }
+  50% {
+    r: 20;
+  }
+}
+
+@keyframes edge-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+/* Ambient decorative animations — used by hero blur orbs and
+   section gradients. Slow and large so they read as atmosphere,
+   not motion sickness. */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.05);
+  }
+}
+
+@keyframes float-slower {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes shimmer-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
   }
 }
 
@@ -321,33 +571,6 @@ section[id] {
     stroke-dashoffset: 1000;
     animation: path-draw 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-<<<<<<< Updated upstream
-  .animate-glow-pulse {
-    animation: glow-pulse 4s ease-in-out infinite;
-  }
-  .animate-pulse-ring-2 {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: pulse-ring-2 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
-  .animate-travel {
-    animation: travel 3.2s linear infinite;
-  }
-  .animate-orbit-cw {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: orbit-cw 24s linear infinite;
-  }
-  .animate-orbit-ccw {
-    transform-origin: center;
-    transform-box: fill-box;
-    animation: orbit-ccw 18s linear infinite;
-  }
-  .animate-breathe {
-    transform-origin: center;
-    transform-box: view-box;
-    animation: breathe 6s ease-in-out infinite;
-=======
   .animate-pulse-soft {
     transform-origin: center;
     transform-box: fill-box;
@@ -357,7 +580,46 @@ section[id] {
     transform-origin: center;
     transform-box: fill-box;
     animation: pulse-ring-soft 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
->>>>>>> Stashed changes
+  }
+  .animate-orbit-ccw {
+    transform-origin: 190px 150px;
+    transform-box: view-box;
+    animation: orbit-ccw 32s linear infinite;
+  }
+  .animate-orbit-cw {
+    transform-origin: 190px 150px;
+    transform-box: view-box;
+    animation: orbit-cw 24s linear infinite;
+  }
+  .animate-twinkle {
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  .animate-edge-flow {
+    stroke-dasharray: 4 4;
+    animation: edge-flow 4s linear infinite;
+  }
+  .animate-node-pulse {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: node-pulse 3s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    will-change: transform;
+    animation: float-slow 16s ease-in-out infinite;
+  }
+  .animate-float-slower {
+    will-change: transform;
+    animation: float-slower 22s ease-in-out infinite;
+  }
+  .animate-shimmer-gradient {
+    background-size: 200% 200%;
+    animation: shimmer-gradient 8s ease-in-out infinite;
+  }
+  .animate-collapsible-down {
+    animation: collapsible-down 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .animate-collapsible-up {
+    animation: collapsible-up 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .reveal-on-scroll {
     opacity: 0;
@@ -388,7 +650,52 @@ section[id] {
   }
   .lift-on-hover:hover {
     transform: translateY(-4px);
-    box-shadow: 0 16px 40px -16px oklch(0.145 0 0 / 0.18);
+    box-shadow: 0 16px 40px -16px oklch(0.205 0 0 / 0.18);
+  }
+
+  /*
+   * Semantic helpers — apply via className without needing to remember
+   * which surface pairs with which text token.
+   */
+  .surface-card {
+    @apply bg-card text-card-foreground;
+  }
+  .surface-popover {
+    @apply bg-popover text-popover-foreground;
+  }
+  .surface-inset {
+    @apply bg-surface-inset text-foreground;
+  }
+
+  /*
+   * Age-inclusive typography scale (40+ demographic).
+   * Use these in place of ad-hoc text-* + font-* combinations.
+   * Body text-base is the floor; .text-display / .text-heading may use
+   * leading-tight for visual hierarchy. .text-meta / .text-caption are
+   * deliberately muted via token, never via opacity.
+   */
+  .text-display {
+    @apply text-4xl font-semibold leading-tight tracking-tight md:text-5xl;
+  }
+  .text-heading {
+    @apply text-2xl font-semibold leading-tight md:text-3xl;
+  }
+  .text-subheading {
+    @apply text-lg font-semibold leading-snug;
+  }
+  .text-body {
+    @apply text-base leading-relaxed;
+  }
+  .text-meta {
+    @apply text-sm text-muted-foreground;
+  }
+  .text-caption {
+    @apply text-xs uppercase tracking-wider text-muted-foreground;
+  }
+
+  /* Pressed-feedback for non-Button elements (40+ accidental-click guard). */
+  .press-feedback {
+    @apply active:scale-[0.97] active:opacity-90 transition-transform;
   }
 }
 
@@ -405,9 +712,6 @@ section[id] {
     opacity: 1;
     transform: none;
   }
-<<<<<<< Updated upstream
-}
-=======
   .animate-caret,
   .animate-shimmer {
     animation: none !important;
@@ -420,9 +724,16 @@ section[id] {
   }
 }
 
-@media (min-width: 1024px) {
-  html {
-    font-size: 16px;
-  }
+/*
+ * Age-inclusive base font sizes (WCAG-friendly for users 40+).
+ * 18px default; opt into 19px or 20px via data-font-scale on <html>.
+ */
+html {
+  font-size: 18px;
 }
->>>>>>> Stashed changes
+html[data-font-scale="lg"] {
+  font-size: 19px;
+}
+html[data-font-scale="xl"] {
+  font-size: 20px;
+}

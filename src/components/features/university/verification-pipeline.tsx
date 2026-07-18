@@ -17,6 +17,7 @@ import {
 
 import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
+import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type {
   GraduateRecord,
   VerificationRecordStatus,
@@ -87,6 +89,7 @@ type GraduateListProps = {
     graduate: GraduateRecord,
     status: VerificationRecordStatus,
   ) => void;
+  onRequestMarkDispute: (graduate: GraduateRecord) => void;
 };
 
 function GraduateList({
@@ -94,16 +97,15 @@ function GraduateList({
   selected,
   onToggleSelected,
   onStatusChange,
+  onRequestMarkDispute,
 }: GraduateListProps) {
   if (records.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 p-12 text-center">
-        <Inbox className="h-10 w-10 text-muted-foreground" aria-hidden />
-        <h3>No records in this stage</h3>
-        <p className="text-muted-foreground">
-          When graduates reach this verification status they will appear here.
-        </p>
-      </div>
+      <EmptyState
+        icon={Inbox}
+        title="No records in this stage"
+        description="When graduates reach this verification status they will appear here."
+      />
     );
   }
 
@@ -157,7 +159,7 @@ function GraduateList({
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="outline" size="sm">
                 <Link href={`/university/graduates/${graduate.id}`}>
                   View record
                 </Link>
@@ -181,7 +183,7 @@ function GraduateList({
                 variant="destructive"
                 size="sm"
                 disabled={graduate.status === "Disputed"}
-                onClick={() => onStatusChange(graduate, "Disputed")}
+                onClick={() => onRequestMarkDispute(graduate)}
               >
                 Mark dispute
               </Button>
@@ -202,6 +204,8 @@ export function VerificationPipeline({
   const [records, setRecords] = useState(initialRecords);
   const [activeTab, setActiveTab] = useState<VerificationTab>("All");
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const [pendingMarkDispute, setPendingMarkDispute] =
+    useState<GraduateRecord | null>(null);
 
   const counts = useMemo(() => countByStatus(records), [records]);
   const visibleRecords = useMemo(
@@ -333,42 +337,39 @@ export function VerificationPipeline({
           const value = counts[status];
           const share =
             records.length > 0 ? Math.round((value / records.length) * 100) : 0;
-          const isActive = activeTab === status;
           return (
             <Card key={status} className="lift-on-hover">
-              <CardContent className="p-0">
-                <Button
-                  type="button"
-                  variant={isActive ? "secondary" : "ghost"}
-                  className="h-full w-full flex-col items-stretch gap-3 whitespace-normal p-5 text-left"
-                  aria-pressed={isActive}
-                  onClick={() => changeTab(status)}
-                >
+              <CardContent className="space-y-3 p-5">
+                <span className="flex items-center justify-between">
+                  <span
+                    aria-hidden
+                    className="flex h-9 w-9 items-center justify-center rounded-md bg-muted"
+                  >
+                    <Icon className="h-4 w-4" aria-hidden />
+                  </span>
+                  <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
+                </span>
+                <span className="text-4xl font-semibold tabular-nums">
+                  {value}
+                </span>
+                <span className="text-muted-foreground">
+                  {STATUS_DESCRIPTION[status]}
+                </span>
+                <span className="space-y-1">
                   <span className="flex items-center justify-between">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
-                      <Icon className="h-4 w-4" aria-hidden />
-                    </span>
-                    <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
+                    <small className="text-muted-foreground">Share</small>
+                    <small className="tabular-nums">{share}%</small>
                   </span>
-                  <span className="text-4xl font-semibold tabular-nums">
-                    {value}
+                  <span
+                    aria-hidden
+                    className="block h-1.5 overflow-hidden rounded-full bg-muted"
+                  >
+                    <span
+                      className="block h-full rounded-full bg-foreground animate-progress-x"
+                      style={{ width: `${share}%` }}
+                    />
                   </span>
-                  <span className="text-muted-foreground">
-                    {STATUS_DESCRIPTION[status]}
-                  </span>
-                  <span className="space-y-1">
-                    <span className="flex items-center justify-between">
-                      <small className="text-muted-foreground">Share</small>
-                      <small className="tabular-nums">{share}%</small>
-                    </span>
-                    <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
-                      <span
-                        className="block h-full rounded-full bg-foreground animate-progress-x"
-                        style={{ width: `${share}%` }}
-                      />
-                    </span>
-                  </span>
-                </Button>
+                </span>
               </CardContent>
             </Card>
           );
@@ -382,7 +383,7 @@ export function VerificationPipeline({
             <p>Filter the queue by verification status.</p>
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() =>
               push({
@@ -473,6 +474,7 @@ export function VerificationPipeline({
                   selected={selected}
                   onToggleSelected={toggleSelected}
                   onStatusChange={updateRecordStatus}
+                  onRequestMarkDispute={setPendingMarkDispute}
                 />
               </CardContent>
             </Card>
@@ -499,6 +501,7 @@ export function VerificationPipeline({
                       selected={selected}
                       onToggleSelected={toggleSelected}
                       onStatusChange={updateRecordStatus}
+                      onRequestMarkDispute={setPendingMarkDispute}
                     />
                   </CardContent>
                 </Card>
@@ -506,6 +509,28 @@ export function VerificationPipeline({
             );
           })}
         </Tabs>
+
+        <ConfirmDialog
+          open={pendingMarkDispute !== null}
+          onOpenChange={(open) => !open && setPendingMarkDispute(null)}
+          title="Mark this graduate as disputed?"
+          description={
+            pendingMarkDispute ? (
+              <>
+                <strong>{pendingMarkDispute.name}</strong> will be flagged for
+                verification review. Their employer pipeline will be paused
+                until the dispute is resolved.
+              </>
+            ) : null
+          }
+          confirmLabel="Mark dispute"
+          destructive
+          onConfirm={() => {
+            if (pendingMarkDispute)
+              updateRecordStatus(pendingMarkDispute, "Disputed");
+            setPendingMarkDispute(null);
+          }}
+        />
       </section>
     </div>
   );

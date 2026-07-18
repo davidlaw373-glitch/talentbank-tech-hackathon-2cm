@@ -74,67 +74,48 @@ export function CursorGlow({ className }: CursorGlowProps) {
         } as React.CSSProperties
       }
     >
-<<<<<<< Updated upstream
-      {/* Outer soft halo */}
-=======
       {/* Outer soft halo — sage (low alpha: atmosphere, not ink) */}
->>>>>>> Stashed changes
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           left: "var(--cx)",
           top: "var(--cy)",
           width: 720,
           height: 720,
           background:
-<<<<<<< Updated upstream
-            "radial-gradient(circle, oklch(0.78 0.16 165 / 0.35) 0%, oklch(0.78 0.16 165 / 0) 60%)",
+            "radial-gradient(circle, rgba(106, 138, 78, 0.22) 0%, rgba(106, 138, 78, 0) 60%)",
           filter: "blur(40px)",
-        }}
-      />
-      {/* Mid glow */}
-=======
-            "radial-gradient(circle, rgba(163, 177, 138, 0.18) 0%, rgba(163, 177, 138, 0) 60%)",
-          filter: "blur(40px)",
+          mixBlendMode: "screen",
         }}
       />
       {/* Mid glow — deep green (moderate alpha: anchors the glow to brand) */}
->>>>>>> Stashed changes
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           left: "var(--cx)",
           top: "var(--cy)",
           width: 420,
           height: 420,
           background:
-<<<<<<< Updated upstream
-            "radial-gradient(circle, oklch(0.85 0.18 165 / 0.45) 0%, oklch(0.85 0.18 165 / 0) 65%)",
+            "radial-gradient(circle, rgba(184, 122, 58, 0.18) 0%, rgba(184, 122, 58, 0) 65%)",
           filter: "blur(20px)",
+          mixBlendMode: "screen",
         }}
       />
-      {/* Bright core */}
-=======
-            "radial-gradient(circle, rgba(88, 129, 87, 0.30) 0%, rgba(88, 129, 87, 0) 65%)",
-          filter: "blur(20px)",
-        }}
-      />
-      {/* Bright core — warm off-white (the cursor light; must NEVER match text color) */}
->>>>>>> Stashed changes
+      {/* Bright core — warm amber wash, screen-blended so it only
+          brightens what's behind instead of painting over it. Keeps
+          cream text on dark pages legible under the cursor. */}
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           left: "var(--cx)",
           top: "var(--cy)",
           width: 160,
           height: 160,
           background:
-<<<<<<< Updated upstream
-            "radial-gradient(circle, oklch(0.95 0.2 165 / 0.7) 0%, oklch(0.95 0.2 165 / 0) 70%)",
-=======
-            "radial-gradient(circle, rgba(248, 252, 240, 0.90) 0%, rgba(248, 252, 240, 0) 70%)",
->>>>>>> Stashed changes
-          filter: "blur(8px)",
+            "radial-gradient(circle, rgba(241, 217, 184, 0.55) 0%, rgba(241, 217, 184, 0) 70%)",
+          filter: "blur(10px)",
+          mixBlendMode: "screen",
         }}
       />
     </div>

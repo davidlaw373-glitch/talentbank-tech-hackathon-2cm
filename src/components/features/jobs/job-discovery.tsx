@@ -18,6 +18,7 @@ import {
 
 import { useToast } from "@/components/common/toast";
 import { jobs } from "@/data/jobs";
+import { JobMatchBreakdown } from "@/components/features/jobs/job-match-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -155,8 +156,8 @@ export function JobDiscovery() {
       {/* Filters */}
       <Card>
         <CardContent className="space-y-4 p-5">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div className="flex flex-1 flex-col gap-1.5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <label
                 htmlFor="job-search"
                 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -178,7 +179,7 @@ export function JobDiscovery() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 sm:w-[12rem]">
               <label
                 htmlFor="work-mode-filter"
                 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -186,7 +187,7 @@ export function JobDiscovery() {
                 Work mode
               </label>
               <Select value={mode} onValueChange={setMode}>
-                <SelectTrigger id="work-mode-filter" className="w-44">
+                <SelectTrigger id="work-mode-filter" className="w-full sm:w-[12rem]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,7 +199,7 @@ export function JobDiscovery() {
               </Select>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 sm:w-[12rem]">
               <label
                 htmlFor="sort"
                 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
@@ -209,7 +210,7 @@ export function JobDiscovery() {
                 value={sort}
                 onValueChange={(v) => setSort(v as SortKey)}
               >
-                <SelectTrigger id="sort" className="w-44">
+                <SelectTrigger id="sort" className="w-full sm:w-[12rem]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -260,7 +261,7 @@ export function JobDiscovery() {
               return (
                 <article
                   key={job.id}
-                  className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent"
+                  className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent-soft"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -280,26 +281,12 @@ export function JobDiscovery() {
                       <p className="mt-2 text-sm text-muted-foreground">
                         {job.summary}
                       </p>
-                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        {job.matchingSkills.slice(0, 4).map((skill) => (
-                          <Badge
-                            key={skill}
-                            variant="secondary"
-                            className="text-[10px]"
-                          >
-                            {skill}
-                          </Badge>
-                        ))}
-                        {job.missingSkills.slice(0, 2).map((skill) => (
-                          <Badge
-                            key={skill}
-                            variant="outline"
-                            className="text-[10px] opacity-70"
-                          >
-                            + {skill}
-                          </Badge>
-                        ))}
-                      </div>
+                      <JobMatchBreakdown
+                        matchingSkills={job.matchingSkills}
+                        missingSkills={job.missingSkills}
+                        visibleCount={3}
+                        missingVisibleCount={0}
+                      />
                       <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" aria-hidden />
@@ -340,7 +327,7 @@ export function JobDiscovery() {
                         </span>
                         <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
                           <div
-                            className="h-full rounded-full bg-foreground/80"
+                            className="h-full rounded-full bg-chart-1"
                             style={{ width: `${job.matchScore}%` }}
                           />
                         </div>

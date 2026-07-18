@@ -165,8 +165,8 @@ export function GraduateManagement({
         }
       />
 
-      <section className="flex flex-wrap items-end gap-3">
-        <div className="min-w-[16rem] flex-1 space-y-1.5">
+      <section className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
           <label htmlFor="grad-search" className="block">
             <small>Search</small>
           </label>
@@ -185,14 +185,14 @@ export function GraduateManagement({
             />
           </div>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 sm:w-[12rem]">
           <label htmlFor="grad-year" className="block">
             <small>Graduation year</small>
           </label>
           <Select value={year} onValueChange={setYear}>
             <SelectTrigger
               id="grad-year"
-              className="w-[12rem]"
+              className="w-full sm:w-[12rem]"
               aria-label="Filter by graduation year"
             >
               <SelectValue placeholder="All years" />
@@ -210,7 +210,7 @@ export function GraduateManagement({
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 sm:w-[14rem]">
           <label htmlFor="grad-employment" className="block">
             <small>Employment status</small>
           </label>
@@ -222,7 +222,7 @@ export function GraduateManagement({
           >
             <SelectTrigger
               id="grad-employment"
-              className="w-[14rem]"
+              className="w-full sm:w-[14rem]"
               aria-label="Filter by employment status"
             >
               <SelectValue placeholder="All statuses" />
@@ -320,13 +320,23 @@ export function GraduateManagement({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Graduate</TableHead>
-                    <TableHead>Program</TableHead>
-                    <TableHead>Year</TableHead>
-                    <TableHead>GPA</TableHead>
-                    <TableHead>Verification</TableHead>
-                    <TableHead>Employment</TableHead>
-                    <TableHead>Skills</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Program
+                    </TableHead>
+                    <TableHead className="hidden sm:table-cell">
+                      Year
+                    </TableHead>
+                    <TableHead className="hidden lg:table-cell">GPA</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Verification
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Employment
+                    </TableHead>
+                    <TableHead className="hidden lg:table-cell">
+                      Skills
+                    </TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -345,26 +355,28 @@ export function GraduateManagement({
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{graduate.program}</TableCell>
-                      <TableCell className="tabular-nums">
+                      <TableCell className="hidden md:table-cell">
+                        {graduate.program}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell tabular-nums">
                         {graduate.graduationYear}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="hidden lg:table-cell text-muted-foreground">
                         {graduate.gpa}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden md:table-cell">
                         <Badge variant={STATUS_VARIANT[graduate.status]}>
                           {graduate.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden md:table-cell">
                         <Badge
                           variant={EMPLOYMENT_VARIANT[graduate.employment]}
                         >
                           {graduate.employment}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="hidden lg:table-cell">
                         <div className="flex flex-wrap gap-1">
                           {graduate.skills.slice(0, 3).map((skill) => (
                             <Badge key={skill} variant="outline">
@@ -379,18 +391,20 @@ export function GraduateManagement({
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap items-center gap-1">
-                          <Button asChild variant="ghost" size="sm">
+                        <div className="flex flex-wrap items-center justify-end gap-1">
+                          <Button asChild variant="outline" size="sm">
                             <Link
                               href={`/university/graduates/${graduate.id}`}
                             >
-                              View
+                              <span className="sm:hidden">Open</span>
+                              <span className="hidden sm:inline">View</span>
                               <ArrowRight aria-hidden />
                             </Link>
                           </Button>
                           {graduate.status !== "Verified" && (
                             <Button
                               size="sm"
+                              className="hidden sm:inline-flex"
                               onClick={() =>
                                 updateStatus(graduate, "Verified")
                               }
@@ -402,6 +416,7 @@ export function GraduateManagement({
                             <Button
                               variant="outline"
                               size="sm"
+                              className="hidden md:inline-flex"
                               onClick={() =>
                                 updateStatus(graduate, "Disputed")
                               }

@@ -5,13 +5,25 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { activateCoverRole } from "@/components/features/cover/cover-roles";
 
-const NAV_LINKS = [
-  { label: "Candidates", href: "#roles" },
-  { label: "Employers", href: "#roles" },
-  { label: "Universities", href: "#roles" },
+type NavLink = {
+  label: string;
+  href: string;
+  roleId?: string;
+};
+
+const NAV_LINKS: NavLink[] = [
+  { label: "Candidates", href: "#roles", roleId: "candidates" },
+  { label: "Employers", href: "#roles", roleId: "employers" },
+  { label: "Universities", href: "#roles", roleId: "universities" },
   { label: "Features", href: "#features" },
 ];
+
+function handleRoleLinkClick(roleId: string | undefined) {
+  if (!roleId) return;
+  activateCoverRole(roleId);
+}
 
 export function CoverNav() {
   const [open, setOpen] = useState(false);
@@ -72,6 +84,7 @@ export function CoverNav() {
             <Link
               key={link.label}
               href={link.href}
+              onClick={() => handleRoleLinkClick(link.roleId)}
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
@@ -80,10 +93,12 @@ export function CoverNav() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="sm">
-            Sign in
+          <Button asChild variant="outline" size="sm">
+            <Link href="/login">Sign in</Link>
           </Button>
-          <Button size="sm">Get started</Button>
+          <Button asChild size="sm">
+            <Link href="/register">Get started</Link>
+          </Button>
         </div>
 
         <Button
@@ -109,15 +124,26 @@ export function CoverNav() {
               <Link
                 key={link.label}
                 href={link.href}
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  handleRoleLinkClick(link.roleId);
+                  setOpen(false);
+                }}
                 className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent"
               >
                 {link.label}
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2 pt-2 border-t">
-              <Button variant="outline">Sign in</Button>
-              <Button>Get started</Button>
+              <Button asChild variant="outline">
+                <Link href="/login" onClick={() => setOpen(false)}>
+                  Sign in
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href="/register" onClick={() => setOpen(false)}>
+                  Get started
+                </Link>
+              </Button>
             </div>
           </nav>
         </div>

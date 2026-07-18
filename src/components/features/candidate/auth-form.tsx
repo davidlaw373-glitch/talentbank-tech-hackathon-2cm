@@ -1,12 +1,11 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowRight,
   Building2,
-  Check,
   GraduationCap,
   Lock,
   Mail,
@@ -16,7 +15,6 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,7 +25,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 type Role = "candidate" | "employer" | "university";
@@ -36,7 +33,16 @@ const ROLES: {
   id: Role;
   label: string;
   icon: LucideIcon;
-  tagline: string;
+  /**
+   * Punchy one-liner shown big on the role card. Reads like a promise,
+   * not a feature list. Voice shifts per role so the three feel like
+   * three different products, not three variants of the same one.
+   */
+  hook: string;
+  /** Small descriptor shown underneath the hook. */
+  descriptor: string;
+  /** Accent token used for decorative elements on this role's card. */
+  accent: "chart-1" | "chart-2" | "chart-4";
   redirect: { register: string; login: string };
   registerGoal: { label: string; placeholder: string };
 }[] = [
@@ -44,23 +50,27 @@ const ROLES: {
     id: "candidate",
     label: "Candidate",
     icon: User,
-    tagline:
-      "Build a verified profile, see your match score for every role, and track applications.",
-    redirect: { register: "/candidate/onboarding", login: "/candidate/dashboard" },
+    hook: "Find work that fits how you actually work.",
+    descriptor:
+      "Skills translated from real projects. Matches that explain themselves.",
+    accent: "chart-1",
+    redirect: { register: "/candidate/profile", login: "/candidate/dashboard" },
     registerGoal: {
-      label: "Career goal",
-      placeholder: "e.g. Find my first product role",
+      label: "What are you looking for?",
+      placeholder: "e.g. A senior frontend role in climate tech",
     },
   },
   {
     id: "employer",
     label: "Employer",
     icon: Building2,
-    tagline:
-      "Post roles, see ranked candidates with AI summaries, and run structured interviews.",
+    hook: "Hire the person, not the keyword soup.",
+    descriptor:
+      "Ranked shortlists with AI summaries. Structured interviews, no gut calls.",
+    accent: "chart-2",
     redirect: { register: "/employer", login: "/employer" },
     registerGoal: {
-      label: "Company name",
+      label: "Your company",
       placeholder: "e.g. Northstar Labs",
     },
   },
@@ -68,11 +78,13 @@ const ROLES: {
     id: "university",
     label: "University",
     icon: GraduationCap,
-    tagline:
-      "Verify student credentials in bulk and track graduate employment outcomes.",
+    hook: "Show what your grads are actually building.",
+    descriptor:
+      "Verified credentials by the thousands. Outcomes you can stand behind.",
+    accent: "chart-4",
     redirect: { register: "/university", login: "/university" },
     registerGoal: {
-      label: "Institution name",
+      label: "Your institution",
       placeholder: "e.g. University of Malaya",
     },
   },
@@ -99,7 +111,7 @@ function Field({
     <div className="space-y-1.5">
       <label
         htmlFor={id}
-        className="block text-sm font-medium text-foreground"
+        className="block text-base font-medium text-foreground"
       >
         {label}
       </label>
@@ -151,118 +163,149 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       : activeRole.redirect.login;
 
   return (
-    <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-2">
-      {/* Brand panel */}
-      <div className="hidden flex-col justify-between rounded-2xl border bg-foreground p-8 text-background lg:flex">
-        <div className="space-y-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-background text-foreground">
-            <Sparkles className="h-4 w-4" aria-hidden />
-          </div>
-          <h2 className="text-3xl font-semibold tracking-tight text-background">
+    <div className="flex w-full flex-col gap-5">
+      {/* Brand header — compact, single row */}
+      <header className="flex items-center gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-foreground text-background shadow-sm">
+          <Sparkles className="h-4 w-4" aria-hidden />
+        </div>
+        <div className="min-w-0">
+          <p className="text-base font-semibold leading-tight tracking-tight">
             CareerOS
-          </h2>
-          <p className="text-base text-background/70">
+          </p>
+          <p className="truncate text-xs text-muted-foreground">
             {registering
               ? "Pick your role and start in under a minute."
               : "Welcome back. Your career journey continues here."}
           </p>
         </div>
+      </header>
 
-        <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-background/55">
-            One platform, three roles
-          </p>
-          <ul className="space-y-3 text-sm text-background/85">
+      {/* Role selection — each card has its own accent and personality */}
+      {registering && (
+        <section aria-label="Choose your role">
+          <div
+            role="radiogroup"
+            aria-label="Audience"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+          >
             {ROLES.map((r) => {
               const Icon = r.icon;
+              const isActive = r.id === role;
               return (
-                <li key={r.id} className="flex items-start gap-3">
+                <button
+                  key={r.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  onClick={() => setRole(r.id)}
+                  className={cn(
+                    "group relative flex flex-col items-start gap-2 overflow-hidden rounded-xl border-2 px-4 py-3 text-left transition-all",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    isActive
+                      ? "border-foreground bg-foreground text-background shadow-md"
+                      : "border-border bg-card hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm",
+                  )}
+                >
+                  {/* Accent stripe — uses per-role chart color so each
+                      card reads as distinct at a glance. The active
+                      state covers it with the inverted bg so the
+                      contrast stays high; otherwise the stripe is the
+                      card's identity marker. */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "absolute inset-x-0 top-0 h-1 origin-left transition-transform",
+                      `bg-${r.accent}`,
+                      isActive ? "scale-x-100" : "scale-x-50 opacity-60",
+                    )}
+                  />
                   <span
                     className={cn(
-                      "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md",
-                      r.id === role
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                      isActive
                         ? "bg-background text-foreground"
-                        : "bg-background/15 text-background"
+                        : `bg-${r.accent}/15 text-foreground group-hover:bg-${r.accent}/25`,
                     )}
                   >
-                    <Icon className="h-3.5 w-3.5" aria-hidden />
+                    <Icon className="h-4 w-4" aria-hidden />
                   </span>
-                  <div>
-                    <p className="font-medium">{r.label}</p>
-                    <p className="text-xs text-background/65">{r.tagline}</p>
-                  </div>
-                </li>
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] opacity-80">
+                    {r.label}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-sm font-semibold leading-snug",
+                      isActive ? "text-background" : "text-foreground",
+                    )}
+                  >
+                    {r.hook}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-[11px] leading-snug",
+                      isActive
+                        ? "text-background/75"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    {r.descriptor}
+                  </span>
+                </button>
               );
             })}
-          </ul>
-        </div>
-
-        <p className="text-xs text-background/55">
-          Trusted by 180+ universities and 4,000+ hiring teams.
-        </p>
-      </div>
-
-      {/* Form */}
-      <Card>
-        <CardHeader className="space-y-4">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <CardTitle>
-                <h1>
-                  {registering ? "Create your account" : "Welcome back"}
-                </h1>
-              </CardTitle>
-              <CardDescription>
-                {registering
-                  ? "Choose your role to get started."
-                  : "Log in to continue your CareerOS journey."}
-              </CardDescription>
-            </div>
-            <Badge variant="secondary">{activeRole.label}</Badge>
           </div>
+        </section>
+      )}
 
-          <Tabs value={role} onValueChange={(v) => setRole(v as Role)}>
-            <TabsList
-              className="grid h-auto w-full grid-cols-3 gap-1 bg-transparent p-0"
-              aria-label="Choose role"
-            >
-              {ROLES.map((r) => {
-                const Icon = r.icon;
-                return (
-                  <TabsTrigger
-                    key={r.id}
-                    value={r.id}
-                    className="flex flex-col items-center gap-1 rounded-md border bg-background px-3 py-2.5 data-[state=active]:border-foreground data-[state=active]:bg-foreground data-[state=active]:text-background"
-                  >
-                    <Icon className="h-4 w-4" aria-hidden />
-                    <span className="text-xs font-medium">{r.label}</span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </Tabs>
+      {/* Form — single column, compact spacing */}
+      <Card className="w-full">
+        <CardHeader className="space-y-1 pb-2">
+          <CardTitle>
+            <h2>
+              {registering ? "Create your account" : "Welcome back"}
+            </h2>
+          </CardTitle>
+          <CardDescription>
+            {registering
+              ? "A few quick details to get you started."
+              : "Log in to continue your CareerOS journey."}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {registering && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Field
+                id="name"
+                label={
+                  role === "candidate"
+                    ? "Full name"
+                    : `Your name (${activeRole.label})`
+                }
+                placeholder="Alex Morgan"
+                icon={User}
+                autoComplete="name"
+              />
+              <Field
+                id="email"
+                label="Email"
+                type="email"
+                placeholder="you@example.com"
+                icon={Mail}
+                autoComplete="email"
+              />
+            </div>
+          )}
+          {!registering && (
             <Field
-              id="name"
-              label={
-                role === "candidate" ? "Full name" : `Your name (${activeRole.label})`
-              }
-              placeholder="Alex Morgan"
-              helper="Use the name you go by professionally."
-              icon={User}
-              autoComplete="name"
+              id="email"
+              label="Email"
+              type="email"
+              placeholder="you@example.com"
+              icon={Mail}
+              autoComplete="email"
             />
           )}
-          <Field
-            id="email"
-            label="Email"
-            type="email"
-            placeholder="you@example.com"
-            icon={Mail}
-            autoComplete="email"
-          />
           <Field
             id="password"
             label="Password"
@@ -277,13 +320,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               id="goal"
               label={activeRole.registerGoal.label}
               placeholder={activeRole.registerGoal.placeholder}
-              helper={
-                role === "candidate"
-                  ? "We'll use this to personalize your matches."
-                  : role === "employer"
-                    ? "We'll prefill your company workspace."
-                    : "We'll match your credential sync settings."
-              }
               icon={
                 role === "candidate"
                   ? Sparkles
@@ -324,9 +360,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 ? "Already registered? Log in"
                 : "New to CareerOS? Register"}
             </Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link href="/">Back to home</Link>
           </Button>
         </CardFooter>
       </Card>

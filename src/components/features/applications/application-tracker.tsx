@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -79,7 +80,7 @@ function ApplicationProgress({ application }: { application: Application }) {
               {isComplete && (
                 <span
                   className={cn(
-                    "absolute inset-y-0 left-0 w-full rounded-full bg-foreground/70",
+                    "absolute inset-y-0 left-0 w-full rounded-full bg-chart-1",
                     i <= completed && "animate-progress-x"
                   )}
                   style={
@@ -90,7 +91,7 @@ function ApplicationProgress({ application }: { application: Application }) {
                 />
               )}
               {isCurrent && (
-                <span className="absolute inset-y-0 left-0 w-full rounded-full bg-foreground/30" />
+                <span className="absolute inset-y-0 left-0 w-full rounded-full bg-chart-2" />
               )}
             </div>
           );
@@ -107,6 +108,9 @@ export function ApplicationTracker() {
   const [applicationStates, setApplicationStates] = useState<
     Record<string, TrackingState>
   >({});
+  const [pendingWithdraw, setPendingWithdraw] = useState<
+    { id: string; jobTitle: string } | null
+  >(null);
 
   const getTrackingState = (id: string): TrackingState =>
     applicationStates[id] ?? "active";
@@ -263,7 +267,7 @@ export function ApplicationTracker() {
 
           {/* List */}
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-12 text-center">
+            <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-surface-tint px-6 py-12 text-center">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                 <Filter className="h-5 w-5 text-muted-foreground" aria-hidden />
               </div>
@@ -281,7 +285,7 @@ export function ApplicationTracker() {
                 const trackingState = getTrackingState(app.id);
                 return (
                   <li key={app.id}>
-                    <div className="lift-on-hover block rounded-lg border bg-card p-5 transition-colors hover:bg-accent">
+                    <div className="lift-on-hover block rounded-lg border bg-card p-5 transition-colors hover:bg-accent-soft">
                       <div className="flex items-start gap-4">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
                           <Building2
@@ -307,7 +311,7 @@ export function ApplicationTracker() {
                             <span>Applied {app.appliedDate}</span>
                             <span>· {app.stage}</span>
                           </div>
-                          <div className="rounded-md border-l-2 border-foreground/40 bg-muted/40 p-2.5 text-xs leading-relaxed">
+                          <div className="rounded-md border-l-2 border-foreground/40 bg-surface-tint p-2.5 text-xs leading-relaxed">
                             <span className="font-semibold">Update: </span>
                             {app.update}
                           </div>
@@ -341,11 +345,10 @@ export function ApplicationTracker() {
                               aria-pressed={trackingState === "withdrawn"}
                               disabled={trackingState === "withdrawn"}
                               onClick={() =>
-                                updateTrackingState(
-                                  app.id,
-                                  "withdrawn",
-                                  app.jobTitle
-                                )
+                                setPendingWithdraw({
+                                  id: app.id,
+                                  jobTitle: app.jobTitle,
+                                })
                               }
                             >
                               {trackingState === "withdrawn"
@@ -363,6 +366,33 @@ export function ApplicationTracker() {
           )}
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={pendingWithdraw !== null}
+        onOpenChange={(open) => !open && setPendingWithdraw(null)}
+        title="Withdraw your application?"
+        description={
+          pendingWithdraw ? (
+            <>
+              Your application for <strong>{pendingWithdraw.jobTitle}</strong>{" "}
+              will be withdrawn. The employer will no longer see it in their
+              pipeline. This can&apos;t be undone, but you can re-apply later.
+            </>
+          ) : null
+        }
+        confirmLabel="Withdraw"
+        destructive
+        onConfirm={() => {
+          if (pendingWithdraw) {
+            updateTrackingState(
+              pendingWithdraw.id,
+              "withdrawn",
+              pendingWithdraw.jobTitle,
+            );
+          }
+          setPendingWithdraw(null);
+        }}
+      />
     </div>
   );
 }

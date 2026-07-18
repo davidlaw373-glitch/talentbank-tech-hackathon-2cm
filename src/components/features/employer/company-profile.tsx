@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/common/toast";
 
 export function CompanyProfile() {
@@ -384,6 +385,7 @@ function TagList({
   variant: "secondary" | "outline";
 }) {
   const [value, setValue] = useState("");
+  const [pendingRemove, setPendingRemove] = useState<string | null>(null);
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
@@ -398,8 +400,8 @@ function TagList({
               <button
                 type="button"
                 aria-label={`Remove ${p}`}
-                onClick={() => onRemove(p)}
-                className="rounded-sm hover:bg-foreground/10"
+                onClick={() => setPendingRemove(p)}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-sm hover:bg-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
               >
                 <X className="h-3 w-3" aria-hidden />
               </button>
@@ -412,7 +414,11 @@ function TagList({
       </div>
       {editing ? (
         <div className="flex flex-wrap items-center gap-2">
+          <label htmlFor={`add-tag-${variant}`} className="sr-only">
+            Add a {variant === "secondary" ? "culture tag" : "benefit"}
+          </label>
           <Input
+            id={`add-tag-${variant}`}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="Add an item"
@@ -432,6 +438,19 @@ function TagList({
           </Button>
         </div>
       ) : null}
+
+      <ConfirmDialog
+        open={pendingRemove !== null}
+        onOpenChange={(open) => !open && setPendingRemove(null)}
+        title={`Remove ${pendingRemove ?? ""}?`}
+        description="This tag will no longer appear on your company profile. You can add it back later."
+        confirmLabel="Remove tag"
+        destructive
+        onConfirm={() => {
+          if (pendingRemove) onRemove(pendingRemove);
+          setPendingRemove(null);
+        }}
+      />
     </div>
   );
 }

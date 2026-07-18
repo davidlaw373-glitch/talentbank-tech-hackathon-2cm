@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, GraduationCap, Compass, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Check, GraduationCap, Compass, TrendingUp, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
@@ -96,7 +96,7 @@ export function CoverPathFinder() {
     <section
       id="paths"
       aria-label="Career path finder"
-      className="w-full border-t bg-muted/40"
+      className="w-full border-t bg-surface-tint"
     >
       <div className="container mx-auto px-6 py-20 md:py-28">
         <ScrollReveal className="mx-auto max-w-2xl text-center">
@@ -128,19 +128,19 @@ export function CoverPathFinder() {
                     onClick={() => pick(path)}
                     aria-pressed={active}
                     className={cn(
-                      "lift-on-hover h-auto justify-start gap-3 whitespace-normal rounded-xl border bg-card p-4 text-left transition-colors hover:bg-accent",
-                      active && "border-foreground/40 bg-accent"
+                      "lift-on-hover h-auto justify-start gap-3 whitespace-normal rounded-xl border-2 bg-card p-4 text-left transition-colors hover:bg-accent-soft",
+                      active && "border-foreground bg-accent-soft"
                     )}
                   >
                     <div
                       className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-md",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-md transition-colors",
                         active
                           ? "bg-foreground text-background"
-                          : "bg-muted text-foreground"
+                          : "bg-surface-inset text-foreground"
                       )}
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5" aria-hidden />
                     </div>
                     <div className="flex-1 text-left">
                       <p
@@ -149,19 +149,26 @@ export function CoverPathFinder() {
                       >
                         {path.nickname}
                       </p>
-                      <p className="text-sm font-semibold">{path.title}</p>
+                      <p className="text-sm font-semibold text-foreground">
+                        {path.title}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {path.sub}
                       </p>
                     </div>
-                    <ArrowRight
-                      className={cn(
-                        "h-4 w-4 shrink-0 self-center transition-transform",
-                        active
-                          ? "translate-x-0.5 text-foreground"
-                          : "text-muted-foreground/40 group-hover:translate-x-0.5"
-                      )}
-                    />
+                    {active ? (
+                      <span
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground text-background"
+                        aria-hidden
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                      </span>
+                    ) : (
+                      <ArrowRight
+                        className="h-4 w-4 shrink-0 self-center text-muted-foreground"
+                        aria-hidden
+                      />
+                    )}
                   </Button>
                 );
               })}
@@ -175,7 +182,7 @@ export function CoverPathFinder() {
             >
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-muted/60 blur-3xl"
+                className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-highlight-soft/60 blur-3xl"
               />
               <div className="relative flex flex-col gap-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -212,7 +219,7 @@ export function CoverPathFinder() {
                         viewBox="0 0 64 24"
                         fill="none"
                         aria-hidden
-                        className="text-foreground/60"
+                        className="text-foreground/80"
                       >
                         <line
                           x1="2"
@@ -235,7 +242,7 @@ export function CoverPathFinder() {
                       </svg>
                     </div>
                     <div className="flex-1 rounded-lg border bg-foreground p-4 text-background">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em]">
                         Next step
                       </p>
                       <p className="mt-1.5 text-sm font-medium sm:text-base">
@@ -281,7 +288,7 @@ export function CoverPathFinder() {
                     </div>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full bg-foreground/80 animate-progress"
+                        className="h-full rounded-full bg-chart-1 animate-progress"
                         style={{ width: `${selected.match}%` }}
                       />
                     </div>

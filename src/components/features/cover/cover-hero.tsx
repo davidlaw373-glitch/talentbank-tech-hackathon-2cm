@@ -58,11 +58,20 @@ export function CoverHero() {
       aria-label="Introduction"
       className="relative w-full overflow-hidden"
     >
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <CursorGlow />
-        <div className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-muted/60 blur-3xl" />
-        <div className="absolute -right-24 top-40 h-96 w-96 rounded-full bg-accent/40 blur-3xl" />
-        <div className="absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 rounded-full bg-muted/40 blur-3xl" />
+        <div className="animate-float-slow absolute -left-32 top-10 h-80 w-80 rounded-full bg-chart-2/30 blur-3xl" />
+        <div className="animate-float-slower absolute -right-24 top-40 h-96 w-96 rounded-full bg-chart-1/25 blur-3xl" />
+        <div className="animate-float-slow absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 rounded-full bg-chart-4/30 blur-3xl" />
+        <div className="animate-float-slower absolute right-1/3 top-1/4 h-64 w-64 rounded-full bg-chart-7/20 blur-3xl" />
+        {/* Subtle gradient mesh for ambient warmth */}
+        <div
+          className="animate-shimmer-gradient absolute inset-0 opacity-30"
+          style={{
+            background:
+              "linear-gradient(135deg, transparent 0%, rgba(106,138,78,0.04) 25%, transparent 50%, rgba(184,122,58,0.04) 75%, transparent 100%)",
+          }}
+        />
       </div>
 
       <div className="container mx-auto flex flex-col items-center px-6 pt-20 pb-24 text-center md:pt-32 md:pb-36">

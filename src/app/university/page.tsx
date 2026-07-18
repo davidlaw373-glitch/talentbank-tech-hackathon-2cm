@@ -10,6 +10,7 @@ import {
   FileText,
   GraduationCap,
   ShieldCheck,
+  Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -79,6 +80,40 @@ export default function UniversityDashboardPage() {
     .slice(0, 4);
   const recentDisputes = universityDisputes.slice(0, 3);
 
+  // Highest priority next-action for university faculty:
+  // pending verification or open dispute counts. Pick whichever is non-zero.
+  const verificationCounts = countByStatus();
+  const pendingVerifications = verificationCounts["Pending review"];
+  const actionRequired = verificationCounts["Action required"];
+  const openDisputes = universityDisputes.filter((d) => d.status === "Open").length;
+  const facultyNextAction =
+    pendingVerifications > 0
+      ? {
+          title: `Review ${pendingVerifications} pending ${
+            pendingVerifications === 1 ? "verification" : "verifications"
+          }`,
+          hint: `${actionRequired} ${
+            actionRequired === 1 ? "item needs" : "items need"
+          } action from candidates.`,
+          href: "/university/verification",
+          cta: "Open verification queue",
+        }
+      : openDisputes > 0
+        ? {
+            title: `Resolve ${openDisputes} open ${
+              openDisputes === 1 ? "dispute" : "disputes"
+            }`,
+            hint: "Faculty reviewers are waiting on a decision.",
+            href: "/university/disputes",
+            cta: "Open disputes",
+          }
+        : {
+            title: "All queues are clear",
+            hint: "No pending verifications or open disputes right now.",
+            href: "/university/verification",
+            cta: "Review verification queue",
+          };
+
   return (
     <div className="space-y-8">
       <PageHeading
@@ -86,6 +121,32 @@ export default function UniversityDashboardPage() {
         description={`${universityProfile.tagline} · Founded ${universityProfile.founded} · ${universityProfile.city}, ${universityProfile.country}`}
         action={<DashboardBulkSyncButton />}
       />
+
+      {/* Next-action prompt */}
+      <Card className="lift-on-hover">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+              <Sparkles className="h-5 w-5" aria-hidden />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Next action
+              </p>
+              <p className="text-sm font-medium">{facultyNextAction.title}</p>
+              <p className="text-xs text-muted-foreground">
+                {facultyNextAction.hint}
+              </p>
+            </div>
+          </div>
+          <Button asChild>
+            <Link href={facultyNextAction.href}>
+              {facultyNextAction.cta}
+              <ArrowRight />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Stat tiles */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
@@ -161,7 +222,7 @@ export default function UniversityDashboardPage() {
                 {total} records currently in the pipeline.
               </CardDescription>
             </div>
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="outline" size="sm">
               <Link href="/university/verification">
                 Manage
                 <ArrowRight />
@@ -240,7 +301,7 @@ export default function UniversityDashboardPage() {
             <h2>Recent disputes</h2>
             <p>Latest escalations awaiting faculty review.</p>
           </div>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="outline" size="sm">
             <Link href="/university/disputes">
               Open disputes
               <ArrowRight />
@@ -265,7 +326,7 @@ export default function UniversityDashboardPage() {
             <h2>Employment at a glance</h2>
             <p>Outcomes by cohort year.</p>
           </div>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="outline" size="sm">
             <Link href="/university/employment">
               Full report
               <ArrowRight />
@@ -304,7 +365,7 @@ export default function UniversityDashboardPage() {
                     </TableCell>
                     <TableCell>{e.topRole}</TableCell>
                     <TableCell>
-                      <Button asChild variant="ghost" size="icon" aria-label={`Open ${e.cohort} details`}>
+                      <Button asChild variant="outline" size="icon" aria-label={`Open ${e.cohort} details`}>
                         <Link href="/university/employment">
                           <ArrowRight />
                         </Link>

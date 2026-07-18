@@ -17,6 +17,7 @@ type Step = {
   title: string;
   body: string;
   detail: string;
+  accent: string;
 };
 
 const STEPS: Step[] = [
@@ -26,6 +27,7 @@ const STEPS: Step[] = [
     title: "Build your profile",
     body: "Universities verify degrees and capstones. You add your work. AI translates skills into a profile that proves what you can do.",
     detail: "Takes about 10 minutes",
+    accent: "bg-chart-1",
   },
   {
     n: "02",
@@ -33,6 +35,7 @@ const STEPS: Step[] = [
     title: "Get matched",
     body: "CareerOS scores your fit for every role in real time — against 200+ signals including skills, goals, and trajectory.",
     detail: "Updated every 24 hours",
+    accent: "bg-chart-2",
   },
   {
     n: "03",
@@ -40,22 +43,27 @@ const STEPS: Step[] = [
     title: "Interview & hire",
     body: "Structured interviews with shared scorecards. AI-generated feedback for both sides. Faster, fairer, and always clear where you stand.",
     detail: "12 days median time-to-hire",
+    accent: "bg-chart-4",
   },
 ];
 
 function StepCard({ step }: { step: Step }) {
   const Icon = step.icon;
   return (
-    <article className="lift-on-hover flex h-full flex-col gap-4 rounded-2xl border bg-card p-6 text-card-foreground sm:p-8">
+    <article className="lift-on-hover relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border bg-card p-6 text-card-foreground sm:p-8">
+      <span
+        aria-hidden
+        className={`absolute inset-x-0 top-0 h-1 ${step.accent}`}
+      />
       <div className="flex items-center justify-between">
         <span
-          className="text-4xl font-semibold tracking-tight tabular-nums"
+          className="text-4xl font-semibold tracking-tight tabular-nums text-muted-foreground/60"
           aria-hidden
         >
           {step.n}
         </span>
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-foreground text-background"
+          className={`flex h-11 w-11 items-center justify-center rounded-xl text-background ${step.accent}`}
           aria-hidden
         >
           <Icon className="h-5 w-5" />
@@ -74,7 +82,9 @@ function StepCard({ step }: { step: Step }) {
         className="mt-2 flex items-center gap-2 border-t pt-4 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground"
         aria-hidden
       >
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-foreground/40" />
+        <span
+          className={`inline-block h-1.5 w-1.5 rounded-full ${step.accent}`}
+        />
         {step.detail}
       </div>
     </article>
@@ -85,7 +95,7 @@ function ArrowBetween({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center self-center text-foreground/30",
+        "flex shrink-0 items-center justify-center self-center text-foreground",
         "py-3 md:py-0 md:px-2",
         className
       )}
@@ -101,7 +111,7 @@ export function CoverHow() {
     <section
       id="how"
       aria-label="How CareerOS works"
-      className="w-full border-t"
+      className="w-full border-t bg-background"
     >
       <div className="container mx-auto px-6 py-20 md:py-28">
         <ScrollReveal className="mx-auto max-w-2xl text-center">

@@ -12,7 +12,7 @@ function renderText(text: string) {
   const parts = text.split(/~~(.*?)~~/g);
   return parts.map((part, i) =>
     i % 2 === 1 ? (
-      <span key={i} className="line-through opacity-50">
+      <span key={i} className="line-through">
         {part}
       </span>
     ) : (

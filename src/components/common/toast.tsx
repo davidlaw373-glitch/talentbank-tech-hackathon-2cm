@@ -155,7 +155,7 @@ function ToastCard({
           "rounded-md p-1 transition-colors",
           toast.tone === "success"
             ? "text-background/70 hover:bg-background/10 hover:text-background"
-            : "text-muted-foreground hover:bg-accent hover:text-foreground",
+            : "text-muted-foreground hover:bg-accent-soft hover:text-foreground",
         )}
       >
         <X className="h-4 w-4" aria-hidden />

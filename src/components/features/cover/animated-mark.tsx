@@ -171,24 +171,30 @@ export function AnimatedMark({
           opacity={star.o}
           className={cn(
             "transition-opacity duration-1000",
-            drawn ? "opacity-100" : "opacity-0"
+            drawn ? "opacity-100 animate-twinkle" : "opacity-0"
           )}
           style={{
-            transitionDelay: `${0.4 + (i % 5) * 0.1}s`,
+            transitionDelay: drawn ? "0s" : `${0.4 + (i % 5) * 0.1}s`,
+            animationDelay: drawn
+              ? `${(i % 6) * 0.5}s`
+              : `${1.2 + (i % 6) * 0.5}s`,
+            // @ts-expect-error -- CSS custom property for twinkle range
+            "--twinkle-min": star.o * 0.3,
+            "--twinkle-max": star.o * 1.6,
           }}
         />
       ))}
 
-      {/* Orbital ring 1 — slow counter-clockwise */}
+      {/* Orbital ring 1 — slow counter-clockwise, continuous rotation */}
       <g
         className={cn(
           "transition-opacity duration-1000",
-          drawn ? "opacity-100" : "opacity-0"
+          drawn ? "opacity-100 animate-orbit-ccw" : "opacity-0"
         )}
         style={{
           transformOrigin: "190px 150px",
           transformBox: "view-box",
-          transitionDelay: "0.6s",
+          transitionDelay: drawn ? "0s" : "0.6s",
         }}
       >
         <ellipse
@@ -203,16 +209,16 @@ export function AnimatedMark({
         />
       </g>
 
-      {/* Orbital ring 2 — faster clockwise */}
+      {/* Orbital ring 2 — faster clockwise, continuous rotation */}
       <g
         className={cn(
           "transition-opacity duration-1000",
-          drawn ? "opacity-100" : "opacity-0"
+          drawn ? "opacity-100 animate-orbit-cw" : "opacity-0"
         )}
         style={{
           transformOrigin: "190px 150px",
           transformBox: "view-box",
-          transitionDelay: "0.8s",
+          transitionDelay: drawn ? "0s" : "0.8s",
         }}
       >
         <ellipse
@@ -227,7 +233,7 @@ export function AnimatedMark({
         />
       </g>
 
-      {/* Edges — draw in with stroke-dashoffset */}
+      {/* Edges — draw in then continuously flow */}
       {EDGES.map((edge, i) => {
         const a = NODES[edge.from];
         const b = NODES[edge.to];
@@ -243,12 +249,16 @@ export function AnimatedMark({
             strokeWidth="1.4"
             strokeLinecap="round"
             strokeOpacity="0.5"
-            strokeDasharray={length}
+            strokeDasharray={drawn ? "6 6" : length}
             strokeDashoffset={drawn ? 0 : length}
+            className={drawn ? "animate-edge-flow" : ""}
             style={{
-              transition: `stroke-dashoffset 0.9s cubic-bezier(0.16, 1, 0.3, 1) ${
-                0.2 + i * 0.2
-              }s`,
+              transition:
+                "stroke-dasharray 0.9s cubic-bezier(0.16, 1, 0.3, 1), stroke-dashoffset 0.9s cubic-bezier(0.16, 1, 0.3, 1)",
+              transitionDelay: drawn
+                ? `${i * 0.15}s, ${i * 0.15}s`
+                : `${0.2 + i * 0.2}s, ${0.2 + i * 0.2}s`,
+              animationDelay: drawn ? `${1 + i * 0.3}s` : "999s",
             }}
           />
         );
@@ -289,7 +299,7 @@ export function AnimatedMark({
         />
       ))}
 
-      {/* Solid nodes with icons */}
+      {/* Solid nodes with icons — pulse continuously once drawn */}
       {NODES.map((n) => {
         const Icon = ICONS[n.id];
         return (
@@ -301,7 +311,18 @@ export function AnimatedMark({
             )}
             style={{ transitionDelay: `${n.delay + 0.9}s` }}
           >
-            <circle cx={n.x} cy={n.y} r="18" fill="currentColor" />
+            <circle
+              cx={n.x}
+              cy={n.y}
+              r="18"
+              fill="currentColor"
+              className={drawn ? "animate-node-pulse" : ""}
+              style={{
+                transformOrigin: `${n.x}px ${n.y}px`,
+                transformBox: "fill-box",
+                animationDelay: `${1.5 + n.delay}s`,
+              }}
+            />
             <g transform={`translate(${n.x}, ${n.y + 1})`}>
               <Icon />
             </g>

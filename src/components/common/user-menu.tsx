@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export function UserMenu({
   const router = useRouter();
   const { push } = useToast();
   const [open, setOpen] = useState(false);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -91,7 +93,7 @@ export function UserMenu({
         aria-expanded={open}
         aria-label={`Open user menu for ${name}`}
         className={cn(
-          "flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none",
+          "flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none",
           open && "bg-accent",
         )}
       >
@@ -159,14 +161,27 @@ export function UserMenu({
           <button
             type="button"
             role="menuitem"
-            onClick={signOut}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+            onClick={() => setConfirmSignOut(true)}
+            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none"
           >
             <LogOut className="h-4 w-4" aria-hidden />
             Sign out
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmSignOut}
+        onOpenChange={setConfirmSignOut}
+        title="Sign out of CareerOS?"
+        description={`You'll need to sign in again to access your ${role.toLowerCase()} workspace.`}
+        confirmLabel="Sign out"
+        destructive
+        onConfirm={() => {
+          setConfirmSignOut(false);
+          signOut();
+        }}
+      />
     </div>
   );
 }
@@ -187,7 +202,7 @@ function UserMenuLink({
       href={href}
       role="menuitem"
       onClick={onSelect}
-      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none"
     >
       {icon}
       {label}

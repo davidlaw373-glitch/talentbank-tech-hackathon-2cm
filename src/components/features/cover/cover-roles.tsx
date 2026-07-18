@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
@@ -11,6 +12,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
+/**
+ * Custom event name CoverNav dispatches to activate a role tab.
+ * Lets the top-nav role links drive the CoverRoles tabs without
+ * lifting state up to the page or coupling the two components.
+ */
+export const COVER_ROLE_EVENT = "cover-role-change";
+export function activateCoverRole(roleId: string) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent(COVER_ROLE_EVENT, { detail: roleId }),
+  );
+}
+
 type Role = {
   id: string;
   label: string;
@@ -20,6 +34,11 @@ type Role = {
   benefits: string[];
   cta: string;
   preview: React.ReactNode;
+  /** Chart token used as the role's signature color — applied to the
+   *  active tab border, the preview card accent, and the CTA button. */
+  accent: string;
+  accentText: string;
+  accentSoft: string;
 };
 
 const ROLES: Role[] = [
@@ -37,6 +56,9 @@ const ROLES: Role[] = [
     ],
     cta: "I'm looking for work",
     preview: <CandidatePreview />,
+    accent: "bg-chart-1",
+    accentText: "text-chart-1",
+    accentSoft: "bg-chart-1/15",
   },
   {
     id: "employers",
@@ -52,6 +74,9 @@ const ROLES: Role[] = [
     ],
     cta: "I'm hiring",
     preview: <EmployerPreview />,
+    accent: "bg-chart-2",
+    accentText: "text-chart-2",
+    accentSoft: "bg-chart-2/15",
   },
   {
     id: "universities",
@@ -67,6 +92,9 @@ const ROLES: Role[] = [
     ],
     cta: "Partner with us",
     preview: <UniversityPreview />,
+    accent: "bg-chart-4",
+    accentText: "text-chart-4",
+    accentSoft: "bg-chart-4/15",
   },
 ];
 
@@ -102,18 +130,23 @@ function CandidatePreview() {
           <span className="text-muted-foreground">AI match score</span>
           <span className="font-semibold">94 / 100</span>
         </div>
-        <div className="grid grid-cols-8 gap-1">
+        <div
+          className="grid grid-cols-8 gap-1"
+          role="img"
+          aria-label="AI match score 94 of 100 across 8 signals"
+        >
           {[1, 1, 1, 0.85, 1, 1, 0.7, 1].map((v, i) => (
             <div
               key={i}
               className={cn(
-                "h-1.5 rounded-full",
+                "h-1.5 rounded-full transition-opacity",
                 v >= 1
-                  ? "bg-foreground/80"
+                  ? "bg-chart-1"
                   : v >= 0.75
-                    ? "bg-foreground/45"
-                    : "bg-muted-foreground/20"
+                    ? "bg-chart-2"
+                    : "bg-chart-7"
               )}
+              style={{ opacity: v >= 1 ? 1 : v >= 0.75 ? 0.7 : 0.5 }}
             />
           ))}
         </div>
@@ -127,7 +160,7 @@ function CandidatePreview() {
         ))}
       </div>
 
-      <div className="mt-5 rounded-md border-l-2 border-foreground/40 bg-muted/40 p-3 text-xs leading-relaxed">
+      <div className="mt-5 rounded-md border-l-2 border-foreground/40 bg-surface-tint p-3 text-xs leading-relaxed">
         <span className="font-semibold">AI insight:</span> Built React systems
         at scale (12M daily users). Strong async-first signal. Open to senior
         IC roles.
@@ -170,7 +203,7 @@ function EmployerPreview() {
         ))}
       </ul>
 
-      <div className="mt-4 rounded-md border-l-2 border-foreground/40 bg-muted/40 p-3 text-xs leading-relaxed">
+      <div className="mt-4 rounded-md border-l-2 border-foreground/40 bg-surface-tint p-3 text-xs leading-relaxed">
         <span className="font-semibold">AI summary:</span> React systems at
         scale, strong async-first signal, open to senior IC roles.
       </div>
@@ -188,16 +221,19 @@ function UniversityPreview() {
 
       <div className="mt-4 space-y-2">
         {[
-          { label: "Software", pct: 38 },
-          { label: "Data & AI", pct: 24 },
-          { label: "Product", pct: 18 },
-          { label: "Other", pct: 12 },
+          { label: "Software", pct: 38, color: "bg-chart-1" },
+          { label: "Data & AI", pct: 24, color: "bg-chart-2" },
+          { label: "Product", pct: 18, color: "bg-chart-4" },
+          { label: "Other", pct: 12, color: "bg-chart-7" },
         ].map((row) => (
           <div key={row.label} className="flex items-center gap-3 text-xs">
             <span className="w-20 text-muted-foreground">{row.label}</span>
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full bg-foreground/80 animate-progress"
+                className={cn(
+                  "h-full rounded-full animate-progress",
+                  row.color,
+                )}
                 style={{ width: `${row.pct}%` }}
               />
             </div>
@@ -208,7 +244,7 @@ function UniversityPreview() {
         ))}
       </div>
 
-      <div className="mt-4 flex items-center gap-2 rounded-md bg-muted/50 p-2.5 text-xs">
+      <div className="mt-4 flex items-center gap-2 rounded-md bg-highlight-soft p-2.5 text-xs">
         <SparkleIcon />
         <span>
           Demand up 41% for LLM evaluation — consider a new elective.
@@ -239,6 +275,22 @@ function SparkleIcon() {
 }
 
 export function CoverRoles() {
+  const [activeRole, setActiveRole] = useState("candidates");
+
+  // Listen for nav-driven role changes from CoverNav. The event is a
+  // CustomEvent with the role id in `detail`. We validate against the
+  // known role ids so a stray event can't break the tab state.
+  useEffect(() => {
+    const onRoleChange = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      if (ROLES.some((r) => r.id === detail)) {
+        setActiveRole(detail);
+      }
+    };
+    window.addEventListener(COVER_ROLE_EVENT, onRoleChange);
+    return () => window.removeEventListener(COVER_ROLE_EVENT, onRoleChange);
+  }, []);
+
   return (
     <section
       id="roles"
@@ -258,20 +310,61 @@ export function CoverRoles() {
         </ScrollReveal>
 
         <ScrollReveal delay={120} className="mt-12">
-          <Tabs defaultValue="candidates" className="w-full">
+          <Tabs
+            value={activeRole}
+            onValueChange={setActiveRole}
+            className="w-full"
+          >
             <TabsList
-              className="mx-auto flex h-auto w-full max-w-xl flex-wrap gap-1 bg-transparent p-0"
+              className="mx-auto flex h-auto w-full max-w-xl flex-wrap gap-3 bg-transparent p-0"
               aria-label="Audience"
             >
-              {ROLES.map((role) => (
-                <TabsTrigger
-                  key={role.id}
-                  value={role.id}
-                  className="flex-1 rounded-md border bg-background px-4 py-3 text-sm font-medium data-[state=active]:border-foreground data-[state=active]:bg-foreground data-[state=active]:text-background sm:text-base"
-                >
-                  {role.label}
-                </TabsTrigger>
-              ))}
+              {ROLES.map((role) => {
+                const isActive = role.id === activeRole;
+                return (
+                  <TabsTrigger
+                    key={role.id}
+                    value={role.id}
+                    aria-label={`${role.label}${isActive ? " (selected)" : ""}`}
+                    className={cn(
+                      "group relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all sm:text-base",
+                      // Active = always dark inverted with checkmark + scale
+                      // so selection is obvious regardless of which color
+                      // the role uses. Per-role color appears as a thin
+                      // top stripe on the active tab so it still reads
+                      // as "the candidate/employer/university tab".
+                      isActive
+                        ? "border-foreground bg-foreground text-background shadow-md scale-[1.02]"
+                        : `border-border bg-background text-foreground hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm`,
+                    )}
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "absolute inset-x-0 top-0 h-1 transition-opacity",
+                        role.accent,
+                        isActive ? "opacity-100" : "opacity-50",
+                      )}
+                    />
+                    {isActive ? (
+                      <Check
+                        aria-hidden
+                        className="h-4 w-4 shrink-0"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "h-2 w-2 shrink-0 rounded-full transition-opacity",
+                          role.accent,
+                          "opacity-60",
+                        )}
+                      />
+                    )}
+                    <span>{role.label}</span>
+                  </TabsTrigger>
+                );
+              })}
             </TabsList>
 
             {ROLES.map((role) => (
@@ -281,13 +374,27 @@ export function CoverRoles() {
                 className="mt-8 ring-offset-background focus-visible:outline-none"
               >
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center">
-                  <TiltCard className="rounded-2xl">
-                    <div className="lift-on-hover rounded-2xl border bg-card p-3">
-                      {role.preview}
-                    </div>
-                  </TiltCard>
+                  <div className="relative">
+                    <div
+                      aria-hidden
+                      className={cn(
+                        "absolute -inset-4 -z-10 rounded-3xl opacity-30 blur-2xl",
+                        role.accent,
+                      )}
+                    />
+                    <TiltCard className="rounded-2xl">
+                      <div className={cn("lift-on-hover rounded-2xl border-2 bg-card p-3", role.accentText.replace("text-", "border-"))}>
+                        {role.preview}
+                      </div>
+                    </TiltCard>
+                  </div>
                   <div className="flex flex-col gap-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    <p
+                      className={cn(
+                        "text-xs font-semibold uppercase tracking-[0.2em]",
+                        role.accentText,
+                      )}
+                    >
                       {role.eyebrow}
                     </p>
                     <h3 className="text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -304,14 +411,23 @@ export function CoverRoles() {
                         >
                           <Check
                             aria-hidden
-                            className="mt-0.5 h-4 w-4 shrink-0"
+                            className={cn(
+                              "mt-0.5 h-4 w-4 shrink-0",
+                              role.accentText,
+                            )}
                           />
                           <span>{benefit}</span>
                         </li>
                       ))}
                     </ul>
                     <div>
-                      <Button asChild>
+                      <Button
+                        asChild
+                        className={cn(
+                          role.accent,
+                          "hover:opacity-90",
+                        )}
+                      >
                         <Link href="#start">
                           {role.cta}
                           <ArrowRight />

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-<<<<<<< Updated upstream
-=======
 import { SkipLink } from "@/components/common/skip-link";
 import { ToastProvider } from "@/components/common/toast";
->>>>>>> Stashed changes
+import {
+  ThemeProvider,
+  themeInitScript,
+} from "@/components/common/theme-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,17 +28,25 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
+      <head>
+        {/*
+         * Apply theme before React hydrates so first paint matches the
+         * user's stored choice or system pref. Prevents flash-of-wrong-theme.
+         */}
+        <script
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-<<<<<<< Updated upstream
-        {children}
-=======
-        <ToastProvider>
-          <SkipLink />
-          {children}
-        </ToastProvider>
->>>>>>> Stashed changes
+        <ThemeProvider>
+          <ToastProvider>
+            <SkipLink />
+            {children}
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

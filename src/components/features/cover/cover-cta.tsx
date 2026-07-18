@@ -19,6 +19,7 @@ type Path = {
   description: string;
   cta: string;
   href: string;
+  accent: string;
 };
 
 const PATHS: Path[] = [
@@ -29,41 +30,28 @@ const PATHS: Path[] = [
     description:
       "Build a verified profile, get AI match scores, and track every application in one place.",
     cta: "Create profile",
-<<<<<<< Updated upstream
-    href: "#start",
-=======
-    href: "/register?next=/candidate/onboarding",
->>>>>>> Stashed changes
+    href: "/register?next=/candidate/profile",
+    accent: "bg-chart-1",
   },
   {
     id: "employer",
     icon: Briefcase,
     title: "I'm hiring",
     description:
-<<<<<<< Updated upstream
-      "Post a role, review ranked candidates with AI summaries, and run structured interviews.",
-    cta: "Post a job",
-    href: "#roles",
-=======
       "Post a role, see ranked candidates with AI summaries, and run interviews with a shared scorecard.",
     cta: "Open employer workspace",
     href: "/login?next=/employer",
->>>>>>> Stashed changes
+    accent: "bg-chart-2",
   },
   {
     id: "university",
     icon: GraduationCap,
     title: "I'm from a university",
     description:
-<<<<<<< Updated upstream
-      "Issue verified credentials, track graduate outcomes, and align your curriculum with demand.",
-    cta: "Partner with us",
-    href: "#start",
-=======
       "Issue verified credentials to students, see where they land after graduation, and update courses to match hiring demand.",
     cta: "Open university workspace",
     href: "/login?next=/university",
->>>>>>> Stashed changes
+    accent: "bg-chart-4",
   },
 ];
 
@@ -76,10 +64,11 @@ export function CoverCta() {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        <div className="absolute left-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-muted/40 blur-3xl" />
-        <div className="absolute right-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl" />
+        <div className="animate-float-slow absolute left-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-chart-2/25 blur-3xl" />
+        <div className="animate-float-slower absolute right-1/4 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-chart-1/20 blur-3xl" />
+        <div className="animate-float-slow absolute left-1/2 bottom-1/4 h-72 w-72 -translate-x-1/2 rounded-full bg-chart-7/20 blur-3xl" />
       </div>
 
       <div className="container mx-auto flex flex-col items-center px-6 py-24 text-center md:py-32">
@@ -106,8 +95,14 @@ export function CoverCta() {
             return (
               <ScrollReveal key={path.id} delay={i * 100}>
                 <TiltCard className="h-full">
-                  <div className="lift-on-hover group flex h-full flex-col items-start gap-5 rounded-2xl border bg-card p-6 text-left text-card-foreground sm:p-8">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-foreground text-background transition-transform group-hover:scale-110">
+                  <div className="lift-on-hover group relative flex h-full flex-col items-start gap-5 overflow-hidden rounded-2xl border bg-card p-6 text-left text-card-foreground sm:p-8">
+                    <span
+                      aria-hidden
+                      className={`absolute inset-x-0 top-0 h-1 ${path.accent}`}
+                    />
+                    <div
+                      className={`flex h-12 w-12 items-center justify-center rounded-xl text-background transition-transform group-hover:scale-110 ${path.accent}`}
+                    >
                       <Icon className="h-6 w-6" />
                     </div>
                     <div className="flex-1">
@@ -120,8 +115,7 @@ export function CoverCta() {
                     </div>
                     <Button
                       asChild
-                      variant="outline"
-                      className="w-full justify-between"
+                      className={`w-full justify-between text-background hover:opacity-90 ${path.accent}`}
                     >
                       <Link href={path.href}>
                         {path.cta}

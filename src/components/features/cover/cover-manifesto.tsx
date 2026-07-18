@@ -7,14 +7,14 @@ export function CoverManifesto() {
     <section
       id="manifesto"
       aria-label="Why we built CareerOS"
-      className="relative w-full overflow-hidden border-t bg-muted/40"
+      className="relative w-full overflow-hidden border-t bg-secondary"
     >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
       >
-        <div className="absolute -left-40 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-muted/40 blur-3xl" />
-        <div className="absolute -right-40 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-accent/30 blur-3xl" />
+        <div className="absolute -left-40 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-chart-3/20 blur-3xl" />
+        <div className="absolute -right-40 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-chart-1/20 blur-3xl" />
       </div>
 
       <div className="container mx-auto px-6 py-20 md:py-28">
@@ -30,7 +30,7 @@ export function CoverManifesto() {
                 &ldquo;
               </span>
               <div className="relative">
-                <CoverEyebrow align="start">Why we built ~~this~~</CoverEyebrow>
+                <CoverEyebrow align="start">Why we built CareerOS</CoverEyebrow>
                 <h2 className="mt-6 text-3xl font-semibold leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">
                   Hiring tools were built for the{" "}
                   <span className="text-muted-foreground">company.</span>
@@ -62,7 +62,7 @@ export function CoverManifesto() {
             <div className="relative">
               <div
                 aria-hidden
-                className="absolute inset-0 -z-10 rounded-full bg-muted/30 blur-2xl"
+                className="absolute inset-0 -z-10 rounded-full bg-surface-tint blur-2xl"
               />
               <AnimatedMark size={420} className="w-full max-w-md" />
             </div>

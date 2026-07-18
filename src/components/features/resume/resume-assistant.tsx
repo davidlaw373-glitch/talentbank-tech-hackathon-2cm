@@ -328,7 +328,7 @@ export function ResumeAssistant() {
                   </p>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className="h-full rounded-full bg-foreground/80"
+                      className="h-full rounded-full bg-chart-1"
                       style={{ width: `${RESUME_SCORE}%` }}
                       aria-hidden
                     />
@@ -431,7 +431,7 @@ export function ResumeAssistant() {
               Switch the version you use when applying.
             </p>
           </div>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="outline" size="sm">
             <Link href="/candidate/profile">
               Manage versions
               <ArrowRight aria-hidden />

@@ -18,6 +18,7 @@ import { employerInterviews } from "@/data/employer";
 import type { EmployerInterview, InterviewStatus } from "@/types/employer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Card,
   CardContent,
@@ -124,6 +125,10 @@ export default function EmployerInterviewsPage() {
       tone: "success",
     });
   };
+
+  const [pendingCancel, setPendingCancel] = useState<EmployerInterview | null>(
+    null,
+  );
 
   const onCancel = (i: EmployerInterview) => {
     updateInterview(i.id, { status: "Cancelled" });
@@ -257,7 +262,7 @@ export default function EmployerInterviewsPage() {
                       interview={interview}
                       onConfirm={() => onConfirm(interview)}
                       onReschedule={() => onReschedule(interview)}
-                      onCancel={() => onCancel(interview)}
+                      onRequestCancel={() => setPendingCancel(interview)}
                       onJoin={() => onJoin(interview)}
                       onViewNotes={() => onViewNotes(interview)}
                       onView={() => onView(interview)}
@@ -269,6 +274,19 @@ export default function EmployerInterviewsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        open={pendingCancel !== null}
+        onOpenChange={(open) => !open && setPendingCancel(null)}
+        title={`Cancel interview with ${pendingCancel?.candidateName ?? "candidate"}?`}
+        description="Both sides will be notified by email. You can rebook afterwards if plans change."
+        confirmLabel="Cancel interview"
+        destructive
+        onConfirm={() => {
+          if (pendingCancel) onCancel(pendingCancel);
+          setPendingCancel(null);
+        }}
+      />
     </div>
   );
 }
@@ -277,7 +295,7 @@ function InterviewRow({
   interview,
   onConfirm,
   onReschedule,
-  onCancel,
+  onRequestCancel,
   onJoin,
   onViewNotes,
   onView,
@@ -285,7 +303,7 @@ function InterviewRow({
   interview: EmployerInterview;
   onConfirm: () => void;
   onReschedule: () => void;
-  onCancel: () => void;
+  onRequestCancel: () => void;
   onJoin: () => void;
   onViewNotes: () => void;
   onView: () => void;
@@ -343,7 +361,7 @@ function InterviewRow({
                 <StickyNote />
                 View notes
               </Button>
-              <Button variant="destructive" size="sm" onClick={onCancel}>
+              <Button variant="destructive" size="sm" onClick={onRequestCancel}>
                 <X />
                 Cancel
               </Button>
@@ -359,7 +377,7 @@ function InterviewRow({
                 <RefreshCcw />
                 Reschedule
               </Button>
-              <Button variant="destructive" size="sm" onClick={onCancel}>
+              <Button variant="destructive" size="sm" onClick={onRequestCancel}>
                 <X />
                 Cancel
               </Button>
@@ -375,7 +393,7 @@ function InterviewRow({
                 <StickyNote />
                 View notes
               </Button>
-              <Button variant="destructive" size="sm" onClick={onCancel}>
+              <Button variant="destructive" size="sm" onClick={onRequestCancel}>
                 <X />
                 Cancel
               </Button>

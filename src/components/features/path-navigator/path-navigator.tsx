@@ -171,7 +171,7 @@ function PathPanel({
                 height="24"
                 viewBox="0 0 64 24"
                 fill="none"
-                className="text-foreground/60"
+                className="text-foreground/80"
               >
                 <line
                   x1="2"
@@ -194,7 +194,7 @@ function PathPanel({
               </svg>
             </div>
             <div className="rounded-lg border bg-foreground p-4 text-background">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em]">
                 Where you&apos;re going
               </p>
               <p className="mt-1.5 text-sm font-medium">{path.to}</p>
@@ -267,7 +267,7 @@ function PathPanel({
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-foreground/80"
+              className="h-full rounded-full bg-chart-1"
               style={{ width: `${path.match}%` }}
               aria-hidden
             />

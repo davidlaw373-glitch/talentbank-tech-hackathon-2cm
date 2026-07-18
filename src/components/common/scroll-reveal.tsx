@@ -11,6 +11,14 @@ type ScrollRevealProps = {
   as?: "div" | "section" | "article";
 };
 
+/**
+ * Hydration-safe scroll-reveal.
+ *
+ * Server and the first client render BOTH produce `visible=false`. The
+ * upgrade to `visible=true` happens inside an IntersectionObserver
+ * callback (an external-system subscription, not in the effect body),
+ * which keeps it out of `react-hooks/set-state-in-effect` territory.
+ */
 export function ScrollReveal({
   children,
   className,
@@ -22,19 +30,15 @@ export function ScrollReveal({
 
   useEffect(() => {
     const node = ref.current;
-    if (!node) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setVisible(true);
-      return;
-    }
+    if (!node || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             setVisible(true);
             observer.unobserve(entry.target);
           }
-        });
+        }
       },
       { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
     );

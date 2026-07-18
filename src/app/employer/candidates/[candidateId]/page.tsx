@@ -95,7 +95,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
     <div className="space-y-8">
       {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="outline" size="sm">
           <Link href="/employer/candidates">
             <ArrowLeft />
             Back to candidates
@@ -169,7 +169,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
                     className="h-3 w-full overflow-hidden rounded-full bg-muted"
                   >
                     <span
-                      className="block h-full rounded-full bg-foreground/70"
+                      className="block h-full rounded-full bg-chart-1"
                       style={{ width: `${candidate.matchScore}%` }}
                     />
                   </div>
@@ -177,7 +177,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
               </div>
               <Separator />
               <div className="space-y-2">
-                <h4>Top skills</h4>
+                <h3 className="text-base font-semibold">Top skills</h3>
                 <div className="flex flex-wrap gap-2">
                   {candidate.topSkills.map((s) => (
                     <Badge key={s} variant="secondary">
@@ -188,7 +188,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
               </div>
               <Separator />
               <div className="space-y-2">
-                <h4>Summary</h4>
+                <h3 className="text-base font-semibold">Summary</h3>
                 <p className="text-muted-foreground">{candidate.summary}</p>
               </div>
             </CardContent>

@@ -141,7 +141,7 @@ export function JobDetailView({
     <div className="space-y-8">
       {/* Top bar */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button asChild variant="ghost" size="sm">
+        <Button asChild variant="outline" size="sm">
           <Link href="/employer/jobs">
             <ArrowLeft />
             Back to jobs
@@ -274,7 +274,7 @@ export function JobDetailView({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <h4>Must have</h4>
+                <h3 className="text-base font-semibold">Must have</h3>
                 <div className="flex flex-wrap gap-2">
                   {job.mustHave.map((s) => (
                     <Badge key={s} variant="default">
@@ -285,7 +285,7 @@ export function JobDetailView({
               </div>
               <Separator />
               <div className="space-y-2">
-                <h4>Nice to have</h4>
+                <h3 className="text-base font-semibold">Nice to have</h3>
                 <div className="flex flex-wrap gap-2">
                   {job.niceToHave.map((s) => (
                     <Badge key={s} variant="outline">
@@ -337,7 +337,7 @@ export function JobDetailView({
                   className="h-2 w-full overflow-hidden rounded-full bg-muted"
                 >
                   <span
-                    className="block h-full rounded-full bg-foreground/70"
+                    className="block h-full rounded-full bg-chart-1"
                     style={{ width: `${job.filledScore}%` }}
                   />
                 </div>
@@ -427,7 +427,7 @@ export function JobDetailView({
               <Link
                 key={c.id}
                 href={`/employer/candidates/${c.id}`}
-                className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-muted"
+                className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span

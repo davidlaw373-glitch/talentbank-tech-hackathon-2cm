@@ -24,6 +24,7 @@ import { useToast } from "@/components/common/toast";
 import { applications } from "@/data/applications";
 import { candidateProfile, recentActivity } from "@/data/candidate";
 import { jobs } from "@/data/jobs";
+import { JobMatchBreakdown } from "@/components/features/jobs/job-match-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -133,6 +134,9 @@ export function DashboardOverview() {
   const done = progressItems.filter((item) => item.done).length;
   const remaining = progressItems.filter((item) => !item.done);
 
+  // Highest priority next-action: any application waiting on the user.
+  const interview = applications.find((a) => a.status === "Interview");
+
   const toggleProgressItem = (id: string) => {
     const item = progressItems.find((progressItem) => progressItem.id === id);
     if (!item) return;
@@ -171,6 +175,53 @@ export function DashboardOverview() {
           </Link>
         </Button>
       </section>
+
+      {/* Next-action prompt */}
+      {interview ? (
+        <Card className="lift-on-hover">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Next action
+              </p>
+              <p className="mt-1 text-sm font-medium">
+                Prepare for your {interview.company} interview
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {interview.stage} · {interview.nextAction}
+              </p>
+            </div>
+            <Button asChild>
+              <Link href={`/candidate/applications/${interview.id}`}>
+                Open application
+                <ArrowRight />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="lift-on-hover">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Next action
+              </p>
+              <p className="mt-1 text-sm font-medium">
+                Match your profile to 6 open roles
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Browse jobs that CareerOS scored against your skills.
+              </p>
+            </div>
+            <Button asChild>
+              <Link href="/candidate/jobs">
+                Browse jobs
+                <ArrowRight />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats row */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
@@ -233,7 +284,7 @@ export function DashboardOverview() {
               <div className="h-2.5 overflow-hidden rounded-full bg-muted">
                 <div
                   key={done}
-                  className="h-full rounded-full bg-foreground animate-progress-x"
+                  className="h-full rounded-full bg-chart-1 animate-progress-x"
                   style={{
                     width: `${Math.round((done / total) * 100)}%`,
                   }}
@@ -249,7 +300,7 @@ export function DashboardOverview() {
                   <li
                     key={item.id}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent",
+                      "flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent-soft",
                       item.done && "opacity-70"
                     )}
                   >
@@ -258,7 +309,7 @@ export function DashboardOverview() {
                         "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
                         item.done
                           ? "bg-foreground text-background"
-                          : "border border-foreground/30 text-foreground/50"
+                          : "border border-border text-muted-foreground"
                       )}
                       aria-hidden
                     >
@@ -295,7 +346,7 @@ export function DashboardOverview() {
             </ul>
 
             {remaining.length > 0 && (
-              <div className="flex items-center justify-between rounded-lg border bg-muted/30 p-4">
+              <div className="flex items-center justify-between rounded-lg border bg-surface-tint p-4">
                 <div>
                   <p className="text-sm font-medium">
                     Next: add {remaining[0].label.toLowerCase()}
@@ -359,7 +410,7 @@ export function DashboardOverview() {
               {applications.length} active · track each stage in one place.
             </p>
           </div>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="outline" size="sm">
             <Link href="/candidate/applications">
               View all
               <ArrowRight />
@@ -407,7 +458,7 @@ export function DashboardOverview() {
                   </div>
 
                   {/* Stage + next action */}
-                  <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="rounded-lg border bg-surface-tint p-3">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       Current stage
                     </p>
@@ -547,7 +598,7 @@ export function DashboardOverview() {
                 <SlidersHorizontal aria-hidden />
                 Update preferences
               </Button>
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="outline" size="sm">
                 <Link href="/candidate/jobs">
                   See all
                   <ArrowRight aria-hidden />
@@ -561,7 +612,7 @@ export function DashboardOverview() {
               return (
                 <article
                   key={job.id}
-                  className="lift-on-hover block rounded-lg border bg-card p-4 transition-colors hover:bg-accent"
+                  className="lift-on-hover block rounded-lg border bg-card p-4 transition-colors hover:bg-accent-soft"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -589,28 +640,13 @@ export function DashboardOverview() {
                           {job.posted}
                         </span>
                       </div>
-                      {/* Match breakdown */}
-                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        {job.matchingSkills.slice(0, 4).map((skill) => (
-                          <Badge key={skill} variant="secondary" className="text-[10px]">
-                            {skill}
-                          </Badge>
-                        ))}
-                        {job.matchingSkills.length > 4 && (
-                          <span className="text-[10px] text-muted-foreground">
-                            +{job.matchingSkills.length - 4} more
-                          </span>
-                        )}
-                        {job.missingSkills.slice(0, 2).map((skill) => (
-                          <Badge
-                            key={skill}
-                            variant="outline"
-                            className="text-[10px] opacity-70"
-                          >
-                            + {skill}
-                          </Badge>
-                        ))}
-                      </div>
+                      {/* Match breakdown — collapsible when more than 3 skills */}
+                      <JobMatchBreakdown
+                        matchingSkills={job.matchingSkills}
+                        missingSkills={job.missingSkills}
+                        visibleCount={3}
+                        missingVisibleCount={0}
+                      />
                     </div>
                     <div className="flex flex-col items-end gap-0">
                       <span className="text-3xl font-semibold tabular-nums leading-none">
@@ -622,7 +658,7 @@ export function DashboardOverview() {
                       {/* Tiny bar */}
                       <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
                         <div
-                          className="h-full rounded-full bg-foreground/80"
+                          className="h-full rounded-full bg-chart-1"
                           style={{ width: `${job.matchScore}%` }}
                         />
                       </div>

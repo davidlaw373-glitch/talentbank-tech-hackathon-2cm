@@ -129,6 +129,10 @@ export default function EmployerDashboardPage() {
     });
   };
 
+  // Promoted next-action CTAs — these are the highest-priority, time-sensitive
+  // items the user should see before scanning stats.
+  const recentApplicant = recentApplicants[0];
+
   return (
     <div className="space-y-8">
       {/* Hero */}
@@ -147,6 +151,32 @@ export default function EmployerDashboardPage() {
           }
         />
       </section>
+
+      {/* Next-action prompt */}
+      {recentApplicant ? (
+        <Card className="lift-on-hover">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Next action
+              </p>
+              <p className="mt-1 text-sm font-medium">
+                Review {recentApplicant.name}&apos;s application for{" "}
+                {recentApplicant.appliedFor}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {recentApplicant.matchScore}% match · just applied
+              </p>
+            </div>
+            <Button asChild>
+              <Link href={`/employer/candidates/${recentApplicant.id}`}>
+                Review application
+                <ArrowRight />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* Stats */}
       <section
@@ -220,7 +250,9 @@ export default function EmployerDashboardPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div
-            aria-label="Pipeline distribution"
+            aria-label={`Pipeline distribution across ${STAGES.length} stages: ${pipelineCounts
+              .map((r) => `${r.stage} ${r.count}`)
+              .join(", ")}`}
             className="flex h-3 w-full overflow-hidden rounded-full bg-muted"
           >
             {pipelineCounts.map((row) => {
@@ -232,25 +264,25 @@ export default function EmployerDashboardPage() {
                 <span
                   key={row.stage}
                   aria-hidden
-                  className="h-full bg-foreground/70 first:rounded-l-full last:rounded-r-full"
+                  className="h-full bg-chart-1 first:rounded-l-full last:rounded-r-full"
                   style={{ width: `${pct}%` }}
                 />
               );
             })}
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
             {pipelineCounts.map((row) => (
-              <div
+              <li
                 key={row.stage}
-                className="flex items-center justify-between rounded-md border bg-background px-3 py-2"
+                className="flex items-center gap-1.5"
               >
-                <small className="text-muted-foreground">{row.stage}</small>
-                <span className="text-base font-semibold tabular-nums">
+                <span className="text-sm font-semibold tabular-nums text-foreground">
                   {row.count}
                 </span>
-              </div>
+                <span>{row.stage}</span>
+              </li>
             ))}
-          </div>
+          </ul>
         </CardContent>
       </Card>
 
@@ -270,7 +302,7 @@ export default function EmployerDashboardPage() {
                 The five most recent candidates across all live roles.
               </CardDescription>
             </div>
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="outline" size="sm">
               <Link href="/employer/candidates">
                 View all
                 <ArrowRight />
@@ -298,7 +330,7 @@ export default function EmployerDashboardPage() {
                 Next three sessions, prioritised by status.
               </CardDescription>
             </div>
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="outline" size="sm">
               <Link href="/employer/interviews">
                 All interviews
                 <ArrowRight />
@@ -327,7 +359,7 @@ export default function EmployerDashboardPage() {
               Live roles only — draft and paused jobs live in job management.
             </CardDescription>
           </div>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="outline" size="sm">
             <Link href="/employer/jobs">
               Manage jobs
               <ArrowRight />
@@ -339,7 +371,7 @@ export default function EmployerDashboardPage() {
             <Link
               key={job.id}
               href={`/employer/jobs/${job.id}`}
-              className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-muted"
+              className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{job.title}</p>
@@ -384,7 +416,7 @@ function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
   return (
     <Link
       href={`/employer/candidates/${candidate.id}`}
-      className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-muted"
+      className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
     >
       <div className="flex min-w-0 items-center gap-3">
         <span

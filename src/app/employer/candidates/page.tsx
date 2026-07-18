@@ -24,6 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeading } from "@/components/common/page-heading";
 import {
   Tabs,
@@ -75,9 +76,13 @@ function stageVariant(stage: CandidateStage) {
 }
 
 export default function EmployerCandidatesPage() {
+  const { push } = useToast();
   const [candidates, setCandidates] = useState<EmployerCandidate[]>(employerCandidates);
   const [stage, setStage] = useState<CandidateStage | "All">("All");
   const [query, setQuery] = useState("");
+  const [pendingReject, setPendingReject] = useState<EmployerCandidate | null>(
+    null,
+  );
 
   const counts = useMemo(() => {
     const map: Record<string, number> = { All: candidates.length };
@@ -206,7 +211,7 @@ export default function EmployerCandidatesPage() {
                         const next = NEXT_STAGE[c.stage];
                         if (next) updateCandidate(c.id, { stage: next });
                       }}
-                      onReject={() => updateCandidate(c.id, { stage: "Rejected" })}
+                      onRequestReject={setPendingReject}
                     />
                   ))}
                 </ul>
@@ -215,6 +220,27 @@ export default function EmployerCandidatesPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        open={pendingReject !== null}
+        onOpenChange={(open) => !open && setPendingReject(null)}
+        title={`Reject ${pendingReject?.name ?? "this candidate"}?`}
+        description="A polite rejection email will be sent automatically. They will no longer appear in your active pipeline."
+        confirmLabel="Reject"
+        destructive
+        requireTyping="REJECT"
+        onConfirm={() => {
+          if (pendingReject) {
+            updateCandidate(pendingReject.id, { stage: "Rejected" });
+            push({
+              title: `${pendingReject.name} rejected`,
+              description: "A polite rejection email will be sent automatically.",
+              tone: "info",
+            });
+          }
+          setPendingReject(null);
+        }}
+      />
     </div>
   );
 }
@@ -223,12 +249,12 @@ function CandidateRow({
   candidate,
   onToggleStar,
   onAdvance,
-  onReject,
+  onRequestReject,
 }: {
   candidate: EmployerCandidate;
   onToggleStar: () => void;
   onAdvance: () => void;
-  onReject: () => void;
+  onRequestReject: (candidate: EmployerCandidate) => void;
 }) {
   const { push } = useToast();
   const next = NEXT_STAGE[candidate.stage];
@@ -259,17 +285,12 @@ function CandidateRow({
 
   const reject = () => {
     if (candidate.stage === "Rejected") return;
-    onReject();
-    push({
-      title: `${candidate.name} rejected`,
-      description: "A polite rejection email will be sent automatically.",
-      tone: "info",
-    });
+    onRequestReject(candidate);
   };
 
   return (
     <li className="py-3 first:pt-0 last:pb-0">
-      <div className="flex items-start justify-between gap-3 rounded-md p-2 transition-colors hover:bg-muted">
+      <div className="flex items-start justify-between gap-3 rounded-md p-2 transition-colors hover:bg-accent-soft">
         <Link
           href={`/employer/candidates/${candidate.id}`}
           className="flex min-w-0 flex-1 items-center gap-3"

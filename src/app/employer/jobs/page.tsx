@@ -22,11 +22,9 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Select,
   SelectContent,
@@ -63,6 +61,7 @@ export default function EmployerJobsPage() {
   const [jobs, setJobs] = useState<EmployerJob[]>(employerJobs);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "All">("All");
+  const [pendingClose, setPendingClose] = useState<EmployerJob | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -266,12 +265,26 @@ export default function EmployerJobsPage() {
                 key={job.id}
                 job={job}
                 onTogglePause={() => onTogglePause(job)}
-                onClose={() => onClose(job)}
+                onRequestClose={setPendingClose}
               />
             ))}
           </div>
         )}
       </section>
+
+      <ConfirmDialog
+        open={pendingClose !== null}
+        onOpenChange={(open) => !open && setPendingClose(null)}
+        title={`Close ${pendingClose?.title ?? "this job posting"}?`}
+        description="It will stop accepting new applicants. Existing applicants will keep their status."
+        confirmLabel="Close job"
+        destructive
+        requireTyping="CLOSE"
+        onConfirm={() => {
+          if (pendingClose) onClose(pendingClose);
+          setPendingClose(null);
+        }}
+      />
     </div>
   );
 }
@@ -279,11 +292,11 @@ export default function EmployerJobsPage() {
 function JobRow({
   job,
   onTogglePause,
-  onClose,
+  onRequestClose,
 }: {
   job: EmployerJob;
   onTogglePause: () => void;
-  onClose: () => void;
+  onRequestClose: (job: EmployerJob) => void;
 }) {
   return (
     <Card className="lift-on-hover">
@@ -327,7 +340,7 @@ function JobRow({
               className="h-2 w-full overflow-hidden rounded-full bg-muted"
             >
               <span
-                className="block h-full rounded-full bg-foreground/70"
+                className="block h-full rounded-full bg-chart-1"
                 style={{ width: `${job.filledScore}%` }}
               />
             </div>
@@ -354,7 +367,7 @@ function JobRow({
             <Button
               variant="destructive"
               size="sm"
-              onClick={onClose}
+              onClick={() => onRequestClose(job)}
               disabled={job.status === "Closed"}
               aria-label={`Close ${job.title}`}
             >

@@ -1,66 +1,35 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-
 import { cn } from "@/lib/utils";
 
 type AnimatedCounterProps = {
   value: number;
   prefix?: string;
   suffix?: string;
-  duration?: number;
   className?: string;
   decimals?: number;
 };
 
+/**
+ * Static, hydration-safe stat display.
+ *
+ * Why no animation: any client-side count-up requires setState after first
+ * render, which causes React 19's hydration check to flag server-vs-client
+ * mismatch (server renders the final value, client would render `0` until
+ * the animation kicks in). Since the underlying purpose — surfacing the
+ * final number to the reader — is fully satisfied by a static value, we
+ * ship the static version. Any future animation should be CSS-only.
+ */
 export function AnimatedCounter({
   value,
   prefix = "",
   suffix = "",
-  duration = 1400,
   className,
   decimals,
 }: AnimatedCounterProps) {
-  const ref = useRef<HTMLSpanElement | null>(null);
-  const [display, setDisplay] = useState(0);
-  const [played, setPlayed] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node || played) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setDisplay(value);
-      setPlayed(true);
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !played) {
-            setPlayed(true);
-            const start = performance.now();
-            const tick = (now: number) => {
-              const t = Math.min(1, (now - start) / duration);
-              const eased = 1 - Math.pow(1 - t, 3);
-              setDisplay(eased * value);
-              if (t < 1) requestAnimationFrame(tick);
-            };
-            requestAnimationFrame(tick);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.4 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [value, duration, played]);
-
   const decimalsToShow = decimals ?? (Number.isInteger(value) ? 0 : 1);
-  const formatted = display.toFixed(decimalsToShow);
+  const formatted = value.toFixed(decimalsToShow);
 
   return (
-    <span ref={ref} className={cn("tabular-nums", className)}>
+    <span className={cn("tabular-nums", className)}>
       {prefix}
       {formatted}
       {suffix}

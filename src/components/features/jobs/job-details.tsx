@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
-import type { Job } from "@/types/candidate";
+import type { Job } from "@/data/jobs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -254,7 +254,6 @@ export function JobDetails({ job }: { job: Job }) {
                   <Badge
                     key={skill}
                     variant="outline"
-                    className="opacity-80"
                   >
                     + {skill}
                   </Badge>

@@ -23,7 +23,7 @@ const COLUMNS: { heading: string; links: string[] }[] = [
 
 export function CoverFooter() {
   return (
-    <footer className="w-full border-t bg-muted/30">
+    <footer className="w-full border-t bg-surface-tint">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
           <div className="col-span-2 md:col-span-1">

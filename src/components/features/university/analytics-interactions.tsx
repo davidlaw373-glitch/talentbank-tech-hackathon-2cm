@@ -177,7 +177,7 @@ export function ReportsArchive({
               Download
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() =>
                 push({

@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type InterviewStat = {
   id: string;
@@ -104,6 +105,10 @@ export function InterviewManagement() {
   const [pastFeedbackOpen, setPastFeedbackOpen] = useState<Set<string>>(
     new Set()
   );
+  const [pendingCancel, setPendingCancel] = useState<{
+    id: string;
+    company: string;
+  } | null>(null);
 
   const prepInterview =
     upcoming.find((interview) => interview.id === selectedPrepId) ??
@@ -204,7 +209,7 @@ export function InterviewManagement() {
                 <CardContent className="space-y-5 p-5 sm:p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                     {/* Left — date + time prominent */}
-                    <div className="flex shrink-0 flex-col items-start gap-1 rounded-lg border bg-muted/30 p-4 sm:w-44">
+                    <div className="flex shrink-0 flex-col items-start gap-1 rounded-lg border bg-surface-tint p-4 sm:w-44">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         {iv.when}
                       </p>
@@ -272,26 +277,19 @@ export function InterviewManagement() {
                           size="sm"
                           variant="outline"
                           aria-label={`Cancel ${iv.company} interview`}
-                          onClick={() => {
-                            setUpcoming((current) =>
-                              current.filter((interview) => interview.id !== iv.id)
-                            );
-                            if (selectedPrepId === iv.id) {
-                              setPrepOpen(false);
-                              setSelectedPrepId(upcoming[0]?.id ?? "");
-                            }
-                            push({
-                              title: "Interview cancelled — candidate notified",
-                              tone: "success",
-                            });
-                          }}
+                          onClick={() =>
+                            setPendingCancel({
+                              id: iv.id,
+                              company: iv.company,
+                            })
+                          }
                         >
                           <X aria-hidden />
                           Cancel
                         </Button>
                         <Button
                           size="sm"
-                          variant="ghost"
+                          variant="outline"
                           aria-label={`${
                             prepOpen && selectedPrepId === iv.id ? "Hide" : "Open"
                           } prep for ${iv.company} interview`}
@@ -328,7 +326,7 @@ export function InterviewManagement() {
               </CardDescription>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               aria-label={prepOpen ? "Collapse prep" : "Expand prep"}
               aria-expanded={prepOpen}
@@ -464,7 +462,7 @@ export function InterviewManagement() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {pastFeedbackOpen.has(p.id) && (
-                  <div className="rounded-md border-l-2 border-foreground/40 bg-muted/40 p-3 text-xs leading-relaxed">
+                  <div className="rounded-md border-l-2 border-foreground/40 bg-surface-tint p-3 text-xs leading-relaxed">
                     <span className="font-semibold">Feedback: </span>
                     {p.feedback}
                   </div>
@@ -487,6 +485,39 @@ export function InterviewManagement() {
           ))}
         </div>
       </section>
+
+      <ConfirmDialog
+        open={pendingCancel !== null}
+        onOpenChange={(open) => !open && setPendingCancel(null)}
+        title="Cancel this interview?"
+        description={
+          pendingCancel ? (
+            <>
+              Your interview with <strong>{pendingCancel.company}</strong> will
+              be cancelled. They&apos;ll be notified by email so you can rebook
+              if needed.
+            </>
+          ) : null
+        }
+        confirmLabel="Cancel interview"
+        destructive
+        onConfirm={() => {
+          if (pendingCancel) {
+            setUpcoming((current) =>
+              current.filter((interview) => interview.id !== pendingCancel.id),
+            );
+            if (selectedPrepId === pendingCancel.id) {
+              setPrepOpen(false);
+              setSelectedPrepId(upcoming[0]?.id ?? "");
+            }
+            push({
+              title: "Interview cancelled — candidate notified",
+              tone: "success",
+            });
+          }
+          setPendingCancel(null);
+        }}
+      />
     </div>
   );
 }

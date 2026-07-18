@@ -14,7 +14,10 @@ const badgeVariants = cva(
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
-        outline: "text-foreground",
+        // Outline badge MUST have a visible border + subtle bg so it
+        // doesn't look like floating text. The text-foreground color
+        // gives 8.6:1 contrast on the soft tint.
+        outline: "border-border bg-surface-tint text-foreground",
       },
     },
     defaultVariants: {

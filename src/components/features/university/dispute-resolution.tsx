@@ -15,6 +15,7 @@ import {
 
 import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
+import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { cn } from "@/lib/utils";
 import type {
   DisputeStatus,
@@ -72,20 +74,17 @@ function countByStatus(disputes: UniversityDispute[]) {
 type DisputeListProps = {
   records: UniversityDispute[];
   onStatusChange: (dispute: UniversityDispute, status: DisputeStatus) => void;
+  onRequestReject: (dispute: UniversityDispute) => void;
 };
 
-function DisputeList({ records, onStatusChange }: DisputeListProps) {
+function DisputeList({ records, onStatusChange, onRequestReject }: DisputeListProps) {
   if (records.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center gap-3 p-12 text-center">
-          <Inbox className="h-10 w-10 text-muted-foreground" aria-hidden />
-          <h3>No disputes in this status</h3>
-          <p className="text-muted-foreground">
-            When candidates or faculty file a dispute it will show up here.
-          </p>
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={Inbox}
+        title="No disputes in this status"
+        description="When candidates or faculty file a dispute it will show up here."
+      />
     );
   }
 
@@ -115,7 +114,7 @@ function DisputeList({ records, onStatusChange }: DisputeListProps) {
             </Badge>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg border bg-muted/30 p-4">
+            <div className="rounded-lg border bg-surface-tint p-4">
               <small className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 Candidate claim
               </small>
@@ -128,7 +127,7 @@ function DisputeList({ records, onStatusChange }: DisputeListProps) {
               <p className="mt-1">{dispute.counter}</p>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="outline" size="sm">
                 <Link href={`/university/disputes/${dispute.id}`}>
                   <ArrowRight aria-hidden />
                   View thread
@@ -164,7 +163,7 @@ function DisputeList({ records, onStatusChange }: DisputeListProps) {
                 variant="destructive"
                 size="sm"
                 disabled={dispute.status === "Rejected"}
-                onClick={() => onStatusChange(dispute, "Rejected")}
+                onClick={() => onRequestReject(dispute)}
               >
                 <X aria-hidden />
                 Reject
@@ -185,6 +184,9 @@ export function DisputeResolution({
   const { push } = useToast();
   const [disputes, setDisputes] = useState(initialDisputes);
   const [activeTab, setActiveTab] = useState<DisputeTab>("All");
+  const [pendingReject, setPendingReject] = useState<UniversityDispute | null>(
+    null,
+  );
   const counts = useMemo(() => countByStatus(disputes), [disputes]);
 
   function updateStatus(dispute: UniversityDispute, nextStatus: DisputeStatus) {
@@ -272,7 +274,7 @@ export function DisputeResolution({
             <p>Filter by status to focus the queue.</p>
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() =>
               push({
@@ -304,6 +306,7 @@ export function DisputeResolution({
             <DisputeList
               records={disputes}
               onStatusChange={updateStatus}
+              onRequestReject={setPendingReject}
             />
           </TabsContent>
 
@@ -314,10 +317,31 @@ export function DisputeResolution({
                   (dispute) => dispute.status === status,
                 )}
                 onStatusChange={updateStatus}
+                onRequestReject={setPendingReject}
               />
             </TabsContent>
           ))}
         </Tabs>
+
+        <ConfirmDialog
+          open={pendingReject !== null}
+          onOpenChange={(open) => !open && setPendingReject(null)}
+          title="Reject this dispute?"
+          description={
+            pendingReject ? (
+              <>
+                The dispute for <strong>{pendingReject.graduateName}</strong>{" "}
+                will be marked Rejected. They&apos;ll be notified by email.
+              </>
+            ) : null
+          }
+          confirmLabel="Reject dispute"
+          destructive
+          onConfirm={() => {
+            if (pendingReject) updateStatus(pendingReject, "Rejected");
+            setPendingReject(null);
+          }}
+        />
       </section>
     </div>
   );
