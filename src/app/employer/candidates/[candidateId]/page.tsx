@@ -306,6 +306,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
               </div>
               <Separator />
               <CandidateActions
+                candidateId={candidate.id}
                 candidateName={candidate.name}
                 appliedFor={candidate.appliedFor}
                 initialStarred={candidate.starred}

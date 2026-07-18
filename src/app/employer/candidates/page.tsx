@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  Bookmark,
   Check,
   Filter,
   Search,
@@ -33,6 +34,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { useToast } from "@/components/common/toast";
+import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
 import { cn } from "@/lib/utils";
 
 const TABS: Array<{ value: CandidateStage | "All"; label: string }> = [
@@ -77,6 +79,7 @@ function stageVariant(stage: CandidateStage) {
 
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
+  const { add, remove, isInPool, getByCandidate } = useTalentPool();
   const [candidates, setCandidates] = useState<EmployerCandidate[]>(employerCandidates);
   const [stage, setStage] = useState<CandidateStage | "All">("All");
   const [query, setQuery] = useState("");
@@ -110,6 +113,15 @@ export default function EmployerCandidatesPage() {
     setCandidates((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...patch } : c)),
     );
+  };
+
+  const togglePool = (candidateId: string) => {
+    if (isInPool(candidateId)) {
+      const entry = getByCandidate(candidateId);
+      if (entry) remove(entry.id);
+    } else {
+      add({ candidateId });
+    }
   };
 
   return (
@@ -204,9 +216,11 @@ export default function EmployerCandidatesPage() {
                     <CandidateRow
                       key={c.id}
                       candidate={c}
+                      inPool={isInPool(c.id)}
                       onToggleStar={() =>
                         updateCandidate(c.id, { starred: !c.starred })
                       }
+                      onTogglePool={() => togglePool(c.id)}
                       onAdvance={() => {
                         const next = NEXT_STAGE[c.stage];
                         if (next) updateCandidate(c.id, { stage: next });
@@ -247,12 +261,16 @@ export default function EmployerCandidatesPage() {
 
 function CandidateRow({
   candidate,
+  inPool,
   onToggleStar,
+  onTogglePool,
   onAdvance,
   onRequestReject,
 }: {
   candidate: EmployerCandidate;
+  inPool: boolean;
   onToggleStar: () => void;
+  onTogglePool: () => void;
   onAdvance: () => void;
   onRequestReject: (candidate: EmployerCandidate) => void;
 }) {
@@ -269,6 +287,19 @@ function CandidateRow({
       description: willStar
         ? "They'll surface at the top of your candidates list."
         : "They won't appear in your starred list anymore.",
+      tone: "info",
+    });
+  };
+
+  const togglePool = () => {
+    onTogglePool();
+    push({
+      title: inPool
+        ? `${candidate.name} removed from talent pool`
+        : `${candidate.name} saved to talent pool`,
+      description: inPool
+        ? "Open the talent pool to re-add them."
+        : "Tag and add notes from the talent pool workspace.",
       tone: "info",
     });
   };
@@ -310,6 +341,12 @@ function CandidateRow({
                   Starred
                 </Badge>
               ) : null}
+              {inPool ? (
+                <Badge variant="secondary">
+                  <Bookmark className="h-3 w-3 fill-current" aria-hidden />
+                  In pool
+                </Badge>
+              ) : null}
             </div>
             <small className="block truncate text-muted-foreground">
               {candidate.appliedFor} · {candidate.location}
@@ -343,6 +380,23 @@ function CandidateRow({
             >
               <Star className={cn(candidate.starred && "fill-current")} aria-hidden />
               {candidate.starred ? "Starred" : "Star"}
+            </Button>
+            <Button
+              variant={inPool ? "secondary" : "outline"}
+              size="sm"
+              onClick={togglePool}
+              aria-pressed={inPool}
+              aria-label={
+                inPool
+                  ? `Remove ${candidate.name} from talent pool`
+                  : `Save ${candidate.name} to talent pool`
+              }
+            >
+              <Bookmark
+                className={cn(inPool && "fill-current")}
+                aria-hidden
+              />
+              {inPool ? "In pool" : "Save to pool"}
             </Button>
             <Button
               variant="outline"

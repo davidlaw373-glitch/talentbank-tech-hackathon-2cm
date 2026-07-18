@@ -4,6 +4,7 @@ import type {
   EmployerCandidate,
   EmployerInterview,
   EmployerOffer,
+  TalentPoolEntry,
 } from "@/types/employer";
 
 export const employerProfile: EmployerProfile = {
@@ -321,6 +322,95 @@ export const employerCandidates: EmployerCandidate[] = [
 
 export function getEmployerCandidate(candidateId: string) {
   return employerCandidates.find((candidate) => candidate.id === candidateId);
+}
+
+export const talentPoolEntries: TalentPoolEntry[] = [
+  {
+    id: "pool-aisha",
+    candidateId: "cand-aisha",
+    status: "Active",
+    savedAt: "3 weeks ago",
+    lastContactedAt: null,
+    notes:
+      "Strong async-first signal. Loop back when Senior Frontend loop opens in Q4.",
+    tags: ["Senior IC", "Future role"],
+    source: "Application",
+    sourceDetail: "Senior Frontend Engineer · Aug 2026",
+    reEngagementScore: 88,
+  },
+  {
+    id: "pool-marco",
+    candidateId: "cand-marco",
+    status: "Contacted",
+    savedAt: "1 month ago",
+    lastContactedAt: "Last week",
+    notes:
+      "Sent a follow-up after the rejected ML round. Open to chat about a platform role.",
+    tags: ["Referral", "Specialist"],
+    source: "Referral",
+    sourceDetail: "Referred by Priya Anand",
+    reEngagementScore: 64,
+  },
+  {
+    id: "pool-sara",
+    candidateId: "cand-sara",
+    status: "Re-engaging",
+    savedAt: "2 weeks ago",
+    lastContactedAt: "Yesterday",
+    notes:
+      "Replied positively to a PM role intro. Loop her in once Platform PM JD is finalised.",
+    tags: ["Senior IC", "Future role"],
+    source: "Application",
+    sourceDetail: "Platform Product Manager · Jul 2026",
+    reEngagementScore: 92,
+  },
+  {
+    id: "pool-rafael",
+    candidateId: "cand-rafael",
+    status: "Stale",
+    savedAt: "5 months ago",
+    lastContactedAt: "3 months ago",
+    notes:
+      "Silver medalist from Q1 loop. Mentioned wanting to move into frontend full-time.",
+    tags: ["Silver medalist", "Open to work"],
+    source: "Application",
+    sourceDetail: "Senior Frontend Engineer · Feb 2026",
+    reEngagementScore: 41,
+  },
+  {
+    id: "pool-tomoko",
+    candidateId: "cand-tomoko",
+    status: "Active",
+    savedAt: "1 month ago",
+    lastContactedAt: null,
+    notes:
+      "Offer pending. Keep warm in case the offer falls through — backup for Design Engineer.",
+    tags: ["Future role", "Senior IC"],
+    source: "Application",
+    sourceDetail: "Design Engineer · Jun 2026",
+    reEngagementScore: 76,
+  },
+  {
+    id: "pool-kasper",
+    candidateId: "cand-kasper",
+    status: "Stale",
+    savedAt: "4 months ago",
+    lastContactedAt: "4 months ago",
+    notes:
+      "Closed for SRE scope but worth keeping warm for backend lead roles.",
+    tags: ["Silver medalist", "Specialist"],
+    source: "Application",
+    sourceDetail: "Site Reliability Engineer · Mar 2026",
+    reEngagementScore: 33,
+  },
+];
+
+export function getTalentPoolEntry(entryId: string) {
+  return talentPoolEntries.find((entry) => entry.id === entryId);
+}
+
+export function getTalentPoolEntryByCandidate(candidateId: string) {
+  return talentPoolEntries.find((entry) => entry.candidateId === candidateId);
 }
 
 export const employerInterviews: EmployerInterview[] = [

@@ -44,8 +44,13 @@ const universityUnread = notifications.filter((n) => !n.read).length;
 export function UniversityShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) => {
+    if (pathname === href) return true;
+    // Section roots like /university must not match nested routes, otherwise
+    // /university/profile would keep the Dashboard indicator lit.
+    if (href.split("/").filter(Boolean).length <= 1) return false;
+    return pathname.startsWith(href + "/");
+  };
 
   return (
     <div className="min-h-full">

@@ -109,3 +109,37 @@ export type EmployerOffer = {
   decision: OfferDecision;
   matchScore: number;
 };
+
+export type TalentPoolStatus =
+  | "Active"
+  | "Contacted"
+  | "Re-engaging"
+  | "Stale";
+
+export type TalentPoolTag =
+  | "Silver medalist"
+  | "Future role"
+  | "Referral"
+  | "Conference"
+  | "Open to work"
+  | "Senior IC"
+  | "Specialist";
+
+export type TalentPoolSource =
+  | "Application"
+  | "Referral"
+  | "Open application"
+  | "Conference";
+
+export type TalentPoolEntry = {
+  id: string;
+  candidateId: string;
+  status: TalentPoolStatus;
+  savedAt: string;
+  lastContactedAt: string | null;
+  notes: string;
+  tags: TalentPoolTag[];
+  source: TalentPoolSource;
+  sourceDetail: string;
+  reEngagementScore: number;
+};

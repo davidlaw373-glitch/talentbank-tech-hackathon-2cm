@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   ArrowRight,
+  Bookmark,
   Calendar,
   Send,
   Star,
@@ -14,6 +15,7 @@ import {
 import type { CandidateStage } from "@/types/employer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/common/toast";
+import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
 import { cn } from "@/lib/utils";
 
 const NEXT_STAGE: Record<CandidateStage, CandidateStage | null> = {
@@ -27,20 +29,25 @@ const NEXT_STAGE: Record<CandidateStage, CandidateStage | null> = {
 };
 
 export function CandidateActions({
+  candidateId,
   candidateName,
   appliedFor,
   initialStarred,
   initialStage,
 }: {
+  candidateId: string;
   candidateName: string;
   appliedFor: string;
   initialStarred: boolean;
   initialStage: CandidateStage;
 }) {
   const { push } = useToast();
+  const { add, remove, getByCandidate, isInPool } = useTalentPool();
   const [starred, setStarred] = useState(initialStarred);
   const [stage, setStage] = useState<CandidateStage>(initialStage);
 
+  const poolEntry = getByCandidate(candidateId);
+  const inPool = isInPool(candidateId);
   const next = NEXT_STAGE[stage];
 
   const toggleStar = () => {
@@ -92,11 +99,29 @@ export function CandidateActions({
   };
 
   const addToPool = () => {
-    setStarred(true);
+    const result = add({ candidateId });
+    if (!result) {
+      push({
+        title: `${candidateName} is already in your pool`,
+        description: "Open the talent pool to view their entry.",
+        tone: "info",
+      });
+      return;
+    }
     push({
       title: `${candidateName} saved to talent pool`,
-      description: "You'll get alerts as their profile matures.",
+      description: "Add notes and tags from the talent pool workspace.",
       tone: "success",
+    });
+  };
+
+  const removeFromPool = () => {
+    if (!poolEntry) return;
+    remove(poolEntry.id);
+    push({
+      title: `${candidateName} removed from talent pool`,
+      description: "You can re-add them anytime.",
+      tone: "info",
     });
   };
 
@@ -142,10 +167,17 @@ export function CandidateActions({
           <Send />
           Send offer
         </Button>
-        <Button variant="ghost" onClick={addToPool}>
-          <UserPlus />
-          Add to talent pool
-        </Button>
+        {inPool ? (
+          <Button variant="ghost" onClick={removeFromPool}>
+            <Bookmark aria-hidden />
+            In talent pool — remove
+          </Button>
+        ) : (
+          <Button variant="ghost" onClick={addToPool}>
+            <UserPlus />
+            Add to talent pool
+          </Button>
+        )}
         <Button
           variant="destructive"
           onClick={reject}
@@ -158,6 +190,7 @@ export function CandidateActions({
 
       <span className="sr-only">
         {candidateName} current stage: {stage}
+        {inPool ? ` · in talent pool as ${poolEntry?.status ?? "Active"}` : ""}
       </span>
     </>
   );

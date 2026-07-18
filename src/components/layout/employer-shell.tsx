@@ -39,8 +39,13 @@ const employerUnread = notifications.filter((n) => !n.read).length;
 export function EmployerShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  const isActive = (href: string) => {
+    if (pathname === href) return true;
+    // Section roots like /employer must not match nested routes, otherwise
+    // /employer/jobs would keep the Dashboard indicator lit.
+    if (href.split("/").filter(Boolean).length <= 1) return false;
+    return pathname.startsWith(href + "/");
+  };
 
   return (
     <div className="min-h-full">
