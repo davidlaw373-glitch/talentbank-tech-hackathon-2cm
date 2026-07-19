@@ -10,6 +10,7 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
+import Link from "next/link";
 import {
   employerActivity,
   employerCompany,
@@ -55,14 +56,9 @@ export function EmployerDashboardOverview() {
             people.
           </p>
         </div>
-        <div>
-          <Button disabled aria-describedby="post-job-unavailable">
-            Post a job
-          </Button>
-          <p id="post-job-unavailable" className="sr-only">
-            Job management is not available in this dashboard preview.
-          </p>
-        </div>
+        <Button asChild>
+          <Link href="/employer/jobs">Post a job</Link>
+        </Button>
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
@@ -170,14 +166,13 @@ export function EmployerDashboardOverview() {
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader>
+          <CardHeader className="flex-row items-start justify-between space-y-0">
             <CardTitle>
               <h2>Shortlisted candidates</h2>
             </CardTitle>
-            <CardDescription>
-              The people closest to a hiring decision right now.
-            </CardDescription>
+            <Button asChild variant="ghost" size="sm"><Link href="/employer/candidates">View all</Link></Button>
           </CardHeader>
+          <CardContent className="-mt-3 pb-0 text-sm text-muted-foreground">The people closest to a hiring decision right now.</CardContent>
           <CardContent className="space-y-3">
             {shortlistedCandidates.map((candidate) => (
               <div
@@ -227,15 +222,16 @@ export function EmployerDashboardOverview() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex-row items-start justify-between space-y-0">
             <CardTitle>
               <h2 className="flex items-center gap-2">
                 <CalendarClock className="h-4 w-4" aria-hidden />
                 Upcoming interviews
               </h2>
             </CardTitle>
-            <CardDescription>Your next scheduled conversations.</CardDescription>
+            <Button asChild variant="ghost" size="sm"><Link href="/employer/interviews">View schedule</Link></Button>
           </CardHeader>
+          <CardContent className="-mt-3 pb-0 text-sm text-muted-foreground">Your next scheduled conversations.</CardContent>
           <CardContent className="space-y-3">
             {upcomingInterviews.map((interview) => (
               <div key={interview.candidate} className="rounded-lg border bg-card p-3">
@@ -258,7 +254,7 @@ export function EmployerDashboardOverview() {
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader>
+          <CardHeader className="flex-row items-start justify-between space-y-0">
             <CardTitle>
               <h2>Active roles</h2>
             </CardTitle>
@@ -329,9 +325,10 @@ export function EmployerDashboardOverview() {
                   <BellRing className="h-4 w-4" aria-hidden />
                   Notifications
                 </h2>
-              </CardTitle>
-              <CardDescription>Items that need attention soon.</CardDescription>
-            </CardHeader>
+            </CardTitle>
+            <Button asChild variant="ghost" size="sm"><Link href="/employer/notifications">View all</Link></Button>
+          </CardHeader>
+          <CardContent className="-mt-3 pb-0 text-sm text-muted-foreground">Items that need attention soon.</CardContent>
             <CardContent>
               <ul className="space-y-3">
                 {employerNotifications.map((notification) => (

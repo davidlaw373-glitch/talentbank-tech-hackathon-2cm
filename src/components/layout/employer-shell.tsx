@@ -1,9 +1,26 @@
 import Link from "next/link";
-import { Bell, BriefcaseBusiness, LayoutDashboard } from "lucide-react";
+import {
+  Bell,
+  BriefcaseBusiness,
+  CalendarClock,
+  FileCheck2,
+  LayoutDashboard,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
 import { employerCompany } from "@/data/employer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+
+const links = [
+  { href: "/employer/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/employer/jobs", label: "Jobs", icon: BriefcaseBusiness },
+  { href: "/employer/candidates", label: "Candidates", icon: UsersRound },
+  { href: "/employer/interviews", label: "Interviews", icon: CalendarClock },
+  { href: "/employer/offers", label: "Offers", icon: FileCheck2 },
+  { href: "/employer/talent", label: "Talent", icon: Sparkles },
+];
 
 export function EmployerShell({ children }: { children: React.ReactNode }) {
   return (
@@ -14,32 +31,21 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
             <h2>CareerOS</h2>
           </Link>
           <nav className="flex flex-wrap items-center gap-1" aria-label="Main navigation">
-            <Button asChild variant="ghost">
-              <Link href="/employer/dashboard">
-                <LayoutDashboard aria-hidden />
-                Dashboard
-              </Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/employer/jobs">
-                <BriefcaseBusiness aria-hidden />
-                Jobs
-              </Link>
-            </Button>
+            {links.map(({ href, label, icon: Icon }) => (
+              <Button key={href} asChild variant="ghost">
+                <Link href={href}>
+                  <Icon aria-hidden />
+                  {label}
+                </Link>
+              </Button>
+            ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled
-              aria-describedby="employer-notifications-unavailable"
-            >
-              <Bell aria-hidden />
-              <span className="sr-only">Notifications unavailable</span>
+            <Button asChild variant="ghost" size="icon" aria-label="View notifications">
+              <Link href="/employer/notifications">
+                <Bell aria-hidden />
+              </Link>
             </Button>
-            <p id="employer-notifications-unavailable" className="sr-only">
-              Notifications are not available in this dashboard preview.
-            </p>
             <Link
               href="/employer/company"
               aria-label={`Open ${employerCompany.name} company profile`}
