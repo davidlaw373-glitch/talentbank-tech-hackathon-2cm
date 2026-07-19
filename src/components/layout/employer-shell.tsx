@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, LayoutDashboard } from "lucide-react";
+import { Bell, BriefcaseBusiness, LayoutDashboard } from "lucide-react";
 import { employerCompany } from "@/data/employer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,12 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
                 Dashboard
               </Link>
             </Button>
+            <Button asChild variant="ghost">
+              <Link href="/employer/jobs">
+                <BriefcaseBusiness aria-hidden />
+                Jobs
+              </Link>
+            </Button>
           </nav>
           <div className="flex items-center gap-2">
             <Button
@@ -34,7 +40,11 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
             <p id="employer-notifications-unavailable" className="sr-only">
               Notifications are not available in this dashboard preview.
             </p>
-            <div className="flex items-center gap-3 rounded-md px-3 py-2">
+            <Link
+              href="/employer/company"
+              aria-label={`Open ${employerCompany.name} company profile`}
+              className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-accent focus-visible:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
               <Badge variant="secondary" aria-hidden>
                 {employerCompany.initials}
               </Badge>
@@ -44,7 +54,7 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
                 </span>
                 <small className="block leading-tight">Employer</small>
               </span>
-            </div>
+            </Link>
           </div>
         </div>
       </header>
