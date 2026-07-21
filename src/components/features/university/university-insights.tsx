@@ -82,7 +82,7 @@ export function UniversityInsights() {
     () => industryDemand
       .map((demand) => ({
         label: demand.role,
-        detail: `${demand.industry} · ${demand.openRoles} open roles tracked`,
+        detail: `${demand.industry} - ${demand.openRoles} open roles tracked`,
         value: demand.growth,
       }))
       .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label)),
@@ -92,7 +92,7 @@ export function UniversityInsights() {
     () => industryDemand
       .map((demand) => ({
         label: demand.skill,
-        detail: `${demand.role} · ${demand.industry}`,
+        detail: `${demand.role} - ${demand.industry}`,
         value: demand.openRoles,
       }))
       .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label)),
