@@ -165,9 +165,22 @@ export function VerificationCenter() {
     setRejectionConfirmed(false);
   }
 
-  function handleStatusChange(status: AcademicVerificationStatus) {
+  function handleStatusChange(
+    status: AcademicVerificationStatus,
+    nextRecords: VerificationRecord[] = records,
+    preferredRecordId?: string
+  ) {
+    const recordsInStatus = nextRecords.filter(
+      (record) => record.status === status
+    );
+    const selectedRecordId = recordsInStatus.some(
+      (record) => record.id === preferredRecordId
+    )
+      ? preferredRecordId ?? null
+      : recordsInStatus[0]?.id ?? null;
+
     setActiveStatus(status);
-    setSelectedId(recordsByStatus[status][0]?.id ?? null);
+    setSelectedId(selectedRecordId);
     setRequestNote("");
     setShowRejectForm(false);
     setRejectionReason("");
@@ -284,19 +297,19 @@ export function VerificationCenter() {
 
     const date = formatDate(new Date());
     const approvedIds = new Set(selectedPendingIds);
-    setRecords((currentRecords) =>
-      currentRecords.map((record) =>
+    const reviewedAt = new Date().toISOString();
+    const nextRecords: VerificationRecord[] = records.map((record) =>
         approvedIds.has(record.id)
           ? {
               ...record,
               status: "Verified",
               reviewer: "Registry Demo User",
-              reviewedAt: new Date().toISOString(),
+              reviewedAt,
               note: "Approved in a batch Registry review.",
             }
           : record
-      )
     );
+    setRecords(nextRecords);
     setHistory((currentHistory) => {
       const nextHistory = { ...currentHistory };
       selectedPendingRecords.forEach((record) => {
@@ -314,7 +327,11 @@ export function VerificationCenter() {
       return nextHistory;
     });
     setSelectedPendingIds([]);
-    setActiveStatus("Verified");
+    handleStatusChange(
+      "Verified",
+      nextRecords,
+      selectedPendingRecords[0]?.id
+    );
     setNotice(`${selectedPendingRecords.length} records were approved by Registry Demo User on ${date}.`);
   }
 
