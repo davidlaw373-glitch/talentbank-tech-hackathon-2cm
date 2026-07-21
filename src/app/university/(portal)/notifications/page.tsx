@@ -1,10 +1,5 @@
-import { PageHeading } from "@/components/common/page-heading";
+import { UniversityNotifications } from "@/components/features/university/university-notifications";
 
 export default function UniversityNotificationsPage() {
-  return (
-    <PageHeading
-      title="Notifications"
-      description="Stay informed about verification, graduate outcome, and demand updates."
-    />
-  );
+  return <UniversityNotifications />;
 }

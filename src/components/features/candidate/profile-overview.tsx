@@ -62,6 +62,8 @@ type Evidence = {
   name: string;
   type: string;
   status: VerificationStatus;
+  issuer?: string;
+  displayStatus?: string;
 };
 
 type ProfileFormState = {
@@ -119,6 +121,8 @@ const INITIAL_EVIDENCE: Evidence[] = [
     name: "Computer Science degree",
     type: "Education",
     status: "Verified",
+    issuer: "University of Malaya",
+    displayStatus: "University verified",
   },
   {
     id: "ev-2",
@@ -795,12 +799,14 @@ export function ProfileOverview() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">{item.type}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.issuer ? `${item.type} \u00B7 ${item.issuer}` : item.type}
+                      </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => toggleEvidenceStatus(item.id)}
-                      aria-label={`Status: ${item.status}. Click to change.`}
+                      aria-label={`Status: ${item.status === "Verified" && item.displayStatus ? item.displayStatus : item.status}. Click to change.`}
                       className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
                       <Badge
@@ -816,7 +822,9 @@ export function ProfileOverview() {
                           item.status === "Not started" && "opacity-60"
                         )}
                       >
-                        {item.status}
+                        {item.status === "Verified" && item.displayStatus
+                          ? item.displayStatus
+                          : item.status}
                       </Badge>
                     </button>
                     <Button

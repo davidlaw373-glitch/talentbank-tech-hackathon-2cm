@@ -271,6 +271,11 @@ export type EmployerApplicant = {
   summary: string;
   portfolio?: string;
   shortlisted: boolean;
+  verifiedCredential?: {
+    qualification: string;
+    institution: string;
+    status: "University verified";
+  };
 };
 
 export type EmployerInterview = {
@@ -321,6 +326,27 @@ export type EmployerNotification = {
 };
 
 export const employerApplicants: EmployerApplicant[] = [
+  {
+    id: "alex-morgan",
+    name: "Alex Morgan",
+    initials: "AM",
+    role: "Frontend Engineer",
+    appliedOn: "Today",
+    experience: "Early career \u00B7 Next.js, TypeScript",
+    location: "Kuala Lumpur, Malaysia",
+    fit: 91,
+    stage: "Screening",
+    skills: ["TypeScript", "React", "Next.js", "Accessibility"],
+    summary:
+      "Product-minded frontend developer who builds accessible, dependable product experiences.",
+    portfolio: "Portfolio available",
+    shortlisted: true,
+    verifiedCredential: {
+      qualification: "Computer Science degree",
+      institution: "University of Malaya",
+      status: "University verified",
+    },
+  },
   {
     id: "nur-aisyah-rahman",
     name: "Nur Aisyah Rahman",

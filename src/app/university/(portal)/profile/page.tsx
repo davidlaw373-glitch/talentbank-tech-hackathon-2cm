@@ -1,10 +1,5 @@
-import { PageHeading } from "@/components/common/page-heading";
+import { UniversityProfile } from "@/components/features/university/university-profile";
 
 export default function UniversityProfilePage() {
-  return (
-    <PageHeading
-      title="University profile"
-      description="Review your institution identity, faculties, and public graduate outcomes."
-    />
-  );
+  return <UniversityProfile />;
 }
