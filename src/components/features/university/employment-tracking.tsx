@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { employmentOutcomes, graduates } from "@/data/university";
+import { getLeadingIndustrySummary } from "@/lib/employment-leader";
 import { calculateEmploymentMetrics } from "@/lib/university-metrics";
 import type {
   EmploymentOutcome,
@@ -259,7 +260,10 @@ export function EmploymentTracking() {
     });
   }, [outcomes]);
 
-  const leadingIndustry = industryDistribution[0]?.label ?? "No industry recorded";
+  const leadingIndustry = useMemo(
+    () => getLeadingIndustrySummary(industryDistribution),
+    [industryDistribution]
+  );
 
   function chooseGraduate(graduateId: string) {
     setDraft(draftFromOutcome(getOutcomeForGraduate(graduateId, outcomes)));
@@ -381,8 +385,8 @@ export function EmploymentTracking() {
         <MetricCard
           icon={Building2}
           label="Leading industry"
-          value={leadingIndustry}
-          detail="Based on confirmed employed outcomes"
+          value={leadingIndustry.value}
+          detail={leadingIndustry.detail}
         />
       </section>
 
