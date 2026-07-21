@@ -1,10 +1,5 @@
-import { PageHeading } from "@/components/common/page-heading";
+import { EmploymentTracking } from "@/components/features/university/employment-tracking";
 
 export default function EmploymentPage() {
-  return (
-    <PageHeading
-      title="Employment"
-      description="Track graduate outcomes and identify people who need follow-up."
-    />
-  );
+  return <EmploymentTracking />;
 }
