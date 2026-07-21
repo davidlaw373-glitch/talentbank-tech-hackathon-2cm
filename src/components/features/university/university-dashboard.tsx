@@ -1,20 +1,20 @@
-"use client";
-
 import Link from "next/link";
 import {
   BadgeCheck,
   BarChart3,
   BriefcaseBusiness,
-  CalendarClock,
   CheckCircle2,
   Clock3,
   FileCheck2,
   GraduationCap,
   Lightbulb,
-  ListTodo,
   UsersRound,
 } from "lucide-react";
 
+import {
+  UniversityRoleHeader,
+  UniversityUpcomingTasks,
+} from "@/components/features/university/university-dashboard-role-content";
 import {
   curriculumInsights,
   employmentOutcomes,
@@ -23,8 +23,10 @@ import {
   universityProfile,
   verificationRecords,
 } from "@/data/university";
-import { calculateEmploymentMetrics } from "@/lib/university-metrics";
-import { useUniversityRole } from "@/components/features/university/university-role-context";
+import {
+  calculateEmploymentMetrics,
+  normalizeEmploymentOutcomes,
+} from "@/lib/university-metrics";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,25 +36,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EmploymentStatus, UniversityRole } from "@/types/university";
+import type { EmploymentStatus } from "@/types/university";
 
-const employmentMetrics = calculateEmploymentMetrics(employmentOutcomes);
-
-const roleActions: Record<
-  UniversityRole,
-  { label: string; href: string; description: string }
-> = {
-  careers: {
-    label: "Update employment outcomes",
-    href: "/university/employment",
-    description: "Focus on graduate outcomes, follow-ups, and employer signals.",
-  },
-  registry: {
-    label: "Review verification queue",
-    href: "/university/verification",
-    description: "Prioritise academic evidence and credential decisions.",
-  },
-};
+const normalizedEmploymentOutcomes = normalizeEmploymentOutcomes(
+  graduates,
+  employmentOutcomes
+);
+const employmentMetrics = calculateEmploymentMetrics(normalizedEmploymentOutcomes);
 
 const outcomeOrder: EmploymentStatus[] = [
   "Employed",
@@ -64,7 +54,7 @@ const outcomeOrder: EmploymentStatus[] = [
 
 const outcomeDistribution = outcomeOrder.map((status) => ({
   status,
-  count: employmentOutcomes.filter((outcome) => outcome.status === status)
+  count: normalizedEmploymentOutcomes.filter((outcome) => outcome.status === status)
     .length,
 }));
 
@@ -78,7 +68,7 @@ const employmentByFaculty = universityProfile.faculties.map((faculty) => {
       .filter((graduate) => graduate.faculty === faculty)
       .map((graduate) => graduate.id)
   );
-  const facultyOutcomes = employmentOutcomes.filter((outcome) =>
+  const facultyOutcomes = normalizedEmploymentOutcomes.filter((outcome) =>
     facultyGraduateIds.has(outcome.graduateId)
   );
   const facultyMetrics = calculateEmploymentMetrics(facultyOutcomes);
@@ -94,41 +84,21 @@ const employmentByFaculty = universityProfile.faculties.map((faculty) => {
 const pendingVerificationCount = verificationRecords.filter(
   (record) => record.status === "Pending"
 ).length;
+const careersTasks = graduates
+  .filter((graduate) =>
+    ["Seeking", "Unknown"].includes(graduate.employmentStatus)
+  )
+  .slice(0, 3);
+const registryTasks = graduates
+  .filter((graduate) =>
+    ["Pending", "Disputed"].includes(graduate.verificationStatus)
+  )
+  .slice(0, 3);
 
 export function UniversityDashboard() {
-  const { role } = useUniversityRole();
-  const roleAction = roleActions[role];
-  const roleName = role === "careers" ? "Career Services" : "Registry";
-
-  const upcomingTasks =
-    role === "careers"
-      ? graduates
-          .filter((graduate) =>
-            ["Seeking", "Unknown"].includes(graduate.employmentStatus)
-          )
-          .slice(0, 3)
-      : graduates
-          .filter((graduate) =>
-            ["Pending", "Disputed"].includes(graduate.verificationStatus)
-          )
-          .slice(0, 3);
-
   return (
     <div className="space-y-8">
-      <section className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            University dashboard
-          </p>
-          <h1>Good morning, {universityProfile.name}</h1>
-          <p className="max-w-2xl text-muted-foreground">
-            {roleAction.description}
-          </p>
-        </div>
-        <Button asChild>
-          <Link href={roleAction.href}>{roleAction.label}</Link>
-        </Button>
-      </section>
+      <UniversityRoleHeader institutionName={universityProfile.name} />
 
       <section
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
@@ -179,7 +149,7 @@ export function UniversityDashboard() {
           <CardContent className="space-y-4">
             {outcomeDistribution.map(({ status, count }) => {
               const percentage = Math.round(
-                (count / employmentOutcomes.length) * 100
+                (count / normalizedEmploymentOutcomes.length) * 100
               );
 
               return (
@@ -195,7 +165,7 @@ export function UniversityDashboard() {
                     role="progressbar"
                     aria-label={`${status} graduate outcomes`}
                     aria-valuemin={0}
-                    aria-valuemax={employmentOutcomes.length}
+                    aria-valuemax={normalizedEmploymentOutcomes.length}
                     aria-valuenow={count}
                   >
                     <div
@@ -367,33 +337,10 @@ export function UniversityDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2 className="flex items-center gap-2">
-                <ListTodo className="h-4 w-4" aria-hidden />
-                Upcoming tasks
-              </h2>
-            </CardTitle>
-            <CardDescription>{roleName} priorities for today.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {upcomingTasks.map((graduate) => (
-              <div key={graduate.id} className="rounded-lg border bg-card p-3">
-                <p className="text-sm font-medium">{graduate.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {graduate.nextAction}
-                </p>
-              </div>
-            ))}
-            <Button asChild variant="outline" size="sm" className="w-full">
-              <Link href={roleAction.href}>
-                <CalendarClock aria-hidden />
-                {roleAction.label}
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <UniversityUpcomingTasks
+          careersTasks={careersTasks}
+          registryTasks={registryTasks}
+        />
       </section>
     </div>
   );

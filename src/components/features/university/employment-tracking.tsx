@@ -31,7 +31,10 @@ import {
 } from "@/components/ui/select";
 import { employmentOutcomes, graduates } from "@/data/university";
 import { getIndustryInsight } from "@/lib/employment-industry";
-import { calculateEmploymentMetrics } from "@/lib/university-metrics";
+import {
+  calculateEmploymentMetrics,
+  normalizeEmploymentOutcomes,
+} from "@/lib/university-metrics";
 import type {
   EmploymentOutcome,
   EmploymentStatus,
@@ -64,6 +67,11 @@ const emptyDraft: EmploymentDraft = {
   employedAt: "",
   daysToEmployment: "",
 };
+
+const initialEmploymentOutcomes = normalizeEmploymentOutcomes(
+  graduates,
+  employmentOutcomes
+);
 
 type DistributionItem = { label: string; count: number; detail?: string };
 
@@ -181,9 +189,13 @@ function DistributionBars({
 
 export function EmploymentTracking() {
   const { role } = useUniversityRole();
-  const [outcomes, setOutcomes] = useState<EmploymentOutcome[]>(employmentOutcomes);
+  const [outcomes, setOutcomes] = useState<EmploymentOutcome[]>(
+    initialEmploymentOutcomes
+  );
   const [draft, setDraft] = useState<EmploymentDraft>(() =>
-    draftFromOutcome(getOutcomeForGraduate(emptyDraft.graduateId, employmentOutcomes))
+    draftFromOutcome(
+      getOutcomeForGraduate(emptyDraft.graduateId, initialEmploymentOutcomes)
+    )
   );
   const [notice, setNotice] = useState("");
   const [isSaving, setIsSaving] = useState(false);

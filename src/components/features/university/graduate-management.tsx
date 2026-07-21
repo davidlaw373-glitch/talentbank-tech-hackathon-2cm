@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import { FileUp, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
 import { graduates } from "@/data/university";
@@ -140,6 +140,7 @@ export function GraduateManagement() {
   const [importPreview, setImportPreview] = useState(false);
   const [notice, setNotice] = useState("");
   const [pendingDeletionId, setPendingDeletionId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const faculties = useMemo(
     () => Array.from(new Set(records.map((record) => record.faculty))).sort(),
@@ -274,11 +275,22 @@ export function GraduateManagement() {
     setNotice(`${record.name} was removed from your local graduate records.`);
   }
 
+  function resetImportPreview() {
+    setImportPreview(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  function cancelImportPreview() {
+    resetImportPreview();
+  }
+
   function importValidRecords() {
     const existingIds = new Set(records.map((record) => record.id));
     const newRecords = importedGraduates.filter((record) => !existingIds.has(record.id));
     setRecords((current) => [...newRecords, ...current]);
-    setImportPreview(false);
+    resetImportPreview();
     setNotice(`${newRecords.length} valid demo graduate records were added locally. The record needing review was not imported.`);
   }
 
@@ -324,7 +336,7 @@ export function GraduateManagement() {
           <CardContent className="space-y-3">
             <label className="block space-y-2 text-sm font-medium" htmlFor="graduate-import">
               CSV file
-              <Input id="graduate-import" type="file" accept=".csv,text/csv" onChange={(event) => setImportPreview(Boolean(event.target.files?.length))} />
+              <Input ref={fileInputRef} id="graduate-import" type="file" accept=".csv,text/csv" onChange={(event) => setImportPreview(Boolean(event.target.files?.length))} />
             </label>
             {importPreview && (
               <div className="rounded-lg border bg-muted/30 p-3 text-sm">
@@ -332,7 +344,7 @@ export function GraduateManagement() {
                 <p className="mt-1 text-xs text-muted-foreground">This prototype does not parse or upload the selected file.</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button size="sm" onClick={importValidRecords}>Import valid records</Button>
-                  <Button size="sm" variant="ghost" onClick={() => setImportPreview(false)}>Cancel</Button>
+                  <Button size="sm" variant="ghost" onClick={cancelImportPreview}>Cancel</Button>
                 </div>
               </div>
             )}

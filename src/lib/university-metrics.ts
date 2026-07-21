@@ -1,4 +1,4 @@
-import type { EmploymentOutcome } from "@/types/university";
+import type { EmploymentOutcome, Graduate } from "@/types/university";
 
 export type EmploymentMetrics = {
   employed: number;
@@ -10,6 +10,23 @@ export type EmploymentMetrics = {
   coverageRate: number;
   averageDaysToEmployment: number;
 };
+
+export function normalizeEmploymentOutcomes(
+  graduateRecords: readonly Pick<Graduate, "id">[],
+  outcomes: readonly EmploymentOutcome[]
+): EmploymentOutcome[] {
+  const outcomesByGraduateId = new Map(
+    outcomes.map((outcome) => [outcome.graduateId, outcome])
+  );
+
+  return graduateRecords.map(
+    (graduate) =>
+      outcomesByGraduateId.get(graduate.id) ?? {
+        graduateId: graduate.id,
+        status: "Unknown",
+      }
+  );
+}
 
 export function calculateEmploymentMetrics(
   outcomes: EmploymentOutcome[]

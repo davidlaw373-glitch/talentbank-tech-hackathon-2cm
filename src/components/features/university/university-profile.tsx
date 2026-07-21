@@ -12,7 +12,10 @@ import {
   graduates,
   universityProfile,
 } from "@/data/university";
-import { calculateEmploymentMetrics } from "@/lib/university-metrics";
+import {
+  calculateEmploymentMetrics,
+  normalizeEmploymentOutcomes,
+} from "@/lib/university-metrics";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -23,7 +26,11 @@ import {
 } from "@/components/ui/card";
 import type { EmploymentStatus } from "@/types/university";
 
-const employmentMetrics = calculateEmploymentMetrics(employmentOutcomes);
+const normalizedEmploymentOutcomes = normalizeEmploymentOutcomes(
+  graduates,
+  employmentOutcomes
+);
+const employmentMetrics = calculateEmploymentMetrics(normalizedEmploymentOutcomes);
 const outcomeOrder: EmploymentStatus[] = [
   "Employed",
   "Seeking",
@@ -33,7 +40,7 @@ const outcomeOrder: EmploymentStatus[] = [
 ];
 const outcomeDistribution = outcomeOrder.map((status) => ({
   status,
-  count: employmentOutcomes.filter((outcome) => outcome.status === status)
+  count: normalizedEmploymentOutcomes.filter((outcome) => outcome.status === status)
     .length,
 }));
 
@@ -103,7 +110,7 @@ export function UniversityProfile() {
           icon={BadgeCheck}
           label="Outcome coverage"
           value={`${employmentMetrics.coverageRate}%`}
-          detail={`${employmentMetrics.knownOutcomes} of ${employmentOutcomes.length} outcomes reported`}
+          detail={`${employmentMetrics.knownOutcomes} of ${normalizedEmploymentOutcomes.length} outcomes reported`}
         />
       </section>
 
@@ -168,7 +175,7 @@ export function UniversityProfile() {
         <CardContent className="space-y-4">
           {outcomeDistribution.map(({ status, count }) => {
             const percentage = Math.round(
-              (count / employmentOutcomes.length) * 100
+              (count / normalizedEmploymentOutcomes.length) * 100
             );
 
             return (
@@ -185,7 +192,7 @@ export function UniversityProfile() {
                   role="progressbar"
                   aria-label={`${status} graduate outcomes`}
                   aria-valuemin={0}
-                  aria-valuemax={employmentOutcomes.length}
+                  aria-valuemax={normalizedEmploymentOutcomes.length}
                   aria-valuenow={count}
                 >
                   <div
