@@ -1,10 +1,5 @@
-import { PageHeading } from "@/components/common/page-heading";
+import { VerificationCenter } from "@/components/features/university/verification-center";
 
 export default function VerificationPage() {
-  return (
-    <PageHeading
-      title="Verification"
-      description="Review academic evidence and resolve credential disputes."
-    />
-  );
+  return <VerificationCenter />;
 }
