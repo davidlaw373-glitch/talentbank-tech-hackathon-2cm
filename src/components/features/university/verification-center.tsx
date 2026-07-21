@@ -165,6 +165,15 @@ export function VerificationCenter() {
     setRejectionConfirmed(false);
   }
 
+  function handleStatusChange(status: AcademicVerificationStatus) {
+    setActiveStatus(status);
+    setSelectedId(recordsByStatus[status][0]?.id ?? null);
+    setRequestNote("");
+    setShowRejectForm(false);
+    setRejectionReason("");
+    setRejectionConfirmed(false);
+  }
+
   function updateRecord(
     recordId: string,
     updates: Partial<VerificationRecord>
@@ -333,7 +342,9 @@ export function VerificationCenter() {
 
       <Tabs
         value={activeStatus}
-        onValueChange={(value) => setActiveStatus(value as AcademicVerificationStatus)}
+        onValueChange={(value) =>
+          handleStatusChange(value as AcademicVerificationStatus)
+        }
       >
         <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto sm:w-auto" aria-label="Verification status">
           {verificationStatuses.map((status) => (
@@ -569,7 +580,7 @@ function ReviewPanel({
               <li key={entry.id} className="relative text-sm">
                 <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-primary" aria-hidden />
                 <p className="font-medium">{entry.action}</p>
-                <p className="text-xs text-muted-foreground">{entry.actor} · {entry.date}</p>
+                <p className="text-xs text-muted-foreground">{entry.actor} — {entry.date}</p>
                 {entry.note && <p className="mt-1 text-xs text-muted-foreground">{entry.note}</p>}
               </li>
             ))}
