@@ -30,6 +30,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  createGraduateForRole,
+  type GraduateDraft,
+} from "@/lib/graduate-management-permissions";
 import type {
   AcademicVerificationStatus,
   EmploymentStatus,
@@ -92,8 +96,6 @@ const importedGraduates: Graduate[] = [
     nextAction: "Confirm postgraduate programme details",
   },
 ];
-
-type GraduateDraft = Omit<Graduate, "id" | "initials">;
 
 const emptyGraduateDraft: GraduateDraft = {
   studentId: "",
@@ -170,8 +172,8 @@ export function GraduateManagement() {
   const isCareers = role === "careers";
   const roleName = isCareers ? "Career Services" : "Registry";
   const restrictionNotice = isCareers
-    ? "Career Services can update employment status and follow-up actions. Academic and credential fields remain read-only."
-    : "Registry can update academic and credential fields. Employment status and career follow-up actions remain read-only.";
+    ? "Career Services can choose employment status and follow-up actions. Credential status is always set to Pending for new records, while academic fields remain read-only on existing records."
+    : "Registry can choose academic and credential fields. New records always use Unknown employment and no recorded employment outcome; employment fields remain read-only.";
 
   function clearFilters() {
     setQuery("");
@@ -184,7 +186,14 @@ export function GraduateManagement() {
 
   function openNewGraduateForm() {
     setEditingId(null);
-    setDraft(emptyGraduateDraft);
+    setDraft({
+      ...emptyGraduateDraft,
+      employmentStatus: "Unknown",
+      verificationStatus: "Pending",
+      nextAction: isCareers
+        ? emptyGraduateDraft.nextAction
+        : "Employment outcome not yet recorded",
+    });
     setShowForm(true);
   }
 
@@ -236,15 +245,12 @@ export function GraduateManagement() {
       }));
       setNotice(`${cleanName}'s ${isCareers ? "employment record" : "academic record"} was updated locally.`);
     } else {
-      const graduate: Graduate = {
+      const graduate = createGraduateForRole({
         ...draft,
         studentId: cleanStudentId,
         name: cleanName,
         programme: draft.programme.trim(),
-        nextAction: draft.nextAction.trim() || "Review graduate record",
-        initials: initialsFor(cleanName),
-        id: `local-graduate-${Date.now()}`,
-      };
+      }, role, `local-graduate-${Date.now()}`);
       setRecords((current) => [graduate, ...current]);
       setNotice(`${cleanName} was added as a local graduate record.`);
     }
@@ -353,9 +359,9 @@ export function GraduateManagement() {
               <label className="space-y-2 text-sm font-medium">Programme<Input value={draft.programme} onChange={(event) => updateDraft("programme", event.target.value)} required disabled={Boolean(editingId && isCareers)} /></label>
               <label className="space-y-2 text-sm font-medium">Graduation year<Input type="number" min="1900" max="2100" value={draft.graduationYear} onChange={(event) => updateDraft("graduationYear", Number(event.target.value))} disabled={Boolean(editingId && isCareers)} /></label>
               <label className="space-y-2 text-sm font-medium">Profile completeness (%)<Input type="number" min="0" max="100" value={draft.profileCompletion} onChange={(event) => updateDraft("profileCompletion", Number(event.target.value))} disabled={Boolean(editingId && isCareers)} /></label>
-              <label className="space-y-2 text-sm font-medium">Employment status<Select value={draft.employmentStatus} onValueChange={(value) => updateDraft("employmentStatus", value as EmploymentStatus)} disabled={Boolean(editingId && !isCareers)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{employmentStatuses.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
-              <label className="space-y-2 text-sm font-medium">Credential status<Select value={draft.verificationStatus} onValueChange={(value) => updateDraft("verificationStatus", value as AcademicVerificationStatus)} disabled={Boolean(editingId && isCareers)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{verificationStatuses.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
-              <label className="space-y-2 text-sm font-medium xl:col-span-3">Next action<Input value={draft.nextAction} onChange={(event) => updateDraft("nextAction", event.target.value)} disabled={Boolean(editingId && !isCareers)} /></label>
+              <label className="space-y-2 text-sm font-medium">Employment status<Select value={draft.employmentStatus} onValueChange={(value) => updateDraft("employmentStatus", value as EmploymentStatus)} disabled={!isCareers}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{employmentStatuses.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
+              <label className="space-y-2 text-sm font-medium">Credential status<Select value={draft.verificationStatus} onValueChange={(value) => updateDraft("verificationStatus", value as AcademicVerificationStatus)} disabled={isCareers}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{verificationStatuses.map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label>
+              <label className="space-y-2 text-sm font-medium xl:col-span-3">Next action<Input value={draft.nextAction} onChange={(event) => updateDraft("nextAction", event.target.value)} disabled={!isCareers} /></label>
               <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-3"><Button type="submit">{editingId ? "Save permitted changes" : "Add graduate"}</Button><Button type="button" variant="ghost" onClick={() => setShowForm(false)}><X aria-hidden />Cancel</Button></div>
             </form>
           </CardContent>
