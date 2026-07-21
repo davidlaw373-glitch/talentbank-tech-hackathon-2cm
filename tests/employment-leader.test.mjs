@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { getLeadingIndustrySummary } from "../src/lib/employment-leader.ts";
+import { getLeadingIndustrySummary } from "../src/lib/employment-industry.ts";
 
 test("reports every leader when industries share the highest employed count", () => {
   const summary = getLeadingIndustrySummary([

@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { employmentOutcomes, graduates } from "@/data/university";
-import { getLeadingIndustrySummary } from "@/lib/employment-leader";
+import { getIndustryInsight } from "@/lib/employment-industry";
 import { calculateEmploymentMetrics } from "@/lib/university-metrics";
 import type {
   EmploymentOutcome,
@@ -200,10 +200,11 @@ export function EmploymentTracking() {
     () => outcomes.filter((outcome) => outcome.status === "Employed"),
     [outcomes]
   );
-  const industryDistribution = useMemo(
-    () => distributionFromValues(employedOutcomes.map((outcome) => outcome.industry)),
+  const industryInsight = useMemo(
+    () => getIndustryInsight(employedOutcomes.map((outcome) => outcome.industry)),
     [employedOutcomes]
   );
+  const industryDistribution = industryInsight.visibleDistribution;
   const jobFamilyDistribution = useMemo(
     () => distributionFromValues(employedOutcomes.map((outcome) => jobFamily(outcome.jobTitle))),
     [employedOutcomes]
@@ -260,10 +261,7 @@ export function EmploymentTracking() {
     });
   }, [outcomes]);
 
-  const leadingIndustry = useMemo(
-    () => getLeadingIndustrySummary(industryDistribution),
-    [industryDistribution]
-  );
+  const leadingIndustry = industryInsight.leadingIndustry;
 
   function chooseGraduate(graduateId: string) {
     setDraft(draftFromOutcome(getOutcomeForGraduate(graduateId, outcomes)));
