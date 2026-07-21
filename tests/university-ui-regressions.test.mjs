@@ -15,6 +15,31 @@ test("dashboard keeps role-independent content outside the client boundary", asy
   assert.match(dashboardSource, /UniversityUpcomingTasks/);
 });
 
+test("dashboard projects exact task fields before crossing the client boundary", async () => {
+  const dashboardSource = await readFile(
+    new URL("university-dashboard.tsx", sourceRoot),
+    "utf8"
+  );
+  const roleContentSource = await readFile(
+    new URL("university-dashboard-role-content.tsx", sourceRoot),
+    "utf8"
+  );
+  const exactTaskProjections = dashboardSource.match(
+    /\.map\(\(\{\s*id,\s*name,\s*nextAction\s*\}\)\s*=>\s*\(\{\s*id,\s*name,\s*nextAction\s*\}\)\)/g
+  ) ?? [];
+
+  assert.equal(
+    exactTaskProjections.length,
+    2,
+    "both role task arrays must project only id, name, and nextAction"
+  );
+  assert.doesNotMatch(roleContentSource, /\bGraduate\b/);
+  assert.match(
+    roleContentSource,
+    /type UpcomingTask = \{\s*id: string;\s*name: string;\s*nextAction: string;\s*\}/
+  );
+});
+
 test("graduate CSV preview clears the native input on cancel and import", async () => {
   const graduateSource = await readFile(
     new URL("graduate-management.tsx", sourceRoot),

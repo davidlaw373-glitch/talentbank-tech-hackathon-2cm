@@ -12,9 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Graduate, UniversityRole } from "@/types/university";
+import type { UniversityRole } from "@/types/university";
 
-type UpcomingTask = Pick<Graduate, "id" | "name" | "nextAction">;
+type UpcomingTask = {
+  id: string;
+  name: string;
+  nextAction: string;
+};
 
 const roleActions: Record<
   UniversityRole,

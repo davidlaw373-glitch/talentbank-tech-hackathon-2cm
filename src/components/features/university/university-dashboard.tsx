@@ -88,12 +88,14 @@ const careersTasks = graduates
   .filter((graduate) =>
     ["Seeking", "Unknown"].includes(graduate.employmentStatus)
   )
-  .slice(0, 3);
+  .slice(0, 3)
+  .map(({ id, name, nextAction }) => ({ id, name, nextAction }));
 const registryTasks = graduates
   .filter((graduate) =>
     ["Pending", "Disputed"].includes(graduate.verificationStatus)
   )
-  .slice(0, 3);
+  .slice(0, 3)
+  .map(({ id, name, nextAction }) => ({ id, name, nextAction }));
 
 export function UniversityDashboard() {
   return (
