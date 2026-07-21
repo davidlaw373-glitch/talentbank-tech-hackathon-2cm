@@ -66,6 +66,10 @@ type Evidence = {
   displayStatus?: string;
 };
 
+function canEditEvidenceStatus(evidence: Evidence) {
+  return !evidence.issuer && !evidence.displayStatus;
+}
+
 type ProfileFormState = {
   name: string;
   title: string;
@@ -350,19 +354,20 @@ export function ProfileOverview() {
 
   const toggleEvidenceStatus = (id: string) => {
     setEvidence((ev) =>
-      ev.map((e) =>
-        e.id === id
-          ? {
-              ...e,
-              status:
-                e.status === "Not started"
-                  ? "Pending"
-                  : e.status === "Pending"
-                    ? "Verified"
-                    : "Not started",
-            }
-          : e
-      )
+      ev.map((e) => {
+        if (e.id !== id) return e;
+        if (!canEditEvidenceStatus(e)) return e;
+
+        return {
+          ...e,
+          status:
+            e.status === "Not started"
+              ? "Pending"
+              : e.status === "Pending"
+                ? "Verified"
+                : "Not started",
+        };
+      })
     );
   };
 
@@ -769,8 +774,8 @@ export function ProfileOverview() {
                   <h2>Verification and supporting evidence</h2>
                 </CardTitle>
                 <CardDescription>
-                  Click a status badge to cycle through Not started → Pending
-                  → Verified.
+                  Evidence you add can move from Not started → Pending →
+                  Verified. Credentials managed by an issuer are read-only.
                 </CardDescription>
               </div>
               <Button size="sm" onClick={addEvidence}>
@@ -803,41 +808,56 @@ export function ProfileOverview() {
                         {item.issuer ? `${item.type} \u00B7 ${item.issuer}` : item.type}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleEvidenceStatus(item.id)}
-                      aria-label={`Status: ${item.status === "Verified" && item.displayStatus ? item.displayStatus : item.status}. Click to change.`}
-                      className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    >
-                      <Badge
-                        variant={
-                          item.status === "Verified"
-                            ? "secondary"
-                            : item.status === "Pending"
-                              ? "outline"
-                              : "outline"
-                        }
-                        className={cn(
-                          "cursor-pointer",
-                          item.status === "Not started" && "opacity-60"
-                        )}
+                    {canEditEvidenceStatus(item) ? (
+                      <button
+                        type="button"
+                        onClick={() => toggleEvidenceStatus(item.id)}
+                        aria-label={`Status: ${item.status}. Click to change.`}
+                        className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       >
-                        {item.status === "Verified" && item.displayStatus
-                          ? item.displayStatus
-                          : item.status}
-                      </Badge>
-                    </button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 text-destructive opacity-0 transition-opacity group-hover:opacity-100"
-                      aria-label="Delete evidence"
-                      onClick={() =>
-                        setEvidence((ev) => ev.filter((x) => x.id !== item.id))
-                      }
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                        <Badge
+                          variant={
+                            item.status === "Verified"
+                              ? "secondary"
+                              : item.status === "Pending"
+                                ? "outline"
+                                : "outline"
+                          }
+                          className={cn(
+                            "cursor-pointer",
+                            item.status === "Not started" && "opacity-60"
+                          )}
+                        >
+                          {item.status}
+                        </Badge>
+                      </button>
+                    ) : (
+                      <div className="text-right">
+                        <Badge variant="secondary">
+                          {item.displayStatus ?? item.status}
+                        </Badge>
+                        {item.issuer && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Managed by {item.issuer}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {canEditEvidenceStatus(item) && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-destructive opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="Delete evidence"
+                        onClick={() =>
+                          setEvidence((ev) =>
+                            ev.filter((x) => x.id !== item.id)
+                          )
+                        }
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
                   </div>
                 ))
               )}
