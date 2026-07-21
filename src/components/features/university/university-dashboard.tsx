@@ -187,7 +187,7 @@ export function UniversityDashboard() {
                   <div className="flex items-center justify-between gap-4 text-sm">
                     <span className="font-medium">{status}</span>
                     <span className="shrink-0 tabular-nums text-muted-foreground">
-                      {count} graduates · {percentage}%
+                      {count} graduates {"\u00B7"} {percentage}%
                     </span>
                   </div>
                   <div
@@ -321,12 +321,23 @@ export function UniversityDashboard() {
             <blockquote className="border-l-2 border-primary pl-3 text-sm text-muted-foreground">
               {curriculumInsights[0].evidence}
             </blockquote>
+            <div className="rounded-lg border bg-card p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Recommended action
+              </p>
+              <p className="mt-1 text-sm font-medium">
+                {curriculumInsights[0].recommendation}
+              </p>
+            </div>
             <div className="flex items-center justify-between rounded-lg border bg-muted/30 p-3 text-xs">
               <span className="text-muted-foreground">Confidence</span>
               <span className="font-semibold tabular-nums">
                 {curriculumInsights[0].confidence}%
               </span>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Advisory only - curriculum changes require university review.
+            </p>
             <Button asChild variant="ghost" size="sm" className="px-0">
               <Link href="/university/insights">Explore insight</Link>
             </Button>
