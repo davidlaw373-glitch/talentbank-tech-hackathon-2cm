@@ -2,7 +2,10 @@ import { UniversityAuthForm } from "@/components/features/university/university-
 
 export default function UniversityLoginPage() {
   return (
-    <main className="container mx-auto flex min-h-screen items-center justify-center p-6">
+    <main
+      id="main-content"
+      className="container mx-auto flex min-h-screen items-center justify-center p-6"
+    >
       <UniversityAuthForm />
     </main>
   );
