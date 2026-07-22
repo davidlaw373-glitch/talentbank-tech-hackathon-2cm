@@ -30,7 +30,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Computer Science",
     graduationYear: 2024,
     profileCompletion: 82,
-    nextAction: "Review Computer Science degree evidence",
   },
   {
     id: "graduate-nadiya",
@@ -41,7 +40,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Information Systems",
     graduationYear: 2024,
     profileCompletion: 96,
-    nextAction: "Review capstone project evidence",
   },
   {
     id: "graduate-wei",
@@ -52,7 +50,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Computer Science",
     graduationYear: 2023,
     profileCompletion: 74,
-    nextAction: "Resolve course completion dispute",
   },
   {
     id: "graduate-farah",
@@ -63,7 +60,6 @@ export const graduates: Graduate[] = [
     programme: "BBA Economics",
     graduationYear: 2024,
     profileCompletion: 91,
-    nextAction: "Confirm postgraduate study details",
   },
   {
     id: "graduate-amir",
@@ -74,7 +70,6 @@ export const graduates: Graduate[] = [
     programme: "BBA Economics",
     graduationYear: 2023,
     profileCompletion: 67,
-    nextAction: "Request complete certificate evidence",
   },
   {
     id: "graduate-jia",
@@ -85,7 +80,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Information Systems",
     graduationYear: 2024,
     profileCompletion: 58,
-    nextAction: "Contact graduate for employment outcome",
   },
   {
     id: "graduate-haris",
@@ -96,7 +90,6 @@ export const graduates: Graduate[] = [
     programme: "BBA Economics",
     graduationYear: 2022,
     profileCompletion: 88,
-    nextAction: "Confirm employer and role details",
   },
   {
     id: "graduate-siti",
@@ -107,7 +100,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Computer Science",
     graduationYear: 2023,
     profileCompletion: 79,
-    nextAction: "Offer careers appointment",
   },
 ];
 
@@ -339,8 +331,9 @@ export const universityNotifications: UniversityNotification[] = [
   {
     id: "notification-import-july",
     category: "Import",
-    title: "Graduate import needs review",
-    message: "Three graduate records are ready to import; one record needs attention.",
+    title: "Registry CSV import demo is ready",
+    message:
+      "Registry can preview academic rows; every imported credential starts as Pending evidence and requires submission before approval.",
     timestamp: "2024-07-15T08:40:00Z",
     read: true,
   },

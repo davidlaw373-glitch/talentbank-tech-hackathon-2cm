@@ -42,13 +42,13 @@ test("dashboard, reports, and public profile derive from the shared demo state",
   }
 });
 
-test("graduate management exposes no unaudited CSV or credential-status editor", async () => {
+test("graduate management exposes no file upload or direct credential-status editor", async () => {
   const graduateSource = await readFile(
     new URL("graduate-management.tsx", sourceRoot),
     "utf8"
   );
 
-  assert.doesNotMatch(graduateSource, /type="file"|CSV file|Import valid records/);
+  assert.doesNotMatch(graduateSource, /type="file"|accept=.*csv/);
   assert.doesNotMatch(graduateSource, /Credential status</);
   assert.match(graduateSource, /selectGraduateVerificationStatus/);
 });
@@ -146,4 +146,90 @@ test("static University Insights content stays outside the role client boundary"
   assert.match(insightsSource, /UniversityInsightsRoleCopy/);
   assert.match(roleCopySource, /^"use client";/);
   assert.match(roleCopySource, /useUniversityRole/);
+});
+
+test("Candidate notification and dashboard progress derive from the shared typed credential association", async () => {
+  const dashboardSource = await readFile(
+    new URL("features/candidate/dashboard-overview.tsx", componentRoot),
+    "utf8"
+  );
+  const profileSource = await readFile(
+    new URL("features/candidate/profile-overview.tsx", componentRoot),
+    "utf8"
+  );
+  const notificationSource = await readFile(
+    new URL("features/notifications/notifications-center.tsx", componentRoot),
+    "utf8"
+  );
+  const notificationData = await readFile(
+    new URL("notifications.ts", dataRoot),
+    "utf8"
+  );
+  const employerSource = await readFile(
+    new URL("features/employer/candidate-management.tsx", componentRoot),
+    "utf8"
+  );
+
+  assert.match(dashboardSource, /candidateProfile\.graduateId/);
+  assert.match(dashboardSource, /credentialProgress/);
+  assert.match(notificationSource, /useCareerOSDemo/);
+  assert.match(notificationSource, /selectCredentialProjection/);
+  assert.match(notificationSource, /candidateProfile\.graduateId/);
+  assert.doesNotMatch(notificationData, /Evidence verified|verified by the university/);
+  for (const source of [dashboardSource, profileSource, employerSource]) {
+    assert.doesNotMatch(source, /["']graduate-alex["']/);
+  }
+  assert.match(employerSource, /applicant\.graduateId/);
+});
+
+test("Registry import and evidence submission stay behind shared commands", async () => {
+  const graduateSource = await readFile(
+    new URL("graduate-management.tsx", sourceRoot),
+    "utf8"
+  );
+  const verificationSource = await readFile(
+    new URL("verification-center.tsx", sourceRoot),
+    "utf8"
+  );
+  const universityData = await readFile(new URL("university.ts", dataRoot), "utf8");
+
+  assert.match(graduateSource, /parseGraduateCsv/);
+  assert.match(graduateSource, /type:\s*"graduate\/import"/);
+  assert.match(graduateSource, /Preview sample CSV/);
+  assert.match(graduateSource, /if \(!isRegistry\)/);
+  assert.match(verificationSource, /type:\s*"verification\/submit-evidence"/);
+  assert.match(verificationSource, /Submit complete evidence/);
+  assert.match(universityData, /Pending evidence/);
+  assert.doesNotMatch(universityData, /ready to import; one record needs attention/);
+});
+
+test("graduate actions, details, skip links, and dashboard collections are derived and accessible", async () => {
+  const graduateSource = await readFile(
+    new URL("graduate-management.tsx", sourceRoot),
+    "utf8"
+  );
+  const dashboardSource = await readFile(
+    new URL("university-dashboard.tsx", sourceRoot),
+    "utf8"
+  );
+  const universityData = await readFile(new URL("university.ts", dataRoot), "utf8");
+  const candidateShell = await readFile(
+    new URL("layout/candidate-shell.tsx", componentRoot),
+    "utf8"
+  );
+  const universityShell = await readFile(
+    new URL("layout/university-shell.tsx", componentRoot),
+    "utf8"
+  );
+
+  assert.match(graduateSource, /selectGraduateNextAction/);
+  assert.doesNotMatch(universityData, /nextAction:/);
+  assert.match(graduateSource, /aria-expanded=/);
+  assert.match(graduateSource, /aria-controls=/);
+  assert.match(graduateSource, /tabIndex=\{-1\}/);
+  assert.doesNotMatch(candidateShell, /Skip to main content/);
+  assert.doesNotMatch(universityShell, /Skip to main content/);
+  assert.match(dashboardSource, /verificationQueue\.length === 0/);
+  assert.match(dashboardSource, /new Set\(state\.graduates\.map/);
+  assert.doesNotMatch(dashboardSource, /universityProfile\.faculties\.map/);
 });

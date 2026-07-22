@@ -17,6 +17,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
+import { candidateProfile } from "@/data/candidate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -277,7 +278,7 @@ export function ProfileOverview() {
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [evidence, setEvidence] = useState<Evidence[]>(INITIAL_EVIDENCE);
   const credentialProjection = useMemo(
-    () => selectCredentialProjection(state, "graduate-alex"),
+    () => selectCredentialProjection(state, candidateProfile.graduateId),
     [state]
   );
   const displayedEvidence = useMemo<Evidence[]>(

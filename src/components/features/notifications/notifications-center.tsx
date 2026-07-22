@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import {
   Bell,
   Briefcase,
@@ -14,15 +13,15 @@ import {
 } from "lucide-react";
 
 import { notifications } from "@/data/notifications";
+import { candidateProfile } from "@/data/candidate";
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
+import { selectCredentialProjection } from "@/lib/university-demo-state";
 import type { NotificationItem, NotificationType } from "@/types/notification";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -112,14 +111,40 @@ function NotificationRow({
 }
 
 export function NotificationsCenter() {
+  const { state } = useCareerOSDemo();
+  const credentialProjection = selectCredentialProjection(
+    state,
+    candidateProfile.graduateId
+  );
+  const candidateNotifications = useMemo<NotificationItem[]>(
+    () => [
+      ...notifications,
+      ...(credentialProjection
+        ? [
+            {
+              id: "candidate-degree-verification",
+              type: "verification" as const,
+              title: credentialProjection.candidateCopy.notificationTitle,
+              message: credentialProjection.candidateCopy.notificationMessage,
+              timestamp:
+                credentialProjection.verificationStatus === "Verified"
+                  ? "Just now"
+                  : "Current status",
+              read: false,
+            },
+          ]
+        : []),
+    ],
+    [credentialProjection]
+  );
   const [readState, setReadState] = useState<Record<string, boolean>>(
-    Object.fromEntries(notifications.map((n) => [n.id, n.read]))
+    Object.fromEntries(candidateNotifications.map((notification) => [notification.id, notification.read]))
   );
   const [tab, setTab] = useState<"all" | "unread" | "read">("all");
   const [query, setQuery] = useState("");
 
   const list = useMemo(() => {
-    return notifications.filter((n) => {
+    return candidateNotifications.filter((n) => {
       const isRead = readState[n.id] ?? n.read;
       if (tab === "unread" && isRead) return false;
       if (tab === "read" && !isRead) return false;
@@ -132,17 +157,17 @@ export function NotificationsCenter() {
       }
       return true;
     });
-  }, [readState, tab, query]);
+  }, [candidateNotifications, readState, tab, query]);
 
   const unreadCount = useMemo(
     () =>
-      notifications.filter((n) => !(readState[n.id] ?? n.read)).length,
-    [readState]
+      candidateNotifications.filter((n) => !(readState[n.id] ?? n.read)).length,
+    [candidateNotifications, readState]
   );
 
   const markAll = () => {
     const next = { ...readState };
-    for (const n of notifications) next[n.id] = true;
+    for (const n of candidateNotifications) next[n.id] = true;
     setReadState(next);
   };
 

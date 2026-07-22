@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import * as universityDomain from "../src/lib/university-demo-state.ts";
 import {
   createUniversityDemoState,
   executeUniversityCommand,
@@ -26,7 +27,6 @@ function createSeedState() {
         programme: "BSc Computer Science",
         graduationYear: 2024,
         profileCompletion: 82,
-        nextAction: "Await Registry review",
       },
       {
         id: "graduate-wei",
@@ -37,7 +37,6 @@ function createSeedState() {
         programme: "BSc Computer Science",
         graduationYear: 2023,
         profileCompletion: 74,
-        nextAction: "Resolve dispute",
       },
       {
         id: "graduate-amir",
@@ -48,7 +47,6 @@ function createSeedState() {
         programme: "BBA Economics",
         graduationYear: 2023,
         profileCompletion: 67,
-        nextAction: "Request complete evidence",
       },
     ],
     verificationRecords: [
@@ -128,6 +126,13 @@ test("Alex starts pending without a trusted Candidate or Employer label", () => 
     institution: "University of Malaya",
     verificationStatus: "Pending",
     trustLabel: null,
+    candidateCopy: {
+      label: "Pending",
+      progressHint: "Degree awaiting Registry review",
+      notificationTitle: "Degree verification pending",
+      notificationMessage:
+        "Computer Science degree is awaiting Registry review at University of Malaya.",
+    },
   });
   assert.equal(selectDashboardProjection(state).pendingVerificationCount, 1);
 });
@@ -153,6 +158,13 @@ test("Registry approval propagates one University verified projection and audit 
     institution: "University of Malaya",
     verificationStatus: "Verified",
     trustLabel: "University verified",
+    candidateCopy: {
+      label: "University verified",
+      progressHint: "University-verified degree on file",
+      notificationTitle: "Degree verification complete",
+      notificationMessage:
+        "Computer Science degree is University verified by University of Malaya.",
+    },
   });
   assert.equal(selectDashboardProjection(result.state).pendingVerificationCount, 0);
   assert.deepEqual(selectVerificationAudit(result.state, "verification-alex-degree").at(-1), {
@@ -197,7 +209,6 @@ test("Career Services cannot add, edit, or delete graduate academic records", ()
     programme: "BSc Computer Science",
     graduationYear: 2026,
     profileCompletion: 20,
-    nextAction: "Await Registry review",
   };
 
   const attempts = [
@@ -213,6 +224,8 @@ test("Career Services cannot add, edit, or delete graduate academic records", ()
       role: "careers",
       graduateId: "graduate-alex",
       patch: { programme: "Changed programme" },
+      actor: "Careers Demo User",
+      occurredAt: NOW,
     }),
     executeUniversityCommand(initial, {
       type: "graduate/delete",
@@ -244,7 +257,6 @@ test("Registry academic maintenance creates a pending audited record and can rea
     programme: "BSc Computer Science",
     graduationYear: 2026,
     profileCompletion: 20,
-    nextAction: "Await Registry review",
   };
 
   const added = executeUniversityCommand(state, {
@@ -267,6 +279,8 @@ test("Registry academic maintenance creates a pending audited record and can rea
     role: "registry",
     graduateId: graduate.id,
     patch: { programme: "BSc Information Systems", profileCompletion: 45 },
+    actor: "Registry Demo User",
+    occurredAt: NOW,
   });
   assert.equal(updated.ok, true);
   assert.equal(updated.state.graduates[0].programme, "BSc Information Systems");
@@ -463,5 +477,234 @@ test("bulk approval rejects incompatible selections and approves compatible elig
       )
       .map((record) => record.status),
     ["Verified", "Verified"]
+  );
+});
+
+test("Registry CSV import creates incomplete Pending evidence while Careers is rejected", () => {
+  const initial = createSeedState();
+  const importedGraduates = [
+    {
+      id: "graduate-imported-one",
+      studentId: "UMENG2026001",
+      name: "Aisha Karim",
+      initials: "AK",
+      faculty: "Faculty of Engineering",
+      programme: "BEng Software Engineering",
+      graduationYear: 2026,
+      profileCompletion: 10,
+    },
+    {
+      id: "graduate-imported-two",
+      studentId: "UMENG2026002",
+      name: "Darren Lee",
+      initials: "DL",
+      faculty: "Faculty of Engineering",
+      programme: "BEng Software Engineering",
+      graduationYear: 2026,
+      profileCompletion: 15,
+    },
+  ];
+
+  const denied = executeUniversityCommand(initial, {
+    type: "graduate/import",
+    role: "careers",
+    graduates: importedGraduates,
+    actor: "Careers Demo User",
+    occurredAt: NOW,
+  });
+  assert.equal(denied.ok, false);
+  assert.match(denied.error, /Registry access is required/);
+  assert.strictEqual(denied.state, initial);
+
+  const imported = executeUniversityCommand(initial, {
+    type: "graduate/import",
+    role: "registry",
+    graduates: importedGraduates,
+    actor: "Registry Demo User",
+    occurredAt: NOW,
+  });
+  assert.equal(imported.ok, true);
+  assert.equal(imported.state.graduates.length, initial.graduates.length + 2);
+  for (const graduate of importedGraduates) {
+    const evidence = imported.state.verificationRecords.find(
+      (record) => record.graduateId === graduate.id
+    );
+    assert.equal(evidence?.status, "Pending");
+    assert.equal(evidence?.evidenceComplete, false);
+    assert.equal(selectCredentialProjection(imported.state, graduate.id)?.trustLabel, null);
+  }
+});
+
+test("CSV preview parser returns academic rows and actionable validation errors", () => {
+  assert.equal(typeof universityDomain.parseGraduateCsv, "function");
+  const parsed = universityDomain.parseGraduateCsv(
+    [
+      "studentId,name,faculty,programme,graduationYear",
+      "UMENG2026001,Aisha Karim,Faculty of Engineering,BEng Software Engineering,2026",
+    ].join("\n")
+  );
+  assert.deepEqual(parsed.errors, []);
+  assert.deepEqual(parsed.graduates, [
+    {
+      id: "import-umeng2026001",
+      studentId: "UMENG2026001",
+      name: "Aisha Karim",
+      initials: "AK",
+      faculty: "Faculty of Engineering",
+      programme: "BEng Software Engineering",
+      graduationYear: 2026,
+      profileCompletion: 0,
+    },
+  ]);
+
+  const invalid = universityDomain.parseGraduateCsv(
+    "studentId,name,faculty,programme,graduationYear\n,Missing ID,Engineering,BEng,not-a-year"
+  );
+  assert.equal(invalid.graduates.length, 0);
+  assert.match(invalid.errors[0], /row 2/i);
+});
+
+test("Registry submits complete evidence before an imported graduate can be approved", () => {
+  const empty = createUniversityDemoState({
+    institutionName: "University of Malaya",
+    graduates: [],
+    verificationRecords: [],
+    employmentOutcomes: [],
+  });
+  const added = executeUniversityCommand(empty, {
+    type: "graduate/add",
+    role: "registry",
+    graduate: {
+      id: "graduate-new",
+      studentId: "UMCS2026001",
+      name: "New Graduate",
+      initials: "NG",
+      faculty: "Computing",
+      programme: "BSc Computer Science",
+      graduationYear: 2026,
+      profileCompletion: 20,
+    },
+    actor: "Registry Demo User",
+    occurredAt: NOW,
+  });
+  assert.equal(added.ok, true);
+  const record = added.state.verificationRecords[0];
+  assert.equal(registryDecision(added.state, record.id, "approve", "Matched").ok, false);
+
+  const submitted = executeUniversityCommand(added.state, {
+    type: "verification/submit-evidence",
+    role: "registry",
+    recordId: record.id,
+    actor: "Registry Demo User",
+    occurredAt: "2026-07-22T09:00:00.000Z",
+  });
+  assert.equal(submitted.ok, true);
+  assert.equal(submitted.state.verificationRecords[0].evidenceComplete, true);
+  assert.equal(submitted.state.verificationRecords[0].status, "Pending");
+  assert.equal(
+    selectVerificationAudit(submitted.state, record.id).at(-1)?.action,
+    "Evidence submitted"
+  );
+  assert.equal(
+    registryDecision(submitted.state, record.id, "approve", "Matched").ok,
+    true
+  );
+});
+
+test("credential-impacting academic edits atomically invalidate trusted evidence", () => {
+  const approved = registryDecision(
+    createSeedState(),
+    "verification-alex-degree",
+    "approve",
+    "Award matched."
+  );
+  assert.equal(approved.ok, true);
+  assert.equal(
+    selectCredentialProjection(approved.state, "graduate-alex")?.trustLabel,
+    "University verified"
+  );
+
+  const updated = executeUniversityCommand(approved.state, {
+    type: "graduate/update-academic",
+    role: "registry",
+    graduateId: "graduate-alex",
+    patch: {
+      name: "Alex Morgan-Smith",
+      programme: "BSc Software Engineering",
+      graduationYear: 2025,
+    },
+    actor: "Registry Demo User",
+    occurredAt: "2026-07-22T10:00:00.000Z",
+  });
+
+  assert.equal(updated.ok, true);
+  assert.deepEqual(selectCredentialProjection(updated.state, "graduate-alex"), {
+    graduateId: "graduate-alex",
+    candidateName: "Alex Morgan-Smith",
+    qualification: "BSc Software Engineering degree",
+    institution: "University of Malaya",
+    verificationStatus: "Pending",
+    trustLabel: null,
+    candidateCopy: {
+      label: "Pending",
+      progressHint: "Degree awaiting Registry review",
+      notificationTitle: "Degree verification pending",
+      notificationMessage:
+        "BSc Software Engineering degree is awaiting Registry review at University of Malaya.",
+    },
+  });
+  const record = updated.state.verificationRecords.find(
+    (candidate) => candidate.id === "verification-alex-degree"
+  );
+  assert.equal(record?.evidenceComplete, false);
+  assert.equal(record?.reviewer, undefined);
+  assert.equal(
+    selectVerificationAudit(updated.state, "verification-alex-degree").at(-1)?.action,
+    "Evidence resubmission required"
+  );
+});
+
+test("next action is derived from current verification and employment state", () => {
+  assert.equal(typeof universityDomain.selectGraduateNextAction, "function");
+  const initial = createSeedState();
+  assert.equal(
+    universityDomain.selectGraduateNextAction(initial, "graduate-alex"),
+    "Review Computer Science degree evidence"
+  );
+  const initialDashboard = selectDashboardProjection(initial);
+  assert.equal(
+    initialDashboard.careersTasks.find((task) => task.id === "graduate-wei")
+      ?.nextAction,
+    "Offer careers appointment"
+  );
+  assert.equal(
+    initialDashboard.registryTasks.find((task) => task.id === "graduate-wei")
+      ?.nextAction,
+    "Resolve Cloud systems course completion dispute"
+  );
+
+  const approved = registryDecision(
+    initial,
+    "verification-alex-degree",
+    "approve",
+    "Award matched."
+  );
+  assert.equal(approved.ok, true);
+  assert.equal(
+    universityDomain.selectGraduateNextAction(approved.state, "graduate-alex"),
+    "No immediate action"
+  );
+
+  const seeking = executeUniversityCommand(approved.state, {
+    type: "employment/update",
+    role: "careers",
+    outcome: { graduateId: "graduate-alex", status: "Seeking" },
+    actor: "Careers Demo User",
+    occurredAt: "2026-07-22T11:00:00.000Z",
+  });
+  assert.equal(seeking.ok, true);
+  assert.equal(
+    universityDomain.selectGraduateNextAction(seeking.state, "graduate-alex"),
+    "Offer careers appointment"
   );
 });

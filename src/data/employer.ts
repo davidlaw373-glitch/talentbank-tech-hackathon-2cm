@@ -259,6 +259,7 @@ export type ApplicantStage =
 
 export type EmployerApplicant = {
   id: string;
+  graduateId?: GraduateId;
   name: string;
   initials: string;
   role: string;
@@ -323,6 +324,7 @@ export type EmployerNotification = {
 export const employerApplicants: EmployerApplicant[] = [
   {
     id: "alex-morgan",
+    graduateId: "graduate-alex",
     name: "Alex Morgan",
     initials: "AM",
     role: "Frontend Engineer",
@@ -563,3 +565,4 @@ export const employerNotificationItems: EmployerNotification[] = [
     href: "/employer/talent",
   },
 ];
+import type { GraduateId } from "@/types/university";

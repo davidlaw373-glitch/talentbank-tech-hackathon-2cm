@@ -4,6 +4,7 @@ import type {
   EmploymentOutcome,
   EmploymentStatus,
   Graduate,
+  GraduateId,
   VerificationAuditAction,
   VerificationAuditEntry,
   VerificationDecision,
@@ -37,7 +38,6 @@ export type GraduateAcademicPatch = Partial<
     | "programme"
     | "graduationYear"
     | "profileCompletion"
-    | "nextAction"
   >
 >;
 
@@ -52,21 +52,31 @@ export type UniversityCommand =
       role: UniversityRole;
       graduate: Graduate;
     } & CommandMetadata)
-  | {
+  | ({
       type: "graduate/update-academic";
       role: UniversityRole;
-      graduateId: string;
+      graduateId: GraduateId;
       patch: GraduateAcademicPatch;
-    }
+    } & CommandMetadata)
+  | ({
+      type: "graduate/import";
+      role: UniversityRole;
+      graduates: Graduate[];
+    } & CommandMetadata)
   | {
       type: "graduate/delete";
       role: UniversityRole;
-      graduateId: string;
+      graduateId: GraduateId;
     }
   | ({
       type: "employment/update";
       role: UniversityRole;
       outcome: EmploymentOutcome;
+    } & CommandMetadata)
+  | ({
+      type: "verification/submit-evidence";
+      role: UniversityRole;
+      recordId: string;
     } & CommandMetadata)
   | ({
       type: "verification/decide";
@@ -110,6 +120,11 @@ export type ReportFilters = {
   programme: "all" | string;
 };
 
+export type GraduateCsvParseResult = {
+  graduates: Graduate[];
+  errors: string[];
+};
+
 const outcomeOrder: EmploymentStatus[] = [
   "Employed",
   "Seeking",
@@ -123,6 +138,14 @@ const terminalVerificationStatuses = new Set<AcademicVerificationStatus>([
   "Rejected",
 ]);
 
+const graduateCsvHeaders = [
+  "studentId",
+  "name",
+  "faculty",
+  "programme",
+  "graduationYear",
+] as const;
+
 function initialsFor(name: string) {
   return name
     .split(/\s+/)
@@ -130,6 +153,62 @@ function initialsFor(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+}
+
+export function parseGraduateCsv(csv: string): GraduateCsvParseResult {
+  const lines = csv
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length === 0) {
+    return { graduates: [], errors: ["Add a CSV header and at least one row."] };
+  }
+
+  const headers = lines[0].split(",").map((value) => value.trim());
+  if (
+    headers.length !== graduateCsvHeaders.length ||
+    headers.some((header, index) => header !== graduateCsvHeaders[index])
+  ) {
+    return {
+      graduates: [],
+      errors: [`Use these CSV columns: ${graduateCsvHeaders.join(",")}.`],
+    };
+  }
+
+  const graduates: Graduate[] = [];
+  const errors: string[] = [];
+  lines.slice(1).forEach((line, index) => {
+    const rowNumber = index + 2;
+    const values = line.split(",").map((value) => value.trim());
+    const [studentId, name, faculty, programme, graduationYearValue] = values;
+    const graduationYear = Number(graduationYearValue);
+    if (
+      values.length !== graduateCsvHeaders.length ||
+      !studentId ||
+      !name ||
+      !faculty ||
+      !programme ||
+      !Number.isInteger(graduationYear) ||
+      graduationYear < 1900 ||
+      graduationYear > 2100
+    ) {
+      errors.push(`Row ${rowNumber} needs every academic field and a valid graduation year.`);
+      return;
+    }
+
+    graduates.push({
+      id: `import-${studentId.toLocaleLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      studentId,
+      name,
+      initials: initialsFor(name),
+      faculty,
+      programme,
+      graduationYear,
+      profileCompletion: 0,
+    });
+  });
+
+  return { graduates, errors };
 }
 
 function auditActionForSeed(
@@ -229,7 +308,6 @@ function cleanGraduate(graduate: Graduate): Graduate {
     programme: graduate.programme.trim(),
     graduationYear: graduate.graduationYear,
     profileCompletion: graduate.profileCompletion,
-    nextAction: graduate.nextAction.trim() || "Review graduate record",
   };
 }
 
@@ -260,6 +338,38 @@ function graduateValidationError(graduate: Graduate) {
   return null;
 }
 
+function pendingDegreeRecord(
+  graduate: Graduate,
+  occurredAt: string
+): VerificationRecord {
+  return {
+    id: `verification-${graduate.id}-degree`,
+    graduateId: graduate.id,
+    evidenceName: `${graduate.programme} degree`,
+    evidenceType: "Degree",
+    status: "Pending",
+    submittedAt: occurredAt,
+    institutionRecord: `${graduate.programme}, class of ${graduate.graduationYear}`,
+    evidenceComplete: false,
+  };
+}
+
+function requestedAuditEntry(
+  record: VerificationRecord,
+  actor: string,
+  occurredAt: string,
+  note: string
+): VerificationAuditEntry {
+  return {
+    id: `${record.id}-${occurredAt}-requested`,
+    recordId: record.id,
+    action: "Verification requested",
+    actor,
+    occurredAt,
+    note,
+  };
+}
+
 function addGraduate(
   state: UniversityDemoState,
   command: Extract<UniversityCommand, { type: "graduate/add" }>
@@ -281,24 +391,13 @@ function addGraduate(
     return failure(state, "A graduate with this student ID already exists.");
   }
 
-  const verificationRecord: VerificationRecord = {
-    id: `verification-${graduate.id}-degree`,
-    graduateId: graduate.id,
-    evidenceName: `${graduate.programme} degree`,
-    evidenceType: "Degree",
-    status: "Pending",
-    submittedAt: command.occurredAt,
-    institutionRecord: `${graduate.programme}, class of ${graduate.graduationYear}`,
-    evidenceComplete: false,
-  };
-  const auditEntry: VerificationAuditEntry = {
-    id: `${verificationRecord.id}-${command.occurredAt}-requested`,
-    recordId: verificationRecord.id,
-    action: "Verification requested",
-    actor: command.actor,
-    occurredAt: command.occurredAt,
-    note: "Academic record added; supporting evidence remains pending.",
-  };
+  const verificationRecord = pendingDegreeRecord(graduate, command.occurredAt);
+  const auditEntry = requestedAuditEntry(
+    verificationRecord,
+    command.actor,
+    command.occurredAt,
+    "Academic record added; supporting evidence remains pending."
+  );
 
   return success(
     {
@@ -316,6 +415,79 @@ function addGraduate(
       ],
     },
     `${graduate.name} was added with a pending degree verification.`
+  );
+}
+
+function importGraduates(
+  state: UniversityDemoState,
+  command: Extract<UniversityCommand, { type: "graduate/import" }>
+): UniversityCommandResult {
+  const permissionFailure = requireRegistry(state, command.role);
+  if (permissionFailure) return permissionFailure;
+  if (command.graduates.length === 0) {
+    return failure(state, "Preview at least one valid CSV row before importing.");
+  }
+
+  const graduates = command.graduates.map(cleanGraduate);
+  const validationError = graduates
+    .map(graduateValidationError)
+    .find((error) => error !== null);
+  if (validationError) return failure(state, validationError);
+
+  const existingIds = new Set(state.graduates.map((record) => record.id));
+  const existingStudentIds = new Set(
+    state.graduates.map((record) => record.studentId.toLocaleLowerCase())
+  );
+  const importedIds = new Set<GraduateId>();
+  const importedStudentIds = new Set<string>();
+  for (const graduate of graduates) {
+    const normalizedStudentId = graduate.studentId.toLocaleLowerCase();
+    if (existingIds.has(graduate.id) || importedIds.has(graduate.id)) {
+      return failure(state, `Duplicate graduate record ID: ${graduate.id}.`);
+    }
+    if (
+      existingStudentIds.has(normalizedStudentId) ||
+      importedStudentIds.has(normalizedStudentId)
+    ) {
+      return failure(state, `Duplicate student ID: ${graduate.studentId}.`);
+    }
+    importedIds.add(graduate.id);
+    importedStudentIds.add(normalizedStudentId);
+  }
+
+  const verificationRecords = graduates.map((graduate) =>
+    pendingDegreeRecord(graduate, command.occurredAt)
+  );
+  const auditEntries = verificationRecords.map((record) =>
+    requestedAuditEntry(
+      record,
+      command.actor,
+      command.occurredAt,
+      "Academic record imported; supporting evidence must be submitted before approval."
+    )
+  );
+
+  return success(
+    {
+      ...state,
+      graduates: [...graduates, ...state.graduates],
+      verificationRecords: [...verificationRecords, ...state.verificationRecords],
+      employmentOutcomes: [
+        ...graduates.map(
+          (graduate): EmploymentOutcome => ({
+            graduateId: graduate.id,
+            status: "Unknown",
+          })
+        ),
+        ...state.employmentOutcomes,
+      ],
+      verificationAudit: [...state.verificationAudit, ...auditEntries],
+      activities: [
+        `${graduates.length} academic record${graduates.length === 1 ? " was" : "s were"} imported by ${command.actor}; every credential remains Pending.`,
+        ...state.activities,
+      ],
+    },
+    `${graduates.length} academic record${graduates.length === 1 ? " was" : "s were"} imported with Pending evidence.`
   );
 }
 
@@ -340,7 +512,6 @@ function updateGraduateAcademic(
     graduationYear: command.patch.graduationYear ?? graduate.graduationYear,
     profileCompletion:
       command.patch.profileCompletion ?? graduate.profileCompletion,
-    nextAction: command.patch.nextAction ?? graduate.nextAction,
   });
   const validationError = graduateValidationError(candidate);
   if (validationError) return failure(state, validationError);
@@ -354,14 +525,65 @@ function updateGraduateAcademic(
     return failure(state, "A graduate with this student ID already exists.");
   }
 
+  const credentialChanged = (
+    ["studentId", "name", "faculty", "programme", "graduationYear"] as const
+  ).some((field) => graduate[field] !== candidate[field]);
+  const affectedRecords = credentialChanged
+    ? state.verificationRecords.filter(
+        (record) => record.graduateId === candidate.id
+      )
+    : [];
+  const affectedRecordIds = new Set(affectedRecords.map((record) => record.id));
+  const verificationRecords = credentialChanged
+    ? state.verificationRecords.map((record) => {
+        if (!affectedRecordIds.has(record.id)) return record;
+        return {
+          ...record,
+          evidenceName:
+            record.evidenceType === "Degree"
+              ? `${candidate.programme} degree`
+              : record.evidenceName,
+          institutionRecord:
+            record.evidenceType === "Degree"
+              ? `${candidate.programme}, class of ${candidate.graduationYear}`
+              : record.institutionRecord,
+          status: "Pending" as const,
+          evidenceComplete: false,
+          reviewer: undefined,
+          reviewedAt: undefined,
+          note: undefined,
+        };
+      })
+    : state.verificationRecords;
+  const invalidationAudit: VerificationAuditEntry[] = affectedRecords.map(
+    (record) => ({
+      id: `${record.id}-${command.occurredAt}-resubmission-required`,
+      recordId: record.id,
+      action: "Evidence resubmission required",
+      actor: command.actor,
+      occurredAt: command.occurredAt,
+      note: "Credential-bearing academic fields changed; prior evidence and trust were invalidated.",
+    })
+  );
+
   return success(
     {
       ...state,
       graduates: state.graduates.map((record) =>
         record.id === candidate.id ? candidate : record
       ),
+      verificationRecords,
+      verificationAudit: [...state.verificationAudit, ...invalidationAudit],
+      activities: credentialChanged
+        ? [
+            `${candidate.name}'s academic record changed; linked evidence now requires resubmission.`,
+            ...state.activities,
+          ]
+        : state.activities,
     },
-    `${candidate.name}'s academic record was updated.`
+    credentialChanged
+      ? `${candidate.name}'s academic record was updated and linked evidence requires resubmission.`
+      : `${candidate.name}'s academic record was updated.`
   );
 }
 
@@ -494,6 +716,64 @@ function decisionIdSuffix(decision: VerificationDecision) {
   if (decision === "approve") return "approved";
   if (decision === "reject") return "rejected";
   return "information-requested";
+}
+
+function submitVerificationEvidence(
+  state: UniversityDemoState,
+  command: Extract<
+    UniversityCommand,
+    { type: "verification/submit-evidence" }
+  >
+): UniversityCommandResult {
+  const permissionFailure = requireRegistry(state, command.role);
+  if (permissionFailure) return permissionFailure;
+
+  const record = state.verificationRecords.find(
+    (candidate) => candidate.id === command.recordId
+  );
+  if (!record) return failure(state, "Verification record not found.");
+  if (terminalVerificationStatuses.has(record.status)) {
+    return failure(
+      state,
+      `${record.status} verification records are terminal and read-only in this MVP.`
+    );
+  }
+
+  const updatedRecord: VerificationRecord = {
+    ...record,
+    status: "Pending",
+    submittedAt: command.occurredAt,
+    evidenceComplete: true,
+    reviewer: undefined,
+    reviewedAt: undefined,
+    note: undefined,
+  };
+  const auditEntry: VerificationAuditEntry = {
+    id: `${record.id}-${command.occurredAt}-evidence-submitted`,
+    recordId: record.id,
+    action: "Evidence submitted",
+    actor: command.actor,
+    occurredAt: command.occurredAt,
+    note: "Complete evidence submitted for Registry review.",
+  };
+  const graduate = state.graduates.find(
+    (candidate) => candidate.id === record.graduateId
+  );
+
+  return success(
+    {
+      ...state,
+      verificationRecords: state.verificationRecords.map((candidate) =>
+        candidate.id === record.id ? updatedRecord : candidate
+      ),
+      verificationAudit: [...state.verificationAudit, auditEntry],
+      activities: [
+        `${graduate?.name ?? "A graduate"}'s ${record.evidenceName} evidence was submitted by ${command.actor}.`,
+        ...state.activities,
+      ],
+    },
+    `${record.evidenceName} evidence is complete and ready for Registry review.`
+  );
 }
 
 function decideVerification(
@@ -647,12 +927,16 @@ export function executeUniversityCommand(
   switch (command.type) {
     case "graduate/add":
       return addGraduate(state, command);
+    case "graduate/import":
+      return importGraduates(state, command);
     case "graduate/update-academic":
       return updateGraduateAcademic(state, command);
     case "graduate/delete":
       return deleteGraduate(state, command);
     case "employment/update":
       return updateEmployment(state, command);
+    case "verification/submit-evidence":
+      return submitVerificationEvidence(state, command);
     case "verification/decide":
       return decideVerification(state, command);
     case "verification/bulk-approve":
@@ -736,7 +1020,7 @@ export function selectEmploymentOutcome(
 
 export function selectGraduateVerificationStatus(
   state: UniversityDemoState,
-  graduateId: string
+  graduateId: GraduateId
 ): AcademicVerificationStatus {
   const statuses = state.verificationRecords
     .filter((record) => record.graduateId === graduateId)
@@ -749,9 +1033,51 @@ export function selectGraduateVerificationStatus(
   return "Pending";
 }
 
+export function selectGraduateNextAction(
+  state: UniversityDemoState,
+  graduateId: GraduateId,
+  context: "all" | UniversityRole = "all"
+) {
+  const records = state.verificationRecords.filter(
+    (record) => record.graduateId === graduateId
+  );
+  if (context !== "careers") {
+    const disputed = records.find((record) => record.status === "Disputed");
+    if (disputed) return `Resolve ${disputed.evidenceName} dispute`;
+
+    const incomplete = records.find(
+      (record) =>
+        !record.evidenceComplete &&
+        (record.status === "Pending" || record.status === "Disputed")
+    );
+    if (incomplete) return `Submit complete ${incomplete.evidenceName} evidence`;
+
+    const pending = records.find((record) => record.status === "Pending");
+    if (pending) return `Review ${pending.evidenceName} evidence`;
+
+    const rejected = records.find((record) => record.status === "Rejected");
+    if (rejected) return `Review rejected ${rejected.evidenceName}`;
+  }
+
+  if (context === "registry") return "No immediate action";
+
+  const outcome = selectEmploymentOutcome(state, graduateId);
+  if (outcome.status === "Unknown") {
+    return "Contact graduate for employment outcome";
+  }
+  if (outcome.status === "Seeking") return "Offer careers appointment";
+  if (outcome.status === "Further study") {
+    return "Confirm postgraduate study details";
+  }
+  if (outcome.status === "Not seeking") {
+    return "Confirm future destination plans";
+  }
+  return "No immediate action";
+}
+
 export function selectCredentialProjection(
   state: UniversityDemoState,
-  graduateId: string
+  graduateId: GraduateId
 ): CredentialProjection | null {
   const graduate = state.graduates.find((record) => record.id === graduateId);
   const degreeRecord = state.verificationRecords
@@ -763,6 +1089,39 @@ export function selectCredentialProjection(
 
   if (!graduate || !degreeRecord) return null;
 
+  const label =
+    degreeRecord.status === "Verified"
+      ? "University verified"
+      : degreeRecord.status;
+  const candidateCopy =
+    degreeRecord.status === "Verified"
+      ? {
+          label,
+          progressHint: "University-verified degree on file",
+          notificationTitle: "Degree verification complete",
+          notificationMessage: `${degreeRecord.evidenceName} is University verified by ${state.institutionName}.`,
+        }
+      : degreeRecord.status === "Disputed"
+        ? {
+            label,
+            progressHint: "Degree verification needs resolution",
+            notificationTitle: "Degree verification disputed",
+            notificationMessage: `${degreeRecord.evidenceName} needs resolution with ${state.institutionName}.`,
+          }
+        : degreeRecord.status === "Rejected"
+          ? {
+              label,
+              progressHint: "Degree evidence was not accepted",
+              notificationTitle: "Degree verification rejected",
+              notificationMessage: `${degreeRecord.evidenceName} was not accepted by ${state.institutionName}.`,
+            }
+          : {
+              label,
+              progressHint: "Degree awaiting Registry review",
+              notificationTitle: "Degree verification pending",
+              notificationMessage: `${degreeRecord.evidenceName} is awaiting Registry review at ${state.institutionName}.`,
+            };
+
   return {
     graduateId,
     candidateName: graduate.name,
@@ -771,6 +1130,7 @@ export function selectCredentialProjection(
     verificationStatus: degreeRecord.status,
     trustLabel:
       degreeRecord.status === "Verified" ? "University verified" : null,
+    candidateCopy,
   };
 }
 
@@ -825,7 +1185,11 @@ export function selectDashboardProjection(state: UniversityDemoState) {
         )
       )
       .slice(0, 3)
-      .map(({ id, name, nextAction }) => ({ id, name, nextAction })),
+      .map(({ id, name }) => ({
+        id,
+        name,
+        nextAction: selectGraduateNextAction(state, id, "careers"),
+      })),
     registryTasks: state.graduates
       .filter((graduate) =>
         ["Pending", "Disputed"].includes(
@@ -833,7 +1197,11 @@ export function selectDashboardProjection(state: UniversityDemoState) {
         )
       )
       .slice(0, 3)
-      .map(({ id, name, nextAction }) => ({ id, name, nextAction })),
+      .map(({ id, name }) => ({
+        id,
+        name,
+        nextAction: selectGraduateNextAction(state, id, "registry"),
+      })),
   };
 }
 

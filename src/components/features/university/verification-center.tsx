@@ -204,6 +204,33 @@ export function VerificationCenter() {
     executeDecision(record, "approve", "Evidence matched the institution record.");
   }
 
+  function submitCompleteEvidence(record: VerificationRecord) {
+    if (!isRegistry || !canDecide(record)) {
+      setNotice(
+        isRegistry
+          ? "Only Pending or Disputed records can receive submitted evidence."
+          : "Registry access is required to submit academic evidence."
+      );
+      return;
+    }
+    if (record.evidenceComplete) {
+      setNotice("This verification record already has complete evidence.");
+      return;
+    }
+    const result = execute({
+      type: "verification/submit-evidence",
+      role,
+      recordId: record.id,
+      actor: "Registry Demo User",
+      occurredAt: new Date().toISOString(),
+    });
+    setNotice(result.ok ? result.message : result.error);
+    if (!result.ok) return;
+    setActiveStatus("Pending");
+    setSelectedId(record.id);
+    resetDecisionForms();
+  }
+
   function toggleSelection(record: VerificationRecord) {
     if (!isRegistry || !canDecide(record)) return;
     setSelectedIds((ids) =>
@@ -373,6 +400,9 @@ export function VerificationCenter() {
                 onRejectionConfirmedChange={setRejectionConfirmed}
                 onReject={rejectRecord}
                 onApprove={() => selectedRecord && approveRecord(selectedRecord)}
+                onSubmitEvidence={() =>
+                  selectedRecord && submitCompleteEvidence(selectedRecord)
+                }
               />
             </div>
           </TabsContent>
@@ -468,6 +498,7 @@ function ReviewPanel({
   onRejectionConfirmedChange,
   onReject,
   onApprove,
+  onSubmitEvidence,
 }: {
   record: VerificationRecord | null;
   graduate: Graduate | null;
@@ -485,6 +516,7 @@ function ReviewPanel({
   onRejectionConfirmedChange: (value: boolean) => void;
   onReject: (event: FormEvent<HTMLFormElement>) => void;
   onApprove: () => void;
+  onSubmitEvidence: () => void;
 }) {
   if (!record) {
     return (
@@ -580,6 +612,17 @@ function ReviewPanel({
         ) : (
           <section className="space-y-3 border-t pt-5" aria-label="Registry decisions">
             <h3 className="text-sm font-semibold">Registry decision</h3>
+            {!record.evidenceComplete && (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={onSubmitEvidence}
+              >
+                <FileText aria-hidden />
+                Submit complete evidence
+              </Button>
+            )}
             <Button
               type="button"
               className="w-full"

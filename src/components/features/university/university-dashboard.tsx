@@ -39,7 +39,9 @@ export function UniversityDashboard() {
   const dashboard = useMemo(() => selectDashboardProjection(state), [state]);
   const employmentByFaculty = useMemo(
     () =>
-      universityProfile.faculties.map((faculty) => {
+      [...new Set(state.graduates.map((graduate) => graduate.faculty))]
+        .sort()
+        .map((faculty) => {
         const facultyGraduates = state.graduates.filter(
           (graduate) => graduate.faculty === faculty
         );
@@ -55,7 +57,7 @@ export function UniversityDashboard() {
           laborForce: facultyMetrics.laborForce,
           rate: facultyMetrics.employmentRate,
         };
-      }),
+        }),
     [state.employmentOutcomes, state.graduates]
   );
 
@@ -170,19 +172,28 @@ export function UniversityDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {dashboard.verificationQueue.map((record) => (
-              <div key={record.id} className="rounded-lg border bg-card p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium">{record.evidenceName}</p>
-                  <Badge variant={record.status === "Disputed" ? "outline" : "secondary"}>
-                    {record.status}
-                  </Badge>
-                </div>
+            {dashboard.verificationQueue.length === 0 ? (
+              <div className="rounded-lg border border-dashed bg-muted/20 p-4">
+                <p className="text-sm font-medium">Verification queue is clear</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {record.institutionRecord}
+                  No Pending or Disputed evidence currently needs Registry review.
                 </p>
               </div>
-            ))}
+            ) : (
+              dashboard.verificationQueue.map((record) => (
+                <div key={record.id} className="rounded-lg border bg-card p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-medium">{record.evidenceName}</p>
+                    <Badge variant={record.status === "Disputed" ? "outline" : "secondary"}>
+                      {record.status}
+                    </Badge>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {record.institutionRecord}
+                  </p>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </section>

@@ -1,4 +1,5 @@
 export type UniversityRole = "careers" | "registry";
+export type GraduateId = string;
 export type EmploymentStatus =
   | "Employed"
   | "Seeking"
@@ -31,7 +32,7 @@ export type UniversityProfile = {
 };
 
 export type Graduate = {
-  id: string;
+  id: GraduateId;
   studentId: string;
   name: string;
   initials: string;
@@ -39,12 +40,11 @@ export type Graduate = {
   programme: string;
   graduationYear: number;
   profileCompletion: number;
-  nextAction: string;
 };
 
 export type VerificationRecord = {
   id: string;
-  graduateId: string;
+  graduateId: GraduateId;
   evidenceName: string;
   evidenceType: EvidenceType;
   status: AcademicVerificationStatus;
@@ -57,7 +57,7 @@ export type VerificationRecord = {
 };
 
 export type EmploymentOutcome = {
-  graduateId: string;
+  graduateId: GraduateId;
   status: EmploymentStatus;
   employer?: string;
   jobTitle?: string;
@@ -75,6 +75,7 @@ export type VerificationAuditAction =
   | "Approved"
   | "Approved in batch"
   | "More information requested"
+  | "Evidence resubmission required"
   | "Rejected";
 
 export type VerificationAuditEntry = {
@@ -87,12 +88,18 @@ export type VerificationAuditEntry = {
 };
 
 export type CredentialProjection = {
-  graduateId: string;
+  graduateId: GraduateId;
   candidateName: string;
   qualification: string;
   institution: string;
   verificationStatus: AcademicVerificationStatus;
   trustLabel: "University verified" | null;
+  candidateCopy: {
+    label: string;
+    progressHint: string;
+    notificationTitle: string;
+    notificationMessage: string;
+  };
 };
 
 export type IndustryDemand = {

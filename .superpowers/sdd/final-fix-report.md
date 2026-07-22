@@ -67,3 +67,45 @@ GREEN observations after implementation:
 - The production build emits the existing multiple-lockfile/workspace-root warning; compilation and page generation still succeed.
 - The in-app browser backend is unavailable, so no claim is made for live viewport, keyboard, reduced-motion, focus, or screen-reader testing. Accessibility behavior was checked through implementation review and automated source contracts only.
 - The demo store intentionally persists only for the open browser session; a full reload resets seeded demo data.
+
+## Second-round final review
+
+Base reviewed: `9229fca`
+
+### Additional fixes delivered
+
+- Centralized status-specific Candidate copy in the shared credential projection. Candidate dashboard progress and the dynamic degree notification now change with the same live record that drives Candidate Profile and Employer trust.
+- Added typed Candidate and Employer `graduateId` associations and removed feature-component lookup literals.
+- Restored a Registry-only CSV demo with pure sample parsing and preview. The domain rejects Careers imports, validates the whole batch atomically, and creates only incomplete `Pending` degree evidence plus audit history.
+- Added the explicit Registry evidence-submission transition required before a new or imported record can be approved.
+- Made credential-bearing academic edits atomically reset all linked evidence to incomplete `Pending`, clear obsolete review metadata, remove downstream University trust, append a resubmission-required audit entry, and surface live feedback.
+- Removed stored graduate `nextAction` data. Registry and Careers tasks plus graduate views now derive actions from current verification and employment state.
+- Added disclosure relationships and focus movement/restoration for graduate details, removed duplicate product-shell skip links, and retained the single root skip link.
+- Added a verification-queue empty state and derived faculty distribution from current graduate data, including newly added or imported faculties.
+- Corrected the import notification so it describes the restored Pending-evidence workflow.
+
+### Second-round TDD evidence
+
+RED observations:
+
+- The initial domain expansion produced five expected failures for the missing import command/parser, evidence submission, credential invalidation, and derived next-action behavior.
+- Three credential-copy assertions then failed until status-specific Candidate progress and notification copy moved into the shared selector.
+- A role-specific task assertion failed until Registry and Careers task projections selected actions in their own workflow context.
+- Three UI contract tests failed for typed Candidate consistency, the restored Registry workflow, and derived/accessibility dashboard behavior before the UI migration.
+
+GREEN observations:
+
+- Focused domain suite: 17 passed, 0 failed.
+- Focused UI regression suite: 12 passed, 0 failed.
+- Consolidated suite: 33 passed, 0 failed.
+
+### Second-round fresh verification
+
+- `node --test tests/*.test.mjs` — PASS, 33 tests, 0 failures.
+- `npx tsc --noEmit` — PASS.
+- Focused ESLint over every changed TypeScript/TSX source and behavior-test file — PASS, 0 problems.
+- `npm run build` — PASS; compilation, TypeScript validation, and all 40 static/SSG pages completed.
+- Stale-value checks — PASS: no graduate fixture contains `nextAction`, no feature component embeds `graduate-alex`, and only the common root skip-link component contains the skip-link label.
+- `git diff --check` — PASS before report generation and repeated during the final staged audit.
+
+The previously documented repository-wide lint baseline, build warning, browser-backend limitation, and session-only persistence limitation remain unchanged.

@@ -8,7 +8,7 @@ import {
   type FormEvent,
   type RefObject,
 } from "react";
-import { Eye, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Eye, FileSpreadsheet, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 
 import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
 import { useUniversityRole } from "@/components/features/university/university-role-context";
@@ -39,6 +39,8 @@ import {
 } from "@/components/ui/table";
 import {
   selectEmploymentOutcome,
+  parseGraduateCsv,
+  selectGraduateNextAction,
   selectGraduateVerificationStatus,
   selectVerificationAudit,
   type UniversityCommandResult,
@@ -56,7 +58,14 @@ type GraduateView = {
   record: Graduate;
   employmentStatus: EmploymentStatus;
   verificationStatus: AcademicVerificationStatus;
+  nextAction: string;
 };
+
+const sampleGraduateCsv = [
+  "studentId,name,faculty,programme,graduationYear",
+  "UMENG2026001,Aisha Karim,Faculty of Engineering,BEng Software Engineering,2026",
+  "UMENG2026002,Darren Lee,Faculty of Engineering,BEng Software Engineering,2026",
+].join("\n");
 
 const employmentStatuses: EmploymentStatus[] = [
   "Employed",
@@ -80,7 +89,6 @@ const emptyGraduateDraft: GraduateDraft = {
   programme: "",
   graduationYear: new Date().getFullYear(),
   profileCompletion: 0,
-  nextAction: "Review graduate record",
 };
 
 function statusVariant(
@@ -112,7 +120,12 @@ export function GraduateManagement() {
   const [notice, setNotice] = useState("");
   const [detailId, setDetailId] = useState<string | null>(null);
   const [pendingDeletionId, setPendingDeletionId] = useState<string | null>(null);
+  const [importPreview, setImportPreview] = useState<ReturnType<
+    typeof parseGraduateCsv
+  > | null>(null);
   const deleteReturnFocusRef = useRef<HTMLElement | null>(null);
+  const detailReturnFocusRef = useRef<HTMLElement | null>(null);
+  const detailRegionRef = useRef<HTMLDivElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
 
   const isRegistry = role === "registry";
@@ -123,6 +136,7 @@ export function GraduateManagement() {
         record,
         employmentStatus: selectEmploymentOutcome(state, record.id).status,
         verificationStatus: selectGraduateVerificationStatus(state, record.id),
+        nextAction: selectGraduateNextAction(state, record.id),
       })),
     [records, state]
   );
@@ -209,7 +223,6 @@ export function GraduateManagement() {
       programme: record.programme,
       graduationYear: record.graduationYear,
       profileCompletion: record.profileCompletion,
-      nextAction: record.nextAction,
     });
     setShowForm(true);
     setNotice("");
@@ -235,6 +248,8 @@ export function GraduateManagement() {
           role,
           graduateId: editingId,
           patch: draft,
+          actor: "Registry Demo User",
+          occurredAt: new Date().toISOString(),
         })
       : execute({
           type: "graduate/add",
@@ -263,6 +278,56 @@ export function GraduateManagement() {
     deleteReturnFocusRef.current = document.activeElement as HTMLElement | null;
     setPendingDeletionId(record.id);
   }
+
+  function previewSampleImport() {
+    if (!isRegistry) {
+      setNotice("Registry access is required to import academic records.");
+      return;
+    }
+    const preview = parseGraduateCsv(sampleGraduateCsv);
+    setImportPreview(preview);
+    setNotice(
+      preview.errors.length > 0
+        ? preview.errors.join(" ")
+        : `${preview.graduates.length} sample academic records are ready to review.`
+    );
+  }
+
+  function importPreviewedGraduates() {
+    if (!isRegistry) {
+      setNotice("Registry access is required to import academic records.");
+      return;
+    }
+    if (!importPreview || importPreview.errors.length > 0) {
+      setNotice("Preview valid CSV rows before importing.");
+      return;
+    }
+    const result = execute({
+      type: "graduate/import",
+      role,
+      graduates: importPreview.graduates,
+      actor: "Registry Demo User",
+      occurredAt: new Date().toISOString(),
+    });
+    setNotice(resultMessage(result));
+    if (result.ok) setImportPreview(null);
+  }
+
+  function openDetails(record: Graduate) {
+    detailReturnFocusRef.current = document.activeElement as HTMLElement | null;
+    setDetailId(record.id);
+  }
+
+  function closeDetails() {
+    setDetailId(null);
+    window.requestAnimationFrame(() => detailReturnFocusRef.current?.focus());
+  }
+
+  useEffect(() => {
+    if (!detailId) return;
+    const frame = window.requestAnimationFrame(() => detailRegionRef.current?.focus());
+    return () => window.cancelAnimationFrame(frame);
+  }, [detailId]);
 
   function confirmDelete(record: Graduate) {
     const result = execute({
@@ -373,6 +438,67 @@ export function GraduateManagement() {
         )}
       </section>
 
+      {isRegistry && (
+        <Card className="border-dashed">
+          <CardHeader>
+            <CardTitle>
+              <h2 className="flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4" aria-hidden />
+                Registry CSV bulk import demo
+              </h2>
+            </CardTitle>
+            <CardDescription>
+              Preview the built-in academic sample. Import creates Pending,
+              incomplete degree evidence that must be submitted and reviewed.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button type="button" variant="outline" onClick={previewSampleImport}>
+              Preview sample CSV
+            </Button>
+            {importPreview && (
+              <div className="space-y-3">
+                {importPreview.errors.length > 0 ? (
+                  <ul className="list-disc space-y-1 pl-5 text-sm text-destructive">
+                    {importPreview.errors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <>
+                    <div className="overflow-x-auto rounded-lg border">
+                      <table className="w-full min-w-[620px] text-left text-sm">
+                        <thead className="border-b bg-muted/30 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                          <tr>
+                            <th className="px-3 py-2" scope="col">Student ID</th>
+                            <th className="px-3 py-2" scope="col">Graduate</th>
+                            <th className="px-3 py-2" scope="col">Programme</th>
+                            <th className="px-3 py-2" scope="col">Evidence</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {importPreview.graduates.map((graduate) => (
+                            <tr key={graduate.id} className="border-b last:border-0">
+                              <td className="px-3 py-2">{graduate.studentId}</td>
+                              <td className="px-3 py-2 font-medium">{graduate.name}</td>
+                              <td className="px-3 py-2">{graduate.programme}</td>
+                              <td className="px-3 py-2">Pending · submission required</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <Button type="button" onClick={importPreviewedGraduates}>
+                      Import {importPreview.graduates.length} Pending records
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {showForm && isRegistry && (
         <Card className="border-foreground/20">
           <CardHeader>
@@ -451,17 +577,6 @@ export function GraduateManagement() {
                   required
                 />
               </Field>
-              <div className="md:col-span-2 xl:col-span-3">
-                <Field label="Next academic action" id="graduate-next-action">
-                  <Input
-                    id="graduate-next-action"
-                    value={draft.nextAction}
-                    onChange={(event) =>
-                      updateDraft("nextAction", event.target.value)
-                    }
-                  />
-                </Field>
-              </div>
               <div className="flex flex-wrap gap-2 md:col-span-2 xl:col-span-3">
                 <Button type="submit">
                   {editingId ? "Save academic record" : "Add graduate"}
@@ -539,7 +654,9 @@ export function GraduateManagement() {
                     key={view.record.id}
                     view={view}
                     isRegistry={isRegistry}
-                    onDetails={() => setDetailId(view.record.id)}
+                    detailsShown={detailId === view.record.id}
+                    detailsId={`graduate-detail-${view.record.id}`}
+                    onDetails={() => openDetails(view.record)}
                     onEdit={() => openEditGraduateForm(view.record)}
                     onDelete={() => requestDelete(view.record)}
                   />
@@ -553,7 +670,9 @@ export function GraduateManagement() {
                 key={view.record.id}
                 view={view}
                 isRegistry={isRegistry}
-                onDetails={() => setDetailId(view.record.id)}
+                detailsShown={detailId === view.record.id}
+                detailsId={`graduate-detail-${view.record.id}`}
+                onDetails={() => openDetails(view.record)}
                 onEdit={() => openEditGraduateForm(view.record)}
                 onDelete={() => requestDelete(view.record)}
               />
@@ -563,11 +682,18 @@ export function GraduateManagement() {
       )}
 
       {detailGraduate && (
-        <GraduateDetail
-          graduate={detailGraduate}
-          state={state}
-          onClose={() => setDetailId(null)}
-        />
+        <div
+          ref={detailRegionRef}
+          id={`graduate-detail-${detailGraduate.id}`}
+          tabIndex={-1}
+          className="scroll-mt-6 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <GraduateDetail
+            graduate={detailGraduate}
+            state={state}
+            onClose={closeDetails}
+          />
+        </div>
       )}
 
       <GraduateDeletionDialog
@@ -618,17 +744,21 @@ function FilterSelect({
 function GraduateRow({
   view,
   isRegistry,
+  detailsShown,
+  detailsId,
   onDetails,
   onEdit,
   onDelete,
 }: {
   view: GraduateView;
   isRegistry: boolean;
+  detailsShown: boolean;
+  detailsId: string;
   onDetails: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const { record, employmentStatus, verificationStatus } = view;
+  const { record, employmentStatus, verificationStatus, nextAction } = view;
   return (
     <TableRow>
       <TableCell>
@@ -649,7 +779,7 @@ function GraduateRow({
         </Badge>
       </TableCell>
       <TableCell className="max-w-56 text-sm text-muted-foreground">
-        {record.nextAction}
+        {nextAction}
       </TableCell>
       <TableCell>
         <div className="flex gap-1">
@@ -657,6 +787,8 @@ function GraduateRow({
             size="icon"
             variant="ghost"
             aria-label={`View details for ${record.name}`}
+            aria-expanded={detailsShown}
+            aria-controls={detailsId}
             onClick={onDetails}
           >
             <Eye aria-hidden />
@@ -690,17 +822,21 @@ function GraduateRow({
 function GraduateCard({
   view,
   isRegistry,
+  detailsShown,
+  detailsId,
   onDetails,
   onEdit,
   onDelete,
 }: {
   view: GraduateView;
   isRegistry: boolean;
+  detailsShown: boolean;
+  detailsId: string;
   onDetails: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const { record, employmentStatus, verificationStatus } = view;
+  const { record, employmentStatus, verificationStatus, nextAction } = view;
   return (
     <Card>
       <CardContent className="space-y-4 p-4">
@@ -710,7 +846,13 @@ function GraduateCard({
             <p className="text-sm text-muted-foreground">{record.studentId}</p>
           </div>
           <div className="flex gap-1">
-            <Button variant="outline" size="sm" onClick={onDetails}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onDetails}
+              aria-expanded={detailsShown}
+              aria-controls={detailsId}
+            >
               <Eye aria-hidden />
               View details
             </Button>
@@ -747,7 +889,7 @@ function GraduateCard({
           <StatusDetail label="Credential" status={verificationStatus} />
           <RecordDetail
             label="Next action"
-            value={record.nextAction}
+            value={nextAction}
             className="col-span-2"
           />
         </dl>
@@ -766,12 +908,13 @@ function GraduateDetail({
   onClose: () => void;
 }) {
   const outcome = selectEmploymentOutcome(state, graduate.id);
+  const nextAction = selectGraduateNextAction(state, graduate.id);
   const evidence = state.verificationRecords.filter(
     (record) => record.graduateId === graduate.id
   );
 
   return (
-    <Card className="border-primary/30" id={`graduate-detail-${graduate.id}`}>
+    <Card className="border-primary/30">
       <CardHeader className="flex-row items-start justify-between space-y-0">
         <div>
           <CardTitle>
@@ -799,6 +942,7 @@ function GraduateDetail({
               label="Profile completeness"
               value={`${graduate.profileCompletion}%`}
             />
+            <RecordDetail label="Next action" value={nextAction} />
           </dl>
         </section>
         <section className="rounded-lg border p-4" aria-labelledby={`evidence-${graduate.id}`}>

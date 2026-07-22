@@ -1,6 +1,7 @@
 import type { CandidateProfile } from "@/types/candidate";
 
 export const candidateProfile: CandidateProfile = {
+  graduateId: "graduate-alex",
   name: "Alex Morgan",
   initials: "AM",
   title: "Frontend Developer",

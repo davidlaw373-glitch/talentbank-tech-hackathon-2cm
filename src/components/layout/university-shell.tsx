@@ -55,12 +55,6 @@ function UniversityRoleSelect() {
 function UniversityShellContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-full">
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-background focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-      >
-        Skip to main content
-      </a>
       <header className="border-b">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
           <Link href="/" aria-label="CareerOS home">

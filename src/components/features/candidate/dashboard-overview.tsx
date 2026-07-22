@@ -41,7 +41,7 @@ type ProgressItem = {
   icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 };
 
-const PROGRESS_ITEMS: ProgressItem[] = [
+const BASE_PROGRESS_ITEMS: ProgressItem[] = [
   {
     id: "basics",
     label: "Basic info",
@@ -76,13 +76,6 @@ const PROGRESS_ITEMS: ProgressItem[] = [
     hint: "Add a project to lift your match scores",
     done: false,
     icon: FolderGit2,
-  },
-  {
-    id: "verification",
-    label: "Verified credentials",
-    hint: "1 document pending review",
-    done: false,
-    icon: BadgeCheck,
   },
 ];
 
@@ -128,7 +121,7 @@ export function DashboardOverview() {
   const { state } = useCareerOSDemo();
   const credentialProjection = selectCredentialProjection(
     state,
-    "graduate-alex"
+    candidateProfile.graduateId
   );
   const evidence = [
     ...(credentialProjection
@@ -145,9 +138,20 @@ export function DashboardOverview() {
     ...candidateProfile.evidence,
   ];
 
-  const total = PROGRESS_ITEMS.length;
-  const done = PROGRESS_ITEMS.filter((i) => i.done).length;
-  const remaining = PROGRESS_ITEMS.filter((i) => !i.done);
+  const credentialProgress: ProgressItem = {
+    id: "verification",
+    label: "Verified credentials",
+    hint:
+      credentialProjection?.candidateCopy.progressHint ??
+      "No University degree is linked yet",
+    done: Boolean(credentialProjection?.trustLabel),
+    icon: BadgeCheck,
+  };
+  const progressItems = [...BASE_PROGRESS_ITEMS, credentialProgress];
+
+  const total = progressItems.length;
+  const done = progressItems.filter((item) => item.done).length;
+  const remaining = progressItems.filter((item) => !item.done);
 
   return (
     <div className="space-y-8">
@@ -241,7 +245,7 @@ export function DashboardOverview() {
 
             {/* Checklist — matches the actual profile page sections */}
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {PROGRESS_ITEMS.map((item) => {
+              {progressItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li
