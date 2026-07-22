@@ -3,18 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  ArrowRight,
-  Building2,
-  GraduationCap,
-  Lock,
-  Mail,
-  School,
-  Sparkles,
-  User,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
+import {
+  CandidateIcon,
+  EmployerIcon,
+  UniversityIcon,
+} from "@/components/features/cover/role-icons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,60 +26,59 @@ type Role = "candidate" | "employer" | "university";
 const ROLES: {
   id: Role;
   label: string;
-  icon: LucideIcon;
   /**
-   * Punchy one-liner shown big on the role card. Reads like a promise,
-   * not a feature list. Voice shifts per role so the three feel like
-   * three different products, not three variants of the same one.
+   * Punchy one-liner shown big on the register role card. Reads like a
+   * promise, not a feature list. Voice shifts per role so the three
+   * feel like three different products, not three variants of the same one.
    */
   hook: string;
   /** Small descriptor shown underneath the hook. */
   descriptor: string;
   /** Accent token used for decorative elements on this role's card. */
   accent: "chart-1" | "chart-2" | "chart-4";
+  /** Standalone role icon — same shape used inside the cover-manifesto
+   *  constellation. Used on the simplified /login role card. */
+  Icon: (props: { className?: string }) => React.JSX.Element;
   redirect: { register: string; login: string };
-  registerGoal: { label: string; placeholder: string };
+  registerGoal: { label: string };
 }[] = [
   {
     id: "candidate",
     label: "Candidate",
-    icon: User,
     hook: "Find work that fits how you actually work.",
     descriptor:
       "Skills translated from real projects. Matches that explain themselves.",
     accent: "chart-1",
+    Icon: CandidateIcon,
     redirect: { register: "/candidate/profile", login: "/candidate/dashboard" },
     registerGoal: {
       label: "What are you looking for?",
-      placeholder: "e.g. A senior frontend role in climate tech",
     },
   },
   {
     id: "employer",
     label: "Employer",
-    icon: Building2,
     hook: "Hire the person, not the keyword soup.",
     descriptor:
       "Ranked shortlists with AI summaries. Structured interviews, no gut calls.",
     accent: "chart-2",
+    Icon: EmployerIcon,
     redirect: { register: "/employer", login: "/employer" },
     registerGoal: {
       label: "Your company",
-      placeholder: "e.g. Northstar Labs",
     },
   },
   {
     id: "university",
     label: "University",
-    icon: GraduationCap,
     hook: "Show what your grads are actually building.",
     descriptor:
       "Verified credentials by the thousands. Outcomes you can stand behind.",
     accent: "chart-4",
+    Icon: UniversityIcon,
     redirect: { register: "/university", login: "/university" },
     registerGoal: {
       label: "Your institution",
-      placeholder: "e.g. University of Malaya",
     },
   },
 ];
@@ -94,43 +87,33 @@ function Field({
   id,
   label,
   type = "text",
-  placeholder,
   helper,
-  icon: Icon,
   autoComplete,
 }: {
   id: string;
   label: string;
   type?: string;
-  placeholder?: string;
   helper?: string;
-  icon?: LucideIcon;
   autoComplete?: string;
 }) {
   return (
     <div className="space-y-1.5">
-      <label
-        htmlFor={id}
-        className="block text-base font-medium text-foreground"
-      >
-        {label}
-      </label>
       <div className="relative">
-        {Icon && (
-          <Icon
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-        )}
         <Input
           id={id}
           type={type}
-          placeholder={placeholder}
+          placeholder=" "
           autoComplete={autoComplete}
-          className={Icon ? "pl-9" : undefined}
           required
           aria-describedby={helper ? `${id}-help` : undefined}
+          className="peer h-14 border border-border bg-card px-3 pb-2 pt-6 text-base shadow-none transition-colors"
         />
+        <label
+          htmlFor={id}
+          className="pointer-events-none absolute left-3 top-[16px] text-base text-muted-foreground transition-[top,font-size,color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] peer-focus:top-2 peer-focus:text-xs peer-focus:text-foreground peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs"
+        >
+          {label}
+        </label>
       </div>
       {helper && (
         <p
@@ -148,14 +131,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const registering = mode === "register";
   const params = useSearchParams();
   const next = params.get("next");
-  const initialRole: Role = (() => {
-    if (!next) return "candidate";
-    if (next.startsWith("/employer")) return "employer";
-    if (next.startsWith("/university")) return "university";
-    return "candidate";
-  })();
-  const [role, setRole] = useState<Role>(initialRole);
-  const activeRole = ROLES.find((r) => r.id === role)!;
+  // Both /login and /register start with all three role cards deselected.
+  // The visitor picks one first, and only then does the auth form expand
+  // below — same pattern on both pages so the choice is deliberate.
+  const [role, setRole] = useState<Role | null>(null);
+  const [hasSelectedRole, setHasSelectedRole] = useState(false);
+  const activeRole =
+    ROLES.find((r) => r.id === role) ?? ROLES[0];
   const targetRedirect = next
     ? next
     : registering
@@ -164,41 +146,66 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
   return (
     <div className="flex w-full flex-col gap-5">
-      {/* Brand header — compact, single row */}
-      <header className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-foreground text-background shadow-sm">
-          <Sparkles className="h-4 w-4" aria-hidden />
-        </div>
-        <div className="min-w-0">
-          <p className="text-base font-semibold leading-tight tracking-tight">
-            CareerOS
-          </p>
-          <p className="truncate text-xs text-muted-foreground">
-            {registering
-              ? "Pick your role and start in under a minute."
-              : "Welcome back. Your career journey continues here."}
-          </p>
-        </div>
-      </header>
-
-      {/* Role selection — each card has its own accent and personality */}
-      {registering && (
-        <section aria-label="Choose your role">
-          <div
-            role="radiogroup"
-            aria-label="Audience"
-            className="grid grid-cols-1 gap-3 sm:grid-cols-3"
-          >
+      {/* Role selection — each card has its own accent and personality.
+          Shown on both /login and /register; the form below is gated
+          until the visitor picks a role (see `hasSelectedRole`).
+          /login uses a simplified icon + name only; /register keeps
+          the fuller card with hook + descriptor. */}
+      <section aria-label="Choose your role">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {registering ? "Register As" : "Log in As"}
+        </h2>
+        <div
+          role="radiogroup"
+          aria-label="Audience"
+          className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+        >
             {ROLES.map((r) => {
-              const Icon = r.icon;
               const isActive = r.id === role;
+              const Icon = r.Icon;
+              /* /login — icon above name only, no descriptor. */
+              if (!registering) {
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isActive}
+                    onClick={() => {
+                      setRole(r.id);
+                      setHasSelectedRole(true);
+                    }}
+                    className={cn(
+                      "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border-2 px-4 py-5 text-center transition-all",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      isActive
+                        ? "border-foreground bg-foreground text-background shadow-md"
+                        : "border-border bg-card hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-10 w-10",
+                        isActive ? "text-background" : "text-secondary",
+                      )}
+                    />
+                    <span className="text-base font-semibold tracking-tight">
+                      {r.label}
+                    </span>
+                  </button>
+                );
+              }
+              /* /register — fuller card with hook + descriptor. */
               return (
                 <button
                   key={r.id}
                   type="button"
                   role="radio"
                   aria-checked={isActive}
-                  onClick={() => setRole(r.id)}
+                  onClick={() => {
+                    setRole(r.id);
+                    setHasSelectedRole(true);
+                  }}
                   className={cn(
                     "group relative flex flex-col items-start gap-2 overflow-hidden rounded-xl border-2 px-4 py-3 text-left transition-all",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
@@ -220,16 +227,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                       isActive ? "scale-x-100" : "scale-x-50 opacity-60",
                     )}
                   />
-                  <span
-                    className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                      isActive
-                        ? "bg-background text-foreground"
-                        : `bg-${r.accent}/15 text-foreground group-hover:bg-${r.accent}/25`,
-                    )}
-                  >
-                    <Icon className="h-4 w-4" aria-hidden />
-                  </span>
                   <span className="text-xs font-semibold uppercase tracking-[0.18em] opacity-80">
                     {r.label}
                   </span>
@@ -255,11 +252,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               );
             })}
           </div>
-        </section>
-      )}
+      </section>
 
-      {/* Form — single column, compact spacing */}
-      <Card className="w-full">
+      {/* Form — single column, compact spacing.
+          On both /login and /register the form only expands once a role
+          card has been picked. */}
+      {hasSelectedRole && (
+        <Card className={cn("w-full animate-reveal")}>
         <CardHeader className="space-y-1 pb-2">
           <CardTitle>
             <h2>
@@ -282,16 +281,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                     ? "Full name"
                     : `Your name (${activeRole.label})`
                 }
-                placeholder="Alex Morgan"
-                icon={User}
                 autoComplete="name"
               />
               <Field
                 id="email"
                 label="Email"
                 type="email"
-                placeholder="you@example.com"
-                icon={Mail}
                 autoComplete="email"
               />
             </div>
@@ -301,8 +296,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               id="email"
               label="Email"
               type="email"
-              placeholder="you@example.com"
-              icon={Mail}
               autoComplete="email"
             />
           )}
@@ -310,23 +303,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             id="password"
             label="Password"
             type="password"
-            placeholder="At least 8 characters"
             helper={registering ? "Use 8+ characters with a number." : undefined}
-            icon={Lock}
             autoComplete={registering ? "new-password" : "current-password"}
           />
           {registering && (
             <Field
               id="goal"
               label={activeRole.registerGoal.label}
-              placeholder={activeRole.registerGoal.placeholder}
-              icon={
-                role === "candidate"
-                  ? Sparkles
-                  : role === "employer"
-                    ? Building2
-                    : School
-              }
             />
           )}
           {!registering && (
@@ -351,18 +334,37 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           <Button asChild size="lg">
             <Link href={targetRedirect}>
               {registering ? `Create ${activeRole.label.toLowerCase()} account` : "Log in"}
-              <ArrowRight />
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href={registering ? "/login" : "/register"}>
-              {registering
-                ? "Already registered? Log in"
-                : "New to CareerOS? Register"}
             </Link>
           </Button>
         </CardFooter>
       </Card>
+      )}
+
+      {/* Cross-link between login ↔ register — always visible, sits below
+          the role cards AND below the form Card once it expands. */}
+      <p className="text-center text-sm text-muted-foreground">
+        {registering ? (
+          <>
+            Already registered?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Log in
+            </Link>
+          </>
+        ) : (
+          <>
+            New to CareerOS?{" "}
+            <Link
+              href="/register"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Register
+            </Link>
+          </>
+        )}
+      </p>
     </div>
   );
 }

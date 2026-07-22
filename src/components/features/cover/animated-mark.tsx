@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import {
+  CandidateIcon,
+  EmployerIcon,
+  UniversityIcon,
+} from "@/components/features/cover/role-icons";
 import { cn } from "@/lib/utils";
 
 type AnimatedMarkProps = {
@@ -55,57 +60,13 @@ function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
   return `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
 }
 
-function PersonIcon() {
-  return (
-    <g>
-      <circle cx="0" cy="-3" r="2.5" fill="var(--secondary)" />
-      <path
-        d="M -5,5 a 5,4 0 0,1 10,0"
-        fill="var(--secondary)"
-      />
-    </g>
-  );
-}
-
-function BriefcaseIcon() {
-  return (
-    <g>
-      <rect
-        x="-5"
-        y="-2"
-        width="10"
-        height="8"
-        rx="1"
-        fill="var(--secondary)"
-      />
-      <path
-        d="M -2,-2 v -2 h 4 v 2"
-        stroke="var(--secondary)"
-        strokeWidth="1"
-        fill="none"
-      />
-    </g>
-  );
-}
-
-function CapIcon() {
-  return (
-    <g>
-      <path d="M -7,0 L 0,-3 L 7,0 L 0,3 Z" fill="var(--secondary)" />
-      <path
-        d="M -4,1.5 v 3 M 4,1.5 v 3"
-        stroke="var(--secondary)"
-        strokeWidth="1"
-        fill="none"
-      />
-    </g>
-  );
-}
-
-const ICONS: Record<string, () => React.JSX.Element> = {
-  candidate: PersonIcon,
-  employer: BriefcaseIcon,
-  university: CapIcon,
+const ICONS: Record<
+  string,
+  (props?: { className?: string }) => React.JSX.Element
+> = {
+  candidate: CandidateIcon,
+  employer: EmployerIcon,
+  university: UniversityIcon,
 };
 
 export function AnimatedMark({

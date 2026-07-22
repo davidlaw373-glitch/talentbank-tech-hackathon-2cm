@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   Menu,
   Route as RouteIcon,
-  Sparkles,
   UserRound,
   X,
 } from "lucide-react";
@@ -20,6 +19,7 @@ import { candidateProfile } from "@/data/candidate";
 import { notifications } from "@/data/notifications";
 import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
+import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
 import { Separator } from "@/components/ui/separator";
@@ -56,9 +56,7 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
       <header className="border-b bg-background">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
           <Link href="/" aria-label="CareerOS home" className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Sparkles className="h-4 w-4" aria-hidden />
-            </span>
+            <BrandMark />
             <small className="font-semibold tracking-tight">CareerOS</small>
             <Badge variant="secondary" className="ml-1 hidden sm:inline-flex">
               Candidate
