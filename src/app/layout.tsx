@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { CareerOSDemoProvider } from "@/components/common/careeros-demo-provider";
 import { SkipLink } from "@/components/common/skip-link";
 import "./globals.css";
 
@@ -27,7 +28,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <SkipLink />
-        {children}
+        <CareerOSDemoProvider>{children}</CareerOSDemoProvider>
       </body>
     </html>
   );

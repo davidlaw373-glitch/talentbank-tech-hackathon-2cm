@@ -1,6 +1,7 @@
 import type { CandidateProfile } from "@/types/candidate";
 
 export const candidateProfile: CandidateProfile = {
+  graduateId: "graduate-alex",
   name: "Alex Morgan",
   initials: "AM",
   title: "Frontend Developer",
@@ -35,7 +36,6 @@ export const candidateProfile: CandidateProfile = {
     },
   ],
   evidence: [
-    { name: "Computer Science degree", type: "Education", status: "Verified" },
     { name: "Northstar Labs internship", type: "Experience", status: "Pending" },
     { name: "Project portfolio", type: "Portfolio", status: "Verified" },
   ],

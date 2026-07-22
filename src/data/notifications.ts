@@ -20,15 +20,6 @@ export const notifications: NotificationItem[] = [
     read: false,
   },
   {
-    id: "n-003",
-    type: "verification",
-    title: "Evidence verified",
-    message:
-      "Your Computer Science degree record has been verified by the university.",
-    timestamp: "Yesterday",
-    read: true,
-  },
-  {
     id: "n-004",
     type: "profile",
     title: "Complete your profile",

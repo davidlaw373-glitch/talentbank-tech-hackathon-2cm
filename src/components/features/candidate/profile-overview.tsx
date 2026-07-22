@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
+import { candidateProfile } from "@/data/candidate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +34,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { selectCredentialProjection } from "@/lib/university-demo-state";
+import type { AcademicVerificationStatus } from "@/types/university";
 
 type VerificationStatus = "Verified" | "Pending" | "Not started";
 
@@ -61,8 +65,14 @@ type Evidence = {
   id: string;
   name: string;
   type: string;
-  status: VerificationStatus;
+  status: VerificationStatus | AcademicVerificationStatus;
+  issuer?: string;
+  displayStatus?: string;
 };
+
+function canEditEvidenceStatus(evidence: Evidence) {
+  return !evidence.issuer;
+}
 
 type ProfileFormState = {
   name: string;
@@ -114,12 +124,6 @@ const INITIAL_SKILLS: string[] = [
 ];
 
 const INITIAL_EVIDENCE: Evidence[] = [
-  {
-    id: "ev-1",
-    name: "Computer Science degree",
-    type: "Education",
-    status: "Verified",
-  },
   {
     id: "ev-2",
     name: "Northstar Labs internship",
@@ -263,6 +267,7 @@ function EditableItem({
 }
 
 export function ProfileOverview() {
+  const { state } = useCareerOSDemo();
   const [profile, setProfile] = useState<ProfileFormState>(PROFILE_DEFAULT);
   const [editingProfile, setEditingProfile] = useState(false);
   const [draft, setDraft] = useState<ProfileFormState>(profile);
@@ -272,6 +277,30 @@ export function ProfileOverview() {
   const [education, setEducation] = useState<Education[]>(INITIAL_EDUCATION);
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [evidence, setEvidence] = useState<Evidence[]>(INITIAL_EVIDENCE);
+  const credentialProjection = useMemo(
+    () => selectCredentialProjection(state, candidateProfile.graduateId),
+    [state]
+  );
+  const displayedEvidence = useMemo<Evidence[]>(
+    () => [
+      ...(credentialProjection
+        ? [
+            {
+              id: "university-alex-degree",
+              name: credentialProjection.qualification,
+              type: "Education",
+              status: credentialProjection.verificationStatus,
+              issuer: credentialProjection.institution,
+              displayStatus:
+                credentialProjection.trustLabel ??
+                credentialProjection.verificationStatus,
+            },
+          ]
+        : []),
+      ...evidence,
+    ],
+    [credentialProjection, evidence]
+  );
 
   const totalSections = 6;
   const done = useMemo(() => {
@@ -279,9 +308,9 @@ export function ProfileOverview() {
     if (experience.length > 0) d++;
     if (education.length > 0) d++;
     if (projects.length > 0) d++;
-    if (evidence.some((e) => e.status === "Verified")) d++;
+    if (displayedEvidence.some((item) => item.status === "Verified")) d++;
     return Math.min(d, totalSections);
-  }, [experience.length, education.length, projects.length, evidence]);
+  }, [displayedEvidence, education.length, experience.length, projects.length]);
   const pct = Math.round((done / totalSections) * 100);
 
   // Add handlers
@@ -346,19 +375,20 @@ export function ProfileOverview() {
 
   const toggleEvidenceStatus = (id: string) => {
     setEvidence((ev) =>
-      ev.map((e) =>
-        e.id === id
-          ? {
-              ...e,
-              status:
-                e.status === "Not started"
-                  ? "Pending"
-                  : e.status === "Pending"
-                    ? "Verified"
-                    : "Not started",
-            }
-          : e
-      )
+      ev.map((e) => {
+        if (e.id !== id) return e;
+        if (!canEditEvidenceStatus(e)) return e;
+
+        return {
+          ...e,
+          status:
+            e.status === "Not started"
+              ? "Pending"
+              : e.status === "Pending"
+                ? "Verified"
+                : "Not started",
+        };
+      })
     );
   };
 
@@ -765,8 +795,8 @@ export function ProfileOverview() {
                   <h2>Verification and supporting evidence</h2>
                 </CardTitle>
                 <CardDescription>
-                  Click a status badge to cycle through Not started → Pending
-                  → Verified.
+                  Evidence you add can move from Not started → Pending →
+                  Verified. Credentials managed by an issuer are read-only.
                 </CardDescription>
               </div>
               <Button size="sm" onClick={addEvidence}>
@@ -775,7 +805,7 @@ export function ProfileOverview() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {evidence.length === 0 ? (
+              {displayedEvidence.length === 0 ? (
                 <EmptyState
                   icon={BadgeCheck}
                   title="No evidence added"
@@ -788,48 +818,75 @@ export function ProfileOverview() {
                   }
                 />
               ) : (
-                evidence.map((item) => (
+                displayedEvidence.map((item) => (
                   <div
                     key={item.id}
                     className="group flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">{item.type}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.issuer ? `${item.type} \u00B7 ${item.issuer}` : item.type}
+                      </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleEvidenceStatus(item.id)}
-                      aria-label={`Status: ${item.status}. Click to change.`}
-                      className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    >
-                      <Badge
-                        variant={
-                          item.status === "Verified"
-                            ? "secondary"
-                            : item.status === "Pending"
-                              ? "outline"
-                              : "outline"
-                        }
-                        className={cn(
-                          "cursor-pointer",
-                          item.status === "Not started" && "opacity-60"
-                        )}
+                    {canEditEvidenceStatus(item) ? (
+                      <button
+                        type="button"
+                        onClick={() => toggleEvidenceStatus(item.id)}
+                        aria-label={`Status: ${item.status}. Click to change.`}
+                        className="focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                       >
-                        {item.status}
-                      </Badge>
-                    </button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 text-destructive opacity-0 transition-opacity group-hover:opacity-100"
-                      aria-label="Delete evidence"
-                      onClick={() =>
-                        setEvidence((ev) => ev.filter((x) => x.id !== item.id))
-                      }
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                        <Badge
+                          variant={
+                            item.status === "Verified"
+                              ? "secondary"
+                              : item.status === "Pending"
+                                ? "outline"
+                                : "outline"
+                          }
+                          className={cn(
+                            "cursor-pointer",
+                            item.status === "Not started" && "opacity-60"
+                          )}
+                        >
+                          {item.status}
+                        </Badge>
+                      </button>
+                    ) : (
+                      <div className="text-right">
+                        <Badge
+                          variant={
+                            item.status === "Rejected"
+                              ? "destructive"
+                              : item.status === "Verified"
+                                ? "secondary"
+                                : "outline"
+                          }
+                        >
+                          {item.displayStatus ?? item.status}
+                        </Badge>
+                        {item.issuer && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Managed by {item.issuer}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {canEditEvidenceStatus(item) && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-destructive opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="Delete evidence"
+                        onClick={() =>
+                          setEvidence((ev) =>
+                            ev.filter((x) => x.id !== item.id)
+                          )
+                        }
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
                   </div>
                 ))
               )}

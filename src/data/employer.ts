@@ -259,6 +259,7 @@ export type ApplicantStage =
 
 export type EmployerApplicant = {
   id: string;
+  graduateId?: GraduateId;
   name: string;
   initials: string;
   role: string;
@@ -321,6 +322,23 @@ export type EmployerNotification = {
 };
 
 export const employerApplicants: EmployerApplicant[] = [
+  {
+    id: "alex-morgan",
+    graduateId: "graduate-alex",
+    name: "Alex Morgan",
+    initials: "AM",
+    role: "Frontend Engineer",
+    appliedOn: "Today",
+    experience: "Early career \u00B7 Next.js, TypeScript",
+    location: "Kuala Lumpur, Malaysia",
+    fit: 91,
+    stage: "Screening",
+    skills: ["TypeScript", "React", "Next.js", "Accessibility"],
+    summary:
+      "Product-minded frontend developer who builds accessible, dependable product experiences.",
+    portfolio: "Portfolio available",
+    shortlisted: true,
+  },
   {
     id: "nur-aisyah-rahman",
     name: "Nur Aisyah Rahman",
@@ -547,3 +565,4 @@ export const employerNotificationItems: EmployerNotification[] = [
     href: "/employer/talent",
   },
 ];
+import type { GraduateId } from "@/types/university";

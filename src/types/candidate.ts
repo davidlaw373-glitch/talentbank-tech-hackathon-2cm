@@ -1,6 +1,9 @@
+import type { GraduateId } from "@/types/university";
+
 export type VerificationStatus = "Verified" | "Pending" | "Not started";
 
 export type CandidateProfile = {
+  graduateId: GraduateId;
   name: string;
   initials: string;
   title: string;

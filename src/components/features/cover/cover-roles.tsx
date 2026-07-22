@@ -19,6 +19,7 @@ type Role = {
   description: string;
   benefits: string[];
   cta: string;
+  href: string;
   preview: React.ReactNode;
 };
 
@@ -36,6 +37,7 @@ const ROLES: Role[] = [
       "Track every job you've applied to in one view",
     ],
     cta: "I'm looking for work",
+    href: "/register",
     preview: <CandidatePreview />,
   },
   {
@@ -51,6 +53,7 @@ const ROLES: Role[] = [
       "Use the same scorecard with every interviewer",
     ],
     cta: "I'm hiring",
+    href: "/employer/register",
     preview: <EmployerPreview />,
   },
   {
@@ -66,6 +69,7 @@ const ROLES: Role[] = [
       "Get suggestions for new courses based on hiring demand",
     ],
     cta: "Partner with us",
+    href: "/university/login",
     preview: <UniversityPreview />,
   },
 ];
@@ -312,7 +316,7 @@ export function CoverRoles() {
                     </ul>
                     <div>
                       <Button asChild>
-                        <Link href="#start">
+                        <Link href={role.href}>
                           {role.cta}
                           <ArrowRight />
                         </Link>
