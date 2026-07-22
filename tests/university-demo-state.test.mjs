@@ -132,6 +132,7 @@ test("Alex starts pending without a trusted Candidate or Employer label", () => 
       notificationTitle: "Degree verification pending",
       notificationMessage:
         "Computer Science degree is awaiting Registry review at University of Malaya.",
+      notificationVersion: "Pending:2024-07-08T09:00:00Z",
     },
   });
   assert.equal(selectDashboardProjection(state).pendingVerificationCount, 1);
@@ -164,6 +165,7 @@ test("Registry approval propagates one University verified projection and audit 
       notificationTitle: "Degree verification complete",
       notificationMessage:
         "Computer Science degree is University verified by University of Malaya.",
+      notificationVersion: "Verified:2026-07-22T08:00:00.000Z",
     },
   });
   assert.equal(selectDashboardProjection(result.state).pendingVerificationCount, 0);
@@ -430,6 +432,153 @@ test("approval requires complete evidence", () => {
   assert.strictEqual(result.state, incomplete);
 });
 
+test("requesting information invalidates evidence until Registry resubmits it", () => {
+  const initial = createSeedState();
+  const requested = registryDecision(
+    initial,
+    "verification-wei-course",
+    "request-information",
+    "Please provide the module transcript."
+  );
+
+  assert.equal(requested.ok, true);
+  assert.equal(requested.state.verificationRecords[1].evidenceComplete, false);
+
+  const prematureApproval = registryDecision(
+    requested.state,
+    "verification-wei-course",
+    "approve",
+    "Attempted approval before resubmission"
+  );
+  assert.equal(prematureApproval.ok, false);
+  assert.match(prematureApproval.error, /complete evidence/);
+
+  const submitted = executeUniversityCommand(requested.state, {
+    type: "verification/submit-evidence",
+    role: "registry",
+    recordId: "verification-wei-course",
+    actor: "Registry Demo User",
+    occurredAt: "2026-07-22T09:00:00.000Z",
+  });
+  assert.equal(submitted.ok, true);
+  assert.equal(
+    submitted.state.verificationRecords[1].submittedAt,
+    "2026-07-22T09:00:00.000Z"
+  );
+  assert.equal(
+    registryDecision(
+      submitted.state,
+      "verification-wei-course",
+      "approve",
+      "Transcript matched"
+    ).ok,
+    true
+  );
+});
+
+test("complete actionable evidence cannot be submitted twice", () => {
+  const initial = createSeedState();
+
+  for (const recordId of [
+    "verification-alex-degree",
+    "verification-wei-course",
+  ]) {
+    const result = executeUniversityCommand(initial, {
+      type: "verification/submit-evidence",
+      role: "registry",
+      recordId,
+      actor: "Registry Demo User",
+      occurredAt: NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.match(result.error, /already complete/i);
+    assert.strictEqual(result.state, initial);
+  }
+});
+
+test("aggregate credential status prioritizes actionable, rejected, then verified records", () => {
+  const initial = createSeedState();
+  const verifiedAndRejected = createUniversityDemoState({
+    institutionName: initial.institutionName,
+    graduates: initial.graduates,
+    verificationRecords: [
+      {
+        ...initial.verificationRecords[0],
+        status: "Verified",
+        reviewedAt: NOW,
+      },
+      {
+        ...initial.verificationRecords[2],
+        graduateId: "graduate-alex",
+      },
+    ],
+    employmentOutcomes: initial.employmentOutcomes,
+  });
+
+  assert.equal(
+    selectGraduateVerificationStatus(verifiedAndRejected, "graduate-alex"),
+    "Rejected"
+  );
+  assert.equal(
+    universityDomain.selectGraduateNextAction(
+      verifiedAndRejected,
+      "graduate-alex",
+      "registry"
+    ),
+    "Review rejected Business analytics certificate"
+  );
+  assert.equal(
+    selectCredentialProjection(verifiedAndRejected, "graduate-alex")
+      ?.verificationStatus,
+    "Rejected"
+  );
+  assert.equal(
+    selectCredentialProjection(verifiedAndRejected, "graduate-alex")?.trustLabel,
+    null
+  );
+
+  const withPending = createUniversityDemoState({
+    institutionName: initial.institutionName,
+    graduates: initial.graduates,
+    verificationRecords: [
+      ...verifiedAndRejected.verificationRecords,
+      { ...initial.verificationRecords[0], id: "verification-alex-pending" },
+    ],
+    employmentOutcomes: initial.employmentOutcomes,
+  });
+  assert.equal(
+    selectGraduateVerificationStatus(withPending, "graduate-alex"),
+    "Pending"
+  );
+  assert.equal(
+    universityDomain.selectGraduateNextAction(
+      withPending,
+      "graduate-alex",
+      "registry"
+    ),
+    "Review Computer Science degree evidence"
+  );
+});
+
+test("credential notification version changes when a same-status audit event occurs", () => {
+  const initial = createSeedState();
+  const before = selectCredentialProjection(initial, "graduate-alex");
+  const requested = registryDecision(
+    initial,
+    "verification-alex-degree",
+    "request-information",
+    "Please submit a clearer award scan."
+  );
+  const after = selectCredentialProjection(requested.state, "graduate-alex");
+
+  assert.equal(before?.verificationStatus, "Pending");
+  assert.equal(after?.verificationStatus, "Pending");
+  assert.notEqual(
+    before?.candidateCopy.notificationVersion,
+    after?.candidateCopy.notificationVersion
+  );
+});
+
 test("bulk approval rejects incompatible selections and approves compatible eligible records", () => {
   const initial = createSeedState();
   const incompatible = executeUniversityCommand(initial, {
@@ -651,6 +800,7 @@ test("credential-impacting academic edits atomically invalidate trusted evidence
       notificationTitle: "Degree verification pending",
       notificationMessage:
         "BSc Software Engineering degree is awaiting Registry review at University of Malaya.",
+      notificationVersion: "Pending:2026-07-22T10:00:00.000Z",
     },
   });
   const record = updated.state.verificationRecords.find(

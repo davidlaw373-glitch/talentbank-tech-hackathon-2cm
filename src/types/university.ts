@@ -99,6 +99,7 @@ export type CredentialProjection = {
     progressHint: string;
     notificationTitle: string;
     notificationMessage: string;
+    notificationVersion: string;
   };
 };
 

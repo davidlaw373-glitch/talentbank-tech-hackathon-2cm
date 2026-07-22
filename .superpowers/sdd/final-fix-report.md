@@ -109,3 +109,26 @@ GREEN observations:
 - `git diff --check` — PASS before report generation and repeated during the final staged audit.
 
 The previously documented repository-wide lint baseline, build warning, browser-backend limitation, and session-only persistence limitation remain unchanged.
+
+## Final state-machine follow-up
+
+Base reviewed: `a31cd40`
+
+### Fixes delivered
+
+- `request-information` now invalidates the submitted evidence by setting `evidenceComplete` to `false`. Approval remains blocked until Registry runs the explicit evidence-submission command, which refreshes `submittedAt`.
+- Evidence submission now rejects already-complete actionable `Pending` and `Disputed` records without mutating state or duplicating audit history.
+- Multi-credential aggregate status now orders actionable `Disputed`/`Pending` records first, then `Rejected`, then `Verified`. The shared Candidate/Employer projection uses the same aggregate result, so one verified record cannot mask a rejected credential or retain a stale trust label.
+- Candidate notification versions now combine aggregate status with the latest credential audit timestamp. Each status transition or same-status audit event receives a new notification ID and therefore appears unread independently of earlier read state.
+
+### TDD and verification evidence
+
+- RED: the focused suite produced five expected failures for evidence invalidation, duplicate submission, aggregate rejection precedence, audit-version changes, and removal of the fixed notification ID.
+- GREEN: focused domain suite 21 passed; focused UI regression suite 12 passed.
+- `node --test tests/*.test.mjs` — PASS, 37 tests, 0 failures.
+- `npx tsc --noEmit` — PASS.
+- Focused ESLint over all five changed source/test files — PASS, 0 problems.
+- `npm run build` — PASS; all 40 static/SSG pages generated.
+- `git diff --check` — PASS before report generation and repeated in the staged audit.
+
+The existing multiple-lockfile build warning, Node module-type test warning, unavailable browser backend, and session-only demo persistence remain unchanged.

@@ -175,6 +175,11 @@ test("Candidate notification and dashboard progress derive from the shared typed
   assert.match(notificationSource, /useCareerOSDemo/);
   assert.match(notificationSource, /selectCredentialProjection/);
   assert.match(notificationSource, /candidateProfile\.graduateId/);
+  assert.match(notificationSource, /candidateCopy\.notificationVersion/);
+  assert.doesNotMatch(
+    notificationSource,
+    /id:\s*["']candidate-degree-verification["']/
+  );
   assert.doesNotMatch(notificationData, /Evidence verified|verified by the university/);
   for (const source of [dashboardSource, profileSource, employerSource]) {
     assert.doesNotMatch(source, /["']graduate-alex["']/);

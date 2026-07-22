@@ -122,7 +122,7 @@ export function NotificationsCenter() {
       ...(credentialProjection
         ? [
             {
-              id: "candidate-degree-verification",
+              id: `candidate-degree-verification-${credentialProjection.candidateCopy.notificationVersion}`,
               type: "verification" as const,
               title: credentialProjection.candidateCopy.notificationTitle,
               message: credentialProjection.candidateCopy.notificationMessage,

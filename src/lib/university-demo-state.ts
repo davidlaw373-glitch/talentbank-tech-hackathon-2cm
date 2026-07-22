@@ -738,6 +738,12 @@ function submitVerificationEvidence(
       `${record.status} verification records are terminal and read-only in this MVP.`
     );
   }
+  if (record.evidenceComplete) {
+    return failure(
+      state,
+      `${record.evidenceName} evidence is already complete and awaiting a decision.`
+    );
+  }
 
   const updatedRecord: VerificationRecord = {
     ...record,
@@ -814,6 +820,10 @@ function decideVerification(
   const updatedRecord: VerificationRecord = {
     ...record,
     status,
+    evidenceComplete:
+      command.decision === "request-information"
+        ? false
+        : record.evidenceComplete,
     reviewer: command.actor,
     reviewedAt: command.occurredAt,
     note: savedNote,
@@ -1028,8 +1038,8 @@ export function selectGraduateVerificationStatus(
 
   if (statuses.includes("Disputed")) return "Disputed";
   if (statuses.includes("Pending")) return "Pending";
-  if (statuses.includes("Verified")) return "Verified";
   if (statuses.includes("Rejected")) return "Rejected";
+  if (statuses.includes("Verified")) return "Verified";
   return "Pending";
 }
 
@@ -1080,56 +1090,71 @@ export function selectCredentialProjection(
   graduateId: GraduateId
 ): CredentialProjection | null {
   const graduate = state.graduates.find((record) => record.id === graduateId);
-  const degreeRecord = state.verificationRecords
-    .filter(
-      (record) =>
-        record.graduateId === graduateId && record.evidenceType === "Degree"
-    )
-    .sort((left, right) => right.submittedAt.localeCompare(left.submittedAt))[0];
+  const graduateRecords = state.verificationRecords.filter(
+    (record) => record.graduateId === graduateId
+  );
+  const aggregateStatus = selectGraduateVerificationStatus(state, graduateId);
+  const credentialRecord = [...graduateRecords]
+    .sort((left, right) => right.submittedAt.localeCompare(left.submittedAt))
+    .find((record) => record.status === aggregateStatus);
 
-  if (!graduate || !degreeRecord) return null;
+  if (!graduate || !credentialRecord) return null;
+
+  const graduateRecordIds = new Set(graduateRecords.map((record) => record.id));
+  const latestAudit = state.verificationAudit
+    .filter((entry) => graduateRecordIds.has(entry.recordId))
+    .sort((left, right) => right.occurredAt.localeCompare(left.occurredAt))[0];
+  const notificationVersion = `${aggregateStatus}:${
+    latestAudit?.occurredAt ??
+    credentialRecord.reviewedAt ??
+    credentialRecord.submittedAt
+  }`;
 
   const label =
-    degreeRecord.status === "Verified"
+    aggregateStatus === "Verified"
       ? "University verified"
-      : degreeRecord.status;
+      : aggregateStatus;
   const candidateCopy =
-    degreeRecord.status === "Verified"
+    aggregateStatus === "Verified"
       ? {
           label,
           progressHint: "University-verified degree on file",
           notificationTitle: "Degree verification complete",
-          notificationMessage: `${degreeRecord.evidenceName} is University verified by ${state.institutionName}.`,
+          notificationMessage: `${credentialRecord.evidenceName} is University verified by ${state.institutionName}.`,
+          notificationVersion,
         }
-      : degreeRecord.status === "Disputed"
+      : aggregateStatus === "Disputed"
         ? {
             label,
             progressHint: "Degree verification needs resolution",
             notificationTitle: "Degree verification disputed",
-            notificationMessage: `${degreeRecord.evidenceName} needs resolution with ${state.institutionName}.`,
+            notificationMessage: `${credentialRecord.evidenceName} needs resolution with ${state.institutionName}.`,
+            notificationVersion,
           }
-        : degreeRecord.status === "Rejected"
+        : aggregateStatus === "Rejected"
           ? {
               label,
               progressHint: "Degree evidence was not accepted",
               notificationTitle: "Degree verification rejected",
-              notificationMessage: `${degreeRecord.evidenceName} was not accepted by ${state.institutionName}.`,
+              notificationMessage: `${credentialRecord.evidenceName} was not accepted by ${state.institutionName}.`,
+              notificationVersion,
             }
           : {
               label,
               progressHint: "Degree awaiting Registry review",
               notificationTitle: "Degree verification pending",
-              notificationMessage: `${degreeRecord.evidenceName} is awaiting Registry review at ${state.institutionName}.`,
+              notificationMessage: `${credentialRecord.evidenceName} is awaiting Registry review at ${state.institutionName}.`,
+              notificationVersion,
             };
 
   return {
     graduateId,
     candidateName: graduate.name,
-    qualification: degreeRecord.evidenceName,
+    qualification: credentialRecord.evidenceName,
     institution: state.institutionName,
-    verificationStatus: degreeRecord.status,
+    verificationStatus: aggregateStatus,
     trustLabel:
-      degreeRecord.status === "Verified" ? "University verified" : null,
+      aggregateStatus === "Verified" ? "University verified" : null,
     candidateCopy,
   };
 }
