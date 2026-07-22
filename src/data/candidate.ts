@@ -35,13 +35,6 @@ export const candidateProfile: CandidateProfile = {
     },
   ],
   evidence: [
-    {
-      name: "Computer Science degree",
-      type: "Education",
-      status: "Verified",
-      issuer: "University of Malaya",
-      displayStatus: "University verified",
-    },
     { name: "Northstar Labs internship", type: "Experience", status: "Pending" },
     { name: "Project portfolio", type: "Portfolio", status: "Verified" },
   ],

@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo } from "react";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -7,15 +10,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import {
-  employmentOutcomes,
-  graduates,
-  universityProfile,
-} from "@/data/university";
-import {
-  calculateEmploymentMetrics,
-  normalizeEmploymentOutcomes,
-} from "@/lib/university-metrics";
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
+import { universityProfile } from "@/data/university";
+import { selectDashboardProjection } from "@/lib/university-demo-state";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -24,27 +21,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EmploymentStatus } from "@/types/university";
-
-const normalizedEmploymentOutcomes = normalizeEmploymentOutcomes(
-  graduates,
-  employmentOutcomes
-);
-const employmentMetrics = calculateEmploymentMetrics(normalizedEmploymentOutcomes);
-const outcomeOrder: EmploymentStatus[] = [
-  "Employed",
-  "Seeking",
-  "Further study",
-  "Not seeking",
-  "Unknown",
-];
-const outcomeDistribution = outcomeOrder.map((status) => ({
-  status,
-  count: normalizedEmploymentOutcomes.filter((outcome) => outcome.status === status)
-    .length,
-}));
-
 export function UniversityProfile() {
+  const { state } = useCareerOSDemo();
+  const dashboard = useMemo(() => selectDashboardProjection(state), [state]);
+
   return (
     <div className="space-y-8">
       <section className="space-y-2">
@@ -97,20 +77,20 @@ export function UniversityProfile() {
         <ProfileStatistic
           icon={GraduationCap}
           label="Graduates tracked"
-          value={graduates.length}
+          value={state.graduates.length}
           detail="Across published cohorts"
         />
         <ProfileStatistic
           icon={BriefcaseBusiness}
           label="Employment rate"
-          value={`${employmentMetrics.employmentRate}%`}
+          value={`${dashboard.metrics.employmentRate}%`}
           detail="Among graduates in the labour force"
         />
         <ProfileStatistic
           icon={BadgeCheck}
           label="Outcome coverage"
-          value={`${employmentMetrics.coverageRate}%`}
-          detail={`${employmentMetrics.knownOutcomes} of ${normalizedEmploymentOutcomes.length} outcomes reported`}
+          value={`${dashboard.metrics.coverageRate}%`}
+          detail={`${dashboard.metrics.knownOutcomes} of ${dashboard.normalizedEmploymentOutcomes.length} outcomes reported`}
         />
       </section>
 
@@ -173,9 +153,11 @@ export function UniversityProfile() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {outcomeDistribution.map(({ status, count }) => {
+          {dashboard.outcomeDistribution.map(({ status, count }) => {
             const percentage = Math.round(
-              (count / normalizedEmploymentOutcomes.length) * 100
+              (count /
+                Math.max(dashboard.normalizedEmploymentOutcomes.length, 1)) *
+                100
             );
 
             return (
@@ -192,7 +174,7 @@ export function UniversityProfile() {
                   role="progressbar"
                   aria-label={`${status} graduate outcomes`}
                   aria-valuemin={0}
-                  aria-valuemax={normalizedEmploymentOutcomes.length}
+                  aria-valuemax={dashboard.normalizedEmploymentOutcomes.length}
                   aria-valuenow={count}
                 >
                   <div

@@ -30,9 +30,7 @@ export const graduates: Graduate[] = [
     programme: "BSc Computer Science",
     graduationYear: 2024,
     profileCompletion: 82,
-    employmentStatus: "Employed",
-    verificationStatus: "Verified",
-    nextAction: "Share graduate outcome with Career Services",
+    nextAction: "Review Computer Science degree evidence",
   },
   {
     id: "graduate-nadiya",
@@ -43,8 +41,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Information Systems",
     graduationYear: 2024,
     profileCompletion: 96,
-    employmentStatus: "Employed",
-    verificationStatus: "Pending",
     nextAction: "Review capstone project evidence",
   },
   {
@@ -56,8 +52,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Computer Science",
     graduationYear: 2023,
     profileCompletion: 74,
-    employmentStatus: "Seeking",
-    verificationStatus: "Disputed",
     nextAction: "Resolve course completion dispute",
   },
   {
@@ -69,8 +63,6 @@ export const graduates: Graduate[] = [
     programme: "BBA Economics",
     graduationYear: 2024,
     profileCompletion: 91,
-    employmentStatus: "Further study",
-    verificationStatus: "Verified",
     nextAction: "Confirm postgraduate study details",
   },
   {
@@ -82,8 +74,6 @@ export const graduates: Graduate[] = [
     programme: "BBA Economics",
     graduationYear: 2023,
     profileCompletion: 67,
-    employmentStatus: "Not seeking",
-    verificationStatus: "Rejected",
     nextAction: "Request complete certificate evidence",
   },
   {
@@ -95,8 +85,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Information Systems",
     graduationYear: 2024,
     profileCompletion: 58,
-    employmentStatus: "Unknown",
-    verificationStatus: "Pending",
     nextAction: "Contact graduate for employment outcome",
   },
   {
@@ -108,8 +96,6 @@ export const graduates: Graduate[] = [
     programme: "BBA Economics",
     graduationYear: 2022,
     profileCompletion: 88,
-    employmentStatus: "Employed",
-    verificationStatus: "Verified",
     nextAction: "Confirm employer and role details",
   },
   {
@@ -121,8 +107,6 @@ export const graduates: Graduate[] = [
     programme: "BSc Computer Science",
     graduationYear: 2023,
     profileCompletion: 79,
-    employmentStatus: "Seeking",
-    verificationStatus: "Pending",
     nextAction: "Offer careers appointment",
   },
 ];
@@ -133,11 +117,8 @@ export const verificationRecords: VerificationRecord[] = [
     graduateId: "graduate-alex",
     evidenceName: "Computer Science degree",
     evidenceType: "Degree",
-    status: "Verified",
+    status: "Pending",
     submittedAt: "2024-07-08T09:00:00Z",
-    reviewer: "Dr. Nur Aina",
-    reviewedAt: "2024-07-10T10:30:00Z",
-    note: "Award and graduation date match the official record.",
     institutionRecord: "BSc Computer Science, awarded July 2024",
     evidenceComplete: true,
   },
@@ -374,7 +355,7 @@ export const universityNotifications: UniversityNotification[] = [
 ];
 
 export const universityActivity = [
-  "Alex Morgan's Computer Science degree was verified by Dr. Nur Aina.",
+  "Alex Morgan's Computer Science degree entered the Registry review queue.",
   "Nadiya Rahman's capstone evidence entered the verification queue.",
   "Haris Abdullah confirmed employment with Meridian Bank.",
   "Wei Jian Lim opened a course completion dispute.",

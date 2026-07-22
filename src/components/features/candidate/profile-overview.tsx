@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { selectCredentialProjection } from "@/lib/university-demo-state";
+import type { AcademicVerificationStatus } from "@/types/university";
 
 type VerificationStatus = "Verified" | "Pending" | "Not started";
 
@@ -61,13 +64,13 @@ type Evidence = {
   id: string;
   name: string;
   type: string;
-  status: VerificationStatus;
+  status: VerificationStatus | AcademicVerificationStatus;
   issuer?: string;
   displayStatus?: string;
 };
 
 function canEditEvidenceStatus(evidence: Evidence) {
-  return !evidence.issuer && !evidence.displayStatus;
+  return !evidence.issuer;
 }
 
 type ProfileFormState = {
@@ -120,14 +123,6 @@ const INITIAL_SKILLS: string[] = [
 ];
 
 const INITIAL_EVIDENCE: Evidence[] = [
-  {
-    id: "ev-1",
-    name: "Computer Science degree",
-    type: "Education",
-    status: "Verified",
-    issuer: "University of Malaya",
-    displayStatus: "University verified",
-  },
   {
     id: "ev-2",
     name: "Northstar Labs internship",
@@ -271,6 +266,7 @@ function EditableItem({
 }
 
 export function ProfileOverview() {
+  const { state } = useCareerOSDemo();
   const [profile, setProfile] = useState<ProfileFormState>(PROFILE_DEFAULT);
   const [editingProfile, setEditingProfile] = useState(false);
   const [draft, setDraft] = useState<ProfileFormState>(profile);
@@ -280,6 +276,30 @@ export function ProfileOverview() {
   const [education, setEducation] = useState<Education[]>(INITIAL_EDUCATION);
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [evidence, setEvidence] = useState<Evidence[]>(INITIAL_EVIDENCE);
+  const credentialProjection = useMemo(
+    () => selectCredentialProjection(state, "graduate-alex"),
+    [state]
+  );
+  const displayedEvidence = useMemo<Evidence[]>(
+    () => [
+      ...(credentialProjection
+        ? [
+            {
+              id: "university-alex-degree",
+              name: credentialProjection.qualification,
+              type: "Education",
+              status: credentialProjection.verificationStatus,
+              issuer: credentialProjection.institution,
+              displayStatus:
+                credentialProjection.trustLabel ??
+                credentialProjection.verificationStatus,
+            },
+          ]
+        : []),
+      ...evidence,
+    ],
+    [credentialProjection, evidence]
+  );
 
   const totalSections = 6;
   const done = useMemo(() => {
@@ -287,9 +307,9 @@ export function ProfileOverview() {
     if (experience.length > 0) d++;
     if (education.length > 0) d++;
     if (projects.length > 0) d++;
-    if (evidence.some((e) => e.status === "Verified")) d++;
+    if (displayedEvidence.some((item) => item.status === "Verified")) d++;
     return Math.min(d, totalSections);
-  }, [experience.length, education.length, projects.length, evidence]);
+  }, [displayedEvidence, education.length, experience.length, projects.length]);
   const pct = Math.round((done / totalSections) * 100);
 
   // Add handlers
@@ -784,7 +804,7 @@ export function ProfileOverview() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {evidence.length === 0 ? (
+              {displayedEvidence.length === 0 ? (
                 <EmptyState
                   icon={BadgeCheck}
                   title="No evidence added"
@@ -797,7 +817,7 @@ export function ProfileOverview() {
                   }
                 />
               ) : (
-                evidence.map((item) => (
+                displayedEvidence.map((item) => (
                   <div
                     key={item.id}
                     className="group flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3"
@@ -833,7 +853,15 @@ export function ProfileOverview() {
                       </button>
                     ) : (
                       <div className="text-right">
-                        <Badge variant="secondary">
+                        <Badge
+                          variant={
+                            item.status === "Rejected"
+                              ? "destructive"
+                              : item.status === "Verified"
+                                ? "secondary"
+                                : "outline"
+                          }
+                        >
                           {item.displayStatus ?? item.status}
                         </Badge>
                         {item.issuer && (

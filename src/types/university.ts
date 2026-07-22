@@ -10,6 +10,10 @@ export type AcademicVerificationStatus =
   | "Verified"
   | "Rejected"
   | "Disputed";
+export type VerificationDecision =
+  | "approve"
+  | "request-information"
+  | "reject";
 export type EvidenceType =
   | "Degree"
   | "Course completion"
@@ -35,8 +39,6 @@ export type Graduate = {
   programme: string;
   graduationYear: number;
   profileCompletion: number;
-  employmentStatus: EmploymentStatus;
-  verificationStatus: AcademicVerificationStatus;
   nextAction: string;
 };
 
@@ -62,6 +64,35 @@ export type EmploymentOutcome = {
   industry?: string;
   employedAt?: string;
   daysToEmployment?: number;
+};
+
+export type VerificationAuditAction =
+  | "Evidence submitted"
+  | "Verified by Registry"
+  | "Rejected by Registry"
+  | "Dispute recorded"
+  | "Verification requested"
+  | "Approved"
+  | "Approved in batch"
+  | "More information requested"
+  | "Rejected";
+
+export type VerificationAuditEntry = {
+  id: string;
+  recordId: string;
+  action: VerificationAuditAction;
+  actor: string;
+  occurredAt: string;
+  note?: string;
+};
+
+export type CredentialProjection = {
+  graduateId: string;
+  candidateName: string;
+  qualification: string;
+  institution: string;
+  verificationStatus: AcademicVerificationStatus;
+  trustLabel: "University verified" | null;
 };
 
 export type IndustryDemand = {

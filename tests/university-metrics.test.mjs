@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import * as employmentMetrics from "../src/lib/university-metrics.ts";
+import * as employmentMetrics from "../src/lib/university-demo-state.ts";
 
 test("normalizes missing graduate outcomes to Unknown before calculating coverage", () => {
   assert.equal(

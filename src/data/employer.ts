@@ -271,11 +271,6 @@ export type EmployerApplicant = {
   summary: string;
   portfolio?: string;
   shortlisted: boolean;
-  verifiedCredential?: {
-    qualification: string;
-    institution: string;
-    status: "University verified";
-  };
 };
 
 export type EmployerInterview = {
@@ -341,11 +336,6 @@ export const employerApplicants: EmployerApplicant[] = [
       "Product-minded frontend developer who builds accessible, dependable product experiences.",
     portfolio: "Portfolio available",
     shortlisted: true,
-    verifiedCredential: {
-      qualification: "Computer Science degree",
-      institution: "University of Malaya",
-      status: "University verified",
-    },
   },
   {
     id: "nur-aisyah-rahman",

@@ -14,13 +14,7 @@ export type CandidateProfile = {
   education: Array<{ institution: string; qualification: string; period: string }>;
   experience: Array<{ company: string; role: string; period: string; description: string }>;
   projects: Array<{ name: string; description: string; skills: string[] }>;
-  evidence: Array<{
-    name: string;
-    type: string;
-    status: VerificationStatus;
-    issuer?: string;
-    displayStatus?: string;
-  }>;
+  evidence: Array<{ name: string; type: string; status: VerificationStatus }>;
 };
 
 export type Job = {

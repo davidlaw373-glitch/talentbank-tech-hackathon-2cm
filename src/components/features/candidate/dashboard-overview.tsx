@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Briefcase,
@@ -6,18 +8,17 @@ import {
   Sparkles,
   ArrowRight,
   Check,
-  Circle,
   MapPin,
   Building2,
   Clock,
   TrendingUp,
-  User,
   GraduationCap,
   FolderGit2,
   FileText,
 } from "lucide-react";
 
 import { applications } from "@/data/applications";
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
 import { candidateProfile, recentActivity } from "@/data/candidate";
 import { jobs } from "@/data/jobs";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { selectCredentialProjection } from "@/lib/university-demo-state";
 
 type ProgressItem = {
   id: string;
@@ -123,6 +125,26 @@ function matchTone(score: number) {
 }
 
 export function DashboardOverview() {
+  const { state } = useCareerOSDemo();
+  const credentialProjection = selectCredentialProjection(
+    state,
+    "graduate-alex"
+  );
+  const evidence = [
+    ...(credentialProjection
+      ? [
+          {
+            name: credentialProjection.qualification,
+            type: `Education · ${credentialProjection.institution}`,
+            status:
+              credentialProjection.trustLabel ??
+              credentialProjection.verificationStatus,
+          },
+        ]
+      : []),
+    ...candidateProfile.evidence,
+  ];
+
   const total = PROGRESS_ITEMS.length;
   const done = PROGRESS_ITEMS.filter((i) => i.done).length;
   const remaining = PROGRESS_ITEMS.filter((i) => !i.done);
@@ -297,10 +319,13 @@ export function DashboardOverview() {
                 Credentials issued by your universities.
               </CardDescription>
             </div>
-            <Badge variant="outline">{candidateProfile.verificationStatus}</Badge>
+            <Badge variant="outline">
+              {credentialProjection?.verificationStatus ??
+                candidateProfile.verificationStatus}
+            </Badge>
           </CardHeader>
           <CardContent className="space-y-3">
-            {candidateProfile.evidence.map((e) => (
+            {evidence.map((e) => (
               <div
                 key={e.name}
                 className="flex items-center justify-between rounded-lg border bg-card p-3"
@@ -309,7 +334,13 @@ export function DashboardOverview() {
                   <p className="truncate text-sm font-medium">{e.name}</p>
                   <p className="text-xs text-muted-foreground">{e.type}</p>
                 </div>
-                <Badge variant={e.status === "Verified" ? "secondary" : "outline"}>
+                <Badge
+                  variant={
+                    e.status === "Verified" || e.status === "University verified"
+                      ? "secondary"
+                      : "outline"
+                  }
+                >
                   {e.status}
                 </Badge>
               </div>

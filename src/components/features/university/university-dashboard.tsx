@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo } from "react";
 import {
   BadgeCheck,
   BarChart3,
@@ -15,18 +18,13 @@ import {
   UniversityRoleHeader,
   UniversityUpcomingTasks,
 } from "@/components/features/university/university-dashboard-role-content";
-import {
-  curriculumInsights,
-  employmentOutcomes,
-  graduates,
-  universityActivity,
-  universityProfile,
-  verificationRecords,
-} from "@/data/university";
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
+import { curriculumInsights, universityProfile } from "@/data/university";
 import {
   calculateEmploymentMetrics,
   normalizeEmploymentOutcomes,
-} from "@/lib/university-metrics";
+  selectDashboardProjection,
+} from "@/lib/university-demo-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,68 +34,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { EmploymentStatus } from "@/types/university";
-
-const normalizedEmploymentOutcomes = normalizeEmploymentOutcomes(
-  graduates,
-  employmentOutcomes
-);
-const employmentMetrics = calculateEmploymentMetrics(normalizedEmploymentOutcomes);
-
-const outcomeOrder: EmploymentStatus[] = [
-  "Employed",
-  "Seeking",
-  "Further study",
-  "Not seeking",
-  "Unknown",
-];
-
-const outcomeDistribution = outcomeOrder.map((status) => ({
-  status,
-  count: normalizedEmploymentOutcomes.filter((outcome) => outcome.status === status)
-    .length,
-}));
-
-const verificationQueue = verificationRecords.filter(
-  (record) => record.status === "Pending" || record.status === "Disputed"
-);
-
-const employmentByFaculty = universityProfile.faculties.map((faculty) => {
-  const facultyGraduateIds = new Set(
-    graduates
-      .filter((graduate) => graduate.faculty === faculty)
-      .map((graduate) => graduate.id)
-  );
-  const facultyOutcomes = normalizedEmploymentOutcomes.filter((outcome) =>
-    facultyGraduateIds.has(outcome.graduateId)
-  );
-  const facultyMetrics = calculateEmploymentMetrics(facultyOutcomes);
-
-  return {
-    faculty: faculty.replace("Faculty of ", ""),
-    employed: facultyMetrics.employed,
-    laborForce: facultyMetrics.laborForce,
-    rate: facultyMetrics.employmentRate,
-  };
-});
-
-const pendingVerificationCount = verificationRecords.filter(
-  (record) => record.status === "Pending"
-).length;
-const careersTasks = graduates
-  .filter((graduate) =>
-    ["Seeking", "Unknown"].includes(graduate.employmentStatus)
-  )
-  .slice(0, 3)
-  .map(({ id, name, nextAction }) => ({ id, name, nextAction }));
-const registryTasks = graduates
-  .filter((graduate) =>
-    ["Pending", "Disputed"].includes(graduate.verificationStatus)
-  )
-  .slice(0, 3)
-  .map(({ id, name, nextAction }) => ({ id, name, nextAction }));
-
 export function UniversityDashboard() {
+  const { state } = useCareerOSDemo();
+  const dashboard = useMemo(() => selectDashboardProjection(state), [state]);
+  const employmentByFaculty = useMemo(
+    () =>
+      universityProfile.faculties.map((faculty) => {
+        const facultyGraduates = state.graduates.filter(
+          (graduate) => graduate.faculty === faculty
+        );
+        const facultyOutcomes = normalizeEmploymentOutcomes(
+          facultyGraduates,
+          state.employmentOutcomes
+        );
+        const facultyMetrics = calculateEmploymentMetrics(facultyOutcomes);
+
+        return {
+          faculty: faculty.replace("Faculty of ", ""),
+          employed: facultyMetrics.employed,
+          laborForce: facultyMetrics.laborForce,
+          rate: facultyMetrics.employmentRate,
+        };
+      }),
+    [state.employmentOutcomes, state.graduates]
+  );
+
   return (
     <div className="space-y-8">
       <UniversityRoleHeader institutionName={universityProfile.name} />
@@ -109,25 +70,25 @@ export function UniversityDashboard() {
         <StatisticCard
           icon={GraduationCap}
           label="Total graduates"
-          value={graduates.length}
+          value={state.graduates.length}
           detail="Across tracked cohorts"
         />
         <StatisticCard
           icon={BriefcaseBusiness}
           label="Employment rate"
-          value={`${employmentMetrics.employmentRate}%`}
+          value={`${dashboard.metrics.employmentRate}%`}
           detail="Graduate outcomes in scope"
         />
         <StatisticCard
           icon={FileCheck2}
           label="Pending verifications"
-          value={pendingVerificationCount}
+          value={dashboard.pendingVerificationCount}
           detail="Evidence awaiting review"
         />
         <StatisticCard
           icon={Clock3}
           label="Average days to employment"
-          value={employmentMetrics.averageDaysToEmployment}
+          value={dashboard.metrics.averageDaysToEmployment}
           detail="For employed graduates"
         />
       </section>
@@ -143,15 +104,17 @@ export function UniversityDashboard() {
                 </h2>
               </CardTitle>
               <CardDescription>
-                A clear view of the latest reported graduate destinations.
+                All recorded destinations across every tracked cohort.
               </CardDescription>
             </div>
-            <Badge variant="secondary">Latest cohort</Badge>
+            <Badge variant="secondary">All tracked cohorts</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
-            {outcomeDistribution.map(({ status, count }) => {
+            {dashboard.outcomeDistribution.map(({ status, count }) => {
               const percentage = Math.round(
-                (count / normalizedEmploymentOutcomes.length) * 100
+                (count /
+                  Math.max(dashboard.normalizedEmploymentOutcomes.length, 1)) *
+                  100
               );
 
               return (
@@ -167,7 +130,7 @@ export function UniversityDashboard() {
                     role="progressbar"
                     aria-label={`${status} graduate outcomes`}
                     aria-valuemin={0}
-                    aria-valuemax={normalizedEmploymentOutcomes.length}
+                    aria-valuemax={dashboard.normalizedEmploymentOutcomes.length}
                     aria-valuenow={count}
                   >
                     <div
@@ -180,10 +143,10 @@ export function UniversityDashboard() {
             })}
             <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
               <span>
-                Based on {employmentMetrics.laborForce} graduates in the labour force
+                Bars use all {dashboard.normalizedEmploymentOutcomes.length} tracked graduates
               </span>
               <span className="font-medium tabular-nums text-foreground">
-                {employmentMetrics.coverageRate}% outcomes known
+                {dashboard.metrics.coverageRate}% outcomes known
               </span>
             </div>
           </CardContent>
@@ -207,7 +170,7 @@ export function UniversityDashboard() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {verificationQueue.map((record) => (
+            {dashboard.verificationQueue.map((record) => (
               <div key={record.id} className="rounded-lg border bg-card p-3">
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-medium">{record.evidenceName}</p>
@@ -329,7 +292,7 @@ export function UniversityDashboard() {
           </CardHeader>
           <CardContent>
             <ol className="space-y-3">
-              {universityActivity.map((activity) => (
+              {state.activities.map((activity) => (
                 <li key={activity} className="flex items-start gap-3 text-sm">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
                   <span>{activity}</span>
@@ -340,8 +303,8 @@ export function UniversityDashboard() {
         </Card>
 
         <UniversityUpcomingTasks
-          careersTasks={careersTasks}
-          registryTasks={registryTasks}
+          careersTasks={dashboard.careersTasks}
+          registryTasks={dashboard.registryTasks}
         />
       </section>
     </div>

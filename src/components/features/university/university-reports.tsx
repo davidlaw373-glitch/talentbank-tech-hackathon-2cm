@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { FileDown, FileSpreadsheet, FileText, RotateCcw } from "lucide-react";
 
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
 import { useUniversityRole } from "@/components/features/university/university-role-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,28 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { curriculumInsights, employmentOutcomes, graduates, industryDemand } from "@/data/university";
-import { calculateEmploymentMetrics } from "@/lib/university-metrics";
-import type { EmploymentOutcome } from "@/types/university";
+import { curriculumInsights, industryDemand } from "@/data/university";
+import { selectReportProjection } from "@/lib/university-demo-state";
 
 type DistributionItem = { label: string; count: number };
-
-function distribution(values: Array<string | undefined>): DistributionItem[] {
-  const counts = new Map<string, number>();
-  values.forEach((value) => {
-    if (value?.trim()) counts.set(value, (counts.get(value) ?? 0) + 1);
-  });
-  return [...counts.entries()]
-    .map(([label, count]) => ({ label, count }))
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label));
-}
-
-function outcomeForGraduate(graduateId: string): EmploymentOutcome {
-  return employmentOutcomes.find((outcome) => outcome.graduateId === graduateId) ?? {
-    graduateId,
-    status: "Unknown",
-  };
-}
 
 function LabelledDistribution({ items, label }: { items: DistributionItem[]; label: string }) {
   if (items.length === 0) return <p className="text-sm text-muted-foreground">No confirmed {label.toLocaleLowerCase()} data in this scope.</p>;
@@ -55,28 +38,27 @@ function LabelledDistribution({ items, label }: { items: DistributionItem[]; lab
 
 export function UniversityReports() {
   const { role } = useUniversityRole();
+  const { state } = useCareerOSDemo();
   const [graduationYear, setGraduationYear] = useState("all");
   const [faculty, setFaculty] = useState("all");
   const [programme, setProgramme] = useState("all");
   const [requestedPreview, setRequestedPreview] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
 
-  const years = useMemo(() => [...new Set(graduates.map((graduate) => graduate.graduationYear))].sort((a, b) => b - a), []);
-  const faculties = useMemo(() => [...new Set(graduates.map((graduate) => graduate.faculty))].sort(), []);
-  const programmes = useMemo(() => [...new Set(graduates.map((graduate) => graduate.programme))].sort(), []);
-  const scopedGraduates = useMemo(() => graduates.filter((graduate) =>
-    (graduationYear === "all" || graduate.graduationYear === Number(graduationYear)) &&
-    (faculty === "all" || graduate.faculty === faculty) &&
-    (programme === "all" || graduate.programme === programme)
-  ), [faculty, graduationYear, programme]);
-  const scopedOutcomes = useMemo(() => scopedGraduates.map((graduate) => outcomeForGraduate(graduate.id)), [scopedGraduates]);
-  const metrics = useMemo(() => calculateEmploymentMetrics(scopedOutcomes), [scopedOutcomes]);
-  const roles = useMemo(() => distribution(scopedOutcomes.filter((outcome) => outcome.status === "Employed").map((outcome) => outcome.jobTitle)), [scopedOutcomes]);
-  const industries = useMemo(() => distribution(scopedOutcomes.filter((outcome) => outcome.status === "Employed").map((outcome) => outcome.industry)), [scopedOutcomes]);
-  const employers = useMemo(() => distribution(scopedOutcomes.filter((outcome) => outcome.status === "Employed").map((outcome) => outcome.employer)), [scopedOutcomes]);
+  const years = useMemo(() => [...new Set(state.graduates.map((graduate) => graduate.graduationYear))].sort((a, b) => b - a), [state.graduates]);
+  const faculties = useMemo(() => [...new Set(state.graduates.map((graduate) => graduate.faculty))].sort(), [state.graduates]);
+  const programmes = useMemo(() => [...new Set(state.graduates.map((graduate) => graduate.programme))].sort(), [state.graduates]);
+  const report = useMemo(
+    () =>
+      selectReportProjection(state, {
+        graduationYear,
+        faculty,
+        programme,
+      }),
+    [faculty, graduationYear, programme, state]
+  );
   const relevantInsights = useMemo(() => curriculumInsights.filter((insight) => programme === "all" || insight.programme === programme), [programme]);
-  const missingOutcomeCount = scopedGraduates.length - metrics.knownOutcomes;
-  const noMatches = requestedPreview && scopedGraduates.length === 0;
+  const noMatches = requestedPreview && report.scopedGraduates.length === 0;
   const previewReady = requestedPreview && !noMatches;
   const roleName = role === "careers" ? "Career Services" : "Registry";
 
@@ -120,19 +102,19 @@ export function UniversityReports() {
       {noMatches && <Card className="border-dashed" role="status" aria-live="polite"><CardContent className="flex flex-wrap items-center justify-between gap-4 p-6"><div><p className="font-medium">No graduate outcomes match this report scope.</p><p className="mt-1 text-sm text-muted-foreground">Your selected filters are still active. Reset them to return to the full graduate cohort.</p></div><Button type="button" variant="outline" onClick={resetFilters}><RotateCcw aria-hidden />Reset report filters</Button></CardContent></Card>}
 
       {previewReady && <section aria-labelledby="report-preview-heading" className="space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 id="report-preview-heading" className="text-xl font-semibold tracking-tight">Report preview</h2><p className="mt-1 text-sm text-muted-foreground">Local calculation for {scopedGraduates.length} graduate{scopedGraduates.length === 1 ? "" : "s"} in scope.</p></div><div className="flex flex-wrap gap-2"><Button type="button" variant="outline" onClick={() => setExportMessage("PDF export is a preview in this Hackathon build; no file was created.")}><FileDown aria-hidden />Export PDF</Button><Button type="button" variant="outline" onClick={() => setExportMessage("Excel export is a preview in this Hackathon build; no file was created.")}><FileSpreadsheet aria-hidden />Export Excel</Button></div></div>
+        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 id="report-preview-heading" className="text-xl font-semibold tracking-tight">Report preview</h2><p className="mt-1 text-sm text-muted-foreground">Local calculation for {report.scopedGraduates.length} graduate{report.scopedGraduates.length === 1 ? "" : "s"} in scope.</p></div><div className="flex flex-wrap gap-2"><Button type="button" variant="outline" onClick={() => setExportMessage("PDF export is a preview in this Hackathon build; no file was created.")}><FileDown aria-hidden />Export PDF</Button><Button type="button" variant="outline" onClick={() => setExportMessage("Excel export is a preview in this Hackathon build; no file was created.")}><FileSpreadsheet aria-hidden />Export Excel</Button></div></div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Metric label="Employment rate" value={`${metrics.employmentRate}%`} detail={`${metrics.employed} employed of ${metrics.laborForce} in labour force`} />
-          <Metric label="Average days" value={metrics.averageDaysToEmployment} detail="For confirmed employed graduates" />
-          <Metric label="Known-outcome coverage" value={`${metrics.coverageRate}%`} detail={`${metrics.knownOutcomes} of ${scopedGraduates.length} outcomes known`} />
-          <Metric label="Missing outcomes" value={missingOutcomeCount} detail="Unknown or not yet recorded" />
+          <Metric label="Employment rate" value={`${report.metrics.employmentRate}%`} detail={`${report.metrics.employed} employed of ${report.metrics.laborForce} in labour force`} />
+          <Metric label="Average days" value={report.metrics.averageDaysToEmployment} detail="For confirmed employed graduates" />
+          <Metric label="Known-outcome coverage" value={`${report.metrics.coverageRate}%`} detail={`${report.metrics.knownOutcomes} of ${report.scopedGraduates.length} outcomes known`} />
+          <Metric label="Missing outcomes" value={report.missingOutcomeCount} detail="Unknown or not yet recorded" />
         </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <ReportPanel title="Role distribution"><LabelledDistribution items={roles} label="roles" /></ReportPanel>
-          <ReportPanel title="Industry distribution"><LabelledDistribution items={industries} label="industries" /></ReportPanel>
-          <ReportPanel title="Leading employers"><LabelledDistribution items={employers} label="employers" /></ReportPanel>
+          <ReportPanel title="Role distribution"><LabelledDistribution items={report.roles} label="roles" /></ReportPanel>
+          <ReportPanel title="Industry distribution"><LabelledDistribution items={report.industries} label="industries" /></ReportPanel>
+          <ReportPanel title="Leading employers"><LabelledDistribution items={report.employers} label="employers" /></ReportPanel>
           <ReportPanel title="Demand-led skill gaps"><div className="space-y-3">{relevantInsights.length > 0 ? relevantInsights.map((insight, index) => { const demand = industryDemand.find((item) => insight.title.toLocaleLowerCase().includes(item.skill.toLocaleLowerCase()) || insight.evidence.toLocaleLowerCase().includes(item.skill.toLocaleLowerCase())); return <div key={insight.id} className="rounded-lg border bg-muted/20 p-3"><div className="flex items-start justify-between gap-3"><p className="text-sm font-medium">{demand?.skill ?? insight.title}</p><Badge variant="outline">{100 - insight.coverage}% gap</Badge></div><p className="mt-1 text-xs text-muted-foreground">{insight.programme} evidence coverage: {insight.coverage}%{index === 0 && demand ? ` - ${demand.openRoles} open roles tracked` : ""}</p></div>; }) : <p className="text-sm text-muted-foreground">No curriculum evidence is linked to the selected programme in this preview.</p>}</div></ReportPanel>
         </div>
       </section>}

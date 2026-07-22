@@ -1,9 +1,6 @@
-"use client";
-
-import { useMemo } from "react";
 import { BarChart3, BriefcaseBusiness, Lightbulb, Sparkles, Target } from "lucide-react";
 
-import { useUniversityRole } from "@/components/features/university/university-role-context";
+import { UniversityInsightsRoleCopy } from "@/components/features/university/university-insights-role-copy";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -34,6 +31,44 @@ function rankedDemandByIndustry(): RankedItem[] {
     .map(([label, value]) => ({ label, value, detail: `${value} open roles tracked` }))
     .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label));
 }
+
+const fastestGrowingRoles = industryDemand
+  .map((demand) => ({
+    label: demand.role,
+    detail: `${demand.industry} - ${demand.openRoles} open roles tracked`,
+    value: demand.growth,
+  }))
+  .sort(
+    (left, right) =>
+      right.value - left.value || left.label.localeCompare(right.label)
+  );
+
+const requestedSkills = industryDemand
+  .map((demand) => ({
+    label: demand.skill,
+    detail: `${demand.role} - ${demand.industry}`,
+    value: demand.openRoles,
+  }))
+  .sort(
+    (left, right) =>
+      right.value - left.value || left.label.localeCompare(right.label)
+  );
+
+const employerDemand = rankedDemandByIndustry();
+const alignmentScore = Math.round(
+  curriculumInsights.reduce((total, insight) => total + insight.coverage, 0) /
+    Math.max(curriculumInsights.length, 1)
+);
+const coverageItems = curriculumInsights
+  .map((insight) => ({
+    label: insight.programme,
+    detail: insight.title,
+    value: insight.coverage,
+  }))
+  .sort(
+    (left, right) =>
+      right.value - left.value || left.label.localeCompare(right.label)
+  );
 
 function LabelledBars({ items, valueLabel }: { items: RankedItem[]; valueLabel: string }) {
   const maximum = Math.max(...items.map((item) => item.value), 1);
@@ -77,47 +112,6 @@ function LabelledBars({ items, valueLabel }: { items: RankedItem[]; valueLabel: 
 }
 
 export function UniversityInsights() {
-  const { role } = useUniversityRole();
-  const fastestGrowingRoles = useMemo(
-    () => industryDemand
-      .map((demand) => ({
-        label: demand.role,
-        detail: `${demand.industry} - ${demand.openRoles} open roles tracked`,
-        value: demand.growth,
-      }))
-      .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label)),
-    []
-  );
-  const requestedSkills = useMemo(
-    () => industryDemand
-      .map((demand) => ({
-        label: demand.skill,
-        detail: `${demand.role} - ${demand.industry}`,
-        value: demand.openRoles,
-      }))
-      .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label)),
-    []
-  );
-  const employerDemand = useMemo(() => rankedDemandByIndustry(), []);
-  const alignmentScore = useMemo(
-    () => Math.round(
-      curriculumInsights.reduce((total, insight) => total + insight.coverage, 0) /
-        Math.max(curriculumInsights.length, 1)
-    ),
-    []
-  );
-  const coverageItems = useMemo(
-    () => curriculumInsights
-      .map((insight) => ({
-        label: insight.programme,
-        detail: insight.title,
-        value: insight.coverage,
-      }))
-      .sort((left, right) => right.value - left.value || left.label.localeCompare(right.label)),
-    []
-  );
-  const roleName = role === "careers" ? "Career Services" : "Registry";
-
   return (
     <div className="space-y-6">
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
@@ -130,7 +124,7 @@ export function UniversityInsights() {
               </h2>
             </CardTitle>
             <CardDescription>
-              {roleName} view of tracked demand and curriculum evidence. These signals inform review; they do not change curriculum records.
+              <UniversityInsightsRoleCopy />
             </CardDescription>
           </CardHeader>
         </Card>

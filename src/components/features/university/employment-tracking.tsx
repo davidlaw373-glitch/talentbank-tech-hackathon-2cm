@@ -11,6 +11,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
+import { useCareerOSDemo } from "@/components/common/careeros-demo-provider";
 import { useUniversityRole } from "@/components/features/university/university-role-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,12 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { employmentOutcomes, graduates } from "@/data/university";
 import { getIndustryInsight } from "@/lib/employment-industry";
 import {
   calculateEmploymentMetrics,
   normalizeEmploymentOutcomes,
-} from "@/lib/university-metrics";
+  selectEmploymentOutcome,
+} from "@/lib/university-demo-state";
 import type {
   EmploymentOutcome,
   EmploymentStatus,
@@ -57,21 +58,6 @@ type EmploymentDraft = {
   employedAt: string;
   daysToEmployment: string;
 };
-
-const emptyDraft: EmploymentDraft = {
-  graduateId: graduates[0]?.id ?? "",
-  status: "Unknown",
-  employer: "",
-  jobTitle: "",
-  industry: "",
-  employedAt: "",
-  daysToEmployment: "",
-};
-
-const initialEmploymentOutcomes = normalizeEmploymentOutcomes(
-  graduates,
-  employmentOutcomes
-);
 
 type DistributionItem = { label: string; count: number; detail?: string };
 
@@ -189,13 +175,14 @@ function DistributionBars({
 
 export function EmploymentTracking() {
   const { role } = useUniversityRole();
-  const [outcomes, setOutcomes] = useState<EmploymentOutcome[]>(
-    initialEmploymentOutcomes
+  const { state, execute } = useCareerOSDemo();
+  const graduates = state.graduates;
+  const outcomes = useMemo(
+    () => normalizeEmploymentOutcomes(graduates, state.employmentOutcomes),
+    [graduates, state.employmentOutcomes]
   );
   const [draft, setDraft] = useState<EmploymentDraft>(() =>
-    draftFromOutcome(
-      getOutcomeForGraduate(emptyDraft.graduateId, initialEmploymentOutcomes)
-    )
+    draftFromOutcome(selectEmploymentOutcome(state, graduates[0]?.id ?? ""))
   );
   const [notice, setNotice] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -241,7 +228,7 @@ export function EmploymentTracking() {
           detail: `${cohortMetrics.employed}/${cohortMetrics.laborForce} in labour force`,
         };
       });
-  }, [outcomes]);
+  }, [graduates, outcomes]);
 
   const programmeComparison = useMemo(() => {
     return [...new Set(graduates.map((graduate) => graduate.programme))]
@@ -257,7 +244,7 @@ export function EmploymentTracking() {
           detail: `${programmeMetrics.employed}/${programmeMetrics.laborForce} in labour force`,
         };
       });
-  }, [outcomes]);
+  }, [graduates, outcomes]);
 
   const followUps = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -271,7 +258,7 @@ export function EmploymentTracking() {
       }
       return [];
     });
-  }, [outcomes]);
+  }, [graduates, outcomes]);
 
   const leadingIndustry = industryInsight.leadingIndustry;
 
@@ -303,7 +290,15 @@ export function EmploymentTracking() {
 
   function saveOutcome(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!isCareers || submissionLock.current) return;
+    if (!isCareers) {
+      setNotice("Career Services access is required to update employment outcomes.");
+      return;
+    }
+    if (submissionLock.current) return;
+    if (!draft.graduateId) {
+      setNotice("Add a graduate record before saving an employment outcome.");
+      return;
+    }
 
     if (
       draft.status === "Employed" &&
@@ -334,17 +329,14 @@ export function EmploymentTracking() {
           }
         : { graduateId: draft.graduateId, status: draft.status };
 
-    setOutcomes((currentOutcomes) => {
-      const hasExistingOutcome = currentOutcomes.some(
-        (outcome) => outcome.graduateId === nextOutcome.graduateId
-      );
-      return hasExistingOutcome
-        ? currentOutcomes.map((outcome) =>
-            outcome.graduateId === nextOutcome.graduateId ? nextOutcome : outcome
-          )
-        : [...currentOutcomes, nextOutcome];
+    const result = execute({
+      type: "employment/update",
+      role,
+      outcome: nextOutcome,
+      actor: "Careers Demo User",
+      occurredAt: new Date().toISOString(),
     });
-    setNotice("Employment outcome saved. All outcome metrics have been recalculated.");
+    setNotice(result.ok ? result.message : result.error);
 
     window.setTimeout(() => {
       submissionLock.current = false;
@@ -371,7 +363,16 @@ export function EmploymentTracking() {
         </Badge>
       </section>
 
-      <p className="sr-only" aria-live="polite" aria-atomic="true">{notice}</p>
+      {notice && (
+        <p
+          className="rounded-lg border border-foreground/15 bg-muted/30 px-4 py-3 text-sm"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {notice}
+        </p>
+      )}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Employment outcome summary">
         <MetricCard
@@ -482,6 +483,11 @@ export function EmploymentTracking() {
               <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100">
                 Career Services access is required to update employment outcomes.
               </p>
+            ) : graduates.length === 0 ? (
+              <p className="rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
+                Registry must add a graduate record before Career Services can
+                update an outcome.
+              </p>
             ) : (
               <form className="space-y-4" onSubmit={saveOutcome}>
                 <div className="space-y-2">
@@ -537,7 +543,6 @@ export function EmploymentTracking() {
                 <p className="text-xs text-muted-foreground">
                   Selecting any status other than Employed clears employer, role, industry, date, and time-to-employment fields.
                 </p>
-                {notice && <p className="text-sm text-muted-foreground" role="status">{notice}</p>}
                 <Button type="submit" className="w-full" disabled={isSaving}>
                   <PencilLine aria-hidden />
                   {isSaving ? "Saving outcome…" : "Save employment outcome"}
