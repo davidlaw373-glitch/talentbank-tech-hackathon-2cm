@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   Menu,
   Route as RouteIcon,
-  UserRound,
   X,
 } from "lucide-react";
 
@@ -22,15 +21,13 @@ import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
-import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { UserMenu } from "@/components/common/user-menu";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/candidate/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/candidate/profile", label: "Profile", icon: UserRound },
-  { href: "/candidate/jobs", label: "Find jobs", icon: BriefcaseBusiness },
+  { href: "/candidate/jobs", label: "Jobs", icon: BriefcaseBusiness },
   { href: "/candidate/applications", label: "Applications", icon: ClipboardList },
   { href: "/candidate/resume", label: "Resume", icon: FileText },
   { href: "/candidate/interviews", label: "Interviews", icon: Calendar },
@@ -53,8 +50,8 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-full">
-      <header className="border-b bg-background">
-        <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4">
+      <header className="sticky top-0 z-40 bg-white border-b border-border/20">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-2">
           <Link href="/" aria-label="CareerOS home" className="flex items-center gap-2">
             <BrandMark />
             <small className="font-semibold tracking-tight">CareerOS</small>
@@ -75,9 +72,9 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
                   href={href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-md px-3 py-2 text-base transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    "relative flex flex-col items-center justify-center gap-0.5 rounded-md px-2.5 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                     active
-                      ? "bg-primary/10 font-semibold text-foreground"
+                      ? "text-foreground after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary"
                       : "text-foreground hover:bg-accent-soft hover:text-foreground",
                   )}
                 >
@@ -144,7 +141,6 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
           </div>
         )}
       </header>
-      <Separator />
       <main id="main-content" tabIndex={-1} className="container mx-auto p-4 sm:p-6">
         {children}
       </main>

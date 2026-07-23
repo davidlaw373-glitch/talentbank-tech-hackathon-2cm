@@ -12,8 +12,6 @@ import {
   Filter,
   MapPin,
   Search,
-  Sparkles,
-  TrendingUp,
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
@@ -81,78 +79,8 @@ export function JobDiscovery() {
     return list;
   }, [query, mode, sort]);
 
-  const stats = useMemo(() => {
-    const avg = Math.round(
-      jobs.reduce((acc, j) => acc + j.matchScore, 0) / jobs.length
-    );
-    const strong = jobs.filter((j) => j.matchScore >= 90).length;
-    return { total: jobs.length, avg, strong };
-  }, []);
-
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Job discovery
-          </p>
-          <h1>Discover jobs</h1>
-          <p className="text-muted-foreground">
-            Explore opportunities matched to your skills, goals, and live
-            market data.
-          </p>
-        </div>
-        <Button asChild variant="outline">
-          <Link href="/candidate/applications">
-            Track applications
-            <ArrowRight />
-          </Link>
-        </Button>
-      </header>
-
-      {/* Stat row */}
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {[
-          {
-            label: "Open roles",
-            value: stats.total,
-            icon: Briefcase,
-            delta: "Across all filters",
-          },
-          {
-            label: "Average match",
-            value: `${stats.avg}%`,
-            icon: Sparkles,
-            delta: "Based on your profile",
-          },
-          {
-            label: "Strong fits",
-            value: stats.strong,
-            icon: TrendingUp,
-            delta: "Match score 90+",
-          },
-        ].map((s) => {
-          const Icon = s.icon;
-          return (
-            <Card key={s.label} className="lift-on-hover">
-              <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold tracking-tight tabular-nums">
-                    {s.value}
-                  </p>
-                  <p className="text-sm font-medium">{s.label}</p>
-                  <p className="text-xs text-muted-foreground">{s.delta}</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </section>
-
       {/* Filters */}
       <Card>
         <CardContent className="space-y-4 p-5">
@@ -261,7 +189,7 @@ export function JobDiscovery() {
               return (
                 <article
                   key={job.id}
-                  className="lift-on-hover block rounded-xl border bg-card p-5 text-card-foreground transition-colors hover:bg-accent-soft"
+                  className="lift-on-hover block rounded-xl border border-border/20 bg-card p-5 text-card-foreground transition-colors hover:bg-accent-soft"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">

@@ -722,7 +722,7 @@ section[id] {
   }
 
   /*
-   * Age-inclusive typography scale (40+ demographic).
+   * Shared typography scale.
    * Use these in place of ad-hoc text-* + font-* combinations.
    * Body text-base is the floor; .text-display / .text-heading may use
    * leading-tight for visual hierarchy. .text-meta / .text-caption are
@@ -733,6 +733,14 @@ section[id] {
   }
   .text-heading {
     @apply text-2xl font-semibold leading-tight md:text-3xl;
+  }
+  /*
+   * CardTitle scale — for the title inside a Card/CardHeader slot when it
+   * needs to read as a primary section heading rather than a page heading.
+   * One step below .text-heading so it stays visually distinct from h1.
+   */
+  .text-card-title {
+    @apply text-xl font-semibold tracking-tight md:text-2xl;
   }
   .text-subheading {
     @apply text-lg font-semibold leading-snug;
@@ -776,18 +784,4 @@ section[id] {
   html {
     scroll-behavior: smooth;
   }
-}
-
-/*
- * Age-inclusive base font sizes (WCAG-friendly for users 40+).
- * 18px default; opt into 19px or 20px via data-font-scale on <html>.
- */
-html {
-  font-size: 18px;
-}
-html[data-font-scale="lg"] {
-  font-size: 19px;
-}
-html[data-font-scale="xl"] {
-  font-size: 20px;
 }

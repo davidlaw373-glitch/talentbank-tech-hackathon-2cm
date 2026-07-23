@@ -136,7 +136,6 @@ export function DashboardOverview() {
   const [progressItems, setProgressItems] = useState(PROGRESS_ITEMS);
   const total = progressItems.length;
   const done = progressItems.filter((item) => item.done).length;
-  const remaining = progressItems.filter((item) => !item.done);
 
   // Highest priority next-action: any application waiting on the user.
   const interview = applications.find((a) => a.status === "Interview");
@@ -160,26 +159,6 @@ export function DashboardOverview() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <section className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Dashboard
-          </p>
-          <h1>Welcome back, {candidateProfile.name.split(" ")[0]}</h1>
-          <p className="text-muted-foreground">
-            Here&apos;s what&apos;s happening in your job search and what to
-            do next.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/candidate/jobs">
-            Browse jobs
-            <ArrowRight />
-          </Link>
-        </Button>
-      </section>
-
       {/* Next-action prompt */}
       {interview ? (
         <Card className="lift-on-hover">
@@ -265,7 +244,7 @@ export function DashboardOverview() {
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
               <CardTitle>
-                <h2 className="flex items-center gap-2">
+                <h2 className="flex items-center gap-2 text-card-title">
                   <Sparkles className="h-4 w-4" aria-hidden />
                   Profile progress
                 </h2>
@@ -275,9 +254,6 @@ export function DashboardOverview() {
                 matches strong.
               </CardDescription>
             </div>
-            <Badge variant="secondary">
-              {done} of {total} · {Math.round((done / total) * 100)}%
-            </Badge>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Progress bar */}
@@ -303,7 +279,7 @@ export function DashboardOverview() {
 
             {/* Checklist — matches the actual profile page sections */}
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {progressItems.map((item) => {
+              {progressItems.filter((item) => !item.done).map((item) => {
                 const Icon = item.icon;
                 return (
                   <li
@@ -353,25 +329,6 @@ export function DashboardOverview() {
                 );
               })}
             </ul>
-
-            {remaining.length > 0 && (
-              <div className="flex items-center justify-between rounded-lg border bg-surface-tint p-4">
-                <div>
-                  <p className="text-sm font-medium">
-                    Next: add {remaining[0].label.toLowerCase()}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {remaining[0].hint}
-                  </p>
-                </div>
-                <Button asChild size="sm">
-                  <Link href="/candidate/profile">
-                    Continue
-                    <ArrowRight />
-                  </Link>
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -380,7 +337,7 @@ export function DashboardOverview() {
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
               <CardTitle>
-                <h2 className="flex items-center gap-2">
+                <h2 className="flex items-center gap-2 text-card-title">
                   <BadgeCheck className="h-4 w-4" aria-hidden />
                   Verification
                 </h2>

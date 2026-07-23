@@ -33,7 +33,7 @@ All values live as CSS variables in `globals.css` and are exposed through the Ta
 
 ### Typography
 
-- Inter via `next/font`; an **age-inclusive 18px base** (scales to 19/20px via `data-font-scale`) for a 40+ audience.
+- Inter via `next/font` at the standard 16px root size (browser default; no root font-size override).
 - Use the shared scale utilities instead of ad-hoc `text-*` combos: `text-display`, `text-heading`, `text-subheading`, `text-body`, `text-meta`, `text-caption`.
 - Create hierarchy through **contrast**: oversized semibold display numbers for metrics (`font-semibold tracking-tight tabular-nums`), uppercase `text-caption` eyebrow labels, and muted supporting copy. The eyebrow-over-heading-over-body rhythm is a CareerOS signature.
 

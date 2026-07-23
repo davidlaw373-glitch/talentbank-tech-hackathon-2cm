@@ -5,12 +5,9 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import Link from "next/link";
 import {
   ArrowRight,
-  Briefcase,
   Building2,
-  CalendarClock,
   Filter,
   Search,
-  Sparkles,
 } from "lucide-react";
 
 import { applications } from "@/data/applications";
@@ -103,7 +100,9 @@ function ApplicationProgress({ application }: { application: Application }) {
 
 export function ApplicationTracker() {
   const { push } = useToast();
-  const [tab, setTab] = useState<"active" | "all" | "archived">("active");
+  const [tab, setTab] = useState<
+    "active" | "all" | "archived" | "interview" | "offers"
+  >("active");
   const [query, setQuery] = useState("");
   const [applicationStates, setApplicationStates] = useState<
     Record<string, TrackingState>
@@ -133,22 +132,26 @@ export function ApplicationTracker() {
     });
   };
 
-  const stats = useMemo(() => {
-    const available = applications.filter(
-      (application) => getTrackingState(application.id) !== "withdrawn"
-    );
-    const active = available.filter(
-      (application) =>
-        application.status !== "Offer" &&
-        getTrackingState(application.id) === "active"
+  const counts = useMemo(() => {
+    const active = applications.filter(
+      (a) =>
+        a.status !== "Offer" && getTrackingState(a.id) === "active"
     ).length;
-    const interviews = available.filter(
-      (application) => application.status === "Interview"
+    const all = applications.filter(
+      (a) => getTrackingState(a.id) !== "withdrawn"
     ).length;
-    const offers = available.filter(
-      (application) => application.status === "Offer"
+    const archived = applications.filter(
+      (a) => getTrackingState(a.id) !== "active"
     ).length;
-    return { active, interviews, offers };
+    const interview = applications.filter(
+      (a) =>
+        a.status === "Interview" && getTrackingState(a.id) !== "withdrawn"
+    ).length;
+    const offers = applications.filter(
+      (a) =>
+        a.status === "Offer" && getTrackingState(a.id) !== "withdrawn"
+    ).length;
+    return { active, all, archived, interview, offers };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicationStates]);
 
@@ -159,6 +162,16 @@ export function ApplicationTracker() {
         return application.status !== "Offer" && trackingState === "active";
       }
       if (tab === "archived") return trackingState !== "active";
+      if (tab === "interview") {
+        return (
+          application.status === "Interview" && trackingState !== "withdrawn"
+        );
+      }
+      if (tab === "offers") {
+        return (
+          application.status === "Offer" && trackingState !== "withdrawn"
+        );
+      }
       return true;
     });
     if (query.trim()) {
@@ -194,47 +207,6 @@ export function ApplicationTracker() {
         </Button>
       </header>
 
-      {/* Stat row */}
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        {[
-          {
-            label: "Active",
-            value: stats.active,
-            icon: Briefcase,
-            tone: "secondary" as const,
-          },
-          {
-            label: "Interviews",
-            value: stats.interviews,
-            icon: CalendarClock,
-            tone: "secondary" as const,
-          },
-          {
-            label: "Offers",
-            value: stats.offers,
-            icon: Sparkles,
-            tone: "default" as const,
-          },
-        ].map((s) => {
-          const Icon = s.icon;
-          return (
-            <Card key={s.label} className="lift-on-hover">
-              <CardContent className="flex items-center gap-4 p-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold tracking-tight tabular-nums">
-                    {s.value}
-                  </p>
-                  <p className="text-sm text-muted-foreground">{s.label}</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </section>
-
       {/* Filters */}
       <Card>
         <CardContent className="space-y-4 p-5">
@@ -245,9 +217,36 @@ export function ApplicationTracker() {
               className="w-full sm:w-auto"
             >
               <TabsList>
-                <TabsTrigger value="active">Active</TabsTrigger>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="archived">Archived</TabsTrigger>
+                <TabsTrigger value="active" className="gap-2">
+                  Active
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    {counts.active}
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="all" className="gap-2">
+                  All
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    {counts.all}
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="archived" className="gap-2">
+                  Archived
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    {counts.archived}
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="interview" className="gap-2">
+                  Interview
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    {counts.interview}
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="offers" className="gap-2">
+                  Offers
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    {counts.offers}
+                  </span>
+                </TabsTrigger>
               </TabsList>
             </Tabs>
             <div className="relative w-full sm:w-72">
