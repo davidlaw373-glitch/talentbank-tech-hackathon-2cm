@@ -32,11 +32,11 @@ export function ProfileProjectsList({
   onChange,
 }: ProfileProjectsListProps) {
   const { push } = useToast();
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Project | null>(null);
 
   function add() {
-    const id = `prj-${Date.now()}`;
+    const id = Date.now();
     const next: Project = {
       id,
       name: "New project",
@@ -67,7 +67,7 @@ export function ProfileProjectsList({
     setDraft(null);
   }
 
-  function remove(id: string) {
+  function remove(id: number) {
     onChange(items.filter((it) => it.id !== id));
   }
 

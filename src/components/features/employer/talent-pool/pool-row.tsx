@@ -11,12 +11,12 @@ import {
   X,
 } from "lucide-react";
 
+import type { Candidate } from "@/types/candidate";
 import type {
-  EmployerCandidate,
   TalentPoolEntry,
   TalentPoolStatus,
   TalentPoolTag,
-} from "@/types/employer";
+} from "@/types/talent-pool";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,17 +72,19 @@ function scoreBarClass(score: number) {
 }
 
 export type TalentPoolRowProps = {
-  candidate: EmployerCandidate;
+  candidate: Candidate;
   entry: TalentPoolEntry;
+  verification?: "Verified" | "Pending" | "None";
   selected: boolean;
-  onToggleSelect: (id: string) => void;
-  onUpdate: (id: string, patch: Partial<TalentPoolEntry>) => void;
-  onRemove: (id: string) => void;
+  onToggleSelect: (id: number) => void;
+  onUpdate: (id: number, patch: Partial<TalentPoolEntry>) => void;
+  onRemove: (id: number) => void;
 };
 
 export function TalentPoolRow({
   candidate,
   entry,
+  verification,
   selected,
   onToggleSelect,
   onUpdate,
@@ -175,7 +177,7 @@ export function TalentPoolRow({
               <Badge variant={statusVariant(entry.status)}>
                 {entry.status}
               </Badge>
-              {candidate.verification === "Verified" ? (
+              {verification === "Verified" ? (
                 <Badge variant="outline">Verified</Badge>
               ) : null}
             </div>

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { candidateProfile } from "@/data/candidate";
+import { get as getCandidate } from "@/data/candidates";
 
 const RESUME_SCORE = 78;
 
@@ -93,6 +93,27 @@ export function ResumeAssistant() {
   const [coverLetterTarget, setCoverLetterTarget] = useState("");
   const [versions, setVersions] = useState(VERSIONS);
   const [suggestions, setSuggestions] = useState(SUGGESTIONS);
+
+  // Read the demo candidate from the JSON dataset — same source as
+  // the profile page and the dashboard.
+  const candidate = getCandidate(1) ?? {
+    id: 0,
+    name: "Alex Morgan",
+    initials: "AM",
+    title: "Frontend Developer",
+    location: "",
+    email: "",
+    phone: "",
+    summary: "",
+    profileCompletion: 0,
+    verificationStatus: "Not started",
+    skills: [],
+    topSkills: [],
+    experience: [],
+    education: [],
+    projects: [],
+    evidence: [],
+  };
 
   const makePrimary = (id: string, name: string) => {
     setVersions((current) =>
@@ -185,13 +206,13 @@ export function ResumeAssistant() {
               >
                 <header className="space-y-1">
                   <p className="text-base font-semibold leading-tight">
-                    {candidateProfile.name}
+                    {candidate.name}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {candidateProfile.title} · {candidateProfile.location}
+                    {candidate.title} · {candidate.location}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {candidateProfile.email} · {candidateProfile.phone}
+                    {candidate.email} · {candidate.phone}
                   </p>
                 </header>
                 <Separator />
@@ -199,14 +220,14 @@ export function ResumeAssistant() {
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Summary
                   </p>
-                  <p className="text-xs">{candidateProfile.summary}</p>
+                  <p className="text-xs">{candidate.summary}</p>
                 </div>
                 <Separator />
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Experience
                   </p>
-                  {candidateProfile.experience.map((exp) => (
+                  {candidate.experience.map((exp) => (
                     <div key={exp.company} className="space-y-0.5">
                       <p className="text-xs font-semibold">
                         {exp.role} · {exp.company}
@@ -231,7 +252,7 @@ export function ResumeAssistant() {
                     Skills
                   </p>
                   <p className="text-[11px]">
-                    {candidateProfile.skills.join(" · ")}
+                    {candidate.skills.join(" · ")}
                   </p>
                 </div>
               </article>
@@ -245,7 +266,7 @@ export function ResumeAssistant() {
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Education
                   </p>
-                  {candidateProfile.education.map((edu) => (
+                  {candidate.education.map((edu) => (
                     <div key={edu.institution}>
                       <p className="text-xs font-semibold">
                         {edu.qualification}
@@ -261,7 +282,7 @@ export function ResumeAssistant() {
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Projects
                   </p>
-                  {candidateProfile.projects.map((proj) => (
+                  {candidate.projects.map((proj) => (
                     <div key={proj.name} className="space-y-0.5">
                       <p className="text-xs font-semibold">{proj.name}</p>
                       <p className="text-[11px]">{proj.description}</p>
@@ -277,7 +298,7 @@ export function ResumeAssistant() {
                     Verified credentials
                   </p>
                   <ul className="ml-3 list-disc space-y-0.5 text-[11px]">
-                    {candidateProfile.evidence.map((e) => (
+                    {candidate.evidence.map((e) => (
                       <li key={e.name}>
                         {e.name} ({e.status})
                       </li>

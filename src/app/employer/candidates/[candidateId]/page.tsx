@@ -7,15 +7,10 @@ import {
   GraduationCap,
   MapPin,
   Sparkles,
-  Star,
   Users,
 } from "lucide-react";
 
-import {
-  employerCandidates,
-  employerInterviews,
-  getEmployerCandidate,
-} from "@/data/employer";
+import { getEmployerCandidateRows, getEmployerInterviewRows } from "@/lib/data-helpers";
 import { STAGE_INDEX, STAGE_VARIANT } from "@/types/application";
 import { CandidateActions } from "@/components/features/employer/candidate-actions";
 import { Badge } from "@/components/ui/badge";
@@ -30,26 +25,35 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Stepper } from "@/components/common/stepper";
 
+const DEMO_EMPLOYER_ID = 1;
+
 type PageProps = {
   params: Promise<{ candidateId: string }>;
 };
 
 export function generateStaticParams() {
-  return employerCandidates.map((c) => ({ candidateId: c.id }));
+  return getEmployerCandidateRows(DEMO_EMPLOYER_ID).map((r) => ({
+    candidateId: String(r.candidate.id),
+  }));
 }
 
 export default async function EmployerCandidateDetailPage({ params }: PageProps) {
-  const { candidateId } = await params;
-  const candidate = getEmployerCandidate(candidateId);
-  if (!candidate) notFound();
+  const { candidateId: rawCandidateId } = await params;
+  const candidateId = Number(rawCandidateId);
+  if (!Number.isInteger(candidateId)) notFound();
 
-  const stageIndex = candidate.rejected ? 1 : STAGE_INDEX[candidate.stage];
+  const rows = getEmployerCandidateRows(DEMO_EMPLOYER_ID);
+  const row = rows.find((r) => r.candidate.id === candidateId);
+  if (!row) notFound();
 
-  const totalScorecards = employerInterviews
-    .filter((i) => i.candidateName === candidate.name)
-    .reduce((acc, i) => acc + i.scorecardItems, 0);
+  const { candidate, app, job, matchScore, verification } = row;
+  const stageIndex = app.rejected ? 1 : STAGE_INDEX[app.stage];
 
-  const timelineSteps = candidate.timeline.map((entry, idx) => ({
+  const totalScorecards = getEmployerInterviewRows(DEMO_EMPLOYER_ID)
+    .filter((r) => r.candidate.id === candidateId)
+    .reduce((acc, r) => acc + r.interview.scorecardItems, 0);
+
+  const timelineSteps = app.timeline.map((entry, idx) => ({
     id: `${idx}-${entry.label}`,
     label: entry.label,
     meta: entry.date,
@@ -85,17 +89,11 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={STAGE_VARIANT[candidate.stage]}>{candidate.stage}</Badge>
-          {candidate.verification === "Verified" ? (
+          <Badge variant={STAGE_VARIANT[app.stage]}>{app.stage}</Badge>
+          {verification === "Verified" ? (
             <Badge variant="secondary">
               <BadgeCheck className="h-3 w-3" aria-hidden />
               Verified
-            </Badge>
-          ) : null}
-          {candidate.starred ? (
-            <Badge variant="outline">
-              <Star className="h-3 w-3 fill-current" aria-hidden />
-              Starred
             </Badge>
           ) : null}
         </div>
@@ -121,7 +119,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-5xl font-semibold tracking-tight tabular-nums">
-                    {candidate.matchScore}
+                    {matchScore}
                   </p>
                   <small className="text-muted-foreground">
                     Match score out of 100
@@ -134,7 +132,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
                   >
                     <span
                       className="block h-full rounded-full bg-chart-1"
-                      style={{ width: `${candidate.matchScore}%` }}
+                      style={{ width: `${matchScore}%` }}
                     />
                   </div>
                 </div>
@@ -188,20 +186,17 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span
-                      aria-hidden
-                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/60"
-                    />
-                    <span>BSc Computer Science · University of Malaya</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span
-                      aria-hidden
-                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/60"
-                    />
-                    <span>AWS Certified Developer · Associate</span>
-                  </li>
+                  {candidate.education.map((edu) => (
+                    <li key={edu.id} className="flex items-start gap-2">
+                      <span
+                        aria-hidden
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/60"
+                      />
+                      <span>
+                        {edu.qualification} · {edu.institution}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
@@ -217,22 +212,14 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  <li>
-                    <p className="text-sm font-medium">
-                      Senior Frontend Engineer · Acme Co
-                    </p>
-                    <small className="text-muted-foreground">
-                      2023 – Present · Singapore
-                    </small>
-                  </li>
-                  <li>
-                    <p className="text-sm font-medium">
-                      Frontend Engineer · Beta Labs
-                    </p>
-                    <small className="text-muted-foreground">
-                      2021 – 2023 · Remote
-                    </small>
-                  </li>
+                  {candidate.experience.map((exp) => (
+                    <li key={exp.id}>
+                      <p className="text-sm font-medium">
+                        {exp.role} · {exp.company}
+                      </p>
+                      <small className="text-muted-foreground">{exp.period}</small>
+                    </li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
@@ -250,7 +237,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
             <CardContent className="space-y-3">
               <div>
                 <small className="text-muted-foreground">Applied for</small>
-                <p className="text-sm font-medium">{candidate.appliedFor}</p>
+                <p className="text-sm font-medium">{job.title}</p>
               </div>
               <Separator />
               <div>
@@ -265,16 +252,16 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
                 <small className="text-muted-foreground">Applied</small>
                 <p className="flex items-center gap-1.5 text-sm font-medium">
                   <Calendar className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-                  {candidate.appliedDate}
+                  {app.appliedDate}
                 </p>
               </div>
               <Separator />
               <CandidateActions
                 candidateId={candidate.id}
                 candidateName={candidate.name}
-                appliedFor={candidate.appliedFor}
-                initialStarred={candidate.starred}
-                initialStage={candidate.stage}
+                appliedFor={job.title}
+                initialStarred={false}
+                initialStage={app.stage}
               />
             </CardContent>
           </Card>

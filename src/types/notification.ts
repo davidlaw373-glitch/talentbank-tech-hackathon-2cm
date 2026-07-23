@@ -13,7 +13,7 @@ export type NotificationType =
   | "report";
 
 export type NotificationItem = {
-  id: string;
+  id: number;
   type: NotificationType;
   title: string;
   message: string;

@@ -13,13 +13,12 @@ import {
   Users,
 } from "lucide-react";
 
-import { employerCandidates } from "@/data/employer";
 import {
   APPLICATION_STAGES,
   NEXT_STAGE,
   type ApplicationStage,
 } from "@/types/application";
-import type { EmployerCandidate } from "@/types/employer";
+import { getEmployerCandidateRows, type EmployerCandidateRow } from "@/lib/data-helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +40,8 @@ import {
 import { useToast } from "@/components/common/toast";
 import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
 import { cn } from "@/lib/utils";
+
+const DEMO_EMPLOYER_ID = 1;
 
 type StageFilter = ApplicationStage | "All" | "Rejected";
 
@@ -71,56 +72,78 @@ function stageVariant(stage: ApplicationStage) {
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
   const { add, remove, isInPool, getByCandidate } = useTalentPool();
-  const [candidates, setCandidates] = useState<EmployerCandidate[]>(employerCandidates);
+  const [rows, setRows] = useState<EmployerCandidateRow[]>(
+    getEmployerCandidateRows(DEMO_EMPLOYER_ID),
+  );
+  const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
   const [stage, setStage] = useState<StageFilter>("All");
   const [query, setQuery] = useState("");
-  const [pendingReject, setPendingReject] = useState<EmployerCandidate | null>(
+  const [pendingReject, setPendingReject] = useState<EmployerCandidateRow | null>(
     null,
   );
+
+  const candidates = rows;
 
   const counts = useMemo(() => {
     const map: Record<string, number> = {
       All: candidates.length,
-      Rejected: candidates.filter((c) => c.rejected).length,
+      Rejected: candidates.filter((c) => c.app.rejected).length,
     };
     for (const c of candidates) {
-      map[c.stage] = (map[c.stage] ?? 0) + 1;
+      map[c.app.stage] = (map[c.app.stage] ?? 0) + 1;
     }
     return map;
   }, [candidates]);
 
-  const filtered: EmployerCandidate[] = useMemo(() => {
+  const filtered: EmployerCandidateRow[] = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = candidates.filter((c) => {
       const matchesStage =
         stage === "All"
           ? true
           : stage === "Rejected"
-            ? c.rejected
-            : c.stage === stage && !c.rejected;
+            ? c.app.rejected
+            : c.app.stage === stage && !c.app.rejected;
       const matchesQuery =
-        !q || `${c.name} ${c.appliedFor}`.toLowerCase().includes(q);
+        !q ||
+        `${c.candidate.name} ${c.job.title}`.toLowerCase().includes(q);
       return matchesStage && matchesQuery;
     });
     return [...list].sort((a, b) => {
-      if (a.starred !== b.starred) return a.starred ? -1 : 1;
-      return a.appliedDate < b.appliedDate ? 1 : -1;
+      const aStarred = starredIds.has(a.candidate.id) ? 1 : 0;
+      const bStarred = starredIds.has(b.candidate.id) ? 1 : 0;
+      if (aStarred !== bStarred) return bStarred - aStarred;
+      return a.app.appliedDate < b.app.appliedDate ? 1 : -1;
     });
-  }, [candidates, stage, query]);
+  }, [candidates, stage, query, starredIds]);
 
-  const updateCandidate = (id: string, patch: Partial<EmployerCandidate>) => {
-    setCandidates((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+  const updateCandidate = (
+    id: number,
+    patch: Partial<EmployerCandidateRow["app"]>,
+  ) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.candidate.id === id ? { ...r, app: { ...r.app, ...patch } } : r,
+      ),
     );
   };
 
-  const togglePool = (candidateId: string) => {
+  const togglePool = (candidateId: number) => {
     if (isInPool(candidateId)) {
       const entry = getByCandidate(candidateId);
       if (entry) remove(entry.id);
     } else {
       add({ candidateId });
     }
+  };
+
+  const toggleStar = (candidateId: number) => {
+    setStarredIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(candidateId)) next.delete(candidateId);
+      else next.add(candidateId);
+      return next;
+    });
   };
 
   return (
@@ -213,16 +236,15 @@ export default function EmployerCandidatesPage() {
                 <ul className="divide-y">
                   {filtered.map((c) => (
                     <CandidateRow
-                      key={c.id}
-                      candidate={c}
-                      inPool={isInPool(c.id)}
-                      onToggleStar={() =>
-                        updateCandidate(c.id, { starred: !c.starred })
-                      }
-                      onTogglePool={() => togglePool(c.id)}
+                      key={c.candidate.id}
+                      row={c}
+                      starred={starredIds.has(c.candidate.id)}
+                      inPool={isInPool(c.candidate.id)}
+                      onToggleStar={() => toggleStar(c.candidate.id)}
+                      onTogglePool={() => togglePool(c.candidate.id)}
                       onAdvance={() => {
-                        const next = NEXT_STAGE[c.stage];
-                        if (next) updateCandidate(c.id, { stage: next });
+                        const next = NEXT_STAGE[c.app.stage];
+                        if (next) updateCandidate(c.candidate.id, { stage: next });
                       }}
                       onRequestReject={setPendingReject}
                     />
@@ -237,16 +259,16 @@ export default function EmployerCandidatesPage() {
       <ConfirmDialog
         open={pendingReject !== null}
         onOpenChange={(open) => !open && setPendingReject(null)}
-        title={`Reject ${pendingReject?.name ?? "this candidate"}?`}
+        title={`Reject ${pendingReject?.candidate.name ?? "this candidate"}?`}
         description="A polite rejection email will be sent automatically. They will no longer appear in your active pipeline."
         confirmLabel="Reject"
         destructive
         requireTyping="REJECT"
         onConfirm={() => {
           if (pendingReject) {
-            updateCandidate(pendingReject.id, { rejected: true });
+            updateCandidate(pendingReject.candidate.id, { rejected: true });
             push({
-              title: `${pendingReject.name} rejected`,
+              title: `${pendingReject.candidate.name} rejected`,
               description: "A polite rejection email will be sent automatically.",
               tone: "info",
             });
@@ -259,25 +281,29 @@ export default function EmployerCandidatesPage() {
 }
 
 function CandidateRow({
-  candidate,
+  row,
+  starred,
   inPool,
   onToggleStar,
   onTogglePool,
   onAdvance,
   onRequestReject,
 }: {
-  candidate: EmployerCandidate;
+  row: EmployerCandidateRow;
+  starred: boolean;
   inPool: boolean;
   onToggleStar: () => void;
   onTogglePool: () => void;
   onAdvance: () => void;
-  onRequestReject: (candidate: EmployerCandidate) => void;
+  onRequestReject: (row: EmployerCandidateRow) => void;
 }) {
   const { push } = useToast();
-  const next = NEXT_STAGE[candidate.stage];
+  const candidate = row.candidate;
+  const job = row.job;
+  const next = NEXT_STAGE[row.app.stage];
 
   const toggleStar = () => {
-    const willStar = !candidate.starred;
+    const willStar = !starred;
     onToggleStar();
     push({
       title: willStar
@@ -308,14 +334,14 @@ function CandidateRow({
     onAdvance();
     push({
       title: `${candidate.name} moved to ${next}`,
-      description: `${candidate.appliedFor} · pipeline updated.`,
+      description: `${job.title} · pipeline updated.`,
       tone: "success",
     });
   };
 
   const reject = () => {
-    if (candidate.rejected) return;
-    onRequestReject(candidate);
+    if (row.app.rejected) return;
+    onRequestReject(row);
   };
 
   return (
@@ -334,7 +360,7 @@ function CandidateRow({
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <p className="truncate text-sm font-medium">{candidate.name}</p>
-              {candidate.starred ? (
+              {starred ? (
                 <Badge variant="outline">
                   <Star className="h-3 w-3 fill-current" aria-hidden />
                   Starred
@@ -348,7 +374,7 @@ function CandidateRow({
               ) : null}
             </div>
             <small className="block truncate text-muted-foreground">
-              {candidate.appliedFor} · {candidate.location}
+              {job.title} · {candidate.location}
             </small>
             <div className="mt-1.5 flex flex-wrap gap-1">
               {candidate.topSkills.slice(0, 3).map((s) => (
@@ -361,8 +387,8 @@ function CandidateRow({
         </Link>
         <div className="flex shrink-0 flex-col items-end gap-2">
           <div className="flex items-center gap-2">
-            <Badge variant="outline">{candidate.matchScore}% match</Badge>
-            <Badge variant={stageVariant(candidate.stage)}>{candidate.stage}</Badge>
+            <Badge variant="outline">{row.matchScore}% match</Badge>
+            <Badge variant={stageVariant(row.app.stage)}>{row.app.stage}</Badge>
             <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden />
           </div>
           <div className="flex items-center gap-1.5">
@@ -370,15 +396,15 @@ function CandidateRow({
               variant="outline"
               size="sm"
               onClick={toggleStar}
-              aria-pressed={candidate.starred}
+              aria-pressed={starred}
               aria-label={
-                candidate.starred
+                starred
                   ? `Remove ${candidate.name} from starred`
                   : `Star ${candidate.name}`
               }
             >
-              <Star className={cn(candidate.starred && "fill-current")} aria-hidden />
-              {candidate.starred ? "Starred" : "Star"}
+              <Star className={cn(starred && "fill-current")} aria-hidden />
+              {starred ? "Starred" : "Star"}
             </Button>
             <Button
               variant={inPool ? "secondary" : "outline"}
@@ -401,7 +427,7 @@ function CandidateRow({
               variant="outline"
               size="sm"
               onClick={advance}
-              disabled={!next || candidate.rejected}
+              disabled={!next || row.app.rejected}
               aria-label={
                 next
                   ? `Move ${candidate.name} to ${next}`
@@ -424,7 +450,7 @@ function CandidateRow({
               variant="destructive"
               size="sm"
               onClick={reject}
-              disabled={candidate.rejected}
+              disabled={row.app.rejected}
               aria-label={`Reject ${candidate.name}`}
             >
               <Trash2 />

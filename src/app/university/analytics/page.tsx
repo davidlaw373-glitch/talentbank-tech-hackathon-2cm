@@ -6,7 +6,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { employmentOutcomes, skillDemand } from "@/data/university";
+import { employmentOutcomes, skillDemand } from "@/lib/university-helpers";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,

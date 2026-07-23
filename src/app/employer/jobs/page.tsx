@@ -15,8 +15,8 @@ import {
   X,
 } from "lucide-react";
 
-import { employerJobs } from "@/data/employer";
-import type { EmployerJob, JobStatus } from "@/types/employer";
+import { getByEmployer as getJobsByEmployer } from "@/data/jobs";
+import type { Job, JobStatus } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,10 +58,10 @@ function statusVariant(status: JobStatus) {
 
 export default function EmployerJobsPage() {
   const { push } = useToast();
-  const [jobs, setJobs] = useState<EmployerJob[]>(employerJobs);
+  const [jobs, setJobs] = useState<Job[]>(getJobsByEmployer(1));
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "All">("All");
-  const [pendingClose, setPendingClose] = useState<EmployerJob | null>(null);
+  const [pendingClose, setPendingClose] = useState<Job | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -90,7 +90,7 @@ export default function EmployerJobsPage() {
     });
   };
 
-  const onTogglePause = (job: EmployerJob) => {
+  const onTogglePause = (job: Job) => {
     setJobs((prev) =>
       prev.map((j) => {
         if (j.id !== job.id) return j;
@@ -115,7 +115,7 @@ export default function EmployerJobsPage() {
     );
   };
 
-  const onClose = (job: EmployerJob) => {
+  const onClose = (job: Job) => {
     setJobs((prev) =>
       prev.map((j) =>
         j.id === job.id
@@ -260,7 +260,7 @@ export default function EmployerJobsPage() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {filtered.map((job: EmployerJob) => (
+            {filtered.map((job: Job) => (
               <JobRow
                 key={job.id}
                 job={job}
@@ -294,9 +294,9 @@ function JobRow({
   onTogglePause,
   onRequestClose,
 }: {
-  job: EmployerJob;
+  job: Job;
   onTogglePause: () => void;
-  onRequestClose: (job: EmployerJob) => void;
+  onRequestClose: (job: Job) => void;
 }) {
   return (
     <Card className="lift-on-hover">

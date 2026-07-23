@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "candidateId": 1,
+    "body": "AI refreshed your matches — 3 new strong fits added.",
+    "timestamp": "Just now"
+  },
+  {
+    "id": 2,
+    "candidateId": 1,
+    "body": "Your application for Senior Frontend at Helio moved to interview.",
+    "timestamp": "Yesterday"
+  },
+  {
+    "id": 3,
+    "candidateId": 1,
+    "body": "AI summary for Helio interview kit is ready to review.",
+    "timestamp": "2 days ago"
+  },
+  {
+    "id": 4,
+    "candidateId": 1,
+    "body": "Credentials sync completed — 1 university updated.",
+    "timestamp": "3 days ago"
+  }
+]

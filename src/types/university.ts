@@ -1,4 +1,32 @@
-export type UniversityProfile = {
+/**
+ * New clean University — the institution that issues credentials. Cohort
+ * outcomes, graduates, and disputes live in their own tables
+ * (`cohort-outcomes.json`, `credentials.json`, `disputes.json`).
+ */
+export type University = {
+  id: number;
+  institutionName: string;
+  initials: string;
+  type: "Public" | "Private";
+  city: string;
+  country: string;
+  founded: number;
+  totalStudents: number;
+  activeCohorts: number;
+  employmentRate: number;
+  medianTimeToHire: number;
+  tagline: string;
+  about: string;
+  topPrograms: string[];
+  partnerEmployers: number;
+  verifiedCredentials: number;
+};
+
+/* ------------------------------------------------------------------ */
+/*  Legacy types kept for the back-compat shim in src/data/university.ts */
+/* ------------------------------------------------------------------ */
+
+export type LegacyUniversityProfile = {
   institutionName: string;
   initials: string;
   type: "Public" | "Private";
@@ -22,8 +50,8 @@ export type VerificationRecordStatus =
   | "Action required"
   | "Disputed";
 
-export type GraduateRecord = {
-  id: string;
+export type LegacyGraduateRecord = {
+  id: number;
   name: string;
   initials: string;
   program: string;
@@ -39,8 +67,8 @@ export type GraduateRecord = {
 
 export type DisputeStatus = "Open" | "In review" | "Resolved" | "Rejected";
 
-export type UniversityDispute = {
-  id: string;
+export type LegacyUniversityDispute = {
+  id: number;
   graduateName: string;
   graduateInitials: string;
   field: string;
@@ -50,8 +78,8 @@ export type UniversityDispute = {
   status: DisputeStatus;
 };
 
-export type EmploymentRecord = {
-  id: string;
+export type LegacyEmploymentRecord = {
+  id: number;
   cohort: string;
   total: number;
   employed: number;
@@ -62,8 +90,23 @@ export type EmploymentRecord = {
   topRole: string;
 };
 
-export type SkillDemand = {
+export type LegacySkillDemand = {
   skill: string;
   openings: number;
   delta: number;
 };
+
+/* ------------------------------------------------------------------ */
+/*  Back-compat aliases for the old `University*` / `*Record` names. */
+/* ------------------------------------------------------------------ */
+
+/** @deprecated Prefer `LegacyUniversityProfile` (or `University`). */
+export type UniversityProfile = LegacyUniversityProfile;
+/** @deprecated Prefer `LegacyGraduateRecord`. */
+export type GraduateRecord = LegacyGraduateRecord;
+/** @deprecated Prefer `LegacyUniversityDispute`. */
+export type UniversityDispute = LegacyUniversityDispute;
+/** @deprecated Prefer `LegacyEmploymentRecord`. */
+export type EmploymentRecord = LegacyEmploymentRecord;
+/** @deprecated Prefer `LegacySkillDemand`. */
+export type SkillDemand = LegacySkillDemand;

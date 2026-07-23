@@ -1,0 +1,311 @@
+[
+  {
+    "id": 1,
+    "employerId": 2,
+    "title": "Senior Frontend Engineer",
+    "location": "Singapore",
+    "workMode": "Remote",
+    "employmentType": "Full-time",
+    "posted": "2 days ago",
+    "salary": "SGD 140–180k",
+    "status": "Live",
+    "description": "Helio is hiring a senior IC to lead the customer dashboard rebuild — accessibility-first React, design-system collaboration, and a small product team.",
+    "responsibilities": [
+      "Drive the customer dashboard rebuild end-to-end with design and product.",
+      "Set the long-term accessibility-first engineering bar for the team.",
+      "Mentor mid-level engineers via review and pairing."
+    ],
+    "requirements": [
+      "5+ years shipping production React at scale.",
+      "Strong accessibility literacy (WCAG 2.2 AA).",
+      "Track record leading design-system work."
+    ],
+    "department": "Engineering",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["React", "TypeScript", "Next.js", "Accessibility"],
+    "niceToHave": ["Web performance", "Design systems"],
+    "summary": "Helio is hiring a senior IC to lead the customer dashboard rebuild — accessibility-first React, design-system collaboration, and a small product team.",
+    "aboutCompany": "Helio is a 90-person platform building energy-market analytics for utilities — backed by a Series C and operating across APAC."
+  },
+  {
+    "id": 2,
+    "employerId": 3,
+    "title": "Frontend Engineer",
+    "location": "London",
+    "workMode": "Hybrid",
+    "employmentType": "Full-time",
+    "posted": "5 days ago",
+    "salary": "GBP 80–105k",
+    "status": "Live",
+    "description": "Lumen is building the next realtime collaboration suite for learners — React, TypeScript, and a tight collaboration with design.",
+    "responsibilities": [
+      "Build features end-to-end on the collaboration suite.",
+      "Partner closely with design on interaction details."
+    ],
+    "requirements": [
+      "3+ years of React + TypeScript in production.",
+      "Comfort iterating quickly against user feedback."
+    ],
+    "department": "Engineering",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["React", "TypeScript", "Next.js", "Design systems"],
+    "niceToHave": ["WebRTC"],
+    "summary": "Lumen is building the next realtime collaboration suite for learners — React, TypeScript, and a tight collaboration with design.",
+    "aboutCompany": "Lumen is a 40-person edtech that helps learners build real projects alongside mentors."
+  },
+  {
+    "id": 3,
+    "employerId": 4,
+    "title": "Staff Product Engineer",
+    "location": "Seoul",
+    "workMode": "Remote",
+    "employmentType": "Full-time",
+    "posted": "1 week ago",
+    "salary": "KRW 140–180M",
+    "status": "Live",
+    "description": "Vertex is hiring a Staff IC to drive the platform team — system design, mentorship, and cross-team alignment.",
+    "responsibilities": [
+      "Lead platform-team architecture decisions.",
+      "Mentor ICs across product teams."
+    ],
+    "requirements": [
+      "8+ years in product engineering.",
+      "Experience with distributed systems."
+    ],
+    "department": "Engineering",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["TypeScript", "Next.js", "Design systems"],
+    "niceToHave": ["Kubernetes"],
+    "summary": "Vertex is hiring a Staff IC to drive the platform team — system design, mentorship, and cross-team alignment.",
+    "aboutCompany": "Vertex is a marketplace business that connects local merchants with logistics partners."
+  },
+  {
+    "id": 4,
+    "employerId": 5,
+    "title": "Data Engineer",
+    "location": "Madrid",
+    "workMode": "On-site",
+    "employmentType": "Full-time",
+    "posted": "3 days ago",
+    "salary": "EUR 60–85k",
+    "status": "Live",
+    "description": "Atlas is hiring a data engineer to modernise their analytics pipeline — Python, Snowflake, dbt.",
+    "responsibilities": [
+      "Modernise the analytics pipeline.",
+      "Own data quality for the reporting warehouse."
+    ],
+    "requirements": [
+      "Hands-on Snowflake + dbt experience.",
+      "Strong SQL fluency."
+    ],
+    "department": "Data",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["Python", "SQL"],
+    "niceToHave": ["Snowflake", "dbt", "Airflow"],
+    "summary": "Atlas is hiring a data engineer to modernise their analytics pipeline — Python, Snowflake, dbt.",
+    "aboutCompany": "Atlas is a 120-person fintech building payments infrastructure for southern Europe."
+  },
+  {
+    "id": 5,
+    "employerId": 6,
+    "title": "Mobile Lead (iOS)",
+    "location": "Tokyo",
+    "workMode": "Hybrid",
+    "employmentType": "Full-time",
+    "posted": "4 days ago",
+    "salary": "JPY 14–18M",
+    "status": "Live",
+    "description": "Polaris needs a Mobile Lead to set the long-term iOS direction and mentor the existing 4-person team.",
+    "responsibilities": [
+      "Set the iOS roadmap.",
+      "Coach the existing team."
+    ],
+    "requirements": [
+      "5+ years building production iOS apps.",
+      "Prior team-lead experience."
+    ],
+    "department": "Mobile",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["Swift", "SwiftUI"],
+    "niceToHave": ["Accessibility", "Product discovery"],
+    "summary": "Polaris needs a Mobile Lead to set the long-term iOS direction and mentor the existing 4-person team.",
+    "aboutCompany": "Polaris is a mid-market mobility app — 1.5M monthly active users in Japan."
+  },
+  {
+    "id": 6,
+    "employerId": 1,
+    "title": "Lead Frontend Engineer",
+    "location": "Kuala Lumpur",
+    "workMode": "Hybrid",
+    "employmentType": "Full-time",
+    "posted": "Today",
+    "salary": "MYR 180–240k",
+    "status": "Live",
+    "description": "Northstar Labs is hiring a frontend lead for their internal platform — design system, mentorship, and bar-raising code reviews.",
+    "responsibilities": [
+      "Lead the frontend platform team.",
+      "Own the design system and review bar."
+    ],
+    "requirements": [
+      "6+ years in frontend.",
+      "Experience leading 3+ engineers."
+    ],
+    "department": "Engineering",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["TypeScript", "React", "Next.js", "Accessibility", "Design systems"],
+    "niceToHave": [],
+    "summary": "Northstar Labs is hiring a frontend lead for their internal platform — design system, mentorship, and bar-raising code reviews.",
+    "aboutCompany": "Northstar Labs is a 250-person SaaS company building operations software for SMBs across SEA."
+  },
+  {
+    "id": 7,
+    "employerId": 1,
+    "title": "Senior Frontend Engineer",
+    "location": "Singapore · Hybrid",
+    "workMode": "Hybrid",
+    "employmentType": "Full-time",
+    "posted": "6 days ago",
+    "salary": "SGD 110k–145k",
+    "status": "Live",
+    "description": "Lead frontend architecture for our deployment product. You'll partner with design and platform to ship a faster, more accessible experience for 4,000+ teams.",
+    "responsibilities": [
+      "Own frontend architecture across two product surfaces",
+      "Drive accessibility and performance work",
+      "Mentor two mid-level engineers"
+    ],
+    "requirements": [
+      "5+ years building production React applications",
+      "Strong TypeScript fluency",
+      "Track record of cross-functional partnership"
+    ],
+    "department": "Engineering",
+    "applicants": 0,
+    "filledScore": 72,
+    "mustHave": ["TypeScript", "React", "Design systems"],
+    "niceToHave": ["Web performance", "Accessibility"],
+    "summary": "Lead frontend architecture for our deployment product. You'll partner with design and platform to ship a faster, more accessible experience for 4,000+ teams.",
+    "aboutCompany": "Northstar Labs is a 250-person SaaS company building operations software for SMBs across SEA."
+  },
+  {
+    "id": 8,
+    "employerId": 1,
+    "title": "Platform Product Manager",
+    "location": "Singapore · Remote",
+    "workMode": "Remote",
+    "employmentType": "Full-time",
+    "posted": "3 days ago",
+    "salary": "SGD 120k–160k",
+    "status": "Live",
+    "description": "Shape the roadmap for our deployment platform. Talk to users, write specs, and partner with engineering to ship what matters.",
+    "responsibilities": [
+      "Run quarterly roadmap planning",
+      "Lead 8–12 customer discovery interviews per month",
+      "Own release notes and changelog"
+    ],
+    "requirements": [
+      "4+ years PM experience in B2B SaaS",
+      "Comfortable with technical concepts",
+      "Strong written communication"
+    ],
+    "department": "Product",
+    "applicants": 0,
+    "filledScore": 48,
+    "mustHave": ["B2B SaaS", "Developer tools", "Discovery research"],
+    "niceToHave": ["Open source community"],
+    "summary": "Shape the roadmap for our deployment platform. Talk to users, write specs, and partner with engineering to ship what matters.",
+    "aboutCompany": "Northstar Labs is a 250-person SaaS company building operations software for SMBs across SEA."
+  },
+  {
+    "id": 9,
+    "employerId": 1,
+    "title": "Design Engineer",
+    "location": "Remote (APAC)",
+    "workMode": "Remote",
+    "employmentType": "Full-time",
+    "posted": "1 week ago",
+    "salary": "SGD 90–120k",
+    "status": "Live",
+    "description": "Sit between design and engineering to ship polished interface moments that ship to production weekly.",
+    "responsibilities": [
+      "Build high-fidelity prototypes in code",
+      "Maintain the design system tokens",
+      "Ship production-ready components"
+    ],
+    "requirements": [
+      "Portfolio showing shipped interface work",
+      "Fluency in React and TypeScript",
+      "Eye for typography and motion"
+    ],
+    "department": "Design",
+    "applicants": 0,
+    "filledScore": 35,
+    "mustHave": ["Figma", "React", "Prototyping"],
+    "niceToHave": ["Motion design", "Brand systems"],
+    "summary": "Sit between design and engineering to ship polished interface moments that ship to production weekly.",
+    "aboutCompany": "Northstar Labs is a 250-person SaaS company building operations software for SMBs across SEA."
+  },
+  {
+    "id": 10,
+    "employerId": 1,
+    "title": "Site Reliability Engineer",
+    "location": "Singapore · On-site",
+    "workMode": "On-site",
+    "employmentType": "Full-time",
+    "posted": "2 weeks ago",
+    "salary": "SGD 130k–170k",
+    "status": "Paused",
+    "description": "Keep our deployment platform fast and reliable across 6 regions. Own the on-call rotation.",
+    "responsibilities": [
+      "Lead incident response",
+      "Drive SLO definitions",
+      "Mentor engineers on production readiness"
+    ],
+    "requirements": [
+      "5+ years SRE or platform engineering",
+      "Production Kubernetes experience",
+      "Calm under pressure"
+    ],
+    "department": "Engineering",
+    "applicants": 0,
+    "filledScore": 22,
+    "mustHave": ["Kubernetes", "Incident response", "Observability"],
+    "niceToHave": ["Rust", "Cost optimization"],
+    "summary": "Keep our deployment platform fast and reliable across 6 regions. Own the on-call rotation.",
+    "aboutCompany": "Northstar Labs is a 250-person SaaS company building operations software for SMBs across SEA."
+  },
+  {
+    "id": 11,
+    "employerId": 1,
+    "title": "Go-to-Market Intern",
+    "location": "Singapore · Hybrid",
+    "workMode": "Hybrid",
+    "employmentType": "Internship",
+    "posted": "Not posted",
+    "salary": "SGD 2,800 / month",
+    "status": "Draft",
+    "description": "Support the GTM team with outreach, research, and customer follow-up. Ideal for a final-year student.",
+    "responsibilities": [
+      "Draft outbound sequences",
+      "Research prospect accounts",
+      "Support customer calls"
+    ],
+    "requirements": [
+      "Final-year undergraduate",
+      "Strong written English",
+      "Curious about developer tools"
+    ],
+    "department": "Revenue",
+    "applicants": 0,
+    "filledScore": 0,
+    "mustHave": ["Curiosity", "Clear writing"],
+    "niceToHave": ["Sales", "Marketing"],
+    "summary": "Support the GTM team with outreach, research, and customer follow-up. Ideal for a final-year student.",
+    "aboutCompany": "Northstar Labs is a 250-person SaaS company building operations software for SMBs across SEA."
+  }
+]

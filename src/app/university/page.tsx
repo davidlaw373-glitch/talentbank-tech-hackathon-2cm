@@ -21,7 +21,7 @@ import {
   skillDemand,
   universityDisputes,
   universityProfile,
-} from "@/data/university";
+} from "@/lib/university-helpers";
 import type { VerificationRecordStatus } from "@/types/university";
 import {
   DashboardBulkSyncButton,

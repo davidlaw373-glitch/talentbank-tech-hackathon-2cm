@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "applicationId": 8,
+    "baseSalary": "SGD 110,000",
+    "startDate": "1 Aug 2026",
+    "sentDate": "2 days ago",
+    "decision": "Pending",
+    "matchScore": 91
+  },
+  {
+    "id": 2,
+    "applicationId": 4,
+    "baseSalary": "SGD 135,000",
+    "startDate": "15 Aug 2026",
+    "sentDate": "Not yet sent",
+    "decision": "Pending",
+    "matchScore": 94
+  }
+]

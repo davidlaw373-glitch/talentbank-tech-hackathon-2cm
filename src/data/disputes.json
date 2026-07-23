@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "credentialId": 13,
+    "field": "Capstone project grade",
+    "claim": "Capstone marked Pass; transcript shows Credit. Requesting Pass → Credit correction.",
+    "counter": "Faculty review upheld Credit. Awaiting candidate to submit revised artifact.",
+    "filedDate": "4 days ago",
+    "status": "In review"
+  },
+  {
+    "id": 2,
+    "credentialId": 11,
+    "field": "Verified credential",
+    "claim": "Skills list missing the PyTorch and CUDA entries from the capstone.",
+    "counter": "Awaiting faculty confirmation; updated record pending sync.",
+    "filedDate": "1 week ago",
+    "status": "Open"
+  },
+  {
+    "id": 3,
+    "credentialId": 12,
+    "field": "Employment outcome",
+    "claim": "Anomaly detection capstone should count toward 'data engineering' track.",
+    "counter": "Outcome updated to reflect track; resolved.",
+    "filedDate": "2 weeks ago",
+    "status": "Resolved"
+  }
+]

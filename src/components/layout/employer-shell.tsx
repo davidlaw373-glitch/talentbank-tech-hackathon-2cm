@@ -14,8 +14,8 @@ import {
   X,
 } from "lucide-react";
 
-import { employerProfile } from "@/data/employer";
-import { employerNotifications } from "@/data/notifications";
+import { get as getEmployer } from "@/data/employers";
+import { getEmployerNotifications } from "@/data/notifications";
 import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
@@ -38,7 +38,8 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   // Shared with the notifications page — same source data, same storage key.
-  const { unreadCount: employerUnread } = useNotificationReadState(employerNotifications, {
+  const employer = getEmployer(1);
+  const { unreadCount: employerUnread } = useNotificationReadState(getEmployerNotifications(), {
     storageKey: "careeros.notifications.employer",
   });
   const isActive = (href: string) => {
@@ -96,8 +97,8 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
             <ThemeToggle />
             <NotificationBell href="/employer/notifications" unreadCount={employerUnread} />
             <UserMenu
-              name={employerProfile.companyName}
-              initials={employerProfile.initials}
+              name={employer?.companyName ?? "Employer"}
+              initials={employer?.initials ?? "?"}
               subtitle="Employer workspace"
               role="Employer"
               profileHref="/employer/profile"

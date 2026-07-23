@@ -3,12 +3,15 @@
 import { useMemo, useState } from "react";
 import { Bookmark, Sparkles, UserPlus } from "lucide-react";
 
-import { employerCandidates } from "@/data/employer";
+import {
+  getEmployerCandidateRows,
+  type EmployerCandidateRow,
+} from "@/lib/data-helpers";
+import type { Candidate } from "@/types/candidate";
 import type {
-  EmployerCandidate,
   TalentPoolEntry,
   TalentPoolStatus,
-} from "@/types/employer";
+} from "@/types/talent-pool";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,40 +35,50 @@ export default function EmployerTalentPoolPage() {
   const { entries, add, remove, update, isInPool } = useTalentPool();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<TalentPoolStatus | "All">("All");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<number>>(new Set());
   const [pendingBulk, setPendingBulk] = useState<number | null>(null);
+
+  const allRows = getEmployerCandidateRows(1);
 
   // Candidates that are NOT yet in the pool — surfaced in the "Browse" CTA.
   const notInPool = useMemo(
-    () => employerCandidates.filter((c) => !isInPool(c.id)),
-    [isInPool],
+    () => allRows.filter((r) => !isInPool(r.candidate.id)),
+    [allRows, isInPool],
   );
 
   const candidateById = useMemo(() => {
-    const map = new Map<string, EmployerCandidate>();
-    for (const c of employerCandidates) map.set(c.id, c);
+    const map = new Map<number, EmployerCandidateRow>();
+    for (const r of allRows) map.set(r.candidate.id, r);
     return map;
-  }, []);
+  }, [allRows]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return entries
       .map((entry) => {
-        const candidate = candidateById.get(entry.candidateId);
-        return candidate ? { entry, candidate } : null;
+        const row = candidateById.get(entry.candidateId);
+        return row ? { entry, candidate: row.candidate } : null;
       })
       .filter(
-        (row): row is { entry: TalentPoolEntry; candidate: EmployerCandidate } =>
+        (
+          row,
+        ): row is { entry: TalentPoolEntry; candidate: Candidate } =>
           row !== null,
       )
       .filter(({ entry, candidate }) => {
         if (status !== "All" && entry.status !== status) return false;
         if (!q) return true;
+        // The job they were added for is captured in entry.sourceDetail;
+        // there is no per-row `appliedFor` in the new shape.
+        const entryRow = allRows.find(
+          (r) => r.candidate.id === entry.candidateId,
+        );
+        const jobTitle = entryRow?.job.title ?? "";
         const haystack = [
           candidate.name,
           candidate.title,
           candidate.location,
-          candidate.appliedFor,
+          jobTitle,
           ...candidate.topSkills,
           ...entry.tags,
         ]
@@ -74,20 +87,20 @@ export default function EmployerTalentPoolPage() {
         return haystack.includes(q);
       })
       .sort((a, b) => b.entry.reEngagementScore - a.entry.reEngagementScore);
-  }, [entries, status, query, candidateById]);
+  }, [entries, status, query, candidateById, allRows]);
 
-  const addCandidate = (candidateId: string) => {
+  const addCandidate = (candidateId: number) => {
     const result = add({ candidateId });
     if (!result) return;
-    const candidate = candidateById.get(candidateId);
+    const row = candidateById.get(candidateId);
     push({
-      title: `${candidate?.name ?? "Candidate"} added to talent pool`,
+      title: `${row?.candidate.name ?? "Candidate"} added to talent pool`,
       description: "You can add notes and tags from their row.",
       tone: "success",
     });
   };
 
-  const removeEntry = (id: string) => {
+  const removeEntry = (id: number) => {
     remove(id);
     setSelected((prev) => {
       if (!prev.has(id)) return prev;
@@ -97,7 +110,7 @@ export default function EmployerTalentPoolPage() {
     });
   };
 
-  const toggleSelect = (id: string) => {
+  const toggleSelect = (id: number) => {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -174,9 +187,9 @@ export default function EmployerTalentPoolPage() {
           </CardHeader>
           <CardContent>
             <ul className="divide-y">
-              {notInPool.slice(0, 3).map((candidate) => (
+              {notInPool.slice(0, 3).map((row) => (
                 <li
-                  key={candidate.id}
+                  key={row.candidate.id}
                   className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
                 >
                   <div className="flex min-w-0 items-center gap-3">
@@ -184,21 +197,21 @@ export default function EmployerTalentPoolPage() {
                       aria-hidden
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
                     >
-                      {candidate.initials}
+                      {row.candidate.initials}
                     </span>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">
-                        {candidate.name}
+                        {row.candidate.name}
                       </p>
                       <small className="block truncate text-muted-foreground">
-                        {candidate.appliedFor} · {candidate.matchScore}% match
+                        {row.job.title} · {row.matchScore}% match
                       </small>
                     </div>
                   </div>
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => addCandidate(candidate.id)}
+                    onClick={() => addCandidate(row.candidate.id)}
                   >
                     <Bookmark />
                     Add to pool
@@ -231,6 +244,7 @@ export default function EmployerTalentPoolPage() {
             <TalentPoolRow
               key={entry.id}
               candidate={candidate}
+              verification={candidateById.get(candidate.id)?.verification}
               entry={entry}
               selected={selected.has(entry.id)}
               onToggleSelect={toggleSelect}

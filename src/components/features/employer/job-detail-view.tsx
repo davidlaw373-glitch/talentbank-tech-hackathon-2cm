@@ -21,11 +21,8 @@ import {
   X,
 } from "lucide-react";
 
-import type {
-  EmployerCandidate,
-  EmployerJob,
-  JobStatus,
-} from "@/types/employer";
+import type { Job, JobStatus } from "@/types/job";
+import type { EmployerCandidateRow } from "@/lib/data-helpers";
 import {
   APPLICATION_STAGES,
   STAGE_LABEL,
@@ -60,8 +57,8 @@ export function JobDetailView({
   job,
   applicants,
 }: {
-  job: EmployerJob;
-  applicants: EmployerCandidate[];
+  job: Job;
+  applicants: EmployerCandidateRow[];
 }) {
   const { push } = useToast();
   const [status, setStatus] = useState<JobStatus>(job.status);
@@ -302,7 +299,7 @@ export function JobDetailView({
                   (stage) => ({
                     label: STAGE_LABEL[stage],
                     value: applicants.filter(
-                      (c) => !c.rejected && c.stage === stage,
+                      (a) => !a.app.rejected && a.app.stage === stage,
                     ).length,
                   }),
                 ),
@@ -413,10 +410,10 @@ export function JobDetailView({
               No applicants yet for this role.
             </p>
           ) : (
-            applicants.map((c) => (
+            applicants.map((r) => (
               <Link
-                key={c.id}
-                href={`/employer/candidates/${c.id}`}
+                key={r.candidate.id}
+                href={`/employer/candidates/${r.candidate.id}`}
                 className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
               >
                 <div className="flex min-w-0 items-center gap-3">
@@ -424,18 +421,18 @@ export function JobDetailView({
                     aria-hidden
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
                   >
-                    {c.initials}
+                    {r.candidate.initials}
                   </span>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{c.name}</p>
+                    <p className="truncate text-sm font-medium">{r.candidate.name}</p>
                     <small className="block truncate text-muted-foreground">
-                      {c.title}
+                      {r.candidate.title}
                     </small>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  <Badge variant="outline">{c.matchScore}% match</Badge>
-                  <Badge variant={STAGE_VARIANT[c.stage]}>{c.stage}</Badge>
+                  <Badge variant="outline">{r.matchScore}% match</Badge>
+                  <Badge variant={STAGE_VARIANT[r.app.stage]}>{r.app.stage}</Badge>
                 </div>
               </Link>
             ))

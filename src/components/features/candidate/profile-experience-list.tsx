@@ -31,11 +31,11 @@ export function ProfileExperienceList({
   onChange,
 }: ProfileExperienceListProps) {
   const { push } = useToast();
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Experience | null>(null);
 
   function add() {
-    const id = `exp-${Date.now()}`;
+    const id = Date.now();
     const next: Experience = {
       id,
       company: "New company",
@@ -67,7 +67,7 @@ export function ProfileExperienceList({
     setDraft(null);
   }
 
-  function remove(id: string) {
+  function remove(id: number) {
     onChange(items.filter((it) => it.id !== id));
   }
 

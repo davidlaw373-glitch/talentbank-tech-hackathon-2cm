@@ -1,4 +1,23 @@
-import type { ApplicationStage } from "@/types/application";
+/**
+ * New clean Employer — the company that owns jobs and hires candidates.
+ * `openRoles`, `activeCandidates`, `hiresThisQuarter`, `avgTimeToHire`
+ * are derived at render time from `jobs.json` / `applications.json` /
+ * `offers.json` — they are not stored on the employer.
+ */
+export type Employer = {
+  id: number;
+  companyName: string;
+  initials: string;
+  tagline: string;
+  industry: EmployerIndustry;
+  size: CompanySize;
+  founded: number;
+  website: string;
+  hq: string;
+  about: string;
+  culture: string[];
+  benefits: string[];
+};
 
 export type EmployerIndustry =
   | "Software & Internet"
@@ -10,7 +29,17 @@ export type EmployerIndustry =
 
 export type CompanySize = "1–10" | "11–50" | "51–200" | "201–500" | "500+";
 
-export type EmployerProfile = {
+/** @deprecated Import `JobStatus` from `@/types/job` instead. */
+export type JobStatus = "Live" | "Draft" | "Paused" | "Closed";
+
+/* ------------------------------------------------------------------ */
+/*  Legacy types kept for the back-compat shim in src/data/employer.ts  */
+/*  These are deleted once consumer pages migrate to the new accessors. */
+/* ------------------------------------------------------------------ */
+
+import type { ApplicationStage } from "@/types/application";
+
+export type LegacyEmployerProfile = {
   companyName: string;
   initials: string;
   tagline: string;
@@ -28,22 +57,16 @@ export type EmployerProfile = {
   benefits: string[];
 };
 
-export type JobStatus = "Live" | "Draft" | "Paused" | "Closed";
-
-export type EmployerJob = {
-  id: string;
+export type LegacyEmployerJob = {
+  id: number;
   title: string;
   department: string;
   location: string;
   workMode: "Remote" | "Hybrid" | "On-site";
   employmentType: "Full-time" | "Part-time" | "Internship" | "Contract";
   salary: string;
-  status: JobStatus;
+  status: "Live" | "Draft" | "Paused" | "Closed";
   posted: string;
-  /**
-   * Total applicants for this role. Per-stage breakdowns are derived from
-   * `employerCandidates` at render time so they never drift out of sync.
-   */
   applicants: number;
   filledScore: number;
   mustHave: string[];
@@ -53,17 +76,15 @@ export type EmployerJob = {
   requirements: string[];
 };
 
-export type EmployerCandidate = {
-  id: string;
+export type LegacyEmployerCandidate = {
+  id: number;
   name: string;
   initials: string;
   title: string;
   location: string;
   appliedFor: string;
   appliedDate: string;
-  /** Which pipeline stage this candidate sits in. */
   stage: ApplicationStage;
-  /** Side state — `true` means the candidate has been rejected. */
   rejected: boolean;
   matchScore: number;
   topSkills: string[];
@@ -73,15 +94,8 @@ export type EmployerCandidate = {
   timeline: Array<{ label: string; date: string; complete: boolean }>;
 };
 
-export type InterviewStatus =
-  | "Scheduled"
-  | "Pending confirmation"
-  | "Reschedule requested"
-  | "Completed"
-  | "Cancelled";
-
-export type EmployerInterview = {
-  id: string;
+export type LegacyEmployerInterview = {
+  id: number;
   candidateName: string;
   candidateInitials: string;
   role: string;
@@ -89,22 +103,38 @@ export type EmployerInterview = {
   interviewers: string[];
   scheduledFor: string;
   duration: number;
-  status: InterviewStatus;
+  status:
+    | "Scheduled"
+    | "Pending confirmation"
+    | "Reschedule requested"
+    | "Completed"
+    | "Cancelled";
   scorecardItems: number;
 };
 
-export type OfferDecision = "Pending" | "Accepted" | "Declined" | "Expired";
-
-export type EmployerOffer = {
-  id: string;
+export type LegacyEmployerOffer = {
+  id: number;
   candidateName: string;
   candidateInitials: string;
   role: string;
   baseSalary: string;
   startDate: string;
   sentDate: string;
-  decision: OfferDecision;
+  decision: "Pending" | "Accepted" | "Declined" | "Expired";
   matchScore: number;
+};
+
+export type LegacyTalentPoolEntry = {
+  id: number;
+  candidateId: number;
+  status: TalentPoolStatus;
+  savedAt: string;
+  lastContactedAt: string | null;
+  notes: string;
+  tags: TalentPoolTag[];
+  source: TalentPoolSource;
+  sourceDetail: string;
+  reEngagementScore: number;
 };
 
 export type TalentPoolStatus =
@@ -128,15 +158,23 @@ export type TalentPoolSource =
   | "Open application"
   | "Conference";
 
-export type TalentPoolEntry = {
-  id: string;
-  candidateId: string;
-  status: TalentPoolStatus;
-  savedAt: string;
-  lastContactedAt: string | null;
-  notes: string;
-  tags: TalentPoolTag[];
-  source: TalentPoolSource;
-  sourceDetail: string;
-  reEngagementScore: number;
-};
+/* ------------------------------------------------------------------ */
+/*  Back-compat aliases — re-export legacy type names so existing    */
+/*  consumers (`EmployerCandidate`, `EmployerJob`, etc.) keep working*/
+/*  until they migrate to the new accessors.                        */
+/* ------------------------------------------------------------------ */
+
+/** @deprecated Prefer `LegacyEmployerProfile` (or `Employer`). */
+export type EmployerProfile = LegacyEmployerProfile;
+/** @deprecated Prefer `LegacyEmployerJob`. */
+export type EmployerJob = LegacyEmployerJob;
+/** @deprecated Prefer `LegacyEmployerCandidate`. */
+export type EmployerCandidate = LegacyEmployerCandidate;
+/** @deprecated Prefer `LegacyEmployerInterview`. */
+export type EmployerInterview = LegacyEmployerInterview;
+export type InterviewStatus = LegacyEmployerInterview["status"];
+/** @deprecated Prefer `LegacyEmployerOffer`. */
+export type EmployerOffer = LegacyEmployerOffer;
+export type OfferDecision = LegacyEmployerOffer["decision"];
+/** @deprecated Prefer `LegacyTalentPoolEntry`. */
+export type TalentPoolEntry = LegacyTalentPoolEntry;

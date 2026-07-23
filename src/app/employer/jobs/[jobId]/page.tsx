@@ -1,28 +1,30 @@
 import { notFound } from "next/navigation";
 
-import {
-  employerCandidates,
-  employerJobs,
-  getEmployerJob,
-} from "@/data/employer";
-import type { EmployerCandidate } from "@/types/employer";
+import { getByEmployer as getJobsByEmployer } from "@/data/jobs";
+import { getEmployerCandidateRows } from "@/lib/data-helpers";
 import { JobDetailView } from "@/components/features/employer/job-detail-view";
 
 type PageProps = {
   params: Promise<{ jobId: string }>;
 };
 
+const DEMO_EMPLOYER_ID = 1;
+
 export function generateStaticParams() {
-  return employerJobs.map((job) => ({ jobId: job.id }));
+  return getJobsByEmployer(DEMO_EMPLOYER_ID).map((job) => ({
+    jobId: String(job.id),
+  }));
 }
 
 export default async function EmployerJobDetailPage({ params }: PageProps) {
-  const { jobId } = await params;
-  const job = getEmployerJob(jobId);
+  const { jobId: rawJobId } = await params;
+  const jobId = Number(rawJobId);
+  if (!Number.isInteger(jobId)) notFound();
+  const job = getJobsByEmployer(DEMO_EMPLOYER_ID).find((j) => j.id === jobId);
   if (!job) notFound();
 
-  const applicants: EmployerCandidate[] = employerCandidates
-    .filter((c) => c.appliedFor === job.title)
+  const applicants = getEmployerCandidateRows(DEMO_EMPLOYER_ID)
+    .filter((r) => r.job.id === jobId)
     .slice(0, 3);
 
   return <JobDetailView job={job} applicants={applicants} />;

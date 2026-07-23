@@ -1,0 +1,146 @@
+[
+  {
+    "id": 1,
+    "candidateId": 1,
+    "jobId": 1,
+    "appliedDate": "12 Jun 2026",
+    "stage": "Interview",
+    "rejected": false,
+    "nextAction": "Prepare your AI summary for the panel — opens 24h before the meeting.",
+    "timeline": [
+      { "label": "Applied", "date": "12 Jun", "complete": true },
+      { "label": "Screening", "date": "16 Jun", "complete": true },
+      { "label": "Interview", "date": "23 Jun", "complete": true },
+      { "label": "Offer", "date": "1 Jul", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 2,
+    "candidateId": 1,
+    "jobId": 2,
+    "appliedDate": "28 Jun 2026",
+    "stage": "Screening",
+    "rejected": false,
+    "nextAction": "Nothing to do — we will email you when Lumen moves your application.",
+    "timeline": [
+      { "label": "Applied", "date": "28 Jun", "complete": true },
+      { "label": "Screening", "date": "2 Jul", "complete": false },
+      { "label": "Interview", "date": "TBD", "complete": false },
+      { "label": "Offer", "date": "TBD", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 3,
+    "candidateId": 1,
+    "jobId": 6,
+    "appliedDate": "10 Jul 2026",
+    "stage": "Applied",
+    "rejected": false,
+    "nextAction": "Add one new project to lift your match score before the hiring manager reviews.",
+    "timeline": [
+      { "label": "Applied", "date": "10 Jul", "complete": true },
+      { "label": "Screening", "date": "TBD", "complete": false },
+      { "label": "Interview", "date": "TBD", "complete": false },
+      { "label": "Offer", "date": "TBD", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 4,
+    "candidateId": 2,
+    "jobId": 7,
+    "appliedDate": "5 days ago",
+    "stage": "Interview",
+    "rejected": false,
+    "nextAction": "Confirm the technical round slot — Jordan will send a calendar invite shortly.",
+    "timeline": [
+      { "label": "Applied", "date": "5 days ago", "complete": true },
+      { "label": "Screening", "date": "4 days ago", "complete": true },
+      { "label": "Interview", "date": "Tomorrow", "complete": false },
+      { "label": "Offer", "date": "To schedule", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 5,
+    "candidateId": 3,
+    "jobId": 7,
+    "appliedDate": "1 week ago",
+    "stage": "Interview",
+    "rejected": false,
+    "nextAction": "Awaiting recruiter response on the system-design slot.",
+    "timeline": [
+      { "label": "Applied", "date": "1 week ago", "complete": true },
+      { "label": "Screening", "date": "5 days ago", "complete": true },
+      { "label": "Interview", "date": "To schedule", "complete": false },
+      { "label": "Offer", "date": "TBD", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 6,
+    "candidateId": 4,
+    "jobId": 8,
+    "appliedDate": "2 days ago",
+    "stage": "Screening",
+    "rejected": false,
+    "nextAction": "Mei will reach out with phone-screen options.",
+    "timeline": [
+      { "label": "Applied", "date": "2 days ago", "complete": true },
+      { "label": "Screening", "date": "Tomorrow", "complete": false },
+      { "label": "Interview", "date": "TBD", "complete": false },
+      { "label": "Offer", "date": "TBD", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 7,
+    "candidateId": 5,
+    "jobId": 7,
+    "appliedDate": "3 days ago",
+    "stage": "Applied",
+    "rejected": false,
+    "nextAction": "Hold tight — the recruiter queue opens Monday.",
+    "timeline": [
+      { "label": "Applied", "date": "3 days ago", "complete": false },
+      { "label": "Screening", "date": "TBD", "complete": false },
+      { "label": "Interview", "date": "TBD", "complete": false },
+      { "label": "Offer", "date": "TBD", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 8,
+    "candidateId": 6,
+    "jobId": 9,
+    "appliedDate": "4 days ago",
+    "stage": "Offer",
+    "rejected": false,
+    "nextAction": "Sign and return the offer by Friday — your start date is set for 1 Aug.",
+    "timeline": [
+      { "label": "Applied", "date": "4 days ago", "complete": true },
+      { "label": "Screening", "date": "3 days ago", "complete": true },
+      { "label": "Interview", "date": "2 days ago", "complete": true },
+      { "label": "Offer", "date": "Yesterday", "complete": true },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  },
+  {
+    "id": 9,
+    "candidateId": 7,
+    "jobId": 10,
+    "appliedDate": "6 days ago",
+    "stage": "Screening",
+    "rejected": true,
+    "nextAction": "We've passed on your profile for this role — feedback from the panel is in your inbox.",
+    "timeline": [
+      { "label": "Applied", "date": "6 days ago", "complete": true },
+      { "label": "Screening", "date": "4 days ago", "complete": true },
+      { "label": "Interview", "date": "TBD", "complete": false },
+      { "label": "Offer", "date": "TBD", "complete": false },
+      { "label": "Hired", "date": "TBD", "complete": false }
+    ]
+  }
+]

@@ -6,7 +6,7 @@ import {
   UserSearch,
 } from "lucide-react";
 
-import { employmentOutcomes, skillDemand } from "@/data/university";
+import { employmentOutcomes, skillDemand } from "@/lib/university-helpers";
 import type { EmploymentRecord } from "@/types/university";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -242,17 +242,17 @@ export default function UniversityEmploymentPage() {
         action={<EmploymentExportButton />}
       />
 
-      <Tabs defaultValue={employmentOutcomes[0].id}>
+      <Tabs defaultValue={String(employmentOutcomes[0].id)}>
         <TabsList className="flex flex-wrap">
           {employmentOutcomes.map((c) => (
-            <TabsTrigger key={c.id} value={c.id}>
+            <TabsTrigger key={c.id} value={String(c.id)}>
               {c.cohort}
             </TabsTrigger>
           ))}
         </TabsList>
 
         {employmentOutcomes.map((c) => (
-          <TabsContent key={c.id} value={c.id} className="mt-6">
+          <TabsContent key={c.id} value={String(c.id)} className="mt-6">
             <CohortDashboard cohort={c} />
           </TabsContent>
         ))}

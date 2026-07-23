@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "applicationId": 4,
+    "type": "Technical",
+    "interviewers": ["Jordan Lee", "Priya Anand"],
+    "scheduledFor": "Tomorrow · 10:00 SGT",
+    "duration": 90,
+    "status": "Scheduled",
+    "scorecardItems": 6
+  },
+  {
+    "id": 2,
+    "applicationId": 6,
+    "type": "Phone screen",
+    "interviewers": ["Mei Tan"],
+    "scheduledFor": "Tomorrow · 14:00 SGT",
+    "duration": 30,
+    "status": "Pending confirmation",
+    "scorecardItems": 4
+  },
+  {
+    "id": 3,
+    "applicationId": 5,
+    "type": "System design",
+    "interviewers": ["Jordan Lee", "Anika Patel"],
+    "scheduledFor": "Thu · 15:00 GMT",
+    "duration": 60,
+    "status": "Scheduled",
+    "scorecardItems": 5
+  },
+  {
+    "id": 4,
+    "applicationId": 8,
+    "type": "Final",
+    "interviewers": ["Mei Tan", "Jordan Lee"],
+    "scheduledFor": "Last week",
+    "duration": 60,
+    "status": "Completed",
+    "scorecardItems": 6
+  },
+  {
+    "id": 5,
+    "applicationId": 4,
+    "type": "Behavioural",
+    "interviewers": ["Priya Anand"],
+    "scheduledFor": "Candidate requested 22 Jul",
+    "duration": 45,
+    "status": "Reschedule requested",
+    "scorecardItems": 4
+  }
+]

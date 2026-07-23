@@ -14,8 +14,11 @@ import {
   X,
 } from "lucide-react";
 
-import { employerInterviews } from "@/data/employer";
-import type { EmployerInterview, InterviewStatus } from "@/types/employer";
+import {
+  getEmployerInterviewRows,
+  type EmployerInterviewRow,
+} from "@/lib/data-helpers";
+import type { InterviewStatus } from "@/types/interview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -77,26 +80,39 @@ function tabMatches(tab: TabValue, status: InterviewStatus) {
 
 export default function EmployerInterviewsPage() {
   const { push } = useToast();
-  const [interviews, setInterviews] = useState<EmployerInterview[]>(employerInterviews);
+  const seedRows = getEmployerInterviewRows(1);
+  const [rows, setRows] = useState<EmployerInterviewRow[]>(seedRows);
   const [tab, setTab] = useState<TabValue>("Upcoming");
 
   const counts = useMemo(() => {
     return {
-      Upcoming: interviews.filter((i) => tabMatches("Upcoming", i.status)).length,
-      Pending: interviews.filter((i) => tabMatches("Pending", i.status)).length,
-      Reschedule: interviews.filter((i) => tabMatches("Reschedule", i.status)).length,
-      Completed: interviews.filter((i) => tabMatches("Completed", i.status)).length,
-      Cancelled: interviews.filter((i) => tabMatches("Cancelled", i.status)).length,
+      Upcoming: rows.filter((r) => tabMatches("Upcoming", r.interview.status))
+        .length,
+      Pending: rows.filter((r) => tabMatches("Pending", r.interview.status))
+        .length,
+      Reschedule: rows.filter((r) => tabMatches("Reschedule", r.interview.status))
+        .length,
+      Completed: rows.filter((r) => tabMatches("Completed", r.interview.status))
+        .length,
+      Cancelled: rows.filter((r) => tabMatches("Cancelled", r.interview.status))
+        .length,
     };
-  }, [interviews]);
+  }, [rows]);
 
-  const visible: EmployerInterview[] = interviews.filter((i) =>
-    tabMatches(tab, i.status),
+  const visible: EmployerInterviewRow[] = rows.filter((r) =>
+    tabMatches(tab, r.interview.status),
   );
 
-  const updateInterview = (id: string, patch: Partial<EmployerInterview>) => {
-    setInterviews((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, ...patch } : i)),
+  const updateInterview = (
+    id: number,
+    patch: Partial<EmployerInterviewRow["interview"]>,
+  ) => {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.interview.id === id
+          ? { ...r, interview: { ...r.interview, ...patch } }
+          : r,
+      ),
     );
   };
 
@@ -108,58 +124,58 @@ export default function EmployerInterviewsPage() {
     });
   };
 
-  const onConfirm = (i: EmployerInterview) => {
-    updateInterview(i.id, { status: "Scheduled" });
+  const onConfirm = (r: EmployerInterviewRow) => {
+    updateInterview(r.interview.id, { status: "Scheduled" });
     push({
-      title: `Confirmed ${i.candidateName}`,
+      title: `Confirmed ${r.candidate.name}`,
       description: "Calendar invite sent to all interviewers.",
       tone: "success",
     });
   };
 
-  const onReschedule = (i: EmployerInterview) => {
-    updateInterview(i.id, { status: "Scheduled" });
+  const onReschedule = (r: EmployerInterviewRow) => {
+    updateInterview(r.interview.id, { status: "Scheduled" });
     push({
-      title: `Rescheduled ${i.candidateName}`,
+      title: `Rescheduled ${r.candidate.name}`,
       description: "New slot proposed — candidate will be notified.",
       tone: "success",
     });
   };
 
-  const [pendingCancel, setPendingCancel] = useState<EmployerInterview | null>(
+  const [pendingCancel, setPendingCancel] = useState<EmployerInterviewRow | null>(
     null,
   );
 
-  const onCancel = (i: EmployerInterview) => {
-    updateInterview(i.id, { status: "Cancelled" });
+  const onCancel = (r: EmployerInterviewRow) => {
+    updateInterview(r.interview.id, { status: "Cancelled" });
     push({
-      title: `Cancelled ${i.candidateName}`,
+      title: `Cancelled ${r.candidate.name}`,
       description: "Candidate has been notified of the cancellation.",
       tone: "info",
     });
   };
 
-  const onJoin = (i: EmployerInterview) => {
-    updateInterview(i.id, { status: "Completed" });
+  const onJoin = (r: EmployerInterviewRow) => {
+    updateInterview(r.interview.id, { status: "Completed" });
     push({
-      title: `Joined ${i.candidateName}'s interview`,
+      title: `Joined ${r.candidate.name}'s interview`,
       description: "Scorecard will unlock when the call ends.",
       tone: "success",
     });
   };
 
-  const onViewNotes = (i: EmployerInterview) => {
+  const onViewNotes = (r: EmployerInterviewRow) => {
     push({
-      title: `Opening notes for ${i.candidateName}`,
-      description: `${i.scorecardItems} scorecard items ready for review.`,
+      title: `Opening notes for ${r.candidate.name}`,
+      description: `${r.interview.scorecardItems} scorecard items ready for review.`,
       tone: "info",
     });
   };
 
-  const onView = (i: EmployerInterview) => {
+  const onView = (r: EmployerInterviewRow) => {
     push({
-      title: `Opening ${i.candidateName}`,
-      description: `${i.type} · ${i.scheduledFor}`,
+      title: `Opening ${r.candidate.name}`,
+      description: `${r.interview.type} · ${r.interview.scheduledFor}`,
       tone: "info",
     });
   };
@@ -256,16 +272,16 @@ export default function EmployerInterviewsPage() {
                 </div>
               ) : (
                 <ul className="divide-y">
-                  {visible.map((interview) => (
+                  {visible.map((r) => (
                     <InterviewRow
-                      key={interview.id}
-                      interview={interview}
-                      onConfirm={() => onConfirm(interview)}
-                      onReschedule={() => onReschedule(interview)}
-                      onRequestCancel={() => setPendingCancel(interview)}
-                      onJoin={() => onJoin(interview)}
-                      onViewNotes={() => onViewNotes(interview)}
-                      onView={() => onView(interview)}
+                      key={r.interview.id}
+                      row={r}
+                      onConfirm={() => onConfirm(r)}
+                      onReschedule={() => onReschedule(r)}
+                      onRequestCancel={() => setPendingCancel(r)}
+                      onJoin={() => onJoin(r)}
+                      onViewNotes={() => onViewNotes(r)}
+                      onView={() => onView(r)}
                     />
                   ))}
                 </ul>
@@ -278,7 +294,7 @@ export default function EmployerInterviewsPage() {
       <ConfirmDialog
         open={pendingCancel !== null}
         onOpenChange={(open) => !open && setPendingCancel(null)}
-        title={`Cancel interview with ${pendingCancel?.candidateName ?? "candidate"}?`}
+        title={`Cancel interview with ${pendingCancel?.candidate.name ?? "candidate"}?`}
         description="Both sides will be notified by email. You can rebook afterwards if plans change."
         confirmLabel="Cancel interview"
         destructive
@@ -292,7 +308,7 @@ export default function EmployerInterviewsPage() {
 }
 
 function InterviewRow({
-  interview,
+  row,
   onConfirm,
   onReschedule,
   onRequestCancel,
@@ -300,7 +316,7 @@ function InterviewRow({
   onViewNotes,
   onView,
 }: {
-  interview: EmployerInterview;
+  row: EmployerInterviewRow;
   onConfirm: () => void;
   onReschedule: () => void;
   onRequestCancel: () => void;
@@ -308,7 +324,8 @@ function InterviewRow({
   onViewNotes: () => void;
   onView: () => void;
 }) {
-  const { status } = interview;
+  const { status } = row.interview;
+  const { candidate, job, interview } = row;
   return (
     <li
       className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
@@ -318,14 +335,12 @@ function InterviewRow({
           aria-hidden
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
         >
-          {interview.candidateInitials}
+          {candidate.initials}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">
-            {interview.candidateName}
-          </p>
+          <p className="truncate text-sm font-medium">{candidate.name}</p>
           <small className="block truncate text-muted-foreground">
-            {interview.role} · {interview.type}
+            {job.title} · {interview.type}
           </small>
           <small className="block truncate text-muted-foreground">
             Interviewers: {interview.interviewers.join(", ")}

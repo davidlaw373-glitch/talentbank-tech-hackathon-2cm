@@ -10,14 +10,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { universityDisputes } from "@/data/university";
+import { universityDisputes } from "@/lib/university-helpers";
 
 type PageProps = {
   params: Promise<{ disputeId: string }>;
 };
 
 export default async function UniversityDisputeDetailPage({ params }: PageProps) {
-  const { disputeId } = await params;
+  const { disputeId: rawDisputeId } = await params;
+  const disputeId = Number(rawDisputeId);
+  if (!Number.isInteger(disputeId)) notFound();
   const dispute = universityDisputes.find((d) => d.id === disputeId);
   if (!dispute) notFound();
 

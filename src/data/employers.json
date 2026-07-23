@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "companyName": "Northstar Labs",
+    "initials": "NL",
+    "tagline": "We build infrastructure that lets small teams ship like big ones.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2019,
+    "website": "northstarlabs.com",
+    "hq": "Singapore",
+    "about": "Northstar Labs builds developer infrastructure used by 4,000+ engineering teams. We hire for craft, ownership, and the patience to ship boring things reliably.",
+    "culture": [
+      "Ship small, ship often",
+      "Async-first communication",
+      "Open salary bands",
+      "Quarterly hack weeks"
+    ],
+    "benefits": [
+      "Equity for every employee",
+      "Remote-friendly with 2 on-sites/year",
+      "L&D budget RM 3,000 / year",
+      "Comprehensive health cover"
+    ]
+  },
+  {
+    "id": 2,
+    "companyName": "Helio",
+    "initials": "HE",
+    "tagline": "Energy-market analytics for utilities across APAC.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2017,
+    "website": "helio.example.com",
+    "hq": "Singapore",
+    "about": "Helio is a 90-person platform building energy-market analytics for utilities — backed by a Series C and operating across APAC.",
+    "culture": [],
+    "benefits": [
+      "Fully remote across APAC",
+      "Annual learning budget",
+      "Equity for senior ICs"
+    ]
+  },
+  {
+    "id": 3,
+    "companyName": "Lumen Studio",
+    "initials": "LS",
+    "tagline": "Realtime collaboration for learners and mentors.",
+    "industry": "Education",
+    "size": "11–50",
+    "founded": 2021,
+    "website": "lumenstudio.example.com",
+    "hq": "London",
+    "about": "Lumen is a 40-person edtech that helps learners build real projects alongside mentors.",
+    "culture": [],
+    "benefits": [
+      "Hybrid — 2 days a week in the London office",
+      "Generous learning budget"
+    ]
+  },
+  {
+    "id": 4,
+    "companyName": "Vertex",
+    "initials": "VX",
+    "tagline": "Logistics marketplace for local merchants.",
+    "industry": "Software & Internet",
+    "size": "201–500",
+    "founded": 2015,
+    "website": "vertex.example.com",
+    "hq": "Seoul",
+    "about": "Vertex is a marketplace business that connects local merchants with logistics partners.",
+    "culture": [],
+    "benefits": [
+      "Fully remote",
+      "Annual offsite"
+    ]
+  },
+  {
+    "id": 5,
+    "companyName": "Atlas",
+    "initials": "AT",
+    "tagline": "Payments infrastructure for southern Europe.",
+    "industry": "Financial Services",
+    "size": "51–200",
+    "founded": 2018,
+    "website": "atlas.example.com",
+    "hq": "Madrid",
+    "about": "Atlas is a 120-person fintech building payments infrastructure for southern Europe.",
+    "culture": [],
+    "benefits": [
+      "On-site in Madrid",
+      "Health + lunch"
+    ]
+  },
+  {
+    "id": 6,
+    "companyName": "Polaris",
+    "initials": "PO",
+    "tagline": "Mid-market mobility app for Japan.",
+    "industry": "Software & Internet",
+    "size": "11–50",
+    "founded": 2019,
+    "website": "polaris.example.com",
+    "hq": "Tokyo",
+    "about": "Polaris is a mid-market mobility app — 1.5M monthly active users in Japan.",
+    "culture": [],
+    "benefits": [
+      "Hybrid in Tokyo",
+      "Annual iOSCon ticket"
+    ]
+  }
+]

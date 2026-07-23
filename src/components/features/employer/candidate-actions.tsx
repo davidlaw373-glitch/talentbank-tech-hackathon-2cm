@@ -25,7 +25,7 @@ export function CandidateActions({
   initialStarred,
   initialStage,
 }: {
-  candidateId: string;
+  candidateId: number;
   candidateName: string;
   appliedFor: string;
   initialStarred: boolean;

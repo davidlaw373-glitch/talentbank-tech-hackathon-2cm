@@ -45,7 +45,7 @@ export function ProfileVerificationCard({
   const [pendingRemove, setPendingRemove] = useState<Evidence | null>(null);
 
   function add() {
-    const id = `ev-${Date.now()}`;
+    const id = Date.now();
     onChange([
       ...items,
       { id, name: "New evidence item", type: "Other", status: "Not started" },
@@ -53,7 +53,7 @@ export function ProfileVerificationCard({
     push({ title: "Add evidence form opened", tone: "info" });
   }
 
-  function toggleStatus(id: string) {
+  function toggleStatus(id: number) {
     onChange(
       items.map((it) =>
         it.id === id ? { ...it, status: nextStatus(it.status) } : it,
@@ -69,7 +69,7 @@ export function ProfileVerificationCard({
     });
   }
 
-  function remove(id: string) {
+  function remove(id: number) {
     onChange(items.filter((it) => it.id !== id));
     push({
       title: "Evidence removed",

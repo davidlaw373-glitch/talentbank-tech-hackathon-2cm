@@ -1,0 +1,444 @@
+[
+  {
+    "id": 1,
+    "name": "Alex Morgan",
+    "initials": "AM",
+    "title": "Senior Frontend Developer",
+    "location": "Kuala Lumpur, Malaysia",
+    "email": "alex.morgan@example.com",
+    "phone": "+60 12 345 6789",
+    "summary": "Product-minded frontend developer with 6+ years shipping accessible, well-tested React systems. Most recently led the design-system rebuild at Northstar Labs, used by 4 product teams.",
+    "profileCompletion": 84,
+    "verificationStatus": "1 pending review",
+    "skills": [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Accessibility",
+      "Design systems",
+      "Product discovery"
+    ],
+    "topSkills": ["TypeScript", "React", "Design systems"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Northstar Labs",
+        "role": "Senior Frontend Developer",
+        "period": "Jan 2024 — present",
+        "description": "Re-built the design system, integrating it with Storybook; cut page load time by 35% across the top 10 flows."
+      },
+      {
+        "id": 2,
+        "company": "Lumen Studio",
+        "role": "Frontend Developer",
+        "period": "Aug 2021 — Dec 2023",
+        "description": "Shipped the realtime collaboration suite used by 12,000+ learners; partnered with design and product end-to-end."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "University of Malaya",
+        "qualification": "BSc Computer Science",
+        "period": "2017 — 2021"
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "name": "Careeros",
+        "description": "Open-source portfolio helper — generates a personalised career timeline from your contributions.",
+        "skills": ["TypeScript", "Next.js", "Tailwind"]
+      },
+      {
+        "id": 2,
+        "name": "Reading List",
+        "description": "Reading-list app that summarises a saved article into 5 bullet points using a small open-source model.",
+        "skills": ["React", "Express", "Hugging Face"]
+      }
+    ],
+    "evidence": [
+      {
+        "id": 1,
+        "name": "Computer Science degree",
+        "type": "Education",
+        "status": "Verified"
+      },
+      {
+        "id": 2,
+        "name": "Northstar Labs internship",
+        "type": "Experience",
+        "status": "Pending"
+      },
+      {
+        "id": 3,
+        "name": "Project portfolio",
+        "type": "Portfolio",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Aisha Khan",
+    "initials": "AK",
+    "title": "Senior Frontend · 6 yrs",
+    "location": "Singapore",
+    "email": "aisha.khan@example.com",
+    "phone": "+65 8123 4567",
+    "summary": "Built React systems at scale (12M daily users). Strong async-first signal. Open to senior IC roles.",
+    "profileCompletion": 92,
+    "verificationStatus": "Verified",
+    "skills": [
+      "React",
+      "TypeScript",
+      "Design systems",
+      "Performance",
+      "Accessibility"
+    ],
+    "topSkills": ["React", "TypeScript", "Design systems"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Helio",
+        "role": "Senior Frontend Engineer",
+        "period": "Mar 2022 — present",
+        "description": "Owned the design-system rebuild used by 12M daily users across marketing, console, and docs."
+      },
+      {
+        "id": 2,
+        "company": "Beta Labs",
+        "role": "Frontend Engineer",
+        "period": "Jul 2019 — Feb 2022",
+        "description": "Shipped customer-facing dashboard surfaces with a focus on accessibility and performance budgets."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "National University of Singapore",
+        "qualification": "BSc Computer Science",
+        "period": "2015 — 2019"
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "name": "Tokens Studio",
+        "description": "OSS tool for syncing design tokens across Figma, Storybook, and CSS variables.",
+        "skills": ["TypeScript", "Figma API"]
+      }
+    ],
+    "evidence": [
+      {
+        "id": 1,
+        "name": "NUS CS degree",
+        "type": "Education",
+        "status": "Verified"
+      },
+      {
+        "id": 2,
+        "name": "Helio employment",
+        "type": "Experience",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Marco Okafor",
+    "initials": "MO",
+    "title": "ML Engineer · 4 yrs",
+    "location": "London",
+    "email": "marco.okafor@example.com",
+    "phone": "+44 7700 900123",
+    "summary": "Strong ML background with growing frontend interest. Built internal tools for a 30-person research team.",
+    "profileCompletion": 71,
+    "verificationStatus": "1 pending",
+    "skills": [
+      "Python",
+      "PyTorch",
+      "TypeScript",
+      "React",
+      "FastAPI"
+    ],
+    "topSkills": ["Python", "PyTorch", "TypeScript"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Lattice Research",
+        "role": "ML Engineer",
+        "period": "Aug 2022 — present",
+        "description": "Built internal evaluation dashboards and tooling for a 30-person research team."
+      },
+      {
+        "id": 2,
+        "company": "Imperial College London",
+        "role": "Research Assistant",
+        "period": "Sep 2020 — Jul 2022",
+        "description": "Worked on productionising forecasting models for an energy-grid optimisation project."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "Imperial College London",
+        "qualification": "MEng Computing",
+        "period": "2016 — 2020"
+      }
+    ],
+    "projects": [],
+    "evidence": [
+      {
+        "id": 1,
+        "name": "Imperial MEng",
+        "type": "Education",
+        "status": "Pending"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Sara Park",
+    "initials": "SP",
+    "title": "Staff PM · 8 yrs",
+    "location": "Seoul",
+    "email": "sara.park@example.com",
+    "phone": "+82 10 1234 5678",
+    "summary": "Led platform PM at two previous startups. Strong discovery research and cross-functional execution.",
+    "profileCompletion": 88,
+    "verificationStatus": "Verified",
+    "skills": [
+      "Discovery research",
+      "B2B SaaS",
+      "Roadmaps",
+      "Stakeholder mgmt",
+      "Strategy"
+    ],
+    "topSkills": ["Discovery research", "B2B SaaS", "Roadmaps"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Mintwave",
+        "role": "Staff Product Manager",
+        "period": "May 2021 — present",
+        "description": "Led platform PM for the developer experience org, partnering with research, design, and engineering."
+      },
+      {
+        "id": 2,
+        "company": "Horangi",
+        "role": "Senior Product Manager",
+        "period": "Aug 2018 — Apr 2021",
+        "description": "Owned the early roadmap for a security SaaS that grew from 0 to 800 paying customers."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "KAIST",
+        "qualification": "BSc Industrial Design",
+        "period": "2014 — 2018"
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "name": "Field Notes for PMs",
+        "description": "Newsletter + playbook on discovery research for new product managers.",
+        "skills": ["Writing", "Research"]
+      }
+    ],
+    "evidence": [
+      {
+        "id": 1,
+        "name": "KAIST degree",
+        "type": "Education",
+        "status": "Verified"
+      },
+      {
+        "id": 2,
+        "name": "Mintwave employment",
+        "type": "Experience",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Rafael Diaz",
+    "initials": "RD",
+    "title": "Data Engineer · 5 yrs",
+    "location": "Madrid",
+    "email": "rafael.diaz@example.com",
+    "phone": "+34 600 123 456",
+    "summary": "Data engineer pivoting toward frontend. Side projects in React and Next.js.",
+    "profileCompletion": 62,
+    "verificationStatus": "Not started",
+    "skills": [
+      "SQL",
+      "Python",
+      "dbt",
+      "React",
+      "Next.js"
+    ],
+    "topSkills": ["SQL", "Python", "dbt"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Cartodb",
+        "role": "Data Engineer",
+        "period": "Sep 2021 — present",
+        "description": "Owned the dbt project that powers the analytics dashboards used internally by the product org."
+      },
+      {
+        "id": 2,
+        "company": "BBVA",
+        "role": "Analytics Engineer",
+        "period": "Jan 2019 — Aug 2021",
+        "description": "Built ETL pipelines on top of BigQuery serving BI dashboards for 200+ analysts."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "Universidad Politécnica de Madrid",
+        "qualification": "BSc Computer Engineering",
+        "period": "2015 — 2019"
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "name": "Trail Reviews",
+        "description": "Indie project: Next.js + Postgres app for hikers to log and review trails.",
+        "skills": ["Next.js", "Postgres"]
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": 6,
+    "name": "Tomoko Yamamoto",
+    "initials": "TY",
+    "title": "Mobile Lead · 7 yrs",
+    "location": "Tokyo",
+    "email": "tomoko.yamamoto@example.com",
+    "phone": "+81 90 1234 5678",
+    "summary": "Mobile lead looking to move into web. Strong portfolio with production interface work.",
+    "profileCompletion": 95,
+    "verificationStatus": "Verified",
+    "skills": [
+      "Figma",
+      "Swift",
+      "Motion design",
+      "React",
+      "Design systems"
+    ],
+    "topSkills": ["Figma", "Swift", "Motion design"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Mercari",
+        "role": "Mobile Lead",
+        "period": "Apr 2021 — present",
+        "description": "Led the iOS team for the seller app through a redesign and a 30% engagement lift."
+      },
+      {
+        "id": 2,
+        "company": "Smartbank",
+        "role": "Senior iOS Engineer",
+        "period": "Aug 2017 — Mar 2021",
+        "description": "Owned the SwiftUI migration that shipped alongside the company's mobile-first rebrand."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "University of Tokyo",
+        "qualification": "BSc Information Science",
+        "period": "2013 — 2017"
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "name": "Motion Studies",
+        "description": "Public collection of microinteraction studies available for designers to fork.",
+        "skills": ["SwiftUI", "Motion"]
+      }
+    ],
+    "evidence": [
+      {
+        "id": 1,
+        "name": "UTokyo degree",
+        "type": "Education",
+        "status": "Verified"
+      },
+      {
+        "id": 2,
+        "name": "Mercari employment",
+        "type": "Experience",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Kasper Andersson",
+    "initials": "KA",
+    "title": "Backend Lead · 9 yrs",
+    "location": "Stockholm",
+    "email": "kasper.andersson@example.com",
+    "phone": "+46 70 123 45 67",
+    "summary": "Backend leader with SRE exposure. Not the right fit for our current SRE scope.",
+    "profileCompletion": 80,
+    "verificationStatus": "Verified",
+    "skills": [
+      "Go",
+      "PostgreSQL",
+      "AWS",
+      "Kubernetes",
+      "Terraform"
+    ],
+    "topSkills": ["Go", "PostgreSQL", "AWS"],
+    "experience": [
+      {
+        "id": 1,
+        "company": "Klarna",
+        "role": "Backend Lead",
+        "period": "Sep 2019 — present",
+        "description": "Led two backend teams through a payment-services rebuild and an SRE-style on-call rotation."
+      },
+      {
+        "id": 2,
+        "company": "Spotify",
+        "role": "Senior Backend Engineer",
+        "period": "Mar 2015 — Aug 2019",
+        "description": "Owned the infrastructure that powered internal experimentation tooling."
+      }
+    ],
+    "education": [
+      {
+        "id": 1,
+        "institution": "KTH Royal Institute of Technology",
+        "qualification": "MSc Computer Science",
+        "period": "2010 — 2015"
+      }
+    ],
+    "projects": [],
+    "evidence": [
+      {
+        "id": 1,
+        "name": "KTH MSc",
+        "type": "Education",
+        "status": "Verified"
+      },
+      {
+        "id": 2,
+        "name": "Klarna employment",
+        "type": "Experience",
+        "status": "Verified"
+      }
+    ]
+  }
+]

@@ -30,11 +30,11 @@ export function ProfileEducationList({
   onChange,
 }: ProfileEducationListProps) {
   const { push } = useToast();
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Education | null>(null);
 
   function add() {
-    const id = `edu-${Date.now()}`;
+    const id = Date.now();
     const next: Education = {
       id,
       institution: "New institution",
@@ -65,7 +65,7 @@ export function ProfileEducationList({
     setDraft(null);
   }
 
-  function remove(id: string) {
+  function remove(id: number) {
     onChange(items.filter((it) => it.id !== id));
   }
 

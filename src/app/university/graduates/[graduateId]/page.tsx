@@ -10,14 +10,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { graduateRecords } from "@/data/university";
+import { graduateRecords } from "@/lib/university-helpers";
 
 type PageProps = {
   params: Promise<{ graduateId: string }>;
 };
 
 export default async function UniversityGraduateDetailPage({ params }: PageProps) {
-  const { graduateId } = await params;
+  const { graduateId: rawGraduateId } = await params;
+  const graduateId = Number(rawGraduateId);
+  if (!Number.isInteger(graduateId)) notFound();
   const graduate = graduateRecords.find((g) => g.id === graduateId);
   if (!graduate) notFound();
 

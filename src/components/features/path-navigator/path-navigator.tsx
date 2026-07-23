@@ -32,7 +32,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { skillDemand } from "@/data/university";
+import { getTrending } from "@/data/market-signals";
 
 type Path = {
   id: string;
@@ -99,8 +99,7 @@ const PATHS: Path[] = [
 ];
 
 const FEATURED_TRENDS = (() => {
-  const sortedByDelta = [...skillDemand].sort((a, b) => b.delta - a.delta);
-  return sortedByDelta.slice(0, 3);
+  return getTrending(3);
 })();
 
 function SummaryStat({

@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
-import { jobs } from "@/data/jobs";
+import { list as jobRows } from "@/data/jobs";
+import { getForCandidate as getMatchScoresForCandidate } from "@/data/match-scores";
+import { get as getEmployer } from "@/data/employers";
 import { JobMatchBreakdown } from "@/components/features/jobs/job-match-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,14 +43,16 @@ function matchTone(score: number) {
 
 type SortKey = "match" | "recent";
 
+const DEMO_CANDIDATE_ID = 1;
+
 export function JobDiscovery() {
   const { push } = useToast();
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState("all");
   const [sort, setSort] = useState<SortKey>("match");
-  const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set());
+  const [savedJobIds, setSavedJobIds] = useState<Set<number>>(new Set());
 
-  const toggleSaved = (jobId: string) => {
+  const toggleSaved = (jobId: number) => {
     const isSaved = savedJobIds.has(jobId);
     setSavedJobIds((current) => {
       const next = new Set(current);
@@ -64,17 +68,25 @@ export function JobDiscovery() {
 
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const list = jobs.filter((job) => {
-      const matchesQuery =
-        !q ||
-        `${job.title} ${job.company} ${job.location}`
-          .toLowerCase()
-          .includes(q);
-      const matchesMode = mode === "all" || job.workMode === mode;
-      return matchesQuery && matchesMode;
+    const matchesByJobId = new Map(
+      getMatchScoresForCandidate(DEMO_CANDIDATE_ID).map((s) => [
+        s.jobId,
+        s,
+      ]),
+    );
+    const list = jobRows.flatMap((job) => {
+      const score = matchesByJobId.get(job.id);
+      const employer = getEmployer(job.employerId);
+      const haystack =
+        `${job.title} ${employer?.companyName ?? ""} ${job.location}`.toLowerCase();
+      if (q && !haystack.includes(q)) return [];
+      if (mode !== "all" && job.workMode !== mode) return [];
+      return [{ job, score, employer }];
     });
     if (sort === "match") {
-      return [...list].sort((a, b) => b.matchScore - a.matchScore);
+      return [...list].sort(
+        (a, b) => (b.score?.score ?? 0) - (a.score?.score ?? 0),
+      );
     }
     return list;
   }, [query, mode, sort]);
@@ -184,8 +196,9 @@ export function JobDiscovery() {
           </Card>
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
-            {filteredJobs.map((job) => {
-              const tone = matchTone(job.matchScore);
+            {filteredJobs.map(({ job, score, employer }) => {
+              const displayScore = score?.score ?? 0;
+              const tone = matchTone(displayScore);
               return (
                 <article
                   key={job.id}
@@ -204,14 +217,14 @@ export function JobDiscovery() {
                       </div>
                       <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5" aria-hidden />
-                        {job.company}
+                        {employer?.companyName ?? "Unknown company"}
                       </p>
                       <p className="mt-2 text-sm text-muted-foreground">
                         {job.summary}
                       </p>
                       <JobMatchBreakdown
-                        matchingSkills={job.matchingSkills}
-                        missingSkills={job.missingSkills}
+                        matchingSkills={score?.matchingSkills ?? []}
+                        missingSkills={score?.missingSkills ?? []}
                         visibleCount={3}
                         missingVisibleCount={0}
                       />
@@ -248,7 +261,7 @@ export function JobDiscovery() {
                       </Button>
                       <div className="flex flex-col items-end gap-1">
                         <span className="text-3xl font-semibold tabular-nums leading-none">
-                          {job.matchScore}
+                          {displayScore}
                         </span>
                         <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                           Match
@@ -256,7 +269,7 @@ export function JobDiscovery() {
                         <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
                           <div
                             className="h-full rounded-full bg-chart-1"
-                            style={{ width: `${job.matchScore}%` }}
+                            style={{ width: `${displayScore}%` }}
                           />
                         </div>
                       </div>

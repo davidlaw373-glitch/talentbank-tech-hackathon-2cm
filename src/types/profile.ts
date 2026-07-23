@@ -1,7 +1,7 @@
 export type VerificationStatus = "Verified" | "Pending" | "Not started";
 
 export type Experience = {
-  id: string;
+  id: number;
   company: string;
   role: string;
   period: string;
@@ -9,21 +9,21 @@ export type Experience = {
 };
 
 export type Education = {
-  id: string;
+  id: number;
   institution: string;
   qualification: string;
   period: string;
 };
 
 export type Project = {
-  id: string;
+  id: number;
   name: string;
   description: string;
   skills: string[];
 };
 
 export type Evidence = {
-  id: string;
+  id: number;
   name: string;
   type: string;
   status: VerificationStatus;

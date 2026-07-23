@@ -11,8 +11,11 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { employerOffers } from "@/data/employer";
-import type { EmployerOffer, OfferDecision } from "@/types/employer";
+import {
+  getEmployerOfferRows,
+  type EmployerOfferRow,
+} from "@/lib/data-helpers";
+import type { OfferDecision } from "@/types/offer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,20 +58,21 @@ function decisionVariant(decision: OfferDecision) {
 
 export default function EmployerOffersPage() {
   const { push } = useToast();
-  const [offers, setOffers] = useState<EmployerOffer[]>(employerOffers);
+  const seedRows = getEmployerOfferRows(1);
+  const [rows, setRows] = useState<EmployerOfferRow[]>(seedRows);
   const [tab, setTab] = useState<TabValue>("Pending");
 
   const counts = useMemo(() => {
     return {
-      Pending: offers.filter((o) => o.decision === "Pending").length,
-      Accepted: offers.filter((o) => o.decision === "Accepted").length,
-      Declined: offers.filter((o) => o.decision === "Declined").length,
-      Expired: offers.filter((o) => o.decision === "Expired").length,
+      Pending: rows.filter((r) => r.offer.decision === "Pending").length,
+      Accepted: rows.filter((r) => r.offer.decision === "Accepted").length,
+      Declined: rows.filter((r) => r.offer.decision === "Declined").length,
+      Expired: rows.filter((r) => r.offer.decision === "Expired").length,
     };
-  }, [offers]);
+  }, [rows]);
 
-  const visible: EmployerOffer[] = offers.filter(
-    (o) => o.decision === tab,
+  const visible: EmployerOfferRow[] = rows.filter(
+    (r) => r.offer.decision === tab,
   );
 
   const onSendOffer = () => {
@@ -79,43 +83,43 @@ export default function EmployerOffersPage() {
     });
   };
 
-  const onSend = (offer: EmployerOffer) => {
+  const onSend = (r: EmployerOfferRow) => {
     push({
-      title: `Re-sent offer to ${offer.candidateName}`,
-      description: `Subject line refreshed, copy preserved for ${offer.role}.`,
+      title: `Re-sent offer to ${r.candidate.name}`,
+      description: `Subject line refreshed, copy preserved for ${r.job.title}.`,
       tone: "success",
     });
   };
 
-  const onRemind = (offer: EmployerOffer) => {
+  const onRemind = (r: EmployerOfferRow) => {
     push({
-      title: `Reminder sent to ${offer.candidateName}`,
+      title: `Reminder sent to ${r.candidate.name}`,
       description: "A nudge email will land in their inbox shortly.",
       tone: "success",
     });
   };
 
-  const onWithdrawPending = (offer: EmployerOffer) => {
-    setOffers((prev) => prev.filter((o) => o.id !== offer.id));
+  const onWithdrawPending = (r: EmployerOfferRow) => {
+    setRows((prev) => prev.filter((row) => row.offer.id !== r.offer.id));
     push({
-      title: `Withdrew offer to ${offer.candidateName}`,
+      title: `Withdrew offer to ${r.candidate.name}`,
       description: "Removed from the active pipeline.",
       tone: "info",
     });
   };
 
-  const onWithdrawDeclined = (offer: EmployerOffer) => {
+  const onWithdrawDeclined = (r: EmployerOfferRow) => {
     push({
-      title: `Withdrew declined offer to ${offer.candidateName}`,
+      title: `Withdrew declined offer to ${r.candidate.name}`,
       description: "Closing the record for this candidate.",
       tone: "info",
     });
   };
 
-  const onView = (offer: EmployerOffer) => {
+  const onView = (r: EmployerOfferRow) => {
     push({
-      title: `Opening ${offer.candidateName} offer`,
-      description: `${offer.role} · ${offer.baseSalary} · start ${offer.startDate}`,
+      title: `Opening ${r.candidate.name} offer`,
+      description: `${r.job.title} · ${r.offer.baseSalary} · start ${r.offer.startDate}`,
       tone: "info",
     });
   };
@@ -212,18 +216,18 @@ export default function EmployerOffersPage() {
                 </div>
               ) : (
                 <ul className="divide-y">
-                  {visible.map((offer) => (
+                  {visible.map((r) => (
                     <OfferRow
-                      key={offer.id}
-                      offer={offer}
-                      onSend={() => onSend(offer)}
-                      onRemind={() => onRemind(offer)}
+                      key={r.offer.id}
+                      row={r}
+                      onSend={() => onSend(r)}
+                      onRemind={() => onRemind(r)}
                       onWithdraw={() =>
-                        offer.decision === "Pending"
-                          ? onWithdrawPending(offer)
-                          : onWithdrawDeclined(offer)
+                        r.offer.decision === "Pending"
+                          ? onWithdrawPending(r)
+                          : onWithdrawDeclined(r)
                       }
-                      onView={() => onView(offer)}
+                      onView={() => onView(r)}
                     />
                   ))}
                 </ul>
@@ -237,18 +241,19 @@ export default function EmployerOffersPage() {
 }
 
 function OfferRow({
-  offer,
+  row,
   onSend,
   onRemind,
   onWithdraw,
   onView,
 }: {
-  offer: EmployerOffer;
+  row: EmployerOfferRow;
   onSend: () => void;
   onRemind: () => void;
   onWithdraw: () => void;
   onView: () => void;
 }) {
+  const { candidate, job, offer } = row;
   return (
     <li
       className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
@@ -258,14 +263,12 @@ function OfferRow({
           aria-hidden
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
         >
-          {offer.candidateInitials}
+          {candidate.initials}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">
-            {offer.candidateName}
-          </p>
+          <p className="truncate text-sm font-medium">{candidate.name}</p>
           <small className="block truncate text-muted-foreground">
-            {offer.role} · {offer.baseSalary}
+            {job.title} · {offer.baseSalary}
           </small>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <Badge variant="outline">Start: {offer.startDate}</Badge>

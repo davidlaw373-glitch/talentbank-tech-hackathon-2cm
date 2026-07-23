@@ -1,21 +1,23 @@
 import { notFound } from "next/navigation";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { applications } from "@/data/applications";
-import { candidateProfile } from "@/data/candidate";
+import { get as getApplication, getApplicationUpdate } from "@/data/applications";
+import { get as getJob } from "@/data/jobs";
+import { getCandidateContext } from "@/lib/data-helpers";
 
 type PageProps = {
   params: Promise<{ applicationId: string }>;
 };
 
-function formatDate(iso: string): string {
-  return iso;
-}
-
 export default async function CandidateApplicationDetailPage({ params }: PageProps) {
-  const { applicationId } = await params;
-  const application = applications.find((a) => a.id === applicationId);
+  const { applicationId: rawApplicationId } = await params;
+  const applicationId = Number(rawApplicationId);
+  if (!Number.isInteger(applicationId)) notFound();
+  const application = getApplication(applicationId);
   if (!application) notFound();
+
+  const job = getJob(application.jobId);
+  const { candidate } = getCandidateContext(application.candidateId);
 
   const completed = application.timeline.filter((t) => t.complete).length;
   const total = application.timeline.length;
@@ -28,9 +30,9 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Application
         </p>
-        <h1>{application.jobTitle}</h1>
+        <h1>{job?.title ?? "Unknown role"}</h1>
         <p className="text-muted-foreground">
-          {application.company} · Applied {formatDate(application.appliedDate)}
+          {job?.location ?? ""} · Applied {application.appliedDate}
         </p>
       </header>
 
@@ -40,7 +42,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
             <CardTitle>
               <h2>Where you stand</h2>
             </CardTitle>
-            <CardDescription>{application.update}</CardDescription>
+            <CardDescription>{getApplicationUpdate(application)}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
@@ -124,7 +126,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
             <h2>About your match</h2>
           </CardTitle>
           <CardDescription>
-            Why this role was surfaced for {candidateProfile.name.split(" ")[0]}.
+            Why this role was surfaced for {candidate.name.split(" ")[0]}.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">

@@ -11,86 +11,46 @@ import { ProfileExperienceList } from "@/components/features/candidate/profile-e
 import { ProfileProjectsList } from "@/components/features/candidate/profile-projects-list";
 import { ProfileSkillsCard } from "@/components/features/candidate/profile-skills-card";
 import { ProfileVerificationCard } from "@/components/features/candidate/profile-verification-card";
-import type {
-  Education,
-  Evidence,
-  Experience,
-  ProfileBasics,
-  Project,
-} from "@/types/profile";
-
-const PROFILE_DEFAULT: ProfileBasics = {
-  name: "Alex Morgan",
-  title: "Frontend Developer",
-  location: "Kuala Lumpur, Malaysia",
-  email: "alex.morgan@example.com",
-  phone: "+60 12 345 6789",
-  summary:
-    "Product-minded frontend developer who enjoys turning complex workflows into accessible, dependable experiences.",
-};
-
-const INITIAL_EXPERIENCE: Experience[] = [
-  {
-    id: "exp-1",
-    company: "Northstar Labs",
-    role: "Frontend Developer Intern",
-    period: "Jan–Jun 2024",
-    description:
-      "Built reusable product interfaces and improved core accessibility checks.",
-  },
-];
-
-const INITIAL_EDUCATION: Education[] = [
-  {
-    id: "edu-1",
-    institution: "University of Malaya",
-    qualification: "BSc Computer Science",
-    period: "2020–2024",
-  },
-];
-
-const INITIAL_PROJECTS: Project[] = [];
-
-const INITIAL_SKILLS: string[] = [
-  "TypeScript",
-  "React",
-  "Next.js",
-  "Accessibility",
-  "Product discovery",
-];
-
-const INITIAL_EVIDENCE: Evidence[] = [
-  {
-    id: "ev-1",
-    name: "Computer Science degree",
-    type: "Education",
-    status: "Verified",
-  },
-  {
-    id: "ev-2",
-    name: "Northstar Labs internship",
-    type: "Experience",
-    status: "Pending",
-  },
-  {
-    id: "ev-3",
-    name: "Project portfolio",
-    type: "Portfolio",
-    status: "Verified",
-  },
-];
+import { get as getCandidate } from "@/data/candidates";
+import type { Candidate } from "@/types/candidate";
 
 const TOTAL_SECTIONS = 6;
 
 export function ProfileOverview() {
-  const [basics, setBasics] = useState<ProfileBasics>(PROFILE_DEFAULT);
-  const [experience, setExperience] =
-    useState<Experience[]>(INITIAL_EXPERIENCE);
-  const [education, setEducation] =
-    useState<Education[]>(INITIAL_EDUCATION);
-  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
-  const [skills, setSkills] = useState<string[]>(INITIAL_SKILLS);
-  const [evidence, setEvidence] = useState<Evidence[]>(INITIAL_EVIDENCE);
+  // Read the demo candidate at module load. When auth lands, this becomes
+  // an async loader keyed on the signed-in user id.
+  const safeSeed: Candidate = getCandidate(1) ?? {
+    id: 0,
+    name: "Alex Morgan",
+    initials: "AM",
+    title: "Frontend Developer",
+    location: "",
+    email: "",
+    phone: "",
+    summary: "",
+    profileCompletion: 0,
+    verificationStatus: "Not started",
+    skills: [],
+    topSkills: [],
+    experience: [],
+    education: [],
+    projects: [],
+    evidence: [],
+  };
+
+  const [basics, setBasics] = useState(() => ({
+    name: safeSeed.name,
+    title: safeSeed.title,
+    location: safeSeed.location,
+    email: safeSeed.email,
+    phone: safeSeed.phone,
+    summary: safeSeed.summary,
+  }));
+  const [experience, setExperience] = useState(safeSeed.experience);
+  const [education, setEducation] = useState(safeSeed.education);
+  const [projects, setProjects] = useState(safeSeed.projects);
+  const [skills, setSkills] = useState<string[]>(safeSeed.skills);
+  const [evidence, setEvidence] = useState(safeSeed.evidence);
 
   const pct = useMemo(() => {
     let done = 2; // basics + skills are always present at load

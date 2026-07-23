@@ -17,9 +17,10 @@ import {
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
-import { applications } from "@/data/applications";
-import { candidateProfile, recentActivity } from "@/data/candidate";
-import { jobs } from "@/data/jobs";
+import { getCandidateContext, getMatchScoresForCandidate } from "@/lib/data-helpers";
+import { getActiveByCandidate } from "@/data/applications";
+import { get as getJob } from "@/data/jobs";
+import { getForCandidate as getActivityForCandidate } from "@/data/activity";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,49 +85,62 @@ const PROGRESS_ITEMS: ProgressItem[] = [
   },
 ];
 
-const STATS = [
-  {
-    label: "Active applications",
-    value: applications.length,
-    icon: Briefcase,
-    delta: "+2 this week",
-    swatch: "bg-accent-soft text-foreground",
-  },
-  {
-    label: "Interview pipeline",
-    value: applications.filter((a) => a.stage === "Interview").length,
-    icon: CalendarClock,
-    delta: "1 next week",
-    swatch: "bg-highlight-soft text-foreground",
-  },
-  {
-    label: "Profile strength",
-    value: candidateProfile.profileCompletion,
-    icon: Sparkles,
-    suffix: "%",
-    delta: "Top 18% of candidates",
-    swatch: "bg-chart-1/20 text-foreground",
-  },
-  {
-    label: "Average match",
-    value: Math.round(
-      jobs.reduce((acc, j) => acc + j.matchScore, 0) / jobs.length
-    ),
-    icon: TrendingUp,
-    suffix: "%",
-    delta: "Across 3 open roles",
-    swatch: "bg-chart-2/20 text-foreground",
-  },
-];
-
 export function DashboardOverview() {
   const { push } = useToast();
   const [progressItems, setProgressItems] = useState(PROGRESS_ITEMS);
+
+  // All derived from JSON at module load — single source of truth.
+  const { candidate } = getCandidateContext(1);
+  const applications = getActiveByCandidate(1);
+  const allMatchScores = getMatchScoresForCandidate(1);
+  const recentActivity = getActivityForCandidate(1);
+
+  const STATS = [
+    {
+      label: "Active applications",
+      value: applications.length,
+      icon: Briefcase,
+      delta: "+2 this week",
+      swatch: "bg-accent-soft text-foreground",
+    },
+    {
+      label: "Interview pipeline",
+      value: applications.filter((a) => a.stage === "Interview").length,
+      icon: CalendarClock,
+      delta: "1 next week",
+      swatch: "bg-highlight-soft text-foreground",
+    },
+    {
+      label: "Profile strength",
+      value: candidate.profileCompletion,
+      icon: Sparkles,
+      suffix: "%",
+      delta: "Top 18% of candidates",
+      swatch: "bg-chart-1/20 text-foreground",
+    },
+    {
+      label: "Average match",
+      value: (() => {
+        if (allMatchScores.length === 0) return 0;
+        const total = allMatchScores.reduce<number>(
+          (acc, s) => acc + s.score,
+          0,
+        );
+        return Math.round(total / allMatchScores.length);
+      })(),
+      icon: TrendingUp,
+      suffix: "%",
+      delta: `Across ${allMatchScores.length} open roles`,
+      swatch: "bg-chart-2/20 text-foreground",
+    },
+  ];
+
   const total = progressItems.length;
   const done = progressItems.filter((item) => item.done).length;
 
   // Highest priority next-action: any application waiting on the user.
   const interview = applications.find((a) => a.stage === "Interview");
+  const interviewJob = interview ? getJob(interview.jobId) : undefined;
 
   const toggleProgressItem = (id: string) => {
     const item = progressItems.find((progressItem) => progressItem.id === id);
@@ -156,7 +170,7 @@ export function DashboardOverview() {
                 Next action
               </p>
               <p className="mt-1 text-sm font-medium">
-                Prepare for your {interview.company} interview
+                Prepare for your {interviewJob?.title ?? "upcoming"} interview
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {interview.stage} · {interview.nextAction}
@@ -334,10 +348,10 @@ export function DashboardOverview() {
                 Credentials issued by your universities.
               </CardDescription>
             </div>
-            <Badge variant="outline">{candidateProfile.verificationStatus}</Badge>
+            <Badge variant="outline">{candidate.verificationStatus}</Badge>
           </CardHeader>
           <CardContent className="space-y-3">
-            {candidateProfile.evidence.map((e) => (
+            {candidate.evidence.map((e) => (
               <div
                 key={e.name}
                 className="flex items-center justify-between rounded-lg border bg-card p-3"
@@ -374,6 +388,7 @@ export function DashboardOverview() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {applications.map((app) => {
+            const job = getJob(app.jobId);
             const completed = app.timeline.filter((t) => t.complete).length;
             const totalSteps = app.timeline.length;
             const pct = Math.round((completed / totalSteps) * 100);
@@ -394,10 +409,10 @@ export function DashboardOverview() {
                         </div>
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold">
-                            {app.jobTitle}
+                            {job?.title ?? "Unknown role"}
                           </p>
                           <p className="truncate text-xs text-muted-foreground">
-                            {app.company}
+                            {job?.location ?? ""}
                           </p>
                         </div>
                       </div>
@@ -526,20 +541,16 @@ export function DashboardOverview() {
           </CardHeader>
           <CardContent className="space-y-3">
             <ol className="space-y-3">
-              {recentActivity.map((activity, i) => (
+              {recentActivity.map((entry) => (
                 <li
-                  key={activity}
+                  key={entry.id}
                   className="relative flex items-start gap-3"
                 >
                   <span className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-foreground/60" />
                   <div>
-                    <p className="text-sm">{activity}</p>
+                    <p className="text-sm">{entry.body}</p>
                     <p className="text-xs text-muted-foreground">
-                      {i === 0
-                        ? "Just now"
-                        : i === 1
-                          ? "Yesterday"
-                          : "2 days ago"}
+                      {entry.timestamp}
                     </p>
                   </div>
                 </li>

@@ -14,8 +14,8 @@ import {
   X,
 } from "lucide-react";
 
-import { candidateProfile } from "@/data/candidate";
-import { notifications } from "@/data/notifications";
+import { get as getCandidate } from "@/data/candidates";
+import { getCandidateNotifications } from "@/data/notifications";
 import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
@@ -39,7 +39,8 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // Use the same hook + storage key as the notifications page so the bell
   // badge and the "Mark read" toggles share one source of truth.
-  const { unreadCount: candidateUnread } = useNotificationReadState(notifications, {
+  const candidate = getCandidate(1);
+  const { unreadCount: candidateUnread } = useNotificationReadState(getCandidateNotifications(), {
     storageKey: "careeros.notifications.candidate",
   });
   const isActive = (href: string) => {
@@ -89,8 +90,8 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
             <ThemeToggle />
             <NotificationBell href="/candidate/notifications" unreadCount={candidateUnread} />
             <UserMenu
-              name={candidateProfile.name}
-              initials={candidateProfile.initials}
+              name={candidate?.name ?? "Candidate"}
+              initials={candidate?.initials ?? "?"}
               subtitle="Candidate"
               role="Candidate"
               profileHref="/candidate/profile"

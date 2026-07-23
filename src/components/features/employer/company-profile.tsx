@@ -13,8 +13,9 @@ import {
   X,
 } from "lucide-react";
 
-import { employerProfile as seedProfile } from "@/data/employer";
-import type { EmployerProfile } from "@/types/employer";
+import { get as getEmployer } from "@/data/employers";
+import { getEmployerStats } from "@/lib/data-helpers";
+import type { Employer } from "@/types/employer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,15 +30,48 @@ import { Separator } from "@/components/ui/separator";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/common/toast";
 
+const DEMO_EMPLOYER_ID = 1;
+
+// Editable view of the employer profile — the JSON-backed `Employer`
+// is extended with the four derived stat fields so the UI can mutate
+// them locally without losing the live computed values on first paint.
+type EditableEmployerProfile = Employer & {
+  openRoles: number;
+  activeCandidates: number;
+  hiresThisQuarter: number;
+  avgTimeToHire: number;
+};
+
 export function CompanyProfile() {
   const { push } = useToast();
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<EmployerProfile>(seedProfile);
-  const [saved, setSaved] = useState<EmployerProfile>(seedProfile);
+  const seedEmployer = getEmployer(DEMO_EMPLOYER_ID);
+  const seedStats = getEmployerStats(DEMO_EMPLOYER_ID);
+  const seedProfile: EditableEmployerProfile = {
+    id: seedEmployer?.id ?? DEMO_EMPLOYER_ID,
+    companyName: seedEmployer?.companyName ?? "",
+    initials: seedEmployer?.initials ?? "",
+    tagline: seedEmployer?.tagline ?? "",
+    industry: seedEmployer?.industry ?? "Software & Internet",
+    size: seedEmployer?.size ?? "1–10",
+    founded: seedEmployer?.founded ?? new Date().getFullYear(),
+    website: seedEmployer?.website ?? "",
+    hq: seedEmployer?.hq ?? "",
+    about: seedEmployer?.about ?? "",
+    culture: seedEmployer?.culture ?? [],
+    benefits: seedEmployer?.benefits ?? [],
+    openRoles: seedStats.openRoles,
+    activeCandidates: seedStats.activeCandidates,
+    hiresThisQuarter: seedStats.hiresThisQuarter,
+    avgTimeToHire: seedStats.avgTimeToHire,
+  };
 
-  const setField = <K extends keyof EmployerProfile>(
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<EditableEmployerProfile>(seedProfile);
+  const [saved, setSaved] = useState<EditableEmployerProfile>(seedProfile);
+
+  const setField = <K extends keyof EditableEmployerProfile>(
     key: K,
-    value: EmployerProfile[K],
+    value: EditableEmployerProfile[K],
   ) => {
     setDraft((d) => ({ ...d, [key]: value }));
   };
@@ -162,14 +196,18 @@ export function CompanyProfile() {
                 label="Industry"
                 value={saved.industry}
                 editing={editing}
-                onChange={(v) => setField("industry", v as EmployerProfile["industry"])}
+                onChange={(v) =>
+                  setField("industry", v as EditableEmployerProfile["industry"])
+                }
               />
               <FieldBlock
                 id="size"
                 label="Company size"
                 value={saved.size}
                 editing={editing}
-                onChange={(v) => setField("size", v as EmployerProfile["size"])}
+                onChange={(v) =>
+                  setField("size", v as EditableEmployerProfile["size"])
+                }
               />
               <FieldBlock
                 id="founded"

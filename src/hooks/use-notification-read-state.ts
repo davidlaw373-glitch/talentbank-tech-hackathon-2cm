@@ -4,7 +4,7 @@ import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 import type { NotificationItem } from "@/types/notification";
 
-type OverrideMap = Record<string, boolean>;
+type OverrideMap = Record<number, boolean>;
 
 // In-memory store, keyed by storageKey. `useSyncExternalStore` reads from
 // here on the client and reads a stable empty-object snapshot on the
@@ -114,10 +114,10 @@ export function useNotificationReadState(
   );
 
   const setRead = useCallback(
-    (id: string, next: boolean) => {
+    (id: number, next: boolean) => {
       if (!storageKey) return;
       const current = store.get(storageKey) ?? {};
-      const merged = { ...current, [id]: next };
+      const merged: OverrideMap = { ...current, [id]: next };
       store.set(storageKey, merged);
       persistOverride(storageKey, merged);
       notify(storageKey);
@@ -126,7 +126,7 @@ export function useNotificationReadState(
   );
 
   const toggle = useCallback(
-    (id: string) => {
+    (id: number) => {
       const current = source.find((n) => n.id === id);
       if (!current) return;
       const fallback = id in override ? Boolean(override[id]) : current.read;

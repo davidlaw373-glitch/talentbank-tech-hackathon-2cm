@@ -83,8 +83,8 @@ function countByStatus(records: GraduateRecord[]) {
 
 type GraduateListProps = {
   records: GraduateRecord[];
-  selected: Set<string>;
-  onToggleSelected: (graduateId: string) => void;
+  selected: Set<number>;
+  onToggleSelected: (graduateId: number) => void;
   onStatusChange: (
     graduate: GraduateRecord,
     status: VerificationRecordStatus,
@@ -203,7 +203,7 @@ export function VerificationPipeline({
   const { push } = useToast();
   const [records, setRecords] = useState(initialRecords);
   const [activeTab, setActiveTab] = useState<VerificationTab>("All");
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const [selected, setSelected] = useState<Set<number>>(() => new Set());
   const [pendingMarkDispute, setPendingMarkDispute] =
     useState<GraduateRecord | null>(null);
 
@@ -224,7 +224,7 @@ export function VerificationPipeline({
     setSelected(new Set());
   }
 
-  function toggleSelected(graduateId: string) {
+  function toggleSelected(graduateId: number) {
     setSelected((current) => {
       const next = new Set(current);
       if (next.has(graduateId)) next.delete(graduateId);

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "institutionName": "University of Malaya",
+    "initials": "UM",
+    "type": "Public",
+    "city": "Kuala Lumpur",
+    "country": "Malaysia",
+    "founded": 1905,
+    "totalStudents": 18420,
+    "activeCohorts": 12,
+    "employmentRate": 87,
+    "medianTimeToHire": 4.2,
+    "tagline": "Research-led teaching for the next century of builders.",
+    "about": "The University of Malaya is the oldest university in Malaysia. Our CareerOS partnership verifies student credentials in bulk and surfaces employment outcomes back to faculty.",
+    "topPrograms": [
+      "Computer Science",
+      "Software Engineering",
+      "Data Science",
+      "Business Analytics",
+      "Electrical Engineering"
+    ],
+    "partnerEmployers": 184,
+    "verifiedCredentials": 9240
+  }
+]

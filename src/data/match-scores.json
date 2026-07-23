@@ -1,0 +1,104 @@
+[
+  {
+    "id": 1,
+    "candidateId": 1,
+    "jobId": 1,
+    "score": 94,
+    "matchingSkills": ["React", "TypeScript", "Next.js", "Accessibility"],
+    "missingSkills": ["GraphQL"]
+  },
+  {
+    "id": 2,
+    "candidateId": 1,
+    "jobId": 2,
+    "score": 88,
+    "matchingSkills": ["React", "TypeScript", "Next.js", "Design systems"],
+    "missingSkills": ["WebRTC"]
+  },
+  {
+    "id": 3,
+    "candidateId": 1,
+    "jobId": 3,
+    "score": 82,
+    "matchingSkills": ["TypeScript", "Next.js", "Design systems"],
+    "missingSkills": ["Kubernetes"]
+  },
+  {
+    "id": 4,
+    "candidateId": 1,
+    "jobId": 4,
+    "score": 71,
+    "matchingSkills": ["Python"],
+    "missingSkills": ["Snowflake", "dbt", "Airflow"]
+  },
+  {
+    "id": 5,
+    "candidateId": 1,
+    "jobId": 5,
+    "score": 68,
+    "matchingSkills": ["Accessibility", "Product discovery"],
+    "missingSkills": ["Swift", "SwiftUI"]
+  },
+  {
+    "id": 6,
+    "candidateId": 1,
+    "jobId": 6,
+    "score": 96,
+    "matchingSkills": [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Accessibility",
+      "Design systems"
+    ],
+    "missingSkills": []
+  },
+  {
+    "id": 7,
+    "candidateId": 2,
+    "jobId": 7,
+    "score": 94,
+    "matchingSkills": ["React", "TypeScript", "Design systems"],
+    "missingSkills": []
+  },
+  {
+    "id": 8,
+    "candidateId": 3,
+    "jobId": 7,
+    "score": 71,
+    "matchingSkills": ["Python", "PyTorch", "TypeScript"],
+    "missingSkills": ["React"]
+  },
+  {
+    "id": 9,
+    "candidateId": 4,
+    "jobId": 8,
+    "score": 89,
+    "matchingSkills": ["Discovery research", "B2B SaaS", "Roadmaps"],
+    "missingSkills": ["Developer tools"]
+  },
+  {
+    "id": 10,
+    "candidateId": 5,
+    "jobId": 7,
+    "score": 62,
+    "matchingSkills": ["SQL", "Python"],
+    "missingSkills": ["React", "TypeScript", "Design systems"]
+  },
+  {
+    "id": 11,
+    "candidateId": 6,
+    "jobId": 9,
+    "score": 91,
+    "matchingSkills": ["Figma", "Swift", "Motion design", "React"],
+    "missingSkills": []
+  },
+  {
+    "id": 12,
+    "candidateId": 7,
+    "jobId": 10,
+    "score": 58,
+    "matchingSkills": ["Go", "PostgreSQL", "AWS", "Kubernetes"],
+    "missingSkills": ["Incident response", "Observability"]
+  }
+]

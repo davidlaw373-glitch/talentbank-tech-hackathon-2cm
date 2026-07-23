@@ -15,8 +15,8 @@ import {
   X,
 } from "lucide-react";
 
-import { universityProfile } from "@/data/university";
-import { universityNotifications } from "@/data/notifications";
+import { get as getUniversity } from "@/data/universities";
+import { getUniversityNotifications } from "@/data/notifications";
 import { useNotificationReadState } from "@/hooks/use-notification-read-state";
 import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
@@ -44,7 +44,8 @@ export function UniversityShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   // Shared with the notifications page — same source data, same storage key.
-  const { unreadCount: universityUnread } = useNotificationReadState(universityNotifications, {
+  const university = getUniversity(1);
+  const { unreadCount: universityUnread } = useNotificationReadState(getUniversityNotifications(), {
     storageKey: "careeros.notifications.university",
   });
   const isActive = (href: string) => {
@@ -102,8 +103,8 @@ export function UniversityShell({ children }: { children: React.ReactNode }) {
             <ThemeToggle />
             <NotificationBell href="/university/notifications" unreadCount={universityUnread} />
             <UserMenu
-              name={universityProfile.institutionName}
-              initials={universityProfile.initials}
+              name={university?.institutionName ?? "University"}
+              initials={university?.initials ?? "?"}
               subtitle="University workspace"
               role="University"
               profileHref="/university/profile"

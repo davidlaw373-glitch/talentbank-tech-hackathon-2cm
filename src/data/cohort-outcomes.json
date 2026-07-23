@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "universityId": 1,
+    "cohort": "Class of 2024",
+    "total": 1240,
+    "employed": 1078,
+    "inGradSchool": 86,
+    "seeking": 76,
+    "avgSalary": "RM 4,800 / mo",
+    "topEmployer": "Northstar Labs",
+    "topRole": "Frontend Developer"
+  },
+  {
+    "id": 2,
+    "universityId": 1,
+    "cohort": "Class of 2023",
+    "total": 1180,
+    "employed": 1041,
+    "inGradSchool": 92,
+    "seeking": 47,
+    "avgSalary": "RM 4,650 / mo",
+    "topEmployer": "Helio",
+    "topRole": "Backend Engineer"
+  },
+  {
+    "id": 3,
+    "universityId": 1,
+    "cohort": "Class of 2022",
+    "total": 1095,
+    "employed": 989,
+    "inGradSchool": 71,
+    "seeking": 35,
+    "avgSalary": "RM 4,400 / mo",
+    "topEmployer": "Orbit Commerce",
+    "topRole": "Product Engineer"
+  }
+]

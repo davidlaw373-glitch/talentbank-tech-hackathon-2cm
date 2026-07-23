@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { universityProfile as seedProfile } from "@/data/university";
+import { universityProfile as seedProfile } from "@/lib/university-helpers";
 import type { UniversityProfile } from "@/types/university";
 import { useToast } from "@/components/common/toast";
 import { InstitutionProfileHeader } from "./institution-profile-header";

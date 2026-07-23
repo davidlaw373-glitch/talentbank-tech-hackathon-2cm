@@ -10,13 +10,14 @@ import {
   Search,
 } from "lucide-react";
 
-import { applications } from "@/data/applications";
 import { useToast } from "@/components/common/toast";
-import type { Application } from "@/types/candidate";
+import { getByCandidate, getApplicationUpdate } from "@/data/applications";
+import { get as getJob } from "@/data/jobs";
 import {
   STAGE_VARIANT,
   type ApplicationStage,
 } from "@/types/application";
+import type { Application } from "@/types/candidate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -104,17 +105,20 @@ export function ApplicationTracker() {
   >("active");
   const [query, setQuery] = useState("");
   const [applicationStates, setApplicationStates] = useState<
-    Record<string, TrackingState>
+    Record<number, TrackingState>
   >({});
   const [pendingWithdraw, setPendingWithdraw] = useState<
-    { id: string; jobTitle: string } | null
+    { id: number; jobTitle: string } | null
   >(null);
 
-  const getTrackingState = (id: string): TrackingState =>
+  // Always read from the JSON dataset, never a stale module-level snapshot.
+  const applications = getByCandidate(1);
+
+  const getTrackingState = (id: number): TrackingState =>
     applicationStates[id] ?? "active";
 
   const updateTrackingState = (
-    id: string,
+    id: number,
     state: TrackingState,
     jobTitle: string
   ) => {
@@ -174,13 +178,16 @@ export function ApplicationTracker() {
     });
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.jobTitle.toLowerCase().includes(q) ||
-          a.company.toLowerCase().includes(q)
-      );
+      list = list.filter((a) => {
+        const job = getJob(a.jobId);
+        const haystack = `${job?.title ?? ""} ${job?.location ?? ""}`;
+        return haystack.toLowerCase().includes(q);
+      });
     }
     return list;
+    // applications is read inside the memo via getByCandidate — it is stable
+    // (sourced from JSON) so we intentionally omit it from deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, query, applicationStates]);
 
   return (
@@ -291,9 +298,15 @@ export function ApplicationTracker() {
                           />
                         </div>
                         <div className="min-w-0 flex-1 space-y-3">
+                          {(() => {
+                            const job = getJob(app.jobId);
+                            const jobTitle = job?.title ?? "Unknown role";
+                            const company = job?.location ?? "";
+                            return (
+                              <>
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="truncate text-sm font-semibold">
-                              {app.jobTitle}
+                              {jobTitle}
                             </p>
                             <Badge variant={tone}>{app.stage}</Badge>
                           </div>
@@ -303,13 +316,13 @@ export function ApplicationTracker() {
                                 className="h-3 w-3"
                                 aria-hidden
                               />
-                              {app.company}
+                              {company}
                             </span>
                             <span>Applied {app.appliedDate}</span>
                           </div>
                           <div className="rounded-md border-l-2 border-foreground/40 bg-surface-tint p-2.5 text-xs leading-relaxed">
                             <span className="font-semibold">Update: </span>
-                            {app.update}
+                            {getApplicationUpdate(app)}
                           </div>
                           <ApplicationProgress application={app} />
                           <div className="flex flex-wrap items-center gap-2">
@@ -327,7 +340,7 @@ export function ApplicationTracker() {
                                 updateTrackingState(
                                   app.id,
                                   trackingState === "saved" ? "active" : "saved",
-                                  app.jobTitle
+                                  jobTitle
                                 )
                               }
                             >
@@ -343,7 +356,7 @@ export function ApplicationTracker() {
                               onClick={() =>
                                 setPendingWithdraw({
                                   id: app.id,
-                                  jobTitle: app.jobTitle,
+                                  jobTitle,
                                 })
                               }
                             >
@@ -352,6 +365,9 @@ export function ApplicationTracker() {
                                 : "Withdraw application"}
                             </Button>
                           </div>
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>

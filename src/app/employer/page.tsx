@@ -16,21 +16,18 @@ import {
 } from "lucide-react";
 
 import {
-  employerCandidates,
-  employerInterviews,
-  employerJobs,
-  employerProfile,
-} from "@/data/employer";
+  getEmployerCandidateRows,
+  getEmployerInterviewRows,
+  getEmployerStats,
+} from "@/lib/data-helpers";
+import { get as getEmployer } from "@/data/employers";
+import { getByEmployer as getJobsByEmployer, getApplicantCount } from "@/data/jobs";
 import {
   APPLICATION_STAGES,
   NEXT_STAGE,
   type ApplicationStage,
 } from "@/types/application";
-import type {
-  EmployerCandidate,
-  EmployerInterview,
-  InterviewStatus,
-} from "@/types/employer";
+import type { EmployerInterviewRow } from "@/lib/data-helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,25 +41,24 @@ import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
 
-const STAGES = APPLICATION_STAGES;
-const STAGE_ADVANCE = NEXT_STAGE;
+const DEMO_EMPLOYER_ID = 1;
 
 function stageTone(stage: ApplicationStage) {
   switch (stage) {
     case "Applied":
       return { variant: "outline" as const };
     case "Screening":
-      return { variant: "secondary" as const };
     case "Interview":
       return { variant: "secondary" as const };
     case "Offer":
-      return { variant: "default" as const };
     case "Hired":
       return { variant: "default" as const };
   }
 }
 
-function interviewActionLabel(status: InterviewStatus) {
+function interviewActionLabel(
+  status: EmployerInterviewRow["interview"]["status"],
+) {
   switch (status) {
     case "Scheduled":
       return "Join";
@@ -77,7 +73,9 @@ function interviewActionLabel(status: InterviewStatus) {
   }
 }
 
-function priorityOrder(status: InterviewStatus) {
+function priorityOrder(
+  status: EmployerInterviewRow["interview"]["status"],
+) {
   if (status === "Pending confirmation") return 0;
   if (status === "Reschedule requested") return 1;
   if (status === "Scheduled") return 2;
@@ -88,20 +86,31 @@ function priorityOrder(status: InterviewStatus) {
 export default function EmployerDashboardPage() {
   const { push } = useToast();
 
-  const liveJobs = employerJobs.filter((j) => j.status === "Live");
-  const totalCandidates = employerCandidates.filter((c) => !c.rejected).length;
+  const employer = getEmployer(DEMO_EMPLOYER_ID);
+  const candidateRows = getEmployerCandidateRows(DEMO_EMPLOYER_ID);
+  const interviewRows = getEmployerInterviewRows(DEMO_EMPLOYER_ID);
+  const stats = getEmployerStats(DEMO_EMPLOYER_ID);
+  const jobs = getJobsByEmployer(DEMO_EMPLOYER_ID);
 
-  const recentApplicants: EmployerCandidate[] = [...employerCandidates]
-    .sort((a, b) => (a.appliedDate < b.appliedDate ? 1 : -1))
+  const liveJobs = jobs.filter((j) => j.status === "Live");
+  const totalCandidates = candidateRows.filter((r) => !r.app.rejected).length;
+
+  const recentApplicants = candidateRows
+    .slice()
+    .sort((a, b) => (a.app.appliedDate < b.app.appliedDate ? 1 : -1))
     .slice(0, 5);
 
-  const upcomingInterviews: EmployerInterview[] = [...employerInterviews]
-    .sort((a, b) => priorityOrder(a.status) - priorityOrder(b.status))
+  const upcomingInterviews = interviewRows
+    .slice()
+    .sort(
+      (a, b) =>
+        priorityOrder(a.interview.status) - priorityOrder(b.interview.status),
+    )
     .slice(0, 3);
 
-  const pipelineCounts = STAGES.map((stage) => ({
+  const pipelineCounts = APPLICATION_STAGES.map((stage) => ({
     stage,
-    count: employerCandidates.filter((c) => c.stage === stage).length,
+    count: candidateRows.filter((r) => r.app.stage === stage).length,
   }));
 
   const largestPipelineCount = Math.max(
@@ -116,10 +125,6 @@ export default function EmployerDashboardPage() {
     });
   };
 
-  // Promoted next-action CTAs — these are the highest-priority, time-sensitive
-  // items the user should see before scanning stats.
-  const recentApplicant = recentApplicants[0];
-
   return (
     <div className="space-y-8">
       {/* Hero */}
@@ -128,7 +133,7 @@ export default function EmployerDashboardPage() {
           Employer dashboard
         </p>
         <PageHeading
-          title={`Welcome back, ${employerProfile.companyName}`}
+          title={`Welcome back, ${employer?.companyName ?? "there"}`}
           description="A snapshot of your hiring funnel today, the candidates moving, and what to do next."
           action={
             <Button onClick={onPostJob}>
@@ -140,7 +145,7 @@ export default function EmployerDashboardPage() {
       </section>
 
       {/* Next-action prompt */}
-      {recentApplicant ? (
+      {recentApplicants[0] ? (
         <Card className="lift-on-hover">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
             <div className="min-w-0 flex-1">
@@ -148,15 +153,17 @@ export default function EmployerDashboardPage() {
                 Next action
               </p>
               <p className="mt-1 text-sm font-medium">
-                Review {recentApplicant.name}&apos;s application for{" "}
-                {recentApplicant.appliedFor}
+                Review {recentApplicants[0].candidate.name}&apos;s application for{" "}
+                {recentApplicants[0].job.title}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {recentApplicant.matchScore}% match · just applied
+                {recentApplicants[0].matchScore}% match · just applied
               </p>
             </div>
             <Button asChild>
-              <Link href={`/employer/candidates/${recentApplicant.id}`}>
+              <Link
+                href={`/employer/candidates/${recentApplicants[0].candidate.id}`}
+              >
                 Review application
                 <ArrowRight />
               </Link>
@@ -173,28 +180,28 @@ export default function EmployerDashboardPage() {
         {[
           {
             label: "Open roles",
-            value: liveJobs.length,
+            value: stats.openRoles,
             icon: Briefcase,
             delta: "Live postings",
             swatch: "bg-accent-soft text-foreground",
           },
           {
             label: "Active candidates",
-            value: employerProfile.activeCandidates,
+            value: stats.activeCandidates,
             icon: Users,
             delta: "Across all roles",
             swatch: "bg-chart-1/20 text-foreground",
           },
           {
             label: "Hires this quarter",
-            value: employerProfile.hiresThisQuarter,
+            value: stats.hiresThisQuarter,
             icon: Sparkles,
             delta: "Q3 2026",
             swatch: "bg-chart-2/20 text-foreground",
           },
           {
             label: "Avg days to hire",
-            value: employerProfile.avgTimeToHire,
+            value: stats.avgTimeToHire,
             icon: Clock,
             delta: "Days, last 90 days",
             swatch: "bg-highlight-soft text-foreground",
@@ -295,8 +302,8 @@ export default function EmployerDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {recentApplicants.map((c) => (
-              <RecentApplicantRow key={c.id} candidate={c} />
+            {recentApplicants.map((r) => (
+              <RecentApplicantRow key={r.candidate.id} row={r} />
             ))}
           </CardContent>
         </Card>
@@ -323,8 +330,8 @@ export default function EmployerDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {upcomingInterviews.map((i) => (
-              <UpcomingInterviewRow key={i.id} interview={i} />
+            {upcomingInterviews.map((r) => (
+              <UpcomingInterviewRow key={r.interview.id} row={r} />
             ))}
           </CardContent>
         </Card>
@@ -367,11 +374,14 @@ export default function EmployerDashboardPage() {
               <div className="flex shrink-0 items-center gap-3">
                 <div className="flex flex-col items-end">
                   <span className="text-base font-semibold tabular-nums">
-                    {job.applicants}
+                    {getApplicantCount(job.id)}
                   </span>
                   <small className="text-muted-foreground">applicants</small>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden />
+                <ArrowRight
+                  className="h-4 w-4 text-muted-foreground"
+                  aria-hidden
+                />
               </div>
             </Link>
           ))}
@@ -381,10 +391,14 @@ export default function EmployerDashboardPage() {
   );
 }
 
-function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
+function RecentApplicantRow({
+  row,
+}: {
+  row: ReturnType<typeof getEmployerCandidateRows>[number];
+}) {
   const { push } = useToast();
-  const [stage, setStage] = useState<ApplicationStage>(candidate.stage);
-  const next = STAGE_ADVANCE[stage];
+  const [stage, setStage] = useState<ApplicationStage>(row.app.stage);
+  const next = NEXT_STAGE[stage];
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -392,15 +406,15 @@ function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
     if (!next) return;
     setStage(next);
     push({
-      title: `Moved ${candidate.name} to ${next}`,
-      description: `Pipeline updated for ${candidate.appliedFor}.`,
+      title: `Moved ${row.candidate.name} to ${next}`,
+      description: `Pipeline updated for ${row.job.title}.`,
       tone: "success",
     });
   };
 
   return (
     <Link
-      href={`/employer/candidates/${candidate.id}`}
+      href={`/employer/candidates/${row.candidate.id}`}
       className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -408,25 +422,25 @@ function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
           aria-hidden
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
         >
-          {candidate.initials}
+          {row.candidate.initials}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{candidate.name}</p>
+          <p className="truncate text-sm font-medium">{row.candidate.name}</p>
           <small className="block truncate text-muted-foreground">
-            {candidate.appliedFor}
+            {row.job.title}
           </small>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <Badge variant="outline">{candidate.matchScore}% match</Badge>
+        <Badge variant="outline">{row.matchScore}% match</Badge>
         <Badge variant={stageTone(stage).variant}>{stage}</Badge>
         <Button
           variant="outline"
           size="sm"
           onClick={onMove}
-          disabled={!next || candidate.rejected}
+          disabled={!next || row.app.rejected}
           aria-label={
-            next ? `Move ${candidate.name} to ${next}` : "Already at final stage"
+            next ? `Move ${row.candidate.name} to ${next}` : "Already at final stage"
           }
         >
           Move
@@ -437,13 +451,13 @@ function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
   );
 }
 
-function UpcomingInterviewRow({ interview }: { interview: EmployerInterview }) {
+function UpcomingInterviewRow({ row }: { row: EmployerInterviewRow }) {
   const { push } = useToast();
-  const [status, setStatus] = useState<InterviewStatus>(interview.status);
+  const [status, setStatus] = useState(row.interview.status);
 
   const onAction = () => {
     push({
-      title: `${interviewActionLabel(status)} ${interview.candidateName}`,
+      title: `${interviewActionLabel(status)} ${row.candidate.name}`,
       description:
         status === "Scheduled"
           ? "Joining link will open in a new tab."
@@ -461,7 +475,7 @@ function UpcomingInterviewRow({ interview }: { interview: EmployerInterview }) {
   const onReschedule = () => {
     setStatus("Scheduled");
     push({
-      title: `Rescheduled ${interview.candidateName}`,
+      title: `Rescheduled ${row.candidate.name}`,
       description: "New slot proposed — candidate will be notified.",
       tone: "success",
     });
@@ -477,15 +491,15 @@ function UpcomingInterviewRow({ interview }: { interview: EmployerInterview }) {
           aria-hidden
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
         >
-          {interview.candidateInitials}
+          {row.candidate.initials}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{interview.candidateName}</p>
+          <p className="truncate text-sm font-medium">{row.candidate.name}</p>
           <small className="block truncate text-muted-foreground">
-            {interview.role} · {interview.type}
+            {row.job.title} · {row.interview.type}
           </small>
           <small className="block truncate text-muted-foreground">
-            {interview.scheduledFor} · {interview.duration} min
+            {row.interview.scheduledFor} · {row.interview.duration} min
           </small>
         </div>
       </div>
