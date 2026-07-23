@@ -12,21 +12,11 @@ import {
   X,
 } from "lucide-react";
 
-import type { CandidateStage } from "@/types/employer";
+import { NEXT_STAGE, type ApplicationStage } from "@/types/application";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/common/toast";
 import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
 import { cn } from "@/lib/utils";
-
-const NEXT_STAGE: Record<CandidateStage, CandidateStage | null> = {
-  New: "Screening",
-  Screening: "Shortlisted",
-  Shortlisted: "Interviewing",
-  Interviewing: "Offer",
-  Offer: "Hired",
-  Hired: null,
-  Rejected: null,
-};
 
 export function CandidateActions({
   candidateId,
@@ -39,12 +29,13 @@ export function CandidateActions({
   candidateName: string;
   appliedFor: string;
   initialStarred: boolean;
-  initialStage: CandidateStage;
+  initialStage: ApplicationStage;
 }) {
   const { push } = useToast();
   const { add, remove, getByCandidate, isInPool } = useTalentPool();
   const [starred, setStarred] = useState(initialStarred);
-  const [stage, setStage] = useState<CandidateStage>(initialStage);
+  const [stage, setStage] = useState<ApplicationStage>(initialStage);
+  const [rejected, setRejected] = useState(false);
 
   const poolEntry = getByCandidate(candidateId);
   const inPool = isInPool(candidateId);
@@ -74,7 +65,8 @@ export function CandidateActions({
   };
 
   const reject = () => {
-    setStage("Rejected");
+    if (rejected) return;
+    setRejected(true);
     push({
       title: `${candidateName} rejected`,
       description: "A polite rejection email will be sent automatically.",
@@ -142,7 +134,7 @@ export function CandidateActions({
           variant="outline"
           size="sm"
           onClick={advance}
-          disabled={!next || stage === "Rejected"}
+          disabled={!next || rejected}
         >
           {next ? `Move to ${next}` : "Already at final stage"}
           {next ? <ArrowRight /> : null}
@@ -151,7 +143,7 @@ export function CandidateActions({
           variant="destructive"
           size="sm"
           onClick={reject}
-          disabled={stage === "Rejected"}
+          disabled={rejected}
         >
           <Trash2 />
           Reject
@@ -181,7 +173,7 @@ export function CandidateActions({
         <Button
           variant="destructive"
           onClick={reject}
-          disabled={stage === "Rejected"}
+          disabled={rejected}
         >
           <X />
           Reject

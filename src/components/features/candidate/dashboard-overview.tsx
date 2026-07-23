@@ -9,22 +9,17 @@ import {
   Sparkles,
   ArrowRight,
   Check,
-  MapPin,
   Building2,
-  Clock,
   TrendingUp,
   GraduationCap,
   FolderGit2,
   FileText,
-  RefreshCw,
-  SlidersHorizontal,
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
 import { applications } from "@/data/applications";
 import { candidateProfile, recentActivity } from "@/data/candidate";
 import { jobs } from "@/data/jobs";
-import { JobMatchBreakdown } from "@/components/features/jobs/job-match-breakdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -99,7 +94,7 @@ const STATS = [
   },
   {
     label: "Interview pipeline",
-    value: applications.filter((a) => a.status === "Interview").length,
+    value: applications.filter((a) => a.stage === "Interview").length,
     icon: CalendarClock,
     delta: "1 next week",
     swatch: "bg-highlight-soft text-foreground",
@@ -124,13 +119,6 @@ const STATS = [
   },
 ];
 
-function matchTone(score: number) {
-  if (score >= 90) return { label: "Strong fit", variant: "default" as const };
-  if (score >= 80) return { label: "Good fit", variant: "secondary" as const };
-  if (score >= 70) return { label: "Possible", variant: "outline" as const };
-  return { label: "Stretch", variant: "outline" as const };
-}
-
 export function DashboardOverview() {
   const { push } = useToast();
   const [progressItems, setProgressItems] = useState(PROGRESS_ITEMS);
@@ -138,7 +126,7 @@ export function DashboardOverview() {
   const done = progressItems.filter((item) => item.done).length;
 
   // Highest priority next-action: any application waiting on the user.
-  const interview = applications.find((a) => a.status === "Interview");
+  const interview = applications.find((a) => a.stage === "Interview");
 
   const toggleProgressItem = (id: string) => {
     const item = progressItems.find((progressItem) => progressItem.id === id);
@@ -416,10 +404,10 @@ export function DashboardOverview() {
                     </div>
                     <Badge
                       variant={
-                        app.status === "Interview" ? "secondary" : "outline"
+                        app.stage === "Interview" ? "secondary" : "outline"
                       }
                     >
-                      {app.status}
+                      {app.stage}
                     </Badge>
                   </div>
 
@@ -527,143 +515,8 @@ export function DashboardOverview() {
         </div>
       </section>
 
-      {/* Recommended jobs + recent activity */}
+      {/* Recent activity */}
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Recommended jobs — spans 2 */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex-row items-start justify-between space-y-0">
-            <div>
-              <CardTitle>
-                <h2>Recommended for you</h2>
-              </CardTitle>
-              <CardDescription>
-                Based on your skills, goals, and live market data.
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  push({ title: "Insights refreshed", tone: "success" })
-                }
-              >
-                <RefreshCw aria-hidden />
-                Refresh insights
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  push({
-                    title: "Preferences editor opened",
-                    tone: "info",
-                  })
-                }
-              >
-                <SlidersHorizontal aria-hidden />
-                Update preferences
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/candidate/jobs">
-                  See all
-                  <ArrowRight aria-hidden />
-                </Link>
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {jobs.slice(0, 3).map((job) => {
-              const tone = matchTone(job.matchScore);
-              return (
-                <article
-                  key={job.id}
-                  className="lift-on-hover block rounded-lg border bg-card p-4 transition-colors hover:bg-accent-soft"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted">
-                      <Briefcase className="h-5 w-5" aria-hidden />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-semibold">
-                          {job.title}
-                        </p>
-                        <Badge variant={tone.variant} className="shrink-0">
-                          {tone.label}
-                        </Badge>
-                      </div>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {job.company} · {job.workMode}
-                      </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" aria-hidden />
-                          {job.location}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" aria-hidden />
-                          {job.posted}
-                        </span>
-                      </div>
-                      {/* Match breakdown — collapsible when more than 3 skills */}
-                      <JobMatchBreakdown
-                        matchingSkills={job.matchingSkills}
-                        missingSkills={job.missingSkills}
-                        visibleCount={3}
-                        missingVisibleCount={0}
-                      />
-                    </div>
-                    <div className="flex flex-col items-end gap-0">
-                      <span className="text-3xl font-semibold tabular-nums leading-none">
-                        {job.matchScore}
-                      </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                        Match
-                      </span>
-                      {/* Tiny bar */}
-                      <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-chart-1"
-                          style={{ width: `${job.matchScore}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        push({
-                          title: "Opening job details",
-                          description: job.title,
-                          tone: "info",
-                        })
-                      }
-                    >
-                      View job
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        push({
-                          title: "Application submitted",
-                          description: `${job.title} · ${job.company}`,
-                          tone: "success",
-                        })
-                      }
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                </article>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        {/* Recent activity */}
         <Card>
           <CardHeader>
             <CardTitle>

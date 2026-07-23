@@ -21,8 +21,12 @@ import {
   employerJobs,
   employerProfile,
 } from "@/data/employer";
+import {
+  APPLICATION_STAGES,
+  NEXT_STAGE,
+  type ApplicationStage,
+} from "@/types/application";
 import type {
-  CandidateStage,
   EmployerCandidate,
   EmployerInterview,
   InterviewStatus,
@@ -40,53 +44,21 @@ import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
 
-const STAGES: CandidateStage[] = [
-  "New",
-  "Screening",
-  "Shortlisted",
-  "Interviewing",
-  "Offer",
-  "Hired",
-];
+const STAGES = APPLICATION_STAGES;
+const STAGE_ADVANCE = NEXT_STAGE;
 
-// Stage → chart palette swatch. Goes from cool sage (early) to warm
-// copper (hired), so the pipeline reads as a gradient of progress.
-const STAGE_SWATCH: Record<CandidateStage, string> = {
-  New: "bg-chart-1",
-  Screening: "bg-chart-3",
-  Shortlisted: "bg-chart-7",
-  Interviewing: "bg-chart-2",
-  Offer: "bg-chart-8",
-  Hired: "bg-highlight",
-  Rejected: "bg-destructive",
-};
-
-const STAGE_ADVANCE: Record<CandidateStage, CandidateStage | null> = {
-  New: "Screening",
-  Screening: "Shortlisted",
-  Shortlisted: "Interviewing",
-  Interviewing: "Offer",
-  Offer: "Hired",
-  Hired: null,
-  Rejected: null,
-};
-
-function stageTone(stage: CandidateStage) {
+function stageTone(stage: ApplicationStage) {
   switch (stage) {
-    case "New":
+    case "Applied":
       return { variant: "outline" as const };
     case "Screening":
       return { variant: "secondary" as const };
-    case "Shortlisted":
+    case "Interview":
       return { variant: "secondary" as const };
-    case "Interviewing":
-      return { variant: "default" as const };
     case "Offer":
       return { variant: "default" as const };
     case "Hired":
       return { variant: "default" as const };
-    case "Rejected":
-      return { variant: "destructive" as const };
   }
 }
 
@@ -117,9 +89,7 @@ export default function EmployerDashboardPage() {
   const { push } = useToast();
 
   const liveJobs = employerJobs.filter((j) => j.status === "Live");
-  const totalCandidates = employerCandidates.filter(
-    (c) => c.stage !== "Rejected",
-  ).length;
+  const totalCandidates = employerCandidates.filter((c) => !c.rejected).length;
 
   const recentApplicants: EmployerCandidate[] = [...employerCandidates]
     .sort((a, b) => (a.appliedDate < b.appliedDate ? 1 : -1))
@@ -133,6 +103,10 @@ export default function EmployerDashboardPage() {
     stage,
     count: employerCandidates.filter((c) => c.stage === stage).length,
   }));
+
+  const largestPipelineCount = Math.max(
+    ...pipelineCounts.map((row) => row.count),
+  );
 
   const onPostJob = () => {
     push({
@@ -271,50 +245,29 @@ export default function EmployerDashboardPage() {
           <Badge variant="secondary">{totalCandidates} active</Badge>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div
-            aria-label={`Pipeline distribution across ${STAGES.length} stages: ${pipelineCounts
-              .map((r) => `${r.stage} ${r.count}`)
-              .join(", ")}`}
-            className="flex h-3 w-full overflow-hidden rounded-full bg-muted"
-          >
-            {pipelineCounts.map((row) => {
-              const pct =
-                totalCandidates === 0
-                  ? 0
-                  : Math.round((row.count / totalCandidates) * 100);
-              return (
-                <span
-                  key={row.stage}
-                  aria-hidden
-                  className={cn(
-                    "h-full first:rounded-l-full last:rounded-r-full",
-                    STAGE_SWATCH[row.stage],
-                  )}
-                  style={{ width: `${pct}%` }}
-                />
-              );
-            })}
-          </div>
-          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-            {pipelineCounts.map((row) => (
-              <li
-                key={row.stage}
-                className="flex items-center gap-1.5"
-              >
-                <span
-                  aria-hidden
-                  className={cn(
-                    "h-2 w-2 rounded-full",
-                    STAGE_SWATCH[row.stage],
-                  )}
-                />
-                <span className="text-sm font-semibold tabular-nums text-foreground">
-                  {row.count}
-                </span>
-                <span>{row.stage}</span>
-              </li>
-            ))}
-          </ul>
+          {pipelineCounts.map((row) => {
+            const pct =
+              largestPipelineCount === 0
+                ? 0
+                : Math.round((row.count / largestPipelineCount) * 100);
+            return (
+              <div key={row.stage} className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium">{row.stage}</span>
+                  <span className="tabular-nums text-muted-foreground">
+                    {row.count} candidates
+                  </span>
+                </div>
+                <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+                  <div
+                    aria-hidden
+                    className="h-full rounded-full bg-foreground/80"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
 
@@ -430,7 +383,7 @@ export default function EmployerDashboardPage() {
 
 function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
   const { push } = useToast();
-  const [stage, setStage] = useState<CandidateStage>(candidate.stage);
+  const [stage, setStage] = useState<ApplicationStage>(candidate.stage);
   const next = STAGE_ADVANCE[stage];
 
   const onMove = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -471,7 +424,7 @@ function RecentApplicantRow({ candidate }: { candidate: EmployerCandidate }) {
           variant="outline"
           size="sm"
           onClick={onMove}
-          disabled={!next || stage === "Rejected"}
+          disabled={!next || candidate.rejected}
           aria-label={
             next ? `Move ${candidate.name} to ${next}` : "Already at final stage"
           }

@@ -1,4 +1,4 @@
-export type ApplicationStatus = "Submitted" | "In review" | "Interview" | "Offer";
+import type { ApplicationStage } from "@/types/application";
 
 export type ApplicationTimelineStep = {
   label: string;
@@ -10,8 +10,9 @@ export type Application = {
   id: string;
   jobTitle: string;
   company: string;
-  status: ApplicationStatus;
-  stage: string;
+  stage: ApplicationStage;
+  /** Side state — true means the application has been rejected. */
+  rejected: boolean;
   nextAction: string;
   appliedDate: string;
   update: string;

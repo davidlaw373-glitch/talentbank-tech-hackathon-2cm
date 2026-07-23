@@ -14,7 +14,12 @@ import {
 } from "lucide-react";
 
 import { employerCandidates } from "@/data/employer";
-import type { CandidateStage, EmployerCandidate } from "@/types/employer";
+import {
+  APPLICATION_STAGES,
+  NEXT_STAGE,
+  type ApplicationStage,
+} from "@/types/application";
+import type { EmployerCandidate } from "@/types/employer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,43 +42,29 @@ import { useToast } from "@/components/common/toast";
 import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
 import { cn } from "@/lib/utils";
 
-const TABS: Array<{ value: CandidateStage | "All"; label: string }> = [
+type StageFilter = ApplicationStage | "All" | "Rejected";
+
+const TABS: Array<{ value: StageFilter; label: string }> = [
   { value: "All", label: "All" },
-  { value: "New", label: "New" },
-  { value: "Screening", label: "Screening" },
-  { value: "Shortlisted", label: "Shortlisted" },
-  { value: "Interviewing", label: "Interviewing" },
-  { value: "Offer", label: "Offer" },
-  { value: "Hired", label: "Hired" },
+  ...APPLICATION_STAGES.map((s) => ({
+    value: s,
+    label: s,
+  })),
   { value: "Rejected", label: "Rejected" },
 ];
 
-const NEXT_STAGE: Record<CandidateStage, CandidateStage | null> = {
-  New: "Screening",
-  Screening: "Shortlisted",
-  Shortlisted: "Interviewing",
-  Interviewing: "Offer",
-  Offer: "Hired",
-  Hired: null,
-  Rejected: null,
-};
-
-function stageVariant(stage: CandidateStage) {
+function stageVariant(stage: ApplicationStage) {
   switch (stage) {
-    case "New":
+    case "Applied":
       return "outline" as const;
     case "Screening":
       return "secondary" as const;
-    case "Shortlisted":
+    case "Interview":
       return "secondary" as const;
-    case "Interviewing":
-      return "default" as const;
     case "Offer":
       return "default" as const;
     case "Hired":
       return "default" as const;
-    case "Rejected":
-      return "destructive" as const;
   }
 }
 
@@ -81,14 +72,17 @@ export default function EmployerCandidatesPage() {
   const { push } = useToast();
   const { add, remove, isInPool, getByCandidate } = useTalentPool();
   const [candidates, setCandidates] = useState<EmployerCandidate[]>(employerCandidates);
-  const [stage, setStage] = useState<CandidateStage | "All">("All");
+  const [stage, setStage] = useState<StageFilter>("All");
   const [query, setQuery] = useState("");
   const [pendingReject, setPendingReject] = useState<EmployerCandidate | null>(
     null,
   );
 
   const counts = useMemo(() => {
-    const map: Record<string, number> = { All: candidates.length };
+    const map: Record<string, number> = {
+      All: candidates.length,
+      Rejected: candidates.filter((c) => c.rejected).length,
+    };
     for (const c of candidates) {
       map[c.stage] = (map[c.stage] ?? 0) + 1;
     }
@@ -98,7 +92,12 @@ export default function EmployerCandidatesPage() {
   const filtered: EmployerCandidate[] = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = candidates.filter((c) => {
-      const matchesStage = stage === "All" || c.stage === stage;
+      const matchesStage =
+        stage === "All"
+          ? true
+          : stage === "Rejected"
+            ? c.rejected
+            : c.stage === stage && !c.rejected;
       const matchesQuery =
         !q || `${c.name} ${c.appliedFor}`.toLowerCase().includes(q);
       return matchesStage && matchesQuery;
@@ -161,7 +160,7 @@ export default function EmployerCandidatesPage() {
       {/* Tabs */}
       <Tabs
         value={stage}
-        onValueChange={(v) => setStage(v as CandidateStage | "All")}
+        onValueChange={(v) => setStage(v as StageFilter)}
       >
         <div className="overflow-x-auto">
           <TabsList aria-label="Filter candidates by stage">
@@ -245,7 +244,7 @@ export default function EmployerCandidatesPage() {
         requireTyping="REJECT"
         onConfirm={() => {
           if (pendingReject) {
-            updateCandidate(pendingReject.id, { stage: "Rejected" });
+            updateCandidate(pendingReject.id, { rejected: true });
             push({
               title: `${pendingReject.name} rejected`,
               description: "A polite rejection email will be sent automatically.",
@@ -315,7 +314,7 @@ function CandidateRow({
   };
 
   const reject = () => {
-    if (candidate.stage === "Rejected") return;
+    if (candidate.rejected) return;
     onRequestReject(candidate);
   };
 
@@ -402,7 +401,7 @@ function CandidateRow({
               variant="outline"
               size="sm"
               onClick={advance}
-              disabled={!next || candidate.stage === "Rejected"}
+              disabled={!next || candidate.rejected}
               aria-label={
                 next
                   ? `Move ${candidate.name} to ${next}`
@@ -425,7 +424,7 @@ function CandidateRow({
               variant="destructive"
               size="sm"
               onClick={reject}
-              disabled={candidate.stage === "Rejected"}
+              disabled={candidate.rejected}
               aria-label={`Reject ${candidate.name}`}
             >
               <Trash2 />

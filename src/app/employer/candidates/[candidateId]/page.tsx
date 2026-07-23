@@ -16,7 +16,7 @@ import {
   employerInterviews,
   getEmployerCandidate,
 } from "@/data/employer";
-import type { CandidateStage } from "@/types/employer";
+import { STAGE_INDEX, STAGE_VARIANT } from "@/types/application";
 import { CandidateActions } from "@/components/features/employer/candidate-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,25 +34,6 @@ type PageProps = {
   params: Promise<{ candidateId: string }>;
 };
 
-function stageVariant(stage: CandidateStage) {
-  switch (stage) {
-    case "New":
-      return "outline" as const;
-    case "Screening":
-      return "secondary" as const;
-    case "Shortlisted":
-      return "secondary" as const;
-    case "Interviewing":
-      return "default" as const;
-    case "Offer":
-      return "default" as const;
-    case "Hired":
-      return "default" as const;
-    case "Rejected":
-      return "destructive" as const;
-  }
-}
-
 export function generateStaticParams() {
   return employerCandidates.map((c) => ({ candidateId: c.id }));
 }
@@ -62,24 +43,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
   const candidate = getEmployerCandidate(candidateId);
   if (!candidate) notFound();
 
-  const stageIndex = (() => {
-    switch (candidate.stage) {
-      case "New":
-        return 0;
-      case "Screening":
-        return 1;
-      case "Shortlisted":
-        return 2;
-      case "Interviewing":
-        return 3;
-      case "Offer":
-        return 4;
-      case "Hired":
-        return 5;
-      case "Rejected":
-        return 1;
-    }
-  })();
+  const stageIndex = candidate.rejected ? 1 : STAGE_INDEX[candidate.stage];
 
   const totalScorecards = employerInterviews
     .filter((i) => i.candidateName === candidate.name)
@@ -121,7 +85,7 @@ export default async function EmployerCandidateDetailPage({ params }: PageProps)
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={stageVariant(candidate.stage)}>{candidate.stage}</Badge>
+          <Badge variant={STAGE_VARIANT[candidate.stage]}>{candidate.stage}</Badge>
           {candidate.verification === "Verified" ? (
             <Badge variant="secondary">
               <BadgeCheck className="h-3 w-3" aria-hidden />

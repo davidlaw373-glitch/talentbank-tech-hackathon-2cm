@@ -12,7 +12,11 @@ import {
 
 import { applications } from "@/data/applications";
 import { useToast } from "@/components/common/toast";
-import type { Application, ApplicationStatus } from "@/types/candidate";
+import type { Application } from "@/types/candidate";
+import {
+  STAGE_VARIANT,
+  type ApplicationStage,
+} from "@/types/application";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,15 +29,10 @@ import { cn } from "@/lib/utils";
 
 type TrackingState = "active" | "saved" | "withdrawn";
 
-const STATUS_TONE: Record<
-  ApplicationStatus,
-  { variant: "default" | "secondary" | "outline"; label: string }
-> = {
-  Submitted: { variant: "outline", label: "Submitted" },
-  "In review": { variant: "outline", label: "In review" },
-  Interview: { variant: "secondary", label: "Interview" },
-  Offer: { variant: "default", label: "Offer" },
-};
+/** Stages the candidate no longer needs to act on (already at the end). */
+function isTerminalStage(stage: ApplicationStage) {
+  return stage === "Offer" || stage === "Hired";
+}
 
 function ApplicationProgress({ application }: { application: Application }) {
   const completed = application.timeline.filter((t) => t.complete).length;
@@ -135,7 +134,7 @@ export function ApplicationTracker() {
   const counts = useMemo(() => {
     const active = applications.filter(
       (a) =>
-        a.status !== "Offer" && getTrackingState(a.id) === "active"
+        !isTerminalStage(a.stage) && getTrackingState(a.id) === "active"
     ).length;
     const all = applications.filter(
       (a) => getTrackingState(a.id) !== "withdrawn"
@@ -145,11 +144,10 @@ export function ApplicationTracker() {
     ).length;
     const interview = applications.filter(
       (a) =>
-        a.status === "Interview" && getTrackingState(a.id) !== "withdrawn"
+        a.stage === "Interview" && getTrackingState(a.id) !== "withdrawn"
     ).length;
     const offers = applications.filter(
-      (a) =>
-        a.status === "Offer" && getTrackingState(a.id) !== "withdrawn"
+      (a) => a.stage === "Offer" && getTrackingState(a.id) !== "withdrawn"
     ).length;
     return { active, all, archived, interview, offers };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,17 +157,17 @@ export function ApplicationTracker() {
     let list = applications.filter((application) => {
       const trackingState = applicationStates[application.id] ?? "active";
       if (tab === "active") {
-        return application.status !== "Offer" && trackingState === "active";
+        return !isTerminalStage(application.stage) && trackingState === "active";
       }
       if (tab === "archived") return trackingState !== "active";
       if (tab === "interview") {
         return (
-          application.status === "Interview" && trackingState !== "withdrawn"
+          application.stage === "Interview" && trackingState !== "withdrawn"
         );
       }
       if (tab === "offers") {
         return (
-          application.status === "Offer" && trackingState !== "withdrawn"
+          application.stage === "Offer" && trackingState !== "withdrawn"
         );
       }
       return true;
@@ -280,7 +278,7 @@ export function ApplicationTracker() {
           ) : (
             <ul className="space-y-3">
               {filtered.map((app) => {
-                const tone = STATUS_TONE[app.status];
+                const tone = STAGE_VARIANT[app.stage];
                 const trackingState = getTrackingState(app.id);
                 return (
                   <li key={app.id}>
@@ -297,7 +295,7 @@ export function ApplicationTracker() {
                             <p className="truncate text-sm font-semibold">
                               {app.jobTitle}
                             </p>
-                            <Badge variant={tone.variant}>{tone.label}</Badge>
+                            <Badge variant={tone}>{app.stage}</Badge>
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
@@ -308,7 +306,6 @@ export function ApplicationTracker() {
                               {app.company}
                             </span>
                             <span>Applied {app.appliedDate}</span>
-                            <span>· {app.stage}</span>
                           </div>
                           <div className="rounded-md border-l-2 border-foreground/40 bg-surface-tint p-2.5 text-xs leading-relaxed">
                             <span className="font-semibold">Update: </span>

@@ -1,3 +1,5 @@
+import type { ApplicationStage } from "@/types/application";
+
 export type EmployerIndustry =
   | "Software & Internet"
   | "Financial Services"
@@ -38,10 +40,11 @@ export type EmployerJob = {
   salary: string;
   status: JobStatus;
   posted: string;
+  /**
+   * Total applicants for this role. Per-stage breakdowns are derived from
+   * `employerCandidates` at render time so they never drift out of sync.
+   */
   applicants: number;
-  shortlisted: number;
-  interviewing: number;
-  offered: number;
   filledScore: number;
   mustHave: string[];
   niceToHave: string[];
@@ -49,15 +52,6 @@ export type EmployerJob = {
   responsibilities: string[];
   requirements: string[];
 };
-
-export type CandidateStage =
-  | "New"
-  | "Screening"
-  | "Shortlisted"
-  | "Interviewing"
-  | "Offer"
-  | "Hired"
-  | "Rejected";
 
 export type EmployerCandidate = {
   id: string;
@@ -67,7 +61,10 @@ export type EmployerCandidate = {
   location: string;
   appliedFor: string;
   appliedDate: string;
-  stage: CandidateStage;
+  /** Which pipeline stage this candidate sits in. */
+  stage: ApplicationStage;
+  /** Side state — `true` means the candidate has been rejected. */
+  rejected: boolean;
   matchScore: number;
   topSkills: string[];
   summary: string;

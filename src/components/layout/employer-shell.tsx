@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Briefcase,
-  Building2,
   Calendar,
   CircleCheck,
   LayoutDashboard,
@@ -28,7 +27,6 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/employer", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/employer/profile", label: "Company", icon: Building2 },
   { href: "/employer/jobs", label: "Jobs", icon: Briefcase },
   { href: "/employer/candidates", label: "Candidates", icon: Users },
   { href: "/employer/interviews", label: "Interviews", icon: Calendar },

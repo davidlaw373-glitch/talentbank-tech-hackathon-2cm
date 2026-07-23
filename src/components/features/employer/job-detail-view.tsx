@@ -22,11 +22,15 @@ import {
 } from "lucide-react";
 
 import type {
-  CandidateStage,
   EmployerCandidate,
   EmployerJob,
   JobStatus,
 } from "@/types/employer";
+import {
+  APPLICATION_STAGES,
+  STAGE_LABEL,
+  STAGE_VARIANT,
+} from "@/types/application";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,25 +52,6 @@ function statusVariant(status: JobStatus) {
     case "Paused":
       return "outline" as const;
     case "Closed":
-      return "destructive" as const;
-  }
-}
-
-function stageVariant(stage: CandidateStage) {
-  switch (stage) {
-    case "New":
-      return "outline" as const;
-    case "Screening":
-      return "secondary" as const;
-    case "Shortlisted":
-      return "secondary" as const;
-    case "Interviewing":
-      return "default" as const;
-    case "Offer":
-      return "default" as const;
-    case "Hired":
-      return "default" as const;
-    case "Rejected":
       return "destructive" as const;
   }
 }
@@ -312,10 +297,15 @@ export function JobDetailView({
             </CardHeader>
             <CardContent className="space-y-3">
               {[
-                { label: "Applicants", value: job.applicants },
-                { label: "Shortlisted", value: job.shortlisted },
-                { label: "Interviewing", value: job.interviewing },
-                { label: "Offered", value: job.offered },
+                { label: "Applied", value: job.applicants },
+                ...APPLICATION_STAGES.filter((s) => s !== "Applied").map(
+                  (stage) => ({
+                    label: STAGE_LABEL[stage],
+                    value: applicants.filter(
+                      (c) => !c.rejected && c.stage === stage,
+                    ).length,
+                  }),
+                ),
               ].map((row) => (
                 <div
                   key={row.label}
@@ -445,7 +435,7 @@ export function JobDetailView({
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <Badge variant="outline">{c.matchScore}% match</Badge>
-                  <Badge variant={stageVariant(c.stage)}>{c.stage}</Badge>
+                  <Badge variant={STAGE_VARIANT[c.stage]}>{c.stage}</Badge>
                 </div>
               </Link>
             ))
