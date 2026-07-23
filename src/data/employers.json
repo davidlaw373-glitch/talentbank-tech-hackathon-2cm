@@ -108,5 +108,1057 @@
       "Hybrid in Tokyo",
       "Annual iOSCon ticket"
     ]
+  },
+  {
+    "id": 7,
+    "companyName": "Stratum IO",
+    "initials": "SI",
+    "tagline": "Redefining education through technology.",
+    "industry": "Healthcare",
+    "size": "51–200",
+    "founded": 2020,
+    "website": "stratumio.com",
+    "hq": "Amsterdam",
+    "about": "Stratum IO is a 51-200 healthcare company headquartered in Amsterdam, founded in 2020. We are building the future of modern teams.",
+    "culture": [
+      "Ship small, ship often",
+      "Quarterly hack weeks",
+      "Outcomes over hours",
+      "Demo days"
+    ],
+    "benefits": [
+      "Free lunch",
+      "L&D budget RM 3,000 / year",
+      "Parental leave"
+    ]
+  },
+  {
+    "id": 8,
+    "companyName": "Optic Systems",
+    "initials": "OS",
+    "tagline": "Transforming healthcare with AI-powered diagnostics.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2013,
+    "website": "opticsystems.com",
+    "hq": "Jakarta",
+    "about": "Optic Systems is a 51-200 software & internet company headquartered in Jakarta, founded in 2013. We are building the future of our industry.",
+    "culture": [
+      "Ownership mindset",
+      "Ship small, ship often",
+      "Open salary bands",
+      "Outcomes over hours"
+    ],
+    "benefits": [
+      "Fully remote across APAC",
+      "Annual learning budget",
+      "Annual offsite",
+      "Comprehensive health cover",
+      "Learning & development budget",
+      "L&D budget RM 3,000 / year"
+    ]
+  },
+  {
+    "id": 9,
+    "companyName": "Wavefront",
+    "initials": "W",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2012,
+    "website": "wavefront.com",
+    "hq": "Amsterdam",
+    "about": "Wavefront is a 51-200 software & internet company headquartered in Amsterdam, founded in 2012. We are building infrastructure for our industry.",
+    "culture": [
+      "Ownership mindset",
+      "Quarterly hack weeks",
+      "Demo days"
+    ],
+    "benefits": [
+      "Generous learning budget",
+      "Free lunch",
+      "Parental leave"
+    ]
+  },
+  {
+    "id": 10,
+    "companyName": "Cascade Tech",
+    "initials": "CT",
+    "tagline": "Building secure, privacy-first applications.",
+    "industry": "Manufacturing",
+    "size": "11–50",
+    "founded": 2019,
+    "website": "cascadetech.com",
+    "hq": "Bangalore",
+    "about": "Cascade Tech is a 11-50 manufacturing company headquartered in Bangalore, founded in 2019. We are building infrastructure for the digital economy.",
+    "culture": [
+      "Quarterly hack weeks",
+      "Bezos-style press release"
+    ],
+    "benefits": [
+      "Stock options",
+      "Comprehensive health cover",
+      "Mental health support",
+      "Hybrid — 2 days a week in the London office",
+      "Generous learning budget",
+      "Fully remote across APAC"
+    ]
+  },
+  {
+    "id": 11,
+    "companyName": "Pivot Point",
+    "initials": "PP",
+    "tagline": "Empowering local businesses with smart logistics.",
+    "industry": "Financial Services",
+    "size": "201–500",
+    "founded": 2016,
+    "website": "pivotpoint.com",
+    "hq": "Dubai",
+    "about": "Pivot Point is a 201-500 financial services company headquartered in Dubai, founded in 2016. We are building infrastructure for the digital economy.",
+    "culture": [
+      "Ship small, ship often",
+      "Demo days"
+    ],
+    "benefits": [
+      "Free lunch",
+      "Comprehensive health cover",
+      "Stock options",
+      "Annual learning budget",
+      "Equity for senior ICs"
+    ]
+  },
+  {
+    "id": 12,
+    "companyName": "DataMesh",
+    "initials": "D",
+    "tagline": "Transforming healthcare with AI-powered diagnostics.",
+    "industry": "Software & Internet",
+    "size": "201–500",
+    "founded": 2021,
+    "website": "datamesh.com",
+    "hq": "Madrid",
+    "about": "DataMesh is a 201-500 software & internet company headquartered in Madrid, founded in 2021. We are building tools for our industry.",
+    "culture": [
+      "Quarterly hack weeks",
+      "Ship small, ship often"
+    ],
+    "benefits": [
+      "Yearly bonus",
+      "Learning & development budget",
+      "Unlimited PTO",
+      "Mental health support",
+      "Free lunch",
+      "Equity for every employee"
+    ]
+  },
+  {
+    "id": 13,
+    "companyName": "Synapse AI",
+    "initials": "SA",
+    "tagline": "Transforming healthcare with AI-powered diagnostics.",
+    "industry": "Software & Internet",
+    "size": "500+",
+    "founded": 2017,
+    "website": "synapseai.com",
+    "hq": "Berlin",
+    "about": "Synapse AI is a 500+ software & internet company headquartered in Berlin, founded in 2017. We are building infrastructure for our industry.",
+    "culture": [
+      "Ship small, ship often",
+      "No meeting Fridays",
+      "Async-first communication"
+    ],
+    "benefits": [
+      "Health + lunch",
+      "Free lunch",
+      "Pension plan",
+      "Parental leave",
+      "Generous learning budget",
+      "Conference attendance"
+    ]
+  },
+  {
+    "id": 14,
+    "companyName": "Quantum Leap",
+    "initials": "QL",
+    "tagline": "Empowering local businesses with smart logistics.",
+    "industry": "Healthcare",
+    "size": "11–50",
+    "founded": 2012,
+    "website": "quantumleap.com",
+    "hq": "Seoul",
+    "about": "Quantum Leap is a 11-50 healthcare company headquartered in Seoul, founded in 2012. We are building solutions in modern teams.",
+    "culture": [
+      "2-pizza teams",
+      "Outcomes over hours",
+      "No meeting Fridays"
+    ],
+    "benefits": [
+      "Hybrid — 2 days a week in the London office",
+      "On-site in Madrid",
+      "Competitive salary",
+      "Conference attendance"
+    ]
+  },
+  {
+    "id": 15,
+    "companyName": "Catalyst Systems",
+    "initials": "CS",
+    "tagline": "Making sense of data at planetary scale.",
+    "industry": "Financial Services",
+    "size": "51–200",
+    "founded": 2011,
+    "website": "catalystsystems.com",
+    "hq": "Singapore",
+    "about": "Catalyst Systems is a 51-200 financial services company headquartered in Singapore, founded in 2011. We are building tools for the digital economy.",
+    "culture": [
+      "Demo days",
+      "Ship small, ship often",
+      "Async-first communication",
+      "High trust, low process"
+    ],
+    "benefits": [
+      "On-site in Madrid",
+      "Home office stipend",
+      "Free lunch",
+      "Annual offsite",
+      "Hybrid — 2 days a week in the London office"
+    ]
+  },
+  {
+    "id": 16,
+    "companyName": "Vector Space",
+    "initials": "VS",
+    "tagline": "Democratizing access to financial services.",
+    "industry": "Public Sector",
+    "size": "1–10",
+    "founded": 2021,
+    "website": "vectorspace.com",
+    "hq": "Jakarta",
+    "about": "Vector Space is a 1-10 public sector company headquartered in Jakarta, founded in 2021. We are building the future of our industry.",
+    "culture": [
+      "High trust, low process",
+      "Outcomes over hours",
+      "Ship small, ship often",
+      "Async-first communication"
+    ],
+    "benefits": [
+      "Pension plan",
+      "Mental health support",
+      "Equity for every employee"
+    ]
+  },
+  {
+    "id": 17,
+    "companyName": "Helix Tech",
+    "initials": "HT",
+    "tagline": "Empowering local businesses with smart logistics.",
+    "industry": "Education",
+    "size": "51–200",
+    "founded": 2021,
+    "website": "helixtech.com",
+    "hq": "San Francisco",
+    "about": "Helix Tech is a 51-200 education company headquartered in San Francisco, founded in 2021. We are building infrastructure for modern teams.",
+    "culture": [
+      "Async-first communication",
+      "Ship small, ship often",
+      "Open salary bands",
+      "Outcomes over hours"
+    ],
+    "benefits": [
+      "Flexible working hours",
+      "Equity for senior ICs",
+      "Equity for every employee",
+      "Annual offsite",
+      "Remote-friendly with 2 on-sites/year",
+      "Mental health support"
+    ]
+  },
+  {
+    "id": 18,
+    "companyName": "Momentum Labs",
+    "initials": "ML",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Software & Internet",
+    "size": "201–500",
+    "founded": 2022,
+    "website": "momentumlabs.com",
+    "hq": "Toronto",
+    "about": "Momentum Labs is a 201-500 software & internet company headquartered in Toronto, founded in 2022. We are building solutions in our industry.",
+    "culture": [
+      "Quarterly hack weeks",
+      "Open salary bands"
+    ],
+    "benefits": [
+      "Generous learning budget",
+      "Competitive salary",
+      "Equity for every employee",
+      "Conference attendance",
+      "Remote-friendly with 2 on-sites/year",
+      "Parental leave"
+    ]
+  },
+  {
+    "id": 19,
+    "companyName": "Spectrum Digital",
+    "initials": "SD",
+    "tagline": "Connecting enterprises with top-tier talent.",
+    "industry": "Software & Internet",
+    "size": "1–10",
+    "founded": 2012,
+    "website": "spectrumdigital.com",
+    "hq": "Madrid",
+    "about": "Spectrum Digital is a 1-10 software & internet company headquartered in Madrid, founded in 2012. We are building infrastructure for our industry.",
+    "culture": [
+      "Working backwards",
+      "Quarterly hack weeks"
+    ],
+    "benefits": [
+      "Fully remote across APAC",
+      "Competitive salary",
+      "Parental leave"
+    ]
+  },
+  {
+    "id": 20,
+    "companyName": "Pulse Analytics",
+    "initials": "PA",
+    "tagline": "Scaling startups from zero to IPO.",
+    "industry": "Software & Internet",
+    "size": "201–500",
+    "founded": 2024,
+    "website": "pulseanalytics.com",
+    "hq": "Paris",
+    "about": "Pulse Analytics is a 201-500 software & internet company headquartered in Paris, founded in 2024. We are building the future of software & internet.",
+    "culture": [
+      "Demo days",
+      "Quarterly hack weeks",
+      "Open salary bands",
+      "High trust, low process"
+    ],
+    "benefits": [
+      "L&D budget RM 3,000 / year",
+      "Stock options",
+      "Competitive salary"
+    ]
+  },
+  {
+    "id": 21,
+    "companyName": "Forge Systems",
+    "initials": "FS",
+    "tagline": "Building secure, privacy-first applications.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2017,
+    "website": "forgesystems.com",
+    "hq": "Stockholm",
+    "about": "Forge Systems is a 51-200 software & internet company headquartered in Stockholm, founded in 2017. We are building infrastructure for software & internet.",
+    "culture": [
+      "2-pizza teams",
+      "No meeting Fridays",
+      "Demo days"
+    ],
+    "benefits": [
+      "Gym membership",
+      "Hybrid in Tokyo",
+      "Generous learning budget",
+      "Fully remote across APAC",
+      "On-site in Madrid",
+      "Comprehensive health cover"
+    ]
+  },
+  {
+    "id": 22,
+    "companyName": "Spark Academy",
+    "initials": "SA",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Education",
+    "size": "51–200",
+    "founded": 2022,
+    "website": "sparkacademy.com",
+    "hq": "Paris",
+    "about": "Spark Academy is a 51-200 education company headquartered in Paris, founded in 2022. We are building infrastructure for the digital economy.",
+    "culture": [
+      "Ship small, ship often",
+      "Async-first communication",
+      "2-pizza teams",
+      "Open salary bands"
+    ],
+    "benefits": [
+      "Annual iOSCon ticket",
+      "Comprehensive health cover",
+      "Conference attendance",
+      "Unlimited PTO",
+      "Generous learning budget",
+      "Fully remote"
+    ]
+  },
+  {
+    "id": 23,
+    "companyName": "Titan Works",
+    "initials": "TW",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Financial Services",
+    "size": "51–200",
+    "founded": 2019,
+    "website": "titanworks.com",
+    "hq": "Madrid",
+    "about": "Titan Works is a 51-200 financial services company headquartered in Madrid, founded in 2019. We are building solutions in our industry.",
+    "culture": [
+      "Quarterly hack weeks",
+      "Outcomes over hours",
+      "Bezos-style press release"
+    ],
+    "benefits": [
+      "Hybrid — 2 days a week in the London office",
+      "Stock options",
+      "Unlimited PTO",
+      "Competitive salary"
+    ]
+  },
+  {
+    "id": 24,
+    "companyName": "Forge AI",
+    "initials": "FA",
+    "tagline": "Accelerating the transition to sustainable energy.",
+    "industry": "Healthcare",
+    "size": "51–200",
+    "founded": 2023,
+    "website": "forgeai.com",
+    "hq": "Ho Chi Minh City",
+    "about": "Forge AI is a 51-200 healthcare company headquartered in Ho Chi Minh City, founded in 2023. We are building the future of modern teams.",
+    "culture": [
+      "Ownership mindset",
+      "Quarterly hack weeks",
+      "Demo days"
+    ],
+    "benefits": [
+      "Fully remote across APAC",
+      "Comprehensive health cover",
+      "Yearly bonus",
+      "Equity for senior ICs",
+      "Conference attendance",
+      "Home office stipend"
+    ]
+  },
+  {
+    "id": 25,
+    "companyName": "Drift Labs",
+    "initials": "DL",
+    "tagline": "Building the future of remote work.",
+    "industry": "Financial Services",
+    "size": "201–500",
+    "founded": 2017,
+    "website": "driftlabs.com",
+    "hq": "Manila",
+    "about": "Drift Labs is a 201-500 financial services company headquartered in Manila, founded in 2017. We are building tools for our industry.",
+    "culture": [
+      "Working backwards",
+      "Bezos-style press release"
+    ],
+    "benefits": [
+      "Annual offsite",
+      "Health + lunch",
+      "Conference attendance",
+      "L&D budget RM 3,000 / year",
+      "Equity for senior ICs"
+    ]
+  },
+  {
+    "id": 26,
+    "companyName": "Rho Technologies",
+    "initials": "RT",
+    "tagline": "Connecting talent with opportunity, globally.",
+    "industry": "Education",
+    "size": "201–500",
+    "founded": 2022,
+    "website": "rhotechnologies.com",
+    "hq": "London",
+    "about": "Rho Technologies is a 201-500 education company headquartered in London, founded in 2022. We are building solutions in modern teams.",
+    "culture": [
+      "Ship small, ship often",
+      "Bezos-style press release",
+      "Ownership mindset",
+      "High trust, low process"
+    ],
+    "benefits": [
+      "Parental leave",
+      "Gym membership",
+      "Comprehensive health cover",
+      "L&D budget RM 3,000 / year"
+    ]
+  },
+  {
+    "id": 27,
+    "companyName": "Sigma Prime",
+    "initials": "SP",
+    "tagline": "Connecting enterprises with top-tier talent.",
+    "industry": "Software & Internet",
+    "size": "1–10",
+    "founded": 2010,
+    "website": "sigmaprime.com",
+    "hq": "Berlin",
+    "about": "Sigma Prime is a 1-10 software & internet company headquartered in Berlin, founded in 2010. We are building infrastructure for software & internet.",
+    "culture": [
+      "Bezos-style press release",
+      "Quarterly hack weeks"
+    ],
+    "benefits": [
+      "Conference attendance",
+      "Annual learning budget",
+      "Comprehensive health cover",
+      "Gym membership",
+      "Parental leave",
+      "Hybrid in Tokyo"
+    ]
+  },
+  {
+    "id": 28,
+    "companyName": "Omega Systems",
+    "initials": "OS",
+    "tagline": "Connecting enterprises with top-tier talent.",
+    "industry": "Public Sector",
+    "size": "11–50",
+    "founded": 2018,
+    "website": "omegasystems.com",
+    "hq": "Ho Chi Minh City",
+    "about": "Omega Systems is a 11-50 public sector company headquartered in Ho Chi Minh City, founded in 2018. We are building tools for our industry.",
+    "culture": [
+      "2-pizza teams",
+      "No meeting Fridays"
+    ],
+    "benefits": [
+      "On-site in Madrid",
+      "Conference attendance",
+      "Pension plan",
+      "Gym membership",
+      "Equity for every employee"
+    ]
+  },
+  {
+    "id": 29,
+    "companyName": "Delta Force",
+    "initials": "DF",
+    "tagline": "Building infrastructure that lets small teams ship like big ones.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2016,
+    "website": "deltaforce.com",
+    "hq": "Stockholm",
+    "about": "Delta Force is a 51-200 software & internet company headquartered in Stockholm, founded in 2016. We are building the future of our industry.",
+    "culture": [
+      "High trust, low process",
+      "Open salary bands",
+      "Outcomes over hours",
+      "Quarterly hack weeks"
+    ],
+    "benefits": [
+      "Parental leave",
+      "Equity for senior ICs",
+      "On-site in Madrid",
+      "Comprehensive health cover",
+      "Yearly bonus",
+      "Fully remote"
+    ]
+  },
+  {
+    "id": 30,
+    "companyName": "Gamma Tech",
+    "initials": "GT",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2019,
+    "website": "gammatech.com",
+    "hq": "Seoul",
+    "about": "Gamma Tech is a 51-200 software & internet company headquartered in Seoul, founded in 2019. We are building solutions in modern teams.",
+    "culture": [
+      "Quarterly hack weeks",
+      "2-pizza teams"
+    ],
+    "benefits": [
+      "Annual offsite",
+      "Unlimited PTO",
+      "Fully remote",
+      "Home office stipend",
+      "Learning & development budget",
+      "Conference attendance"
+    ]
+  },
+  {
+    "id": 31,
+    "companyName": "Epsilon Labs",
+    "initials": "EL",
+    "tagline": "Scaling startups from zero to IPO.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2012,
+    "website": "epsilonlabs.com",
+    "hq": "Stockholm",
+    "about": "Epsilon Labs is a 51-200 software & internet company headquartered in Stockholm, founded in 2012. We are building infrastructure for modern teams.",
+    "culture": [
+      "Demo days",
+      "Ownership mindset",
+      "2-pizza teams"
+    ],
+    "benefits": [
+      "Competitive salary",
+      "Comprehensive health cover",
+      "Equity for every employee",
+      "Health + lunch"
+    ]
+  },
+  {
+    "id": 32,
+    "companyName": "Zeta Corp",
+    "initials": "ZC",
+    "tagline": "Connecting enterprises with top-tier talent.",
+    "industry": "Financial Services",
+    "size": "1–10",
+    "founded": 2010,
+    "website": "zetacorp.com",
+    "hq": "Sydney",
+    "about": "Zeta Corp is a 1-10 financial services company headquartered in Sydney, founded in 2010. We are building infrastructure for the digital economy.",
+    "culture": [
+      "Ship small, ship often",
+      "Async-first communication",
+      "Ownership mindset",
+      "Open salary bands"
+    ],
+    "benefits": [
+      "Annual iOSCon ticket",
+      "Stock options",
+      "Comprehensive health cover",
+      "Annual offsite",
+      "Fully remote across APAC",
+      "Hybrid in Tokyo"
+    ]
+  },
+  {
+    "id": 33,
+    "companyName": "Theta Solutions",
+    "initials": "TS",
+    "tagline": "Building infrastructure that lets small teams ship like big ones.",
+    "industry": "Healthcare",
+    "size": "201–500",
+    "founded": 2014,
+    "website": "thetasolutions.com",
+    "hq": "Jakarta",
+    "about": "Theta Solutions is a 201-500 healthcare company headquartered in Jakarta, founded in 2014. We are building solutions in modern teams.",
+    "culture": [
+      "Working backwards",
+      "Ship small, ship often",
+      "Demo days",
+      "Open salary bands"
+    ],
+    "benefits": [
+      "L&D budget RM 3,000 / year",
+      "Annual offsite",
+      "Equity for senior ICs"
+    ]
+  },
+  {
+    "id": 34,
+    "companyName": "Iota Systems",
+    "initials": "IS",
+    "tagline": "Transforming healthcare with AI-powered diagnostics.",
+    "industry": "Education",
+    "size": "201–500",
+    "founded": 2017,
+    "website": "iotasystems.com",
+    "hq": "Paris",
+    "about": "Iota Systems is a 201-500 education company headquartered in Paris, founded in 2017. We are building tools for education.",
+    "culture": [
+      "Demo days",
+      "Ship small, ship often",
+      "Async-first communication"
+    ],
+    "benefits": [
+      "Remote-friendly with 2 on-sites/year",
+      "Home office stipend",
+      "Conference attendance",
+      "Hybrid in Tokyo",
+      "Fully remote",
+      "On-site in Madrid"
+    ]
+  },
+  {
+    "id": 35,
+    "companyName": "Kappa Digital",
+    "initials": "KD",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Financial Services",
+    "size": "11–50",
+    "founded": 2010,
+    "website": "kappadigital.com",
+    "hq": "Singapore",
+    "about": "Kappa Digital is a 11-50 financial services company headquartered in Singapore, founded in 2010. We are building solutions in financial services.",
+    "culture": [
+      "Ship small, ship often",
+      "Async-first communication",
+      "Open salary bands"
+    ],
+    "benefits": [
+      "Annual iOSCon ticket",
+      "Fully remote across APAC",
+      "Equity for every employee",
+      "Yearly bonus",
+      "Annual learning budget"
+    ]
+  },
+  {
+    "id": 36,
+    "companyName": "Cloudstride",
+    "initials": "C",
+    "tagline": "Building infrastructure that lets small teams ship like big ones.",
+    "industry": "Education",
+    "size": "201–500",
+    "founded": 2023,
+    "website": "cloudstride.com",
+    "hq": "Stockholm",
+    "about": "Cloudstride is a 201-500 education company headquartered in Stockholm, founded in 2023. We are building infrastructure for modern teams.",
+    "culture": [
+      "2-pizza teams",
+      "Quarterly hack weeks"
+    ],
+    "benefits": [
+      "Fully remote across APAC",
+      "Annual iOSCon ticket",
+      "L&D budget RM 3,000 / year",
+      "Equity for senior ICs",
+      "Pension plan",
+      "Hybrid in Tokyo"
+    ]
+  },
+  {
+    "id": 37,
+    "companyName": "Northwind Tech",
+    "initials": "NT",
+    "tagline": "Empowering local businesses with smart logistics.",
+    "industry": "Education",
+    "size": "500+",
+    "founded": 2021,
+    "website": "northwindtech.com",
+    "hq": "Ho Chi Minh City",
+    "about": "Northwind Tech is a 500+ education company headquartered in Ho Chi Minh City, founded in 2021. We are building tools for our industry.",
+    "culture": [
+      "Ownership mindset",
+      "Working backwards"
+    ],
+    "benefits": [
+      "Annual iOSCon ticket",
+      "Fully remote across APAC",
+      "Comprehensive health cover"
+    ]
+  },
+  {
+    "id": 38,
+    "companyName": "Cobalt Networks",
+    "initials": "CN",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Software & Internet",
+    "size": "500+",
+    "founded": 2018,
+    "website": "cobaltnetworks.com",
+    "hq": "Seoul",
+    "about": "Cobalt Networks is a 500+ software & internet company headquartered in Seoul, founded in 2018. We are building infrastructure for our industry.",
+    "culture": [
+      "Bezos-style press release",
+      "Open salary bands"
+    ],
+    "benefits": [
+      "Comprehensive health cover",
+      "L&D budget RM 3,000 / year",
+      "Yearly bonus",
+      "Unlimited PTO",
+      "Annual iOSCon ticket",
+      "Learning & development budget"
+    ]
+  },
+  {
+    "id": 39,
+    "companyName": "Ironclad",
+    "initials": "I",
+    "tagline": "Empowering local businesses with smart logistics.",
+    "industry": "Public Sector",
+    "size": "11–50",
+    "founded": 2012,
+    "website": "ironclad.com",
+    "hq": "Manila",
+    "about": "Ironclad is a 11-50 public sector company headquartered in Manila, founded in 2012. We are building solutions in public sector.",
+    "culture": [
+      "Ownership mindset",
+      "No meeting Fridays"
+    ],
+    "benefits": [
+      "Equity for every employee",
+      "Fully remote",
+      "Remote-friendly with 2 on-sites/year"
+    ]
+  },
+  {
+    "id": 40,
+    "companyName": "Luminary",
+    "initials": "L",
+    "tagline": "Empowering local businesses with smart logistics.",
+    "industry": "Financial Services",
+    "size": "11–50",
+    "founded": 2014,
+    "website": "luminary.com",
+    "hq": "Bangkok",
+    "about": "Luminary is a 11-50 financial services company headquartered in Bangkok, founded in 2014. We are building the future of our industry.",
+    "culture": [
+      "Ship small, ship often",
+      "Bezos-style press release",
+      "Async-first communication",
+      "2-pizza teams"
+    ],
+    "benefits": [
+      "L&D budget RM 3,000 / year",
+      "Unlimited PTO",
+      "Home office stipend",
+      "Hybrid — 2 days a week in the London office",
+      "Learning & development budget",
+      "Gym membership"
+    ]
+  },
+  {
+    "id": 41,
+    "companyName": "Silverline",
+    "initials": "S",
+    "tagline": "Connecting enterprises with top-tier talent.",
+    "industry": "Manufacturing",
+    "size": "201–500",
+    "founded": 2019,
+    "website": "silverline.com",
+    "hq": "Jakarta",
+    "about": "Silverline is a 201-500 manufacturing company headquartered in Jakarta, founded in 2019. We are building tools for modern teams.",
+    "culture": [
+      "Demo days",
+      "High trust, low process",
+      "Ship small, ship often"
+    ],
+    "benefits": [
+      "Yearly bonus",
+      "Flexible working hours",
+      "Pension plan"
+    ]
+  },
+  {
+    "id": 42,
+    "companyName": "Bluewave",
+    "initials": "B",
+    "tagline": "Building the future of remote work.",
+    "industry": "Software & Internet",
+    "size": "201–500",
+    "founded": 2024,
+    "website": "bluewave.com",
+    "hq": "San Francisco",
+    "about": "Bluewave is a 201-500 software & internet company headquartered in San Francisco, founded in 2024. We are building tools for software & internet.",
+    "culture": [
+      "High trust, low process",
+      "Ownership mindset"
+    ],
+    "benefits": [
+      "Parental leave",
+      "Free lunch",
+      "Pension plan",
+      "Hybrid — 2 days a week in the London office",
+      "Home office stipend"
+    ]
+  },
+  {
+    "id": 43,
+    "companyName": "Redstone",
+    "initials": "R",
+    "tagline": "Creating open-source tools for developers worldwide.",
+    "industry": "Financial Services",
+    "size": "51–200",
+    "founded": 2021,
+    "website": "redstone.com",
+    "hq": "London",
+    "about": "Redstone is a 51-200 financial services company headquartered in London, founded in 2021. We are building the future of our industry.",
+    "culture": [
+      "No meeting Fridays",
+      "Demo days",
+      "Bezos-style press release"
+    ],
+    "benefits": [
+      "Conference attendance",
+      "Unlimited PTO",
+      "Hybrid — 2 days a week in the London office",
+      "Annual iOSCon ticket",
+      "Competitive salary",
+      "Stock options"
+    ]
+  },
+  {
+    "id": 44,
+    "companyName": "Greenfield",
+    "initials": "G",
+    "tagline": "Reimagining how teams collaborate and create.",
+    "industry": "Software & Internet",
+    "size": "201–500",
+    "founded": 2016,
+    "website": "greenfield.com",
+    "hq": "Toronto",
+    "about": "Greenfield is a 201-500 software & internet company headquartered in Toronto, founded in 2016. We are building tools for software & internet.",
+    "culture": [
+      "Working backwards",
+      "Demo days",
+      "Outcomes over hours",
+      "Ship small, ship often"
+    ],
+    "benefits": [
+      "Annual learning budget",
+      "Stock options",
+      "Gym membership",
+      "Conference attendance"
+    ]
+  },
+  {
+    "id": 45,
+    "companyName": "Blackrock Tech",
+    "initials": "BT",
+    "tagline": "Transforming healthcare with AI-powered diagnostics.",
+    "industry": "Manufacturing",
+    "size": "11–50",
+    "founded": 2019,
+    "website": "blackrocktech.com",
+    "hq": "Amsterdam",
+    "about": "Blackrock Tech is a 11-50 manufacturing company headquartered in Amsterdam, founded in 2019. We are building tools for manufacturing.",
+    "culture": [
+      "Working backwards",
+      "Bezos-style press release"
+    ],
+    "benefits": [
+      "Equity for senior ICs",
+      "Equity for every employee",
+      "Fully remote",
+      "Unlimited PTO"
+    ]
+  },
+  {
+    "id": 46,
+    "companyName": "Orbital",
+    "initials": "O",
+    "tagline": "Transforming healthcare with AI-powered diagnostics.",
+    "industry": "Manufacturing",
+    "size": "11–50",
+    "founded": 2012,
+    "website": "orbital.com",
+    "hq": "Mumbai",
+    "about": "Orbital is a 11-50 manufacturing company headquartered in Mumbai, founded in 2012. We are building infrastructure for manufacturing.",
+    "culture": [
+      "Outcomes over hours",
+      "Ownership mindset",
+      "Bezos-style press release",
+      "Ship small, ship often"
+    ],
+    "benefits": [
+      "Hybrid — 2 days a week in the London office",
+      "Annual iOSCon ticket",
+      "Gym membership",
+      "Generous learning budget",
+      "L&D budget RM 3,000 / year",
+      "Free lunch"
+    ]
+  },
+  {
+    "id": 47,
+    "companyName": "Parallax",
+    "initials": "P",
+    "tagline": "Democratizing access to financial services.",
+    "industry": "Education",
+    "size": "51–200",
+    "founded": 2012,
+    "website": "parallax.com",
+    "hq": "Ho Chi Minh City",
+    "about": "Parallax is a 51-200 education company headquartered in Ho Chi Minh City, founded in 2012. We are building the future of the digital economy.",
+    "culture": [
+      "Open salary bands",
+      "Ownership mindset"
+    ],
+    "benefits": [
+      "Mental health support",
+      "On-site in Madrid",
+      "Competitive salary",
+      "Equity for every employee"
+    ]
+  },
+  {
+    "id": 48,
+    "companyName": "CivicTech",
+    "initials": "C",
+    "tagline": "Building infrastructure that lets small teams ship like big ones.",
+    "industry": "Healthcare",
+    "size": "1–10",
+    "founded": 2011,
+    "website": "civictech.com",
+    "hq": "Mumbai",
+    "about": "CivicTech is a 1-10 healthcare company headquartered in Mumbai, founded in 2011. We are building tools for the digital economy.",
+    "culture": [
+      "Demo days",
+      "Ownership mindset",
+      "Quarterly hack weeks"
+    ],
+    "benefits": [
+      "Annual learning budget",
+      "L&D budget RM 3,000 / year",
+      "Competitive salary",
+      "Stock options",
+      "Parental leave",
+      "Equity for every employee"
+    ]
+  },
+  {
+    "id": 49,
+    "companyName": "LegalOS",
+    "initials": "L",
+    "tagline": "Powering the next generation of digital commerce.",
+    "industry": "Education",
+    "size": "51–200",
+    "founded": 2016,
+    "website": "legalos.com",
+    "hq": "Bangalore",
+    "about": "LegalOS is a 51-200 education company headquartered in Bangalore, founded in 2016. We are building tools for education.",
+    "culture": [
+      "Ownership mindset",
+      "Async-first communication",
+      "Demo days"
+    ],
+    "benefits": [
+      "Flexible working hours",
+      "Comprehensive health cover",
+      "Pension plan",
+      "L&D budget RM 3,000 / year",
+      "Stock options",
+      "Equity for senior ICs"
+    ]
+  },
+  {
+    "id": 50,
+    "companyName": "HealthBridge",
+    "initials": "H",
+    "tagline": "Building infrastructure that lets small teams ship like big ones.",
+    "industry": "Software & Internet",
+    "size": "51–200",
+    "founded": 2024,
+    "website": "healthbridge.com",
+    "hq": "Paris",
+    "about": "HealthBridge is a 51-200 software & internet company headquartered in Paris, founded in 2024. We are building tools for the digital economy.",
+    "culture": [
+      "2-pizza teams",
+      "Open salary bands",
+      "Async-first communication",
+      "High trust, low process"
+    ],
+    "benefits": [
+      "L&D budget RM 3,000 / year",
+      "Free lunch",
+      "Hybrid in Tokyo",
+      "Mental health support",
+      "Competitive salary",
+      "Hybrid — 2 days a week in the London office"
+    ]
   }
 ]
