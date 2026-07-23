@@ -68,23 +68,37 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
                     key={`${application.id}-${i}`}
                     className="flex items-start gap-3"
                   >
-                    <span
-                      className={
-                        isComplete
-                          ? "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground text-background text-[10px] font-semibold"
-                          : isCurrent
-                            ? "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-foreground bg-background text-[10px] font-semibold text-foreground"
-                            : "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-background text-[10px] font-semibold text-muted-foreground"
-                      }
-                      aria-label={
-                        isComplete
-                          ? `${step.label} — complete`
-                          : isCurrent
-                            ? `${step.label} — in progress`
-                            : `${step.label} — upcoming`
-                      }
-                    >
-                      {isComplete ? "✓" : i + 1}
+                    <span className="relative mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                      {isCurrent && (
+                        <span
+                          className="absolute inset-0 rounded-full border-2 border-foreground animate-pulse-ring-soft"
+                          aria-hidden
+                        />
+                      )}
+                      <span
+                        className={
+                          isComplete
+                            ? "relative flex h-6 w-6 items-center justify-center rounded-full bg-foreground text-[10px] font-semibold text-background"
+                            : isCurrent
+                              ? "relative flex h-6 w-6 items-center justify-center rounded-full border-2 border-foreground bg-background text-foreground animate-pulse-soft"
+                              : "relative flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background text-[10px] font-semibold text-muted-foreground"
+                        }
+                        aria-label={
+                          isComplete
+                            ? `${step.label} — complete`
+                            : isCurrent
+                              ? `${step.label} — in progress`
+                              : `${step.label} — upcoming`
+                        }
+                      >
+                        {isComplete ? (
+                          "✓"
+                        ) : isCurrent ? (
+                          <span className="inline-block h-2 w-2 rounded-full bg-foreground" />
+                        ) : (
+                          i + 1
+                        )}
+                      </span>
                     </span>
                     <div className="-mt-0.5 flex-1">
                       <p
