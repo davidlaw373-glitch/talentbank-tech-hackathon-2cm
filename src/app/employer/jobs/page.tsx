@@ -102,7 +102,7 @@ export default function EmployerJobsPage() {
     () =>
       showAllJobs
         ? filtered
-        : [...jobs].sort((a, b) => b.filledScore - a.filledScore).slice(0, 3),
+        : [...jobs].sort((a, b) => b.filledScore - a.filledScore),
     [filtered, jobs, showAllJobs],
   );
 
@@ -190,15 +190,22 @@ export default function EmployerJobsPage() {
         title="Job management"
         description="All your open, draft, and paused roles — search, filter, and jump into a posting."
         action={
-          <Button onClick={onNewJob}>
-            <Plus />
-            New job
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {showAllJobs && (
+              <Button variant="outline" onClick={() => setShowAllJobs(false)}>
+                Show priority jobs
+              </Button>
+            )}
+            <Button onClick={onNewJob}>
+              <Plus />
+              New job
+            </Button>
+          </div>
         }
       />
 
       {/* Stats */}
-      <section
+      {!showAllJobs && <section
         aria-label="Job status counts"
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
       >
@@ -228,12 +235,12 @@ export default function EmployerJobsPage() {
             </Card>
           );
         })}
-      </section>
+      </section>}
 
       {/* Filters */}
       {showAllJobs && (
-        <Card>
-          <CardContent className="grid gap-3 p-5 sm:grid-cols-[minmax(0,1fr)_14rem_14rem] sm:items-end">
+        <Card className="overflow-hidden">
+          <CardContent className="grid gap-3 bg-surface-inset p-5 sm:grid-cols-[minmax(0,1fr)_14rem_14rem] sm:items-end">
             <div className="flex flex-1 flex-col gap-1.5">
               <label
                 htmlFor="job-search"
@@ -302,38 +309,58 @@ export default function EmployerJobsPage() {
               </Select>
             </div>
           </CardContent>
+          <div className="border-t bg-surface-inset p-3">
+            {displayedJobs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 p-12 text-center">
+                <span
+                  aria-hidden
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
+                >
+                  <Filter className="h-5 w-5 text-muted-foreground" />
+                </span>
+                <div>
+                  <p className="text-sm font-medium">
+                    No jobs match those filters
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Try a broader search or change the status or location.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div
+                aria-label="All jobs"
+                className="max-h-[32rem] space-y-3 overflow-y-auto pr-1"
+              >
+                {displayedJobs.map((job: Job) => (
+                  <JobRow
+                    key={job.id}
+                    job={job}
+                    showActions
+                    onTogglePause={() => onTogglePause(job)}
+                    onRequestClose={setPendingClose}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </Card>
       )}
 
       {/* Results */}
-      <section className="space-y-3">
+      {!showAllJobs && <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2>
-              {showAllJobs
-                ? `${filtered.length} job${filtered.length === 1 ? "" : "s"}`
-                : "Priority jobs"}
-            </h2>
+            <h2>Priority jobs</h2>
             <p className="text-sm text-muted-foreground">
-              {showAllJobs ? (
-                <>
-                  Showing{" "}
-                  {statusFilter === "All"
-                    ? "all statuses"
-                    : statusFilter.toLowerCase()}
-                  {locationFilter === "All" ? "" : ` in ${locationFilter}`}
-                  {query.trim() ? ` matching "${query.trim()}"` : ""}.
-                </>
-              ) : (
-                "The three roles with the highest funnel completion."
-              )}
+              Roles ordered by highest funnel completion.
             </p>
           </div>
           <Button
             variant="outline"
-            onClick={() => setShowAllJobs((current) => !current)}
+            onClick={() => setShowAllJobs(true)}
           >
-            {showAllJobs ? "Show priority jobs" : `View all ${jobs.length} jobs`}
+            View all jobs
           </Button>
         </div>
 
@@ -355,7 +382,10 @@ export default function EmployerJobsPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div
+            aria-label={showAllJobs ? "All jobs" : "Priority jobs"}
+            className="max-h-[32rem] space-y-3 overflow-y-auto rounded-xl border bg-surface-inset p-3 pr-2"
+          >
             {displayedJobs.map((job: Job) => (
               <JobRow
                 key={job.id}
@@ -367,7 +397,7 @@ export default function EmployerJobsPage() {
             ))}
           </div>
         )}
-      </section>
+      </section>}
 
       <ConfirmDialog
         open={pendingClose !== null}
@@ -462,7 +492,7 @@ function JobRow({
             </span>
             <small className="text-muted-foreground">applicants</small>
           </div>
-          <div className="hidden w-32 sm:block">
+          <div className="hidden w-32 sm:mt-3 sm:block">
             <div
               aria-hidden
               className="h-2 w-full overflow-hidden rounded-full bg-muted"
