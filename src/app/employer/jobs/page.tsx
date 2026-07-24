@@ -34,6 +34,10 @@ import {
 } from "@/components/ui/select";
 import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
+import {
+  JobEditorDialog,
+  type JobEditorValues,
+} from "@/components/features/employer/job-editor-dialog";
 
 const STATUS_OPTIONS: Array<{ value: JobStatus | "All"; label: string }> = [
   { value: "All", label: "All statuses" },
@@ -69,7 +73,10 @@ export default function EmployerJobsPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "All">("All");
   const [locationFilter, setLocationFilter] = useState("All");
+  const [showAllJobs, setShowAllJobs] = useState(false);
+  const [newJobOpen, setNewJobOpen] = useState(false);
   const [pendingClose, setPendingClose] = useState<Job | null>(null);
+  const [finalClose, setFinalClose] = useState<Job | null>(null);
 
   const locationOptions = useMemo(
     () =>
@@ -91,6 +98,14 @@ export default function EmployerJobsPage() {
     });
   }, [jobs, locationFilter, query, statusFilter]);
 
+  const displayedJobs = useMemo(
+    () =>
+      showAllJobs
+        ? filtered
+        : [...jobs].sort((a, b) => b.filledScore - a.filledScore).slice(0, 3),
+    [filtered, jobs, showAllJobs],
+  );
+
   const stats = useMemo(() => {
     return {
       total: jobs.length,
@@ -101,10 +116,31 @@ export default function EmployerJobsPage() {
   }, [jobs]);
 
   const onNewJob = () => {
+    setNewJobOpen(true);
+  };
+
+  const onCreateJob = (values: JobEditorValues) => {
+    const nextId = Math.max(0, ...jobs.map((job) => job.id)) + 1;
+    const newJob: Job = {
+      id: nextId,
+      employerId: 1,
+      ...values,
+      status: "Draft",
+      posted: "Just now",
+      applicants: 0,
+      filledScore: 0,
+      responsibilities: [],
+      requirements: [],
+      mustHave: [],
+      niceToHave: [],
+      summary: values.description,
+      aboutCompany: "",
+    };
+    setJobs((current) => [newJob, ...current]);
     push({
-      title: "New job draft opened",
-      description: "Add the basics and publish when ready.",
-      tone: "info",
+      title: `${newJob.title} created`,
+      description: "The new role has been saved as a draft.",
+      tone: "success",
     });
   };
 
@@ -195,94 +231,113 @@ export default function EmployerJobsPage() {
       </section>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="grid gap-3 p-5 sm:grid-cols-[minmax(0,1fr)_14rem_14rem] sm:items-end">
-          <div className="flex flex-1 flex-col gap-1.5">
-            <label
-              htmlFor="job-search"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-            >
-              Search jobs
-            </label>
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden
-              />
-              <Input
-                id="job-search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Filter by job title"
-                className="pl-9"
-              />
+      {showAllJobs && (
+        <Card>
+          <CardContent className="grid gap-3 p-5 sm:grid-cols-[minmax(0,1fr)_14rem_14rem] sm:items-end">
+            <div className="flex flex-1 flex-col gap-1.5">
+              <label
+                htmlFor="job-search"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Search jobs
+              </label>
+              <div className="relative">
+                <Search
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden
+                />
+                <Input
+                  id="job-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Filter by job title"
+                  className="pl-9"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-col gap-1.5 sm:w-56">
-            <label
-              htmlFor="status-filter"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-            >
-              Status
-            </label>
-            <Select
-              value={statusFilter}
-              onValueChange={(v) => setStatusFilter(v as JobStatus | "All")}
-            >
-              <SelectTrigger id="status-filter">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="flex flex-col gap-1.5 sm:w-56">
+              <label
+                htmlFor="status-filter"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Status
+              </label>
+              <Select
+                value={statusFilter}
+                onValueChange={(v) => setStatusFilter(v as JobStatus | "All")}
+              >
+                <SelectTrigger id="status-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="location-filter"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-            >
-              Location
-            </label>
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
-              <SelectTrigger id="location-filter">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All locations</SelectItem>
-                {locationOptions.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="location-filter"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Location
+              </label>
+              <Select value={locationFilter} onValueChange={setLocationFilter}>
+                <SelectTrigger id="location-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All locations</SelectItem>
+                  {locationOptions.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Results */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2>
-              {filtered.length} job{filtered.length === 1 ? "" : "s"}
+              {showAllJobs
+                ? `${filtered.length} job${filtered.length === 1 ? "" : "s"}`
+                : "Priority jobs"}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Showing {statusFilter === "All" ? "all statuses" : statusFilter.toLowerCase()}
-              {locationFilter === "All" ? "" : ` in ${locationFilter}`}
-              {query.trim() ? ` matching "${query.trim()}"` : ""}.
+              {showAllJobs ? (
+                <>
+                  Showing{" "}
+                  {statusFilter === "All"
+                    ? "all statuses"
+                    : statusFilter.toLowerCase()}
+                  {locationFilter === "All" ? "" : ` in ${locationFilter}`}
+                  {query.trim() ? ` matching "${query.trim()}"` : ""}.
+                </>
+              ) : (
+                "The three roles with the highest funnel completion."
+              )}
             </p>
           </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowAllJobs((current) => !current)}
+          >
+            {showAllJobs ? "Show priority jobs" : `View all ${jobs.length} jobs`}
+          </Button>
         </div>
 
-        {filtered.length === 0 ? (
+        {displayedJobs.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center gap-3 p-12 text-center">
               <span
@@ -301,10 +356,11 @@ export default function EmployerJobsPage() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {filtered.map((job: Job) => (
+            {displayedJobs.map((job: Job) => (
               <JobRow
                 key={job.id}
                 job={job}
+                showActions={showAllJobs}
                 onTogglePause={() => onTogglePause(job)}
                 onRequestClose={setPendingClose}
               />
@@ -317,14 +373,38 @@ export default function EmployerJobsPage() {
         open={pendingClose !== null}
         onOpenChange={(open) => !open && setPendingClose(null)}
         title={`Close ${pendingClose?.title ?? "this job posting"}?`}
-        description="It will stop accepting new applicants. Existing applicants will keep their status."
+        description="This role will stop accepting new applicants. Existing applicants will keep their current status."
         confirmLabel="Close job"
         destructive
-        requireTyping="CLOSE"
         onConfirm={() => {
-          if (pendingClose) onClose(pendingClose);
+          setFinalClose(pendingClose);
           setPendingClose(null);
         }}
+      />
+      <ConfirmDialog
+        open={finalClose !== null}
+        onOpenChange={(open) => !open && setFinalClose(null)}
+        title="Confirm closing this job"
+        description={
+          <>
+            Are you sure you want to close{" "}
+            <strong className="text-foreground">
+              {finalClose?.title ?? "this job posting"}
+            </strong>
+            ? This is your final confirmation.
+          </>
+        }
+        confirmLabel="Yes, close job"
+        destructive
+        onConfirm={() => {
+          if (finalClose) onClose(finalClose);
+          setFinalClose(null);
+        }}
+      />
+      <JobEditorDialog
+        open={newJobOpen}
+        onOpenChange={setNewJobOpen}
+        onSave={onCreateJob}
       />
     </div>
   );
@@ -332,16 +412,23 @@ export default function EmployerJobsPage() {
 
 function JobRow({
   job,
+  showActions,
   onTogglePause,
   onRequestClose,
 }: {
   job: Job;
+  showActions: boolean;
   onTogglePause: () => void;
   onRequestClose: (job: Job) => void;
 }) {
   return (
-    <Card className="lift-on-hover">
-      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <Card className="group relative lift-on-hover">
+      <Link
+        href={`/employer/jobs/${job.id}`}
+        aria-label={`Open ${job.title}`}
+        className="absolute inset-0 z-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      />
+      <CardContent className="pointer-events-none relative z-10 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <span
             aria-hidden
@@ -352,7 +439,7 @@ function JobRow({
           <div className="min-w-0">
             <Link
               href={`/employer/jobs/${job.id}`}
-              className="text-sm font-medium hover:underline"
+              className="pointer-events-auto text-sm font-medium hover:underline"
             >
               {job.title}
             </Link>
@@ -389,32 +476,36 @@ function JobRow({
               {job.filledScore}% filled
             </small>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onTogglePause}
-              disabled={job.status === "Closed" || job.status === "Draft"}
-              aria-pressed={job.status === "Paused"}
-              aria-label={
-                job.status === "Paused"
-                  ? `Resume ${job.title}`
-                  : `Pause ${job.title}`
-              }
-            >
-              {job.status === "Paused" ? <Play /> : <Pause />}
-              {job.status === "Paused" ? "Resume" : "Pause"}
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => onRequestClose(job)}
-              disabled={job.status === "Closed"}
-              aria-label={`Close ${job.title}`}
-            >
-              <X />
-              Close
-            </Button>
+          <div className="pointer-events-auto flex items-center gap-2">
+            {showActions && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onTogglePause}
+                  disabled={job.status === "Closed" || job.status === "Draft"}
+                  aria-pressed={job.status === "Paused"}
+                  aria-label={
+                    job.status === "Paused"
+                      ? `Resume ${job.title}`
+                      : `Pause ${job.title}`
+                  }
+                >
+                  {job.status === "Paused" ? <Play /> : <Pause />}
+                  {job.status === "Paused" ? "Resume" : "Pause"}
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onRequestClose(job)}
+                  disabled={job.status === "Closed"}
+                  aria-label={`Close ${job.title}`}
+                >
+                  <X />
+                  Close
+                </Button>
+              </>
+            )}
             <Button asChild variant="ghost" size="icon" aria-label={`Open ${job.title}`}>
               <Link href={`/employer/jobs/${job.id}`}>
                 <ArrowRight />

@@ -25,7 +25,7 @@ export default async function EmployerJobDetailPage({ params }: PageProps) {
 
   const applicants = getEmployerCandidateRows(DEMO_EMPLOYER_ID)
     .filter((r) => r.job.id === jobId)
-    .slice(0, 3);
+    .sort((a, b) => b.matchScore - a.matchScore);
 
   return <JobDetailView job={job} applicants={applicants} />;
 }
