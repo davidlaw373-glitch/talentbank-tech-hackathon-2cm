@@ -21,21 +21,30 @@ import {
   LongText,
   TextInput,
 } from "@/components/features/candidate/profile-form-fields";
+import {
+  detectSkills,
+  type SkillLexicon,
+} from "@/components/features/candidate/skill-parser";
+import { normalize } from "@/components/features/candidate/credential-derivations";
 import type { Project } from "@/types/profile";
 
 type ProfileProjectsListProps = {
   items: Project[];
   onChange: (next: Project[]) => void;
+  /** Data-driven lexicon powering "Suggest tags from description". */
+  lexicon: SkillLexicon;
 };
 
 export function ProfileProjectsList({
   items,
   onChange,
+  lexicon,
 }: ProfileProjectsListProps) {
   const { push } = useToast();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Project | null>(null);
   const [skillDraft, setSkillDraft] = useState("");
+  const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
 
   function add() {
     const id = Date.now();
@@ -48,6 +57,7 @@ export function ProfileProjectsList({
     onChange([...items, next]);
     setDraft(next);
     setSkillDraft("");
+    setSuggestedTags([]);
     setEditingId(id);
     push({ title: "Add project form opened", tone: "info" });
   }
@@ -55,6 +65,7 @@ export function ProfileProjectsList({
   function beginEdit(item: Project) {
     setDraft({ ...item });
     setSkillDraft("");
+    setSuggestedTags([]);
     setEditingId(item.id);
   }
 
@@ -64,6 +75,7 @@ export function ProfileProjectsList({
     setEditingId(null);
     setDraft(null);
     setSkillDraft("");
+    setSuggestedTags([]);
     push({ title: "Project updated", tone: "success" });
   }
 
@@ -71,6 +83,7 @@ export function ProfileProjectsList({
     setEditingId(null);
     setDraft(null);
     setSkillDraft("");
+    setSuggestedTags([]);
   }
 
   function remove(id: number) {
@@ -100,6 +113,45 @@ export function ProfileProjectsList({
       ...draft,
       skills: draft.skills.filter((_, i) => i !== index),
     });
+  }
+
+  // Deterministic parser: detect skills from the description, minus tags
+  // already on the draft.
+  function suggestTags() {
+    if (!draft) return;
+    const existing = new Set(draft.skills.map(normalize));
+    const detected = detectSkills(draft.description, lexicon).filter(
+      (skill) => !existing.has(normalize(skill)),
+    );
+    setSuggestedTags(detected);
+    if (detected.length === 0) {
+      push({
+        title: "No new skills detected",
+        description: "Add more detail to the description and try again.",
+        tone: "info",
+      });
+    }
+  }
+
+  function addSuggestedTag(tag: string) {
+    if (!draft) return;
+    if (!draft.skills.some((skill) => normalize(skill) === normalize(tag))) {
+      setDraft({ ...draft, skills: [...draft.skills, tag] });
+    }
+    setSuggestedTags((current) =>
+      current.filter((t) => normalize(t) !== normalize(tag)),
+    );
+  }
+
+  function addAllSuggestedTags() {
+    if (!draft || suggestedTags.length === 0) return;
+    const existing = new Set(draft.skills.map(normalize));
+    const merged = [...draft.skills];
+    for (const tag of suggestedTags) {
+      if (!existing.has(normalize(tag))) merged.push(tag);
+    }
+    setDraft({ ...draft, skills: merged });
+    setSuggestedTags([]);
   }
 
   function handleSkillKeyDown(
@@ -220,6 +272,47 @@ export function ProfileProjectsList({
                       Press <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">Enter</kbd> or{" "}
                       <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">,</kbd> to add · Backspace on empty to remove the last tag.
                     </p>
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={suggestTags}
+                      >
+                        <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                        Suggest tags from description
+                      </Button>
+                      {suggestedTags.length > 0 ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={addAllSuggestedTags}
+                        >
+                          Add all
+                        </Button>
+                      ) : null}
+                    </div>
+                    {suggestedTags.length > 0 ? (
+                      <div
+                        role="group"
+                        aria-label="Suggested tags detected from the description"
+                        className="flex flex-wrap gap-1.5"
+                      >
+                        {suggestedTags.map((tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => addSuggestedTag(tag)}
+                            aria-label={`Add tag ${tag}`}
+                            className="inline-flex items-center gap-1 rounded-full border border-dashed border-border bg-card px-2.5 py-1 text-xs font-medium transition-colors hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                          >
+                            <Plus className="h-3 w-3" aria-hidden />
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
                   </FieldRow>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button size="sm" onClick={save}>
