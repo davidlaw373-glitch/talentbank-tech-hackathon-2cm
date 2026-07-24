@@ -20,7 +20,6 @@ import { useToast } from "@/components/common/toast";
 import { getMatchScoresForCandidate } from "@/lib/data-helpers";
 import { getActiveByCandidate } from "@/data/applications";
 import { get as getJob } from "@/data/jobs";
-import { getForCandidate as getActivityForCandidate } from "@/data/activity";
 import { getForCandidate as getCredentialsForCandidate } from "@/data/credentials";
 import { get as getUniversity } from "@/data/universities";
 import {
@@ -98,7 +97,6 @@ export function DashboardOverview() {
   // All derived from JSON at module load — single source of truth.
   const applications = getActiveByCandidate(1);
   const allMatchScores = getMatchScoresForCandidate(1);
-  const recentActivity = getActivityForCandidate(1);
 
   // University-issued credentials drive the verification card + checklist.
   const credentials = getCredentialsForCandidate(1);
@@ -272,50 +270,6 @@ export function DashboardOverview() {
             </Card>
           );
         })}
-      </section>
-
-      {/* Recent activity — placed directly after the stats so it is visible the moment the candidate signs in */}
-      <section className="space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-card-title">Recent activity</h2>
-            <p className="text-sm text-muted-foreground">
-              Your latest CareerOS updates, in one feed.
-            </p>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/candidate/notifications">
-              View all
-              <ArrowRight aria-hidden />
-            </Link>
-          </Button>
-        </div>
-
-        <Card>
-          <CardContent className="p-5 sm:p-6">
-            <ol className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-              {recentActivity.map((entry) => (
-                <li
-                  key={entry.id}
-                  className="relative flex items-start gap-3"
-                >
-                  <span
-                    className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-foreground/60"
-                    aria-hidden
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-medium leading-snug">
-                      {entry.body}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {entry.timestamp}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
       </section>
 
       {/* Profile progress + Verification */}

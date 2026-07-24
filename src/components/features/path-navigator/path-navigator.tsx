@@ -8,7 +8,6 @@ import {
   Building2,
   Flag,
   MapPin,
-  RefreshCw,
   Rocket,
   ShieldCheck,
   Sparkles,
@@ -17,7 +16,6 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -78,9 +76,13 @@ function SummaryStat({
         >
           <Icon aria-hidden className="h-5 w-5" />
         </div>
-        <p className="text-4xl font-semibold tabular-nums leading-none sm:text-5xl">
+        <p className="text-4xl font-semibold tabular-nums leading-none lg:text-5xl">
           {value}
-          {suffix ?? ""}
+          {suffix ? (
+            <span className="ml-0.5 text-base font-medium text-muted-foreground lg:text-lg">
+              {suffix}
+            </span>
+          ) : null}
         </p>
         <p className="text-base font-semibold tracking-tight">{label}</p>
       </CardContent>
@@ -274,8 +276,8 @@ function RolePanel({
 
       {/* Roadmap CTA + revealable milestone list */}
       <Card>
-        <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 sm:flex-1">
             <p className="text-sm font-semibold">
               {hasGaps
                 ? "Ready to close these gaps?"
@@ -287,11 +289,12 @@ function RolePanel({
                 : "No skill gaps to bridge. Focus on applying and interview prep."}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:shrink-0 sm:items-center">
             <Button
               variant={isGoal ? "secondary" : "outline"}
               aria-pressed={isGoal}
               onClick={onToggleGoal}
+              className="w-full sm:w-auto"
             >
               {isGoal ? "Following this goal" : "Mark as my goal"}
             </Button>
@@ -300,12 +303,13 @@ function RolePanel({
                 onClick={onToggleRoadmap}
                 aria-expanded={showRoadmap}
                 aria-controls={roadmapId}
+                className="w-full sm:w-auto"
               >
                 {showRoadmap ? "Hide roadmap" : "Get my roadmap"}
                 <ArrowRight aria-hidden />
               </Button>
             ) : (
-              <Button asChild>
+              <Button asChild className="w-full sm:w-auto">
                 <Link href={`/candidate/jobs/${role.jobId}`}>
                   View role
                   <ArrowRight aria-hidden />
@@ -479,24 +483,7 @@ export function PathNavigator() {
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Career Path Navigator"
-        description="Pick a target role from your real matches — we map your verified strengths, the exact gaps, and a step-by-step roadmap."
-        action={
-          <Button
-            variant="outline"
-            onClick={() =>
-              push({
-                title: "Re-evaluated with current market signals",
-                tone: "success",
-              })
-            }
-          >
-            <RefreshCw aria-hidden />
-            Re-evaluate with current signals
-          </Button>
-        }
-      />
+      <h1 className="sr-only">Career Path Navigator</h1>
 
       {selectedRole === null ? (
         <Card>
