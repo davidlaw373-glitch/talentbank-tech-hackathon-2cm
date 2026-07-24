@@ -337,7 +337,7 @@ export function ResumeAssistant() {
                   className="relative flex h-32 w-32 shrink-0 items-center justify-center rounded-md border-8 border-muted"
                 >
                   <div className="flex flex-col items-center">
-                    <span className="text-3xl font-semibold tabular-nums leading-none">
+                    <span className="text-4xl font-semibold tabular-nums leading-none">
                       {RESUME_SCORE}
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -451,7 +451,7 @@ export function ResumeAssistant() {
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <h2>Resume versions</h2>
+            <h2 className="text-card-title">Resume versions</h2>
             <p className="text-sm text-muted-foreground">
               Switch the version you use when applying.
             </p>
@@ -557,7 +557,9 @@ export function ResumeAssistant() {
                     {i + 1}
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold">{s.title}</p>
+                    <p className="text-base font-semibold leading-snug">
+                      {s.title}
+                    </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {s.detail}
                     </p>

@@ -226,12 +226,14 @@ export function DashboardOverview() {
                 >
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
-                <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
                   {s.value}
                   {s.suffix ?? ""}
                 </div>
                 <div>
-                  <p className="text-base font-medium">{s.label}</p>
+                  <p className="text-base font-semibold tracking-tight">
+                    {s.label}
+                  </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {s.delta}
                   </p>
@@ -246,7 +248,7 @@ export function DashboardOverview() {
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-heading">Recent activity</h2>
+            <h2 className="text-card-title">Recent activity</h2>
             <p className="text-sm text-muted-foreground">
               Your latest CareerOS updates, in one feed.
             </p>
@@ -272,7 +274,9 @@ export function DashboardOverview() {
                     aria-hidden
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-base font-medium">{entry.body}</p>
+                    <p className="text-base font-medium leading-snug">
+                      {entry.body}
+                    </p>
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {entry.timestamp}
                     </p>
@@ -366,7 +370,7 @@ export function DashboardOverview() {
                       <div className="min-w-0 flex-1">
                         <p
                           className={cn(
-                            "truncate text-base font-medium",
+                            "truncate text-base font-semibold",
                             item.done && "text-muted-foreground"
                           )}
                         >
@@ -415,7 +419,7 @@ export function DashboardOverview() {
                 className="flex items-center justify-between rounded-lg border bg-card p-3"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-medium">{e.name}</p>
+                  <p className="truncate text-base font-semibold">{e.name}</p>
                   <p className="text-xs text-muted-foreground">{e.type}</p>
                 </div>
                 <Badge variant={e.status === "Verified" ? "secondary" : "outline"}>
@@ -431,7 +435,7 @@ export function DashboardOverview() {
       <section className="space-y-4">
         <div className="flex items-end justify-between">
           <div>
-            <h2 className="text-heading">Your application pipeline</h2>
+            <h2 className="text-card-title">Your application pipeline</h2>
             <p className="text-sm text-muted-foreground">
               {applications.length} active · track each stage in one place.
             </p>

@@ -167,7 +167,7 @@ export function JobDiscovery() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2>
+            <h2 className="text-card-title">
               {filteredJobs.length} role
               {filteredJobs.length === 1 ? "" : "s"} match
             </h2>
@@ -260,7 +260,7 @@ export function JobDiscovery() {
                         </Link>
                       </Button>
                       <div className="flex flex-col items-end gap-1">
-                        <span className="text-3xl font-semibold tabular-nums leading-none">
+                        <span className="text-4xl font-semibold tabular-nums leading-none">
                           {displayScore}
                         </span>
                         <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">

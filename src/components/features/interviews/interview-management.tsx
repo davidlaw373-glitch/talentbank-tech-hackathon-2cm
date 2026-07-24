@@ -166,10 +166,12 @@ export function InterviewManagement() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                   <Icon aria-hidden className="h-5 w-5" />
                 </div>
-                <p className="text-3xl font-semibold tabular-nums leading-none">
+                <p className="text-4xl font-semibold tabular-nums leading-none sm:text-5xl">
                   {s.id === "upcoming" ? upcoming.length : s.value}
                 </p>
-                <p className="text-sm text-muted-foreground">{s.label}</p>
+                <p className="text-base font-semibold tracking-tight">
+                  {s.label}
+                </p>
               </CardContent>
             </Card>
           );
@@ -180,7 +182,7 @@ export function InterviewManagement() {
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <h2>Upcoming interviews</h2>
+            <h2 className="text-card-title">Upcoming interviews</h2>
             <p className="text-sm text-muted-foreground">
               You have {upcoming.length} scheduled this week.
             </p>
@@ -316,7 +318,7 @@ export function InterviewManagement() {
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
               <CardTitle>
-                <h2 className="flex items-center gap-2">
+                <h2 className="flex items-center gap-2 text-card-title">
                   <Sparkles aria-hidden className="h-4 w-4" />
                   Interview prep — {prepInterview.company} {prepInterview.round.toLowerCase()}
                 </h2>
@@ -444,7 +446,7 @@ export function InterviewManagement() {
       {/* Past interviews */}
       <section className="space-y-4">
         <div>
-          <h2>Past interviews</h2>
+          <h2 className="text-card-title">Past interviews</h2>
           <p className="text-sm text-muted-foreground">
             Feedback from your most recent rounds.
           </p>

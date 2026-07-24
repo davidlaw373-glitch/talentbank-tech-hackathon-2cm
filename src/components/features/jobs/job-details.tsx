@@ -141,7 +141,7 @@ export function JobDetails({
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               {job.department}
             </p>
-            <h1>{job.title}</h1>
+            <h1 className="text-display">{job.title}</h1>
             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Building2 className="h-3.5 w-3.5" aria-hidden />

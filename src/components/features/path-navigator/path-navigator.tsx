@@ -119,11 +119,11 @@ function SummaryStat({
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
           <Icon aria-hidden className="h-5 w-5" />
         </div>
-        <p className="text-3xl font-semibold tabular-nums leading-none">
+        <p className="text-4xl font-semibold tabular-nums leading-none sm:text-5xl">
           {value}
           {suffix ?? ""}
         </p>
-        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="text-base font-semibold tracking-tight">{label}</p>
       </CardContent>
     </Card>
   );

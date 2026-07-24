@@ -304,7 +304,7 @@ export function ApplicationTracker() {
                             return (
                               <>
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate text-sm font-semibold">
+                            <p className="truncate text-base font-semibold tracking-tight">
                               {jobTitle}
                             </p>
                             <Badge variant={tone}>{app.stage}</Badge>

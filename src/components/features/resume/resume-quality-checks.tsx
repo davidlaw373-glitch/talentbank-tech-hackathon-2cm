@@ -1377,7 +1377,7 @@ export function ResumeQualityChecks() {
                   value={draft.name}
                   onCommit={(value) => updateField("name", value)}
                   label="Full name"
-                  className="-m-2 block w-full rounded-md p-2 text-3xl font-semibold tracking-tight hover:bg-accent-soft/30"
+                  className="-m-2 block w-full rounded-md p-2 text-4xl font-semibold tracking-tight hover:bg-accent-soft/30 sm:text-5xl"
                   placeholder="Your name"
                   highlights={nameHighlights}
                   onHighlightClick={setActiveIssueId}
@@ -1788,7 +1788,7 @@ export function ResumeQualityChecks() {
         <Card>
           <CardHeader>
             <CardTitle>
-              <h2 className="flex items-center gap-2 text-base">
+              <h2 className="flex items-center gap-2 text-card-title">
                 <Sparkles aria-hidden className="h-4 w-4" />
                 AI guidance
               </h2>

@@ -30,7 +30,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Application
         </p>
-        <h1>{job?.title ?? "Unknown role"}</h1>
+        <h1 className="text-display">{job?.title ?? "Unknown role"}</h1>
         <p className="text-muted-foreground">
           {job?.location ?? ""} · Applied {application.appliedDate}
         </p>

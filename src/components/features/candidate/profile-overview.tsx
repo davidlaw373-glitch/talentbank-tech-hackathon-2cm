@@ -68,7 +68,7 @@ export function ProfileOverview() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Candidate profile
           </p>
-          <h1>Your profile</h1>
+          <h1 className="text-display">Your profile</h1>
           <p className="text-muted-foreground">
             Keep your career story accurate so employers can understand your
             capabilities and evidence.

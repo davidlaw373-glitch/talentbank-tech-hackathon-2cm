@@ -93,7 +93,7 @@ function NotificationRow({
           <div className="flex flex-wrap items-center gap-2">
             <p
               className={cn(
-                "truncate text-sm font-medium",
+                "truncate text-base font-semibold",
                 read && "text-muted-foreground",
               )}
             >
@@ -173,7 +173,7 @@ export function NotificationsCenter({
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Notifications
           </p>
-          <h1>{heading}</h1>
+          <h1 className="text-display">{heading}</h1>
           <p className="text-muted-foreground">{description}</p>
         </div>
         <div className="flex items-center gap-2">
