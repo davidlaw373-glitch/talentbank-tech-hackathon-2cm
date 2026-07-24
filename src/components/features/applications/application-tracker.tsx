@@ -286,9 +286,16 @@ export function ApplicationTracker() {
               {filtered.map((app) => {
                 const tone = STAGE_VARIANT[app.stage];
                 const trackingState = getTrackingState(app.id);
+                const job = getJob(app.jobId);
+                const jobTitle = job?.title ?? "Unknown role";
+                const company = job?.location ?? "";
                 return (
                   <li key={app.id}>
-                    <div className="block rounded-lg border bg-card p-5">
+                    <Link
+                      href={`/candidate/applications/${app.id}`}
+                      aria-label={`Open application for ${jobTitle}`}
+                      className="group block rounded-lg border bg-card p-5 outline-none transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-border/40 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
                       <div className="flex items-start gap-4">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
                           <Building2
@@ -297,12 +304,6 @@ export function ApplicationTracker() {
                           />
                         </div>
                         <div className="min-w-0 flex-1 space-y-3">
-                          {(() => {
-                            const job = getJob(app.jobId);
-                            const jobTitle = job?.title ?? "Unknown role";
-                            const company = job?.location ?? "";
-                            return (
-                              <>
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="truncate text-base font-semibold tracking-tight">
                               {jobTitle}
@@ -342,23 +343,21 @@ export function ApplicationTracker() {
                           </div>
                           <ApplicationProgress application={app} />
                           <div className="flex flex-wrap items-center gap-2">
-                            <Button asChild size="sm">
-                              <Link href={`/candidate/applications/${app.id}`}>
-                                View application
-                                <ArrowRight aria-hidden />
-                              </Link>
-                            </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               aria-pressed={trackingState === "saved"}
-                              onClick={() =>
+                              onClick={(e) => {
+                                // The whole card is a link; keep the
+                                // Save action independent.
+                                e.preventDefault();
+                                e.stopPropagation();
                                 updateTrackingState(
                                   app.id,
                                   trackingState === "saved" ? "active" : "saved",
                                   jobTitle
-                                )
-                              }
+                                );
+                              }}
                             >
                               {trackingState === "saved"
                                 ? "Move to active"
@@ -369,24 +368,23 @@ export function ApplicationTracker() {
                               variant="outline"
                               aria-pressed={trackingState === "withdrawn"}
                               disabled={trackingState === "withdrawn"}
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 setPendingWithdraw({
                                   id: app.id,
                                   jobTitle,
-                                })
-                              }
+                                });
+                              }}
                             >
                               {trackingState === "withdrawn"
                                 ? "Application withdrawn"
                                 : "Withdraw application"}
                             </Button>
                           </div>
-                              </>
-                            );
-                          })()}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </li>
                 );
               })}

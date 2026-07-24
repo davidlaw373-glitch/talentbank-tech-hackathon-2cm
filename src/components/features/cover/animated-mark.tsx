@@ -2,11 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import {
-  CandidateIcon,
-  EmployerIcon,
-  UniversityIcon,
-} from "@/components/features/cover/role-icons";
 import { cn } from "@/lib/utils";
 
 type AnimatedMarkProps = {
@@ -60,13 +55,60 @@ function edgePath(a: { x: number; y: number }, b: { x: number; y: number }) {
   return `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
 }
 
-const ICONS: Record<
+/**
+ * Each role icon rendered as a plain function returning the inner <g>
+ * with paths positioned relative to (0, 0). Drawn directly into the
+ * parent AnimatedMark <svg> so the fill colour is set deterministically
+ * (no `currentColor` cascade through nested <svg> elements).
+ */
+const ICON_PATHS: Record<
   string,
-  (props?: { className?: string }) => React.JSX.Element
+  (cx: number, cy: number) => React.JSX.Element
 > = {
-  candidate: CandidateIcon,
-  employer: EmployerIcon,
-  university: UniversityIcon,
+  candidate: (cx, cy) => (
+    <g transform={`translate(${cx} ${cy})`}>
+      <circle cx={0} cy={-3.5} r={3.5} fill="var(--constellation-icon)" />
+      <path
+        d="M -7,6.5 a 7,5.5 0 0,1 14,0"
+        fill="var(--constellation-icon)"
+      />
+    </g>
+  ),
+  employer: (cx, cy) => (
+    <g transform={`translate(${cx} ${cy})`}>
+      <rect
+        x={-7}
+        y={-3}
+        width={14}
+        height={11}
+        rx={1.5}
+        fill="var(--constellation-icon)"
+      />
+      <path
+        d="M -3,-3 v -3 h 6 v 3"
+        stroke="var(--constellation-icon)"
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  ),
+  university: (cx, cy) => (
+    <g transform={`translate(${cx} ${cy})`}>
+      <path
+        d="M -10,0 L 0,-4 L 10,0 L 0,4 Z"
+        fill="var(--constellation-icon)"
+      />
+      <path
+        d="M -6,2 v 4.5 M 6,2 v 4.5"
+        stroke="var(--constellation-icon)"
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinecap="round"
+      />
+    </g>
+  ),
 };
 
 export function AnimatedMark({
@@ -260,7 +302,7 @@ export function AnimatedMark({
           key={`pulse-${n.id}`}
           cx={n.x}
           cy={n.y}
-          r="18"
+          r="26"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -275,7 +317,7 @@ export function AnimatedMark({
 
       {/* Solid nodes with icons — pulse continuously once drawn */}
       {NODES.map((n) => {
-        const Icon = ICONS[n.id];
+        const renderIcon = ICON_PATHS[n.id];
         return (
           <g
             key={`node-${n.id}`}
@@ -288,7 +330,7 @@ export function AnimatedMark({
             <circle
               cx={n.x}
               cy={n.y}
-              r="22"
+              r="26"
               fill="currentColor"
               className={drawn ? "animate-node-pulse" : ""}
               style={{
@@ -297,9 +339,7 @@ export function AnimatedMark({
                 animationDelay: `${1.5 + n.delay}s`,
               }}
             />
-            <g transform={`translate(${n.x}, ${n.y + 1})`}>
-              <Icon />
-            </g>
+            {renderIcon(n.x, n.y)}
           </g>
         );
       })}

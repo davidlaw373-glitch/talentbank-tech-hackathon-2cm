@@ -43,7 +43,7 @@ export function CoverNav() {
         </Link>
 
         <nav
-          className="hidden md:flex items-center gap-8"
+          className="hidden lg:flex items-center gap-8"
           aria-label="Primary"
         >
           {NAV_LINKS.map((link) => (
@@ -58,7 +58,19 @@ export function CoverNav() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
+          <ThemeToggle />
+          <Button asChild variant="outline" size="sm">
+            <Link href="/login">Sign in</Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link href="/register">Get started</Link>
+          </Button>
+        </div>
+
+        {/* Tablet (md–lg): keep the auth CTAs visible so users have direct
+            access without opening the menu, but tuck the link list away. */}
+        <div className="hidden md:flex lg:hidden items-center gap-2">
           <ThemeToggle />
           <Button asChild variant="outline" size="sm">
             <Link href="/login">Sign in</Link>
