@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { ProfileBasicInfo } from "@/components/features/candidate/profile-basic-info";
@@ -13,8 +12,6 @@ import { ProfileSkillsCard } from "@/components/features/candidate/profile-skill
 import { ProfileVerificationCard } from "@/components/features/candidate/profile-verification-card";
 import { get as getCandidate } from "@/data/candidates";
 import type { Candidate } from "@/types/candidate";
-
-const TOTAL_SECTIONS = 6;
 
 export function ProfileOverview() {
   // Read the demo candidate at module load. When auth lands, this becomes
@@ -52,38 +49,30 @@ export function ProfileOverview() {
   const [skills, setSkills] = useState<string[]>(safeSeed.skills);
   const [evidence, setEvidence] = useState(safeSeed.evidence);
 
-  const pct = useMemo(() => {
-    let done = 2; // basics + skills are always present at load
-    if (experience.length > 0) done += 1;
-    if (education.length > 0) done += 1;
-    if (projects.length > 0) done += 1;
-    if (evidence.some((e) => e.status === "Verified")) done += 1;
-    return Math.round((Math.min(done, TOTAL_SECTIONS) / TOTAL_SECTIONS) * 100);
-  }, [experience.length, education.length, projects.length, evidence]);
-
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Candidate profile
-          </p>
-          <h1 className="text-display">Your profile</h1>
-          <p className="text-muted-foreground">
-            Keep your career story accurate so employers can understand your
-            capabilities and evidence.
-          </p>
-        </div>
-        <Badge variant="secondary">{pct}% complete</Badge>
-      </header>
-
       <ProfileBasicInfo value={basics} onSave={setBasics} />
 
       <Tabs defaultValue="career" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="career">Career story</TabsTrigger>
-          <TabsTrigger value="skills">Skills</TabsTrigger>
-          <TabsTrigger value="verification">Verification</TabsTrigger>
+          <TabsTrigger
+            value="career"
+            className="cursor-pointer text-muted-foreground transition-colors hover:bg-accent-soft hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+          >
+            Career story
+          </TabsTrigger>
+          <TabsTrigger
+            value="skills"
+            className="cursor-pointer text-muted-foreground transition-colors hover:bg-accent-soft hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+          >
+            Skills
+          </TabsTrigger>
+          <TabsTrigger
+            value="verification"
+            className="cursor-pointer text-muted-foreground transition-colors hover:bg-accent-soft hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+          >
+            Verification
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="career" className="space-y-4">

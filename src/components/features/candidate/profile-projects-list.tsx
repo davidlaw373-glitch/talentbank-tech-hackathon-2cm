@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import { Check, Plus, Sparkles, X } from "lucide-react";
 
@@ -34,6 +35,7 @@ export function ProfileProjectsList({
   const { push } = useToast();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [draft, setDraft] = useState<Project | null>(null);
+  const [skillDraft, setSkillDraft] = useState("");
 
   function add() {
     const id = Date.now();
@@ -45,12 +47,14 @@ export function ProfileProjectsList({
     };
     onChange([...items, next]);
     setDraft(next);
+    setSkillDraft("");
     setEditingId(id);
     push({ title: "Add project form opened", tone: "info" });
   }
 
   function beginEdit(item: Project) {
     setDraft({ ...item });
+    setSkillDraft("");
     setEditingId(item.id);
   }
 
@@ -59,16 +63,63 @@ export function ProfileProjectsList({
     onChange(items.map((it) => (it.id === draft.id ? draft : it)));
     setEditingId(null);
     setDraft(null);
+    setSkillDraft("");
     push({ title: "Project updated", tone: "success" });
   }
 
   function cancel() {
     setEditingId(null);
     setDraft(null);
+    setSkillDraft("");
   }
 
   function remove(id: number) {
     onChange(items.filter((it) => it.id !== id));
+  }
+
+  // Skills editor — chips for the existing tags, an input that
+  // commits a new tag on Enter or comma and dedupes case-insensitively.
+  function addSkill(value: string) {
+    if (!draft) return;
+    const tag = value.trim();
+    if (!tag) return;
+    const exists = draft.skills.some(
+      (skill) => skill.toLowerCase() === tag.toLowerCase(),
+    );
+    if (exists) {
+      setSkillDraft("");
+      return;
+    }
+    setDraft({ ...draft, skills: [...draft.skills, tag] });
+    setSkillDraft("");
+  }
+
+  function removeSkillAt(index: number) {
+    if (!draft) return;
+    setDraft({
+      ...draft,
+      skills: draft.skills.filter((_, i) => i !== index),
+    });
+  }
+
+  function handleSkillKeyDown(
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      addSkill(skillDraft);
+      return;
+    }
+    if (
+      event.key === "Backspace" &&
+      skillDraft === "" &&
+      draft &&
+      draft.skills.length > 0
+    ) {
+      // Quick delete: empty input + backspace removes the last chip,
+      // matching the behaviour of every tag input the user is used to.
+      removeSkillAt(draft.skills.length - 1);
+    }
   }
 
   return (
@@ -123,6 +174,52 @@ export function ProfileProjectsList({
                       }
                       rows={3}
                     />
+                  </FieldRow>
+                  <FieldRow label="Tags">
+                    <div className="flex flex-wrap items-center gap-1.5 rounded-md border bg-background p-2 focus-within:ring-1 focus-within:ring-ring">
+                      {draft.skills.map((skill, index) => (
+                        <Badge
+                          key={`${skill}-${index}`}
+                          variant="outline"
+                          className="gap-1 pl-2 pr-1"
+                        >
+                          <span>{skill}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeSkillAt(index)}
+                            aria-label={`Remove tag ${skill}`}
+                            className="flex h-4 w-4 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          >
+                            <X aria-hidden className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                      <input
+                        type="text"
+                        value={skillDraft}
+                        onChange={(event) =>
+                          setSkillDraft(event.target.value)
+                        }
+                        onKeyDown={handleSkillKeyDown}
+                        onBlur={() => {
+                          // Commit any in-flight value when the field
+                          // loses focus, so users don't lose typed text
+                          // by tabbing/clicking away.
+                          if (skillDraft.trim()) addSkill(skillDraft);
+                        }}
+                        placeholder={
+                          draft.skills.length === 0
+                            ? "TypeScript, Next.js, …"
+                            : "Add tag…"
+                        }
+                        aria-label="Add a tag"
+                        className="min-w-[8rem] flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                      />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">
+                      Press <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">Enter</kbd> or{" "}
+                      <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">,</kbd> to add · Backspace on empty to remove the last tag.
+                    </p>
                   </FieldRow>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button size="sm" onClick={save}>

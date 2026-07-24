@@ -143,13 +143,15 @@ export function ProfileVerificationCard({
                   {item.status}
                 </Badge>
               </button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => requestVerification(item)}
-              >
-                Request verification
-              </Button>
+              {item.status !== "Verified" ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => requestVerification(item)}
+                >
+                  Request verification
+                </Button>
+              ) : null}
               <Button
                 size="icon"
                 variant="ghost"

@@ -72,15 +72,15 @@ export function ProfileSkillsCard({ skills, onChange }: ProfileSkillsCardProps) 
       <CardContent className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           {skills.map((skill) => (
-            <Badge key={skill} variant="secondary" className="gap-1 pr-1">
+            <Badge key={skill} variant="outline" className="gap-1 pr-1">
               {skill}
               <button
                 type="button"
                 onClick={() => setPendingRemove(skill)}
                 aria-label={`Remove ${skill}`}
-                className="ml-1 inline-flex h-7 w-7 items-center justify-center rounded-full hover:bg-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-foreground/10 text-foreground/80 transition-colors hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
               </button>
             </Badge>
           ))}
