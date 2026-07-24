@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -10,9 +11,8 @@ import {
   Wand2,
   AlertTriangle,
   Eye,
-  Pencil,
   Plus,
-  ArrowRight,
+  X,
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { get as getCandidate } from "@/data/candidates";
+import { cn } from "@/lib/utils";
 
 const RESUME_SCORE = 78;
 
@@ -87,11 +88,280 @@ const SUGGESTIONS = [
   },
 ];
 
+/* ------------------------------------------------------------------ */
+/* Plain-text resume renderer for the .txt download                   */
+/* ------------------------------------------------------------------ */
+
+type Resume = NonNullable<ReturnType<typeof getCandidate>>;
+
+function buildResumeText(resume: Resume): string {
+  const lines: string[] = [];
+  lines.push(resume.name.toUpperCase());
+  lines.push([resume.title, resume.location].filter(Boolean).join(" · "));
+  lines.push([resume.email, resume.phone].filter(Boolean).join(" · "));
+  lines.push("");
+  lines.push("SUMMARY");
+  lines.push(resume.summary);
+  lines.push("");
+  lines.push("EXPERIENCE");
+  for (const exp of resume.experience) {
+    lines.push(`${exp.role} · ${exp.company}`);
+    lines.push(exp.period);
+    lines.push(`- ${exp.description}`);
+    lines.push(
+      "- Partnered with design and product to ship features used by 12,000+ learners.",
+    );
+    lines.push("- Cut page load time by 35% across top flows.");
+    lines.push("");
+  }
+  lines.push("EDUCATION");
+  for (const edu of resume.education) {
+    lines.push(`${edu.qualification} · ${edu.institution} · ${edu.period}`);
+  }
+  lines.push("");
+  lines.push("PROJECTS");
+  for (const proj of resume.projects) {
+    lines.push(`${proj.name}`);
+    lines.push(proj.description);
+    lines.push(`Stack: ${proj.skills.join(", ")}`);
+    lines.push("");
+  }
+  lines.push("SKILLS");
+  lines.push(resume.skills.join(" · "));
+  lines.push("");
+  lines.push("VERIFIED CREDENTIALS");
+  for (const evidence of resume.evidence) {
+    lines.push(`- ${evidence.name} (${evidence.status})`);
+  }
+  return lines.join("\n");
+}
+
+function downloadResume(
+  resume: Resume,
+  filename: string,
+  push: (toast: {
+    title: string;
+    description?: string;
+    tone: "info" | "success" | "error";
+  }) => void,
+) {
+  const text = buildResumeText(resume);
+  // The real product would mint a PDF here. For the demo we ship a plain
+  // text file with the .txt extension so the browser triggers a download
+  // immediately and the user sees the resume content in the saved file.
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename.replace(/\.pdf$/i, ".txt");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  // Release the object URL on the next tick so the browser has time to
+  // start the download.
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  push({
+    title: "Resume downloaded",
+    description: filename,
+    tone: "success",
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Full-page preview dialog                                            */
+/* ------------------------------------------------------------------ */
+
+function ResumePreviewDialog({
+  open,
+  onOpenChange,
+  candidate,
+  filename,
+  onDownload,
+}: {
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+  candidate: Resume;
+  filename: string;
+  onDownload: () => void;
+}) {
+  const dialogRef = React.useRef<HTMLDialogElement | null>(null);
+  const titleId = React.useId();
+
+  // Sync open state ↔ <dialog> show/close. Mirrors the ConfirmDialog
+  // pattern so focus trap and Esc-to-close work out of the box.
+  React.useEffect(() => {
+    const node = dialogRef.current;
+    if (!node) return;
+    if (open && !node.open) {
+      node.showModal();
+    } else if (!open && node.open) {
+      node.close();
+    }
+  }, [open]);
+
+  React.useEffect(() => {
+    const node = dialogRef.current;
+    if (!node) return;
+    const onClose = () => onOpenChange(false);
+    node.addEventListener("close", onClose);
+    return () => node.removeEventListener("close", onClose);
+  }, [onOpenChange]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      className={cn(
+        "w-full max-w-3xl p-0 rounded-lg shadow-xl",
+        "bg-popover text-popover-foreground",
+        "backdrop:bg-foreground/40 backdrop:backdrop-blur-sm",
+        "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+        "border border-border",
+      )}
+      onClick={(event) => {
+        // Backdrop clicks land on the dialog element itself; close
+        // when the click target is the dialog (not a child).
+        if (event.target === event.currentTarget) onOpenChange(false);
+      }}
+    >
+      <div className="flex items-center justify-between border-b border-border bg-surface-1 px-5 py-3">
+        <div>
+          <h2
+            id="resume-preview-title"
+            className="text-base font-semibold tracking-tight"
+          >
+            {filename}
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Full-page preview · press Esc to close
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" onClick={onDownload}>
+            <Download aria-hidden />
+            Download
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label="Close preview"
+            onClick={() => onOpenChange(false)}
+          >
+            <X aria-hidden />
+          </Button>
+        </div>
+      </div>
+      <div className="max-h-[80vh] space-y-6 overflow-y-auto bg-surface-2 p-6">
+        <article className="mx-auto max-w-2xl space-y-5 rounded-md border bg-card p-8 shadow-sm">
+          <header className="space-y-1">
+            <p className="text-2xl font-semibold tracking-tight">
+              {candidate.name}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {candidate.title} · {candidate.location}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {candidate.email} · {candidate.phone}
+            </p>
+          </header>
+          <Separator />
+          <section className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Summary
+            </p>
+            <p className="text-sm leading-relaxed">{candidate.summary}</p>
+          </section>
+          <Separator />
+          <section className="space-y-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Experience
+            </p>
+            {candidate.experience.map((exp) => (
+              <div key={exp.company} className="space-y-1">
+                <p className="text-base font-semibold">
+                  {exp.role} · {exp.company}
+                </p>
+                <p className="text-xs text-muted-foreground">{exp.period}</p>
+                <ul className="ml-4 list-disc space-y-1 text-sm leading-relaxed">
+                  <li>{exp.description}</li>
+                  <li>
+                    Partnered with design and product to ship features used by
+                    12,000+ learners.
+                  </li>
+                  <li>Cut page load time by 35% across top flows.</li>
+                </ul>
+              </div>
+            ))}
+          </section>
+          <Separator />
+          <section className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Education
+            </p>
+            {candidate.education.map((edu) => (
+              <div key={edu.institution}>
+                <p className="text-base font-semibold">
+                  {edu.qualification}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {edu.institution} · {edu.period}
+                </p>
+              </div>
+            ))}
+          </section>
+          <Separator />
+          <section className="space-y-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Projects
+            </p>
+            {candidate.projects.map((proj) => (
+              <div key={proj.name} className="space-y-1">
+                <p className="text-base font-semibold">{proj.name}</p>
+                <p className="text-sm leading-relaxed">{proj.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  Stack: {proj.skills.join(", ")}
+                </p>
+              </div>
+            ))}
+          </section>
+          <Separator />
+          <section className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Skills
+            </p>
+            <p className="text-sm leading-relaxed">
+              {candidate.skills.join(" · ")}
+            </p>
+          </section>
+          <Separator />
+          <section className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Verified credentials
+            </p>
+            <ul className="ml-4 list-disc space-y-1 text-sm leading-relaxed">
+              {candidate.evidence.map((e) => (
+                <li key={e.name}>
+                  {e.name} ({e.status})
+                </li>
+              ))}
+            </ul>
+          </section>
+        </article>
+      </div>
+    </dialog>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Main component                                                      */
+/* ------------------------------------------------------------------ */
+
 export function ResumeAssistant() {
   const { push } = useToast();
   const [coverLetterTarget, setCoverLetterTarget] = useState("");
   const [versions, setVersions] = useState(VERSIONS);
   const [suggestions, setSuggestions] = useState(SUGGESTIONS);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Read the demo candidate from the JSON dataset — same source as
   // the profile page and the dashboard.
@@ -114,6 +384,17 @@ export function ResumeAssistant() {
     evidence: [],
   };
 
+  const primaryVersion = versions.find((version) => version.primary);
+  const previewFilename = primaryVersion?.name ?? "master_v3.pdf";
+
+  const handleDownloadCurrent = () => {
+    downloadResume(candidate, previewFilename, push);
+  };
+
+  const handleDownloadVersion = (filename: string) => {
+    downloadResume(candidate, filename, push);
+  };
+
   const makePrimary = (id: string, name: string) => {
     setVersions((current) =>
       current.map((version) => ({ ...version, primary: version.id === id }))
@@ -125,40 +406,55 @@ export function ResumeAssistant() {
     });
   };
 
+  const applySuggestion = (id: string, title: string) => {
+    setSuggestions((current) => current.filter((s) => s.id !== id));
+    push({
+      title: "Suggestion applied",
+      description: title,
+      tone: "success",
+    });
+  };
+
+  const dismissSuggestion = (id: string, title: string) => {
+    setSuggestions((current) => current.filter((s) => s.id !== id));
+    push({
+      title: "Suggestion dismissed",
+      description: title,
+      tone: "info",
+    });
+  };
+
+  const hasSuggestions = suggestions.length > 0;
+
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Resume
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() =>
-              push({
-                title: "Tailoring against your top matches…",
-                tone: "info",
-              })
-            }
-          >
-            <Wand2 aria-hidden />
-            Generate tailored resume
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/candidate/resume/quality-checks">
-              <AlertTriangle aria-hidden />
-              Quality checks
-            </Link>
-          </Button>
-          <Button
-            onClick={() =>
-              push({ title: "Resume upload started", tone: "info" })
-            }
-          >
-            <Plus aria-hidden />
-            Upload new resume
-          </Button>
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant="outline"
+          onClick={() =>
+            push({
+              title: "Tailoring against your top matches…",
+              tone: "info",
+            })
+          }
+        >
+          <Wand2 aria-hidden />
+          Generate tailored resume
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/candidate/resume/quality-checks">
+            <AlertTriangle aria-hidden />
+            Quality checks
+          </Link>
+        </Button>
+        <Button
+          onClick={() =>
+            push({ title: "Resume upload started", tone: "info" })
+          }
+        >
+          <Plus aria-hidden />
+          Upload new resume
+        </Button>
       </div>
 
       {/* Two-column layout: preview + assistant */}
@@ -174,27 +470,24 @@ export function ResumeAssistant() {
                 </h2>
               </CardTitle>
               <CardDescription>
-                master_v3.pdf · last updated 8 July 2026
+                {previewFilename} · last updated{" "}
+                {primaryVersion?.date ?? "8 July 2026"}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
                 size="sm"
-                aria-label="Edit resume"
-                onClick={() =>
-                  push({ title: "Resume editor opened", tone: "info" })
-                }
+                variant="outline"
+                aria-label="Preview resume"
+                onClick={() => setPreviewOpen(true)}
               >
-                <Pencil aria-hidden />
-                Edit
+                <Eye aria-hidden />
+                Preview
               </Button>
               <Button
                 size="sm"
                 aria-label="Download resume"
-                onClick={() =>
-                  push({ title: "Resume download started", tone: "success" })
-                }
+                onClick={handleDownloadCurrent}
               >
                 <Download aria-hidden />
                 Download
@@ -449,19 +742,11 @@ export function ResumeAssistant() {
 
       {/* Resume versions */}
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <h2 className="text-card-title">Resume versions</h2>
-            <p className="text-sm text-muted-foreground">
-              Switch the version you use when applying.
-            </p>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/candidate/profile">
-              Manage versions
-              <ArrowRight aria-hidden />
-            </Link>
-          </Button>
+        <div>
+          <h2 className="text-card-title">Resume versions</h2>
+          <p className="text-sm text-muted-foreground">
+            Switch the version you use when applying.
+          </p>
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {versions.map((v) => (
@@ -485,30 +770,8 @@ export function ResumeAssistant() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
                     size="sm"
-                    variant="outline"
-                    aria-label={`Preview ${v.name}`}
-                    onClick={() =>
-                      push({
-                        title: "Resume preview opened",
-                        description: v.name,
-                        tone: "info",
-                      })
-                    }
-                  >
-                    <Eye aria-hidden />
-                    Preview
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
                     aria-label={`Download ${v.name}`}
-                    onClick={() =>
-                      push({
-                        title: "Resume download started",
-                        description: v.name,
-                        tone: "success",
-                      })
-                    }
+                    onClick={() => handleDownloadVersion(v.name)}
                   >
                     <Download aria-hidden />
                     Download
@@ -529,8 +792,20 @@ export function ResumeAssistant() {
         </div>
       </section>
 
-      {/* Tailored suggestions */}
-      <section>
+      {/* Tailored suggestions — entire section collapses once every
+          suggestion has been applied or dismissed so the page surfaces
+          a "all clear" state instead of a permanently empty list. Uses
+          the same collapse motion as the dashboard's Profile progress
+          card so the rhythm reads consistently across the candidate app. */}
+      <section
+        className={cn(
+          "overflow-hidden transition-all duration-700 ease-out",
+          hasSuggestions
+            ? "max-h-[2000px] translate-y-0 opacity-100"
+            : "pointer-events-none max-h-0 -translate-y-2 opacity-0"
+        )}
+        aria-hidden={!hasSuggestions}
+      >
         <Card>
           <CardHeader>
             <CardTitle>
@@ -568,13 +843,7 @@ export function ResumeAssistant() {
                     <Button
                       size="sm"
                       aria-label={`Apply suggestion: ${s.title}`}
-                      onClick={() =>
-                        push({
-                          title: "Suggestion applied",
-                          description: s.title,
-                          tone: "success",
-                        })
-                      }
+                      onClick={() => applySuggestion(s.id, s.title)}
                     >
                       Apply
                     </Button>
@@ -582,16 +851,7 @@ export function ResumeAssistant() {
                       size="sm"
                       variant="outline"
                       aria-label={`Dismiss suggestion: ${s.title}`}
-                      onClick={() => {
-                        setSuggestions((current) =>
-                          current.filter((suggestion) => suggestion.id !== s.id)
-                        );
-                        push({
-                          title: "Suggestion dismissed",
-                          description: s.title,
-                          tone: "info",
-                        });
-                      }}
+                      onClick={() => dismissSuggestion(s.id, s.title)}
                     >
                       Dismiss
                     </Button>
@@ -602,6 +862,16 @@ export function ResumeAssistant() {
           </CardContent>
         </Card>
       </section>
+      {/* Full-page preview dialog — keeps the existing in-card preview
+          but gives the user a dedicated, scrollable view they can
+          trigger from the Preview button. */}
+      <ResumePreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        candidate={candidate}
+        filename={previewFilename}
+        onDownload={handleDownloadCurrent}
+      />
     </div>
   );
 }

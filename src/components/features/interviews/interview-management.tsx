@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useState } from "react";
 import {
   CalendarClock,
@@ -15,7 +16,6 @@ import {
   X,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,8 +26,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { cn } from "@/lib/utils";
 
 type InterviewStat = {
   id: string;
@@ -97,6 +100,202 @@ const PAST = [
   },
 ];
 
+type RescheduleTarget = {
+  id: string;
+  company: string;
+  role: string;
+  round: string;
+  interviewers: string[];
+  /** Original time the candidate is rescheduling away from. */
+  when: string;
+  time: string;
+};
+
+type RescheduleSlot = {
+  id: string;
+  value: string;
+};
+
+const EMPTY_SLOTS: RescheduleSlot[] = [
+  { id: "slot-1", value: "" },
+  { id: "slot-2", value: "" },
+  { id: "slot-3", value: "" },
+];
+
+/* ------------------------------------------------------------------ */
+/* Reschedule dialog — collects up to 3 suggested times and a reason  */
+/* ------------------------------------------------------------------ */
+
+function RescheduleDialog({
+  open,
+  onOpenChange,
+  target,
+  onSubmit,
+}: {
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+  target: RescheduleTarget | null;
+  onSubmit: (payload: {
+    target: RescheduleTarget;
+    slots: string[];
+    reason: string;
+  }) => void;
+}) {
+  const dialogRef = React.useRef<HTMLDialogElement | null>(null);
+  const titleId = React.useId();
+  const formId = React.useId();
+
+  // Local form state. The parent passes `key={target.id}` so the dialog
+  // remounts (and the state resets) whenever a different interview is
+  // opened for rescheduling — no manual reset effect needed.
+  const [slots, setSlots] = useState<RescheduleSlot[]>(EMPTY_SLOTS);
+  const [reason, setReason] = useState("");
+
+  // Sync open state ↔ <dialog> show/close (same pattern as ConfirmDialog).
+  React.useEffect(() => {
+    const node = dialogRef.current;
+    if (!node) return;
+    if (open && !node.open) {
+      node.showModal();
+    } else if (!open && node.open) {
+      node.close();
+    }
+  }, [open]);
+
+  React.useEffect(() => {
+    const node = dialogRef.current;
+    if (!node) return;
+    const onClose = () => onOpenChange(false);
+    node.addEventListener("close", onClose);
+    return () => node.removeEventListener("close", onClose);
+  }, [onOpenChange]);
+
+  const filledSlots = slots.map((slot) => slot.value.trim()).filter(Boolean);
+  const canSubmit = filledSlots.length > 0;
+
+  const updateSlot = (slotId: string, value: string) => {
+    setSlots((current) =>
+      current.map((slot) => (slot.id === slotId ? { ...slot, value } : slot))
+    );
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!target || !canSubmit) return;
+    onSubmit({
+      target,
+      slots: filledSlots,
+      reason: reason.trim(),
+    });
+    onOpenChange(false);
+  };
+
+  return (
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      className={cn(
+        "w-full max-w-lg p-0 rounded-lg shadow-xl",
+        "bg-popover text-popover-foreground",
+        "backdrop:bg-foreground/40 backdrop:backdrop-blur-sm",
+        "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+        "border border-border",
+      )}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onOpenChange(false);
+      }}
+    >
+      {target ? (
+        <form
+          id={formId}
+          method="dialog"
+          onSubmit={handleSubmit}
+          className="space-y-5 p-6"
+        >
+          <header className="space-y-1.5">
+            <h2 id={titleId} className="text-lg font-semibold tracking-tight">
+              Request a reschedule
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              <strong>{target.role}</strong> at {target.company} · originally{" "}
+              {target.when} at {target.time}
+            </p>
+          </header>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Suggested times
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                {filledSlots.length} of 3 added
+              </p>
+            </div>
+            <div className="space-y-2">
+              {slots.map((slot, index) => (
+                <div
+                  key={slot.id}
+                  className="flex items-center gap-2 rounded-md border bg-card p-2"
+                >
+                  <span
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold"
+                    aria-hidden
+                  >
+                    {index + 1}
+                  </span>
+                  <Input
+                    value={slot.value}
+                    onChange={(event) =>
+                      updateSlot(slot.id, event.target.value)
+                    }
+                    placeholder="e.g. Thu 24 Jul, 2:00–3:00 PM SGT"
+                    aria-label={`Suggested time ${index + 1}`}
+                    className="border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Add at least one slot. The interviewer will pick whichever works
+              on their side.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor={`${formId}-reason`}
+              className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Reason <span className="font-normal normal-case">(optional)</span>
+            </label>
+            <Textarea
+              id={`${formId}-reason`}
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              rows={3}
+              placeholder="e.g. Conflict with a final exam — happy to move mornings or another weekday."
+              aria-label="Reason for rescheduling"
+            />
+          </div>
+
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!canSubmit}>
+              Send request
+            </Button>
+          </div>
+        </form>
+      ) : null}
+    </dialog>
+  );
+}
+
 export function InterviewManagement() {
   const { push } = useToast();
   const [upcoming, setUpcoming] = useState(UPCOMING);
@@ -109,6 +308,8 @@ export function InterviewManagement() {
     id: string;
     company: string;
   } | null>(null);
+  const [pendingReschedule, setPendingReschedule] =
+    useState<RescheduleTarget | null>(null);
 
   const prepInterview =
     upcoming.find((interview) => interview.id === selectedPrepId) ??
@@ -132,27 +333,32 @@ export function InterviewManagement() {
     });
   };
 
+  const openReschedule = (target: RescheduleTarget) => {
+    setPendingReschedule(target);
+  };
+
+  const handleRescheduleSubmit = (payload: {
+    target: RescheduleTarget;
+    slots: string[];
+    reason: string;
+  }) => {
+    const recipient = payload.target.interviewers[0] ?? "the team";
+    const slotSummary =
+      payload.slots.length === 1
+        ? payload.slots[0]
+        : `${payload.slots.length} suggested times`;
+    push({
+      title: `Reschedule request sent to ${recipient}`,
+      description: payload.reason
+        ? `${slotSummary} — "${payload.reason}"`
+        : slotSummary,
+      tone: "success",
+    });
+    setPendingReschedule(null);
+  };
+
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Interviews"
-        description="Manage every scheduled round, prep confidently, and keep past feedback within reach."
-        action={
-          <Button
-            variant="outline"
-            onClick={() =>
-              push({
-                title: "Connected to Google Calendar",
-                tone: "success",
-              })
-            }
-          >
-            <CalendarPlus aria-hidden />
-            Calendar sync
-          </Button>
-        }
-      />
-
       {/* Stat row */}
       <section
         aria-label="Interview summary"
@@ -267,9 +473,14 @@ export function InterviewManagement() {
                           variant="outline"
                           aria-label={`Reschedule ${iv.company} interview`}
                           onClick={() =>
-                            push({
-                              title: `Reschedule request sent to ${iv.interviewers[0]}`,
-                              tone: "success",
+                            openReschedule({
+                              id: iv.id,
+                              company: iv.company,
+                              role: iv.role,
+                              round: iv.round,
+                              interviewers: iv.interviewers,
+                              when: iv.when,
+                              time: iv.time,
                             })
                           }
                         >
@@ -359,16 +570,23 @@ export function InterviewManagement() {
                       {MOCK_QUESTIONS.map((q, i) => (
                         <li
                           key={q}
-                          className="flex items-start gap-2 rounded-md border bg-card p-3"
+                          className="rounded-md border bg-card p-3"
                         >
-                          <span
-                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold"
-                            aria-hidden
-                          >
-                            {i + 1}
-                          </span>
-                          <div className="flex-1 space-y-2">
-                            <p className="text-xs leading-relaxed">{q}</p>
+                          <div className="flex items-start gap-3">
+                            <span
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold"
+                              aria-hidden
+                            >
+                              {i + 1}
+                            </span>
+                            {/* min-w-0 lets the long question wrap inside this
+                                flex child — without it, the intrinsic width
+                                of the text pushes the card past its column. */}
+                            <p className="min-w-0 flex-1 text-sm leading-relaxed text-foreground">
+                              {q}
+                            </p>
+                          </div>
+                          <div className="mt-3 flex justify-end">
                             <Button
                               size="sm"
                               variant="outline"
@@ -380,7 +598,7 @@ export function InterviewManagement() {
                                 })
                               }
                             >
-                              Practice this question
+                              Practice
                             </Button>
                           </div>
                         </li>
@@ -428,10 +646,17 @@ export function InterviewManagement() {
                       {SCORECARD.map((line) => (
                         <li
                           key={line}
-                          className="flex items-center justify-between rounded-md border bg-card p-3 text-xs"
+                          className="flex items-center justify-between gap-3 rounded-md border bg-card p-3 text-xs"
                         >
-                          <span>{line}</span>
-                          <Badge variant="outline">1–5</Badge>
+                          {/* min-w-0 lets the long label wrap inside this
+                              flex child so the badge on the right is never
+                              crowded off the card at narrow widths. */}
+                          <span className="min-w-0 flex-1 leading-relaxed">
+                            {line}
+                          </span>
+                          <Badge variant="outline" className="shrink-0">
+                            1–5
+                          </Badge>
                         </li>
                       ))}
                     </ul>
@@ -519,6 +744,14 @@ export function InterviewManagement() {
           }
           setPendingCancel(null);
         }}
+      />
+
+      <RescheduleDialog
+        key={pendingReschedule?.id ?? "closed"}
+        open={pendingReschedule !== null}
+        onOpenChange={(open) => !open && setPendingReschedule(null)}
+        target={pendingReschedule}
+        onSubmit={handleRescheduleSubmit}
       />
     </div>
   );
