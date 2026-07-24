@@ -461,7 +461,7 @@ export function ResumeAssistant() {
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           {versions.map((v) => (
-            <Card key={v.id} className="lift-on-hover">
+            <Card key={v.id}>
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle>

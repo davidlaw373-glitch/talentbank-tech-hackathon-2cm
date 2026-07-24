@@ -202,7 +202,7 @@ export function JobDiscovery() {
               return (
                 <article
                   key={job.id}
-                  className="lift-on-hover block rounded-xl border border-border/20 bg-card p-5 text-card-foreground transition-colors hover:bg-accent-soft"
+                  className="block rounded-xl border border-border/20 bg-card p-5 text-card-foreground"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">

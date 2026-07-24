@@ -166,7 +166,7 @@ export function DashboardOverview() {
     <div className="space-y-8">
       {/* Next-action prompt */}
       {interview ? (
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -188,7 +188,7 @@ export function DashboardOverview() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -216,7 +216,7 @@ export function DashboardOverview() {
         {STATS.map((s) => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="lift-on-hover">
+            <Card key={s.label}>
               <CardContent className="space-y-3 p-5 sm:p-6">
                 <div
                   className={cn(
@@ -259,7 +259,7 @@ export function DashboardOverview() {
           </Button>
         </div>
 
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="p-5 sm:p-6">
             <ol className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
               {recentActivity.map((entry) => (
@@ -344,7 +344,7 @@ export function DashboardOverview() {
                     <li
                       key={item.id}
                       className={cn(
-                        "flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent-soft",
+                        "flex items-center gap-3 rounded-lg border bg-card p-3",
                         item.done && "opacity-70"
                       )}
                     >
@@ -448,7 +448,7 @@ export function DashboardOverview() {
           {applications.map((app) => {
             const job = getJob(app.jobId);
             return (
-              <Card key={app.id} className="lift-on-hover">
+              <Card key={app.id}>
                 <CardContent className="space-y-4 p-5 sm:p-6">
                   {/* Header — job identity and current stage at a glance. */}
                   <div className="flex items-start justify-between gap-3">

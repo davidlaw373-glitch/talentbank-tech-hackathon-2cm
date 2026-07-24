@@ -114,7 +114,7 @@ function SummaryStat({
   icon: LucideIcon;
 }) {
   return (
-    <Card className="lift-on-hover">
+    <Card>
       <CardContent className="space-y-2 p-5">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
           <Icon aria-hidden className="h-5 w-5" />
@@ -421,7 +421,7 @@ export function PathNavigator() {
               {FEATURED_TRENDS.map((trend) => (
                 <div
                   key={trend.skill}
-                  className="lift-on-hover flex items-center justify-between rounded-lg border bg-card p-4"
+                  className="flex items-center justify-between rounded-lg border bg-card p-4"
                 >
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">

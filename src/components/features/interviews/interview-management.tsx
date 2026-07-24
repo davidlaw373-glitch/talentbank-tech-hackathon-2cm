@@ -161,7 +161,7 @@ export function InterviewManagement() {
         {STATS.map((s) => {
           const Icon = s.icon;
           return (
-            <Card key={s.id} className="lift-on-hover">
+            <Card key={s.id}>
               <CardContent className="space-y-2 p-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                   <Icon aria-hidden className="h-5 w-5" />
@@ -205,7 +205,7 @@ export function InterviewManagement() {
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {upcoming.map((iv) => (
-              <Card key={iv.id} className="lift-on-hover">
+              <Card key={iv.id}>
                 <CardContent className="space-y-5 p-5 sm:p-6">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                     {/* Left — date + time prominent */}
@@ -451,7 +451,7 @@ export function InterviewManagement() {
         </div>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {PAST.map((p) => (
-            <Card key={p.id} className="lift-on-hover">
+            <Card key={p.id}>
               <CardHeader>
                 <CardTitle>
                   <h3>

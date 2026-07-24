@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 
 type TrackingState = "active" | "saved" | "withdrawn";
 
@@ -74,21 +73,33 @@ function ApplicationProgress({ application }: { application: Application }) {
                     : `${step.label} upcoming`
               }
             >
+              {/* Per-segment fill — each completed stage gets its own
+                  fill element that lives *inside* its segment
+                  (clipped by overflow-hidden rounded-full), so the
+                  fill grows from within the pill rather than
+                  sitting on top of it. The fill is sequential: each
+                  segment finishes filling before the next one
+                  starts, with a longer duration and a softer easing
+                  so each fill glides in rather than snapping, and
+                  the overall pass reads as one smooth continuous
+                  sweep. */}
               {isComplete && (
                 <span
-                  className={cn(
-                    "absolute inset-y-0 left-0 w-full rounded-full bg-chart-1",
-                    i <= completed && "animate-progress-x"
-                  )}
-                  style={
-                    i > completed
-                      ? { width: 0 }
-                      : { animationDelay: `${i * 80}ms` }
-                  }
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-chart-1"
+                  style={{
+                    animation: `progress-fill 900ms cubic-bezier(0.4, 0, 0.2, 1) ${i * 900}ms both`,
+                  }}
                 />
               )}
+              {/* Current stage — orange with a subtle shimmer that
+                  signals "this is where you are" without competing
+                  with the completed fills. */}
               {isCurrent && (
-                <span className="absolute inset-y-0 left-0 w-full rounded-full bg-chart-2" />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-chart-2 via-highlight-soft to-chart-2 bg-[length:200%_100%] animate-shimmer-gradient"
+                />
               )}
             </div>
           );
@@ -289,7 +300,7 @@ export function ApplicationTracker() {
                 const trackingState = getTrackingState(app.id);
                 return (
                   <li key={app.id}>
-                    <div className="lift-on-hover block rounded-lg border bg-card p-5 transition-colors hover:bg-accent-soft">
+                    <div className="block rounded-lg border bg-card p-5">
                       <div className="flex items-start gap-4">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
                           <Building2

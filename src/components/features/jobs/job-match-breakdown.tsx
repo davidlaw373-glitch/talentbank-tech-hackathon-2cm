@@ -78,19 +78,37 @@ export function JobMatchBreakdown({
             </div>
           </CollapsibleContent>
           <CollapsibleTrigger
+            aria-expanded={open}
+            aria-label={
+              open
+                ? "Hide additional skills"
+                : `Show ${remaining} more skill${remaining === 1 ? "" : "s"}`
+            }
             className={cn(
-              "mt-1.5 inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:rounded-sm",
+              "group/more mt-2 inline-flex items-center gap-1.5 rounded-full border border-dashed border-border/60 bg-accent-soft/50 py-0.5 pl-1 pr-2 text-[10px] font-semibold text-foreground/75 transition-all duration-200",
+              "hover:border-solid hover:border-highlight/50 hover:bg-accent-soft hover:text-foreground hover:shadow-sm",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-card",
+              "active:scale-[0.97]",
+              "data-[state=open]:border-solid data-[state=open]:border-border data-[state=open]:bg-accent-soft data-[state=open]:text-foreground",
             )}
           >
+            <span
+              aria-hidden
+              className={cn(
+                "flex h-4 min-w-4 items-center justify-center rounded-full bg-highlight-soft px-1.5 text-[9px] font-bold tabular-nums leading-none text-foreground transition-colors duration-200",
+                "group-hover/more:bg-highlight group-hover/more:text-highlight-foreground",
+                "group-data-[state=open]/more:bg-highlight group-data-[state=open]/more:text-highlight-foreground",
+              )}
+            >
+              {open ? remaining : `+${remaining}`}
+            </span>
             <span>
-              {open
-                ? "Hide breakdown"
-                : `Show all (${remaining} more skill${remaining === 1 ? "" : "s"})`}
+              {open ? "Hide" : `more skill${remaining === 1 ? "" : "s"}`}
             </span>
             <ChevronDown
               className={cn(
-                "h-3 w-3 transition-transform",
-                open && "rotate-180",
+                "h-3 w-3 transition-transform duration-200",
+                "group-data-[state=open]/more:rotate-180",
               )}
               aria-hidden
             />
