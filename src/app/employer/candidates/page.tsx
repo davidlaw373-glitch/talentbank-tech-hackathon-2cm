@@ -10,7 +10,6 @@ import {
   Search,
   Star,
   Trash2,
-  Users,
 } from "lucide-react";
 
 import {
@@ -24,19 +23,17 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeading } from "@/components/common/page-heading";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/common/toast";
 import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
 import { cn } from "@/lib/utils";
@@ -44,15 +41,6 @@ import { cn } from "@/lib/utils";
 const DEMO_EMPLOYER_ID = 1;
 
 type StageFilter = ApplicationStage | "All" | "Rejected";
-
-const TABS: Array<{ value: StageFilter; label: string }> = [
-  { value: "All", label: "All" },
-  ...APPLICATION_STAGES.map((s) => ({
-    value: s,
-    label: s,
-  })),
-  { value: "Rejected", label: "Rejected" },
-];
 
 function stageVariant(stage: ApplicationStage) {
   switch (stage) {
@@ -77,23 +65,22 @@ export default function EmployerCandidatesPage() {
   );
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
   const [stage, setStage] = useState<StageFilter>("All");
+  const [role, setRole] = useState("All");
   const [query, setQuery] = useState("");
+  const [showAllCandidates, setShowAllCandidates] = useState(false);
   const [pendingReject, setPendingReject] = useState<EmployerCandidateRow | null>(
     null,
   );
 
   const candidates = rows;
 
-  const counts = useMemo(() => {
-    const map: Record<string, number> = {
-      All: candidates.length,
-      Rejected: candidates.filter((c) => c.app.rejected).length,
-    };
-    for (const c of candidates) {
-      map[c.app.stage] = (map[c.app.stage] ?? 0) + 1;
-    }
-    return map;
-  }, [candidates]);
+  const roleOptions = useMemo(
+    () =>
+      Array.from(new Set(candidates.map((candidate) => candidate.job.title))).sort(
+        (a, b) => a.localeCompare(b),
+      ),
+    [candidates],
+  );
 
   const filtered: EmployerCandidateRow[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -107,15 +94,20 @@ export default function EmployerCandidatesPage() {
       const matchesQuery =
         !q ||
         `${c.candidate.name} ${c.job.title}`.toLowerCase().includes(q);
-      return matchesStage && matchesQuery;
+      const matchesRole = role === "All" || c.job.title === role;
+      return matchesStage && matchesQuery && matchesRole;
     });
-    return [...list].sort((a, b) => {
-      const aStarred = starredIds.has(a.candidate.id) ? 1 : 0;
-      const bStarred = starredIds.has(b.candidate.id) ? 1 : 0;
-      if (aStarred !== bStarred) return bStarred - aStarred;
-      return a.app.appliedDate < b.app.appliedDate ? 1 : -1;
-    });
-  }, [candidates, stage, query, starredIds]);
+    return [...list].sort((a, b) => b.matchScore - a.matchScore);
+  }, [candidates, stage, query, role]);
+
+  const priorityCandidates = useMemo(
+    () => [...candidates].sort((a, b) => b.matchScore - a.matchScore),
+    [candidates],
+  );
+
+  const displayedCandidates = showAllCandidates
+    ? filtered
+    : priorityCandidates;
 
   const updateCandidate = (
     id: number,
@@ -151,110 +143,140 @@ export default function EmployerCandidatesPage() {
       <PageHeading
         title="Candidate management"
         description="Everyone in your funnel. Filter by stage, search by name, jump into a profile."
+        action={
+          <Button
+            variant={showAllCandidates ? "outline" : "default"}
+            onClick={() => setShowAllCandidates((current) => !current)}
+          >
+            {showAllCandidates ? "Show priority candidates" : "View all candidates"}
+          </Button>
+        }
       />
 
-      {/* Search */}
-      <Card>
-        <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex flex-1 flex-col gap-1.5">
-            <label
-              htmlFor="candidate-search"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-            >
-              Search candidates
-            </label>
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden
-              />
-              <Input
-                id="candidate-search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Filter by name or applied role"
-                className="pl-9"
-              />
+      <Card className="flex h-[calc(100vh-13rem)] min-h-[32rem] flex-col overflow-hidden">
+        {showAllCandidates && (
+          <CardContent className="grid gap-3 border-b bg-surface-inset p-5 sm:grid-cols-[minmax(0,1fr)_14rem_16rem] sm:items-end">
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="candidate-search"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Search candidates
+              </label>
+              <div className="relative">
+                <Search
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden
+                />
+                <Input
+                  id="candidate-search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Filter by candidate name"
+                  className="pl-9"
+                />
+              </div>
             </div>
-          </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="candidate-stage-filter"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Stage
+              </label>
+              <Select
+                value={stage}
+                onValueChange={(value) => setStage(value as StageFilter)}
+              >
+                <SelectTrigger id="candidate-stage-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All stages</SelectItem>
+                  {APPLICATION_STAGES.map((applicationStage) => (
+                    <SelectItem key={applicationStage} value={applicationStage}>
+                      {applicationStage}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="Rejected">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="candidate-role-filter"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Applied role
+              </label>
+              <Select value={role} onValueChange={setRole}>
+                <SelectTrigger id="candidate-role-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All roles</SelectItem>
+                  {roleOptions.map((jobTitle) => (
+                    <SelectItem key={jobTitle} value={jobTitle}>
+                      {jobTitle}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        )}
+
+        <CardContent className="min-h-0 flex-1 bg-surface-inset p-3">
+          {displayedCandidates.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+              <span
+                aria-hidden
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
+              >
+                <Filter className="h-5 w-5 text-muted-foreground" />
+              </span>
+              <div>
+                <p className="text-sm font-medium">
+                  No candidates match those filters
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Try a different stage, role, or search.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <ul
+              aria-label={
+                showAllCandidates ? "All candidates" : "Priority candidates"
+              }
+              className={cn(
+                "h-full space-y-3 overflow-y-auto pr-1",
+              )}
+            >
+              {displayedCandidates.map((candidateRow) => (
+                <CandidateRow
+                  key={candidateRow.candidate.id}
+                  row={candidateRow}
+                  showFullActions={showAllCandidates}
+                  starred={starredIds.has(candidateRow.candidate.id)}
+                  inPool={isInPool(candidateRow.candidate.id)}
+                  onToggleStar={() => toggleStar(candidateRow.candidate.id)}
+                  onTogglePool={() => togglePool(candidateRow.candidate.id)}
+                  onAdvance={() => {
+                    const next = NEXT_STAGE[candidateRow.app.stage];
+                    if (next) {
+                      updateCandidate(candidateRow.candidate.id, { stage: next });
+                    }
+                  }}
+                  onRequestReject={setPendingReject}
+                />
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
-
-      {/* Tabs */}
-      <Tabs
-        value={stage}
-        onValueChange={(v) => setStage(v as StageFilter)}
-      >
-        <div className="overflow-x-auto">
-          <TabsList aria-label="Filter candidates by stage">
-            {TABS.map((t) => (
-              <TabsTrigger key={t.value} value={t.value}>
-                {t.label}
-                <span className="ml-2 text-xs text-muted-foreground tabular-nums">
-                  {counts[t.value] ?? 0}
-                </span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
-
-        <TabsContent value={stage} className="mt-4">
-          <Card>
-            <CardHeader className="flex-row items-start justify-between space-y-0">
-              <div>
-                <CardTitle>
-                  <h2 className="flex items-center gap-2">
-                    <Users className="h-4 w-4" aria-hidden />
-                    {filtered.length} candidate
-                    {filtered.length === 1 ? "" : "s"}
-                  </h2>
-                </CardTitle>
-                <CardDescription>
-                  Sorted by starred, then recency of application.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                  <span
-                    aria-hidden
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
-                  >
-                    <Filter className="h-5 w-5 text-muted-foreground" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium">
-                      No candidates match those filters
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Try a different stage or clear your search.
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <ul className="divide-y">
-                  {filtered.map((c) => (
-                    <CandidateRow
-                      key={c.candidate.id}
-                      row={c}
-                      starred={starredIds.has(c.candidate.id)}
-                      inPool={isInPool(c.candidate.id)}
-                      onToggleStar={() => toggleStar(c.candidate.id)}
-                      onTogglePool={() => togglePool(c.candidate.id)}
-                      onAdvance={() => {
-                        const next = NEXT_STAGE[c.app.stage];
-                        if (next) updateCandidate(c.candidate.id, { stage: next });
-                      }}
-                      onRequestReject={setPendingReject}
-                    />
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
 
       <ConfirmDialog
         open={pendingReject !== null}
@@ -282,6 +304,7 @@ export default function EmployerCandidatesPage() {
 
 function CandidateRow({
   row,
+  showFullActions,
   starred,
   inPool,
   onToggleStar,
@@ -290,6 +313,7 @@ function CandidateRow({
   onRequestReject,
 }: {
   row: EmployerCandidateRow;
+  showFullActions: boolean;
   starred: boolean;
   inPool: boolean;
   onToggleStar: () => void;
@@ -345,8 +369,8 @@ function CandidateRow({
   };
 
   return (
-    <li className="py-3 first:pt-0 last:pb-0">
-      <div className="flex items-start justify-between gap-3 rounded-md p-2 transition-colors hover:bg-accent-soft">
+    <li className="rounded-xl border bg-card shadow-sm">
+      <div className="flex items-start justify-between gap-3 rounded-xl p-4 transition-colors hover:bg-foreground/5 focus-within:bg-foreground/5">
         <Link
           href={`/employer/candidates/${candidate.id}`}
           className="flex min-w-0 flex-1 items-center gap-3"
@@ -423,39 +447,43 @@ function CandidateRow({
               />
               {inPool ? "In pool" : "Save to pool"}
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={advance}
-              disabled={!next || row.app.rejected}
-              aria-label={
-                next
-                  ? `Move ${candidate.name} to ${next}`
-                  : `${candidate.name} already at final stage`
-              }
-            >
-              {next ? (
-                <>
-                  Move to {next}
-                  <ArrowRight />
-                </>
-              ) : (
-                <>
-                  <Check />
-                  Final stage
-                </>
-              )}
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={reject}
-              disabled={row.app.rejected}
-              aria-label={`Reject ${candidate.name}`}
-            >
-              <Trash2 />
-              Reject
-            </Button>
+            {showFullActions && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={advance}
+                  disabled={!next || row.app.rejected}
+                  aria-label={
+                    next
+                      ? `Move ${candidate.name} to ${next}`
+                      : `${candidate.name} already at final stage`
+                  }
+                >
+                  {next ? (
+                    <>
+                      Move to {next}
+                      <ArrowRight />
+                    </>
+                  ) : (
+                    <>
+                      <Check />
+                      Final stage
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={reject}
+                  disabled={row.app.rejected}
+                  aria-label={`Reject ${candidate.name}`}
+                >
+                  <Trash2 />
+                  Reject
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

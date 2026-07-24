@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local two-account Codex workflow
+AGENTS.local.md
+START-A.md
+START-B.md
+handoff-A.md
+handoff-B.md

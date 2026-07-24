@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -38,7 +38,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useToast } from "@/components/common/toast";
+import {
+  JobEditorDialog,
+  type JobEditorValues,
+} from "@/components/features/employer/job-editor-dialog";
 
 function statusVariant(status: JobStatus) {
   switch (status) {
@@ -61,13 +66,24 @@ export function JobDetailView({
   applicants: EmployerCandidateRow[];
 }) {
   const { push } = useToast();
+  const [activeJob, setActiveJob] = useState(job);
   const [status, setStatus] = useState<JobStatus>(job.status);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [closePromptOpen, setClosePromptOpen] = useState(false);
+  const [finalCloseOpen, setFinalCloseOpen] = useState(false);
+  const [showAllApplicants, setShowAllApplicants] = useState(false);
+  const applicantsRef = useRef<HTMLDivElement>(null);
 
   const onEdit = () => {
+    setEditorOpen(true);
+  };
+
+  const onSaveEdit = (values: JobEditorValues) => {
+    setActiveJob((current) => ({ ...current, ...values }));
     push({
-      title: `Editing ${job.title}`,
-      description: "Job editor would open here (demo).",
-      tone: "info",
+      title: `${values.title} updated`,
+      description: "Your job posting changes have been saved.",
+      tone: "success",
     });
   };
 
@@ -76,14 +92,14 @@ export function JobDetailView({
       if (prev === "Closed" || prev === "Draft") return prev;
       if (prev === "Paused") {
         push({
-          title: `${job.title} resumed`,
+          title: `${activeJob.title} resumed`,
           description: "Accepting applicants again.",
           tone: "success",
         });
         return "Live";
       }
       push({
-        title: `${job.title} paused`,
+        title: `${activeJob.title} paused`,
         description: "It will stop appearing in candidate searches.",
         tone: "info",
       });
@@ -95,7 +111,7 @@ export function JobDetailView({
     setStatus((prev) => {
       if (prev === "Closed") return prev;
       push({
-        title: `${job.title} closed`,
+      title: `${activeJob.title} closed`,
         description: "No new applicants will be accepted.",
         tone: "info",
       });
@@ -112,11 +128,10 @@ export function JobDetailView({
   };
 
   const onViewApplicants = () => {
-    push({
-      title: `Opening applicants for ${job.title}`,
-      description: "Filtered list would open here (demo).",
-      tone: "info",
-    });
+    setShowAllApplicants(true);
+    requestAnimationFrame(() =>
+      applicantsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
   };
 
   return (
@@ -148,7 +163,7 @@ export function JobDetailView({
           <Button
             variant="destructive"
             size="sm"
-            onClick={onClose}
+            onClick={() => setClosePromptOpen(true)}
             disabled={status === "Closed"}
           >
             <X />
@@ -170,15 +185,15 @@ export function JobDetailView({
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Job posting
             </p>
-            <h1>{job.title}</h1>
+            <h1>{activeJob.title}</h1>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={statusVariant(status)}>{status}</Badge>
-          <Badge variant="outline">{job.department}</Badge>
-          <Badge variant="outline">{job.workMode}</Badge>
-          <Badge variant="outline">{job.employmentType}</Badge>
-          <small className="text-muted-foreground">Posted {job.posted}</small>
+          <Badge variant="outline">{activeJob.department}</Badge>
+          <Badge variant="outline">{activeJob.workMode}</Badge>
+          <Badge variant="outline">{activeJob.employmentType}</Badge>
+          <small className="text-muted-foreground">Posted {activeJob.posted}</small>
         </div>
       </header>
 
@@ -193,7 +208,7 @@ export function JobDetailView({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">{job.description}</p>
+              <p className="text-muted-foreground">{activeJob.description}</p>
             </CardContent>
           </Card>
 
@@ -209,7 +224,7 @@ export function JobDetailView({
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {job.responsibilities.map((item) => (
+                {activeJob.responsibilities.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <Check
                       className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
@@ -231,7 +246,7 @@ export function JobDetailView({
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {job.requirements.map((item) => (
+                {activeJob.requirements.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <Check
                       className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
@@ -258,7 +273,7 @@ export function JobDetailView({
               <div className="space-y-2">
                 <h3 className="text-base font-semibold">Must have</h3>
                 <div className="flex flex-wrap gap-2">
-                  {job.mustHave.map((s) => (
+                  {activeJob.mustHave.map((s) => (
                     <Badge key={s} variant="default">
                       {s}
                     </Badge>
@@ -269,7 +284,7 @@ export function JobDetailView({
               <div className="space-y-2">
                 <h3 className="text-base font-semibold">Nice to have</h3>
                 <div className="flex flex-wrap gap-2">
-                  {job.niceToHave.map((s) => (
+                  {activeJob.niceToHave.map((s) => (
                     <Badge key={s} variant="outline">
                       {s}
                     </Badge>
@@ -294,7 +309,7 @@ export function JobDetailView({
             </CardHeader>
             <CardContent className="space-y-3">
               {[
-                { label: "Applied", value: job.applicants },
+                { label: "Applied", value: activeJob.applicants },
                 ...APPLICATION_STAGES.filter((s) => s !== "Applied").map(
                   (stage) => ({
                     label: STAGE_LABEL[stage],
@@ -317,7 +332,7 @@ export function JobDetailView({
               <div className="space-y-1.5 pt-2">
                 <div className="flex items-center justify-between">
                   <small className="text-muted-foreground">Funnel filled</small>
-                  <small className="font-medium tabular-nums">{job.filledScore}%</small>
+                  <small className="font-medium tabular-nums">{activeJob.filledScore}%</small>
                 </div>
                 <div
                   aria-hidden
@@ -325,7 +340,7 @@ export function JobDetailView({
                 >
                   <span
                     className="block h-full rounded-full bg-chart-1"
-                    style={{ width: `${job.filledScore}%` }}
+                    style={{ width: `${activeJob.filledScore}%` }}
                   />
                 </div>
               </div>
@@ -346,7 +361,7 @@ export function JobDetailView({
                   </dt>
                   <dd className="flex items-center gap-1.5">
                     <Wallet className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-                    {job.salary}
+                    {activeJob.salary}
                   </dd>
                 </div>
                 <div>
@@ -355,7 +370,7 @@ export function JobDetailView({
                   </dt>
                   <dd className="flex items-center gap-1.5">
                     <Building2 className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-                    {job.workMode}
+                    {activeJob.workMode}
                   </dd>
                 </div>
                 <div>
@@ -364,7 +379,7 @@ export function JobDetailView({
                   </dt>
                   <dd className="flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-                    {job.employmentType}
+                    {activeJob.employmentType}
                   </dd>
                 </div>
                 <div>
@@ -373,7 +388,7 @@ export function JobDetailView({
                   </dt>
                   <dd className="flex items-center gap-1.5">
                     <MapPin className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-                    {job.location}
+                    {activeJob.location}
                   </dd>
                 </div>
               </dl>
@@ -383,14 +398,16 @@ export function JobDetailView({
       </section>
 
       {/* Applicants for this job */}
-      <Card>
+      <Card ref={applicantsRef} className="scroll-mt-6">
         <CardHeader className="flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle>
               <h2>Top applicants</h2>
             </CardTitle>
             <CardDescription>
-              The strongest matches so far for {job.title}.
+              {showAllApplicants
+                ? `All ${applicants.length} matches for ${activeJob.title}.`
+                : `The strongest matches so far for ${activeJob.title}.`}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -398,9 +415,17 @@ export function JobDetailView({
               <Copy />
               Copy link
             </Button>
-            <Button variant="default" size="sm" onClick={onViewApplicants}>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={
+                showAllApplicants
+                  ? () => setShowAllApplicants(false)
+                  : onViewApplicants
+              }
+            >
               <ExternalLink />
-              View applicants
+              {showAllApplicants ? "Show top applicants" : "View all applications"}
             </Button>
           </div>
         </CardHeader>
@@ -410,11 +435,11 @@ export function JobDetailView({
               No applicants yet for this role.
             </p>
           ) : (
-            applicants.map((r) => (
+            (showAllApplicants ? applicants : applicants.slice(0, 3)).map((r) => (
               <Link
                 key={r.candidate.id}
                 href={`/employer/candidates/${r.candidate.id}`}
-                className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
+                className="grid gap-4 rounded-lg border bg-background p-4 transition-colors hover:bg-accent-soft sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span
@@ -428,17 +453,80 @@ export function JobDetailView({
                     <small className="block truncate text-muted-foreground">
                       {r.candidate.title}
                     </small>
+                    {showAllApplicants && (
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" aria-hidden />
+                          {r.candidate.location}
+                        </span>
+                        <span>Applied {r.app.appliedDate}</span>
+                        <span>{r.verification} credentials</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <Badge variant="outline">{r.matchScore}% match</Badge>
-                  <Badge variant={STAGE_VARIANT[r.app.stage]}>{r.app.stage}</Badge>
+                <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{r.matchScore}% match</Badge>
+                    <Badge variant={STAGE_VARIANT[r.app.stage]}>{r.app.stage}</Badge>
+                  </div>
+                  {showAllApplicants && (
+                    <>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted sm:w-36">
+                        <span
+                          className="block h-full rounded-full bg-chart-1"
+                          style={{ width: `${r.matchScore}%` }}
+                        />
+                      </div>
+                      <div className="flex max-w-sm flex-wrap justify-end gap-1">
+                        {r.candidate.topSkills.slice(0, 3).map((skill) => (
+                          <Badge key={skill} variant="secondary">
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </Link>
             ))
           )}
         </CardContent>
       </Card>
+
+      <JobEditorDialog
+        open={editorOpen}
+        job={activeJob}
+        onOpenChange={setEditorOpen}
+        onSave={onSaveEdit}
+      />
+      <ConfirmDialog
+        open={closePromptOpen}
+        onOpenChange={setClosePromptOpen}
+        title={`Close ${activeJob.title}?`}
+        description="This role will stop accepting new applicants. Existing applicants will keep their current status."
+        confirmLabel="Close job"
+        destructive
+        onConfirm={() => setFinalCloseOpen(true)}
+      />
+      <ConfirmDialog
+        open={finalCloseOpen}
+        onOpenChange={setFinalCloseOpen}
+        title="Confirm closing this job"
+        description={
+          <>
+            Are you sure you want to close{" "}
+            <strong className="text-foreground">{activeJob.title}</strong>? This
+            is your final confirmation.
+          </>
+        }
+        confirmLabel="Yes, close job"
+        destructive
+        onConfirm={() => {
+          onClose();
+          setFinalCloseOpen(false);
+        }}
+      />
     </div>
   );
 }
