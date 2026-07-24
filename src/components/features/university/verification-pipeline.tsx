@@ -7,10 +7,9 @@ import {
   CheckCircle2,
   CheckSquare,
   Clock,
+  FileDown,
   FileUp,
-  FolderArchive,
   Inbox,
-  RefreshCw,
   ShieldCheck,
   Square,
 } from "lucide-react";
@@ -38,7 +37,7 @@ const STATUSES: VerificationRecordStatus[] = [
   "Verified",
   "Pending review",
   "Action required",
-  "Disputed",
+  "Rejected",
 ];
 
 type VerificationTab = VerificationRecordStatus | "All";
@@ -47,7 +46,7 @@ const STATUS_DESCRIPTION: Record<VerificationRecordStatus, string> = {
   Verified: "Credentials confirmed by faculty.",
   "Pending review": "Awaiting faculty sign-off.",
   "Action required": "Missing information from candidate.",
-  Disputed: "Open dispute filed against this record.",
+  Rejected: "Rejected by faculty; awaiting resolution.",
 };
 
 const STATUS_ICON: Record<
@@ -57,7 +56,7 @@ const STATUS_ICON: Record<
   Verified: CheckCircle2,
   "Pending review": Clock,
   "Action required": AlertCircle,
-  Disputed: AlertCircle,
+  Rejected: AlertCircle,
 };
 
 const STATUS_VARIANT: Record<
@@ -67,7 +66,7 @@ const STATUS_VARIANT: Record<
   Verified: "default",
   "Pending review": "secondary",
   "Action required": "outline",
-  Disputed: "destructive",
+  Rejected: "destructive",
 };
 
 function countByStatus(records: GraduateRecord[]) {
@@ -75,7 +74,7 @@ function countByStatus(records: GraduateRecord[]) {
     Verified: 0,
     "Pending review": 0,
     "Action required": 0,
-    Disputed: 0,
+    Rejected: 0,
   };
   for (const graduate of records) counts[graduate.status] += 1;
   return counts;
@@ -89,7 +88,7 @@ type GraduateListProps = {
     graduate: GraduateRecord,
     status: VerificationRecordStatus,
   ) => void;
-  onRequestMarkDispute: (graduate: GraduateRecord) => void;
+  onRequestReject: (graduate: GraduateRecord) => void;
 };
 
 function GraduateList({
@@ -97,7 +96,7 @@ function GraduateList({
   selected,
   onToggleSelected,
   onStatusChange,
-  onRequestMarkDispute,
+  onRequestReject,
 }: GraduateListProps) {
   if (records.length === 0) {
     return (
@@ -138,15 +137,15 @@ function GraduateList({
               </span>
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p>{graduate.name}</p>
+                  <p className="text-base font-medium">{graduate.name}</p>
                   <Badge variant={STATUS_VARIANT[graduate.status]}>
                     {graduate.status}
                   </Badge>
                 </div>
-                <p className="text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {graduate.program} · Class of {graduate.graduationYear}
                 </p>
-                <p className="text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Capstone: {graduate.capstone}
                 </p>
                 <div className="flex flex-wrap gap-1 pt-1">
@@ -182,10 +181,10 @@ function GraduateList({
               <Button
                 variant="destructive"
                 size="sm"
-                disabled={graduate.status === "Disputed"}
-                onClick={() => onRequestMarkDispute(graduate)}
+                disabled={graduate.status === "Rejected"}
+                onClick={() => onRequestReject(graduate)}
               >
-                Mark dispute
+                Reject
               </Button>
             </div>
           </li>
@@ -204,8 +203,9 @@ export function VerificationPipeline({
   const [records, setRecords] = useState(initialRecords);
   const [activeTab, setActiveTab] = useState<VerificationTab>("All");
   const [selected, setSelected] = useState<Set<number>>(() => new Set());
-  const [pendingMarkDispute, setPendingMarkDispute] =
+  const [pendingReject, setPendingReject] =
     useState<GraduateRecord | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const counts = useMemo(() => countByStatus(records), [records]);
   const visibleRecords = useMemo(
@@ -248,6 +248,7 @@ export function VerificationPipeline({
   function updateRecordStatus(
     graduate: GraduateRecord,
     nextStatus: VerificationRecordStatus,
+    reason?: string,
   ) {
     if (graduate.status === nextStatus) return;
     setRecords((current) =>
@@ -262,7 +263,9 @@ export function VerificationPipeline({
     });
     push({
       title: `${graduate.name} moved to ${nextStatus}`,
-      description: `Status changed from ${graduate.status}.`,
+      description: reason
+        ? `Reason: ${reason}`
+        : `Status changed from ${graduate.status}.`,
       tone: nextStatus === "Verified" ? "success" : "info",
     });
   }
@@ -300,35 +303,6 @@ export function VerificationPipeline({
       <PageHeading
         title="Verification pipeline"
         description="Approve, request more information, or escalate disputes from a single queue."
-        action={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() =>
-                push({
-                  title: "Bulk import opened",
-                  description: "Choose a graduate records file to continue.",
-                  tone: "info",
-                })
-              }
-            >
-              <FolderArchive aria-hidden />
-              Bulk import
-            </Button>
-            <Button
-              onClick={() =>
-                push({
-                  title: "Record sync started",
-                  description: "We'll notify you when the pipeline is refreshed.",
-                  tone: "success",
-                })
-              }
-            >
-              <RefreshCw aria-hidden />
-              Sync records
-            </Button>
-          </div>
-        }
       />
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -338,9 +312,9 @@ export function VerificationPipeline({
           const share =
             records.length > 0 ? Math.round((value / records.length) * 100) : 0;
           return (
-            <Card key={status} className="lift-on-hover">
+            <Card key={status}>
               <CardContent className="space-y-3 p-5">
-                <span className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <span
                     aria-hidden
                     className="flex h-9 w-9 items-center justify-center rounded-md bg-muted"
@@ -348,18 +322,18 @@ export function VerificationPipeline({
                     <Icon className="h-4 w-4" aria-hidden />
                   </span>
                   <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
-                </span>
-                <span className="text-4xl font-semibold tabular-nums">
+                </div>
+                <div className="text-4xl font-semibold tabular-nums">
                   {value}
-                </span>
-                <span className="text-muted-foreground">
+                </div>
+                <p className="text-sm text-muted-foreground">
                   {STATUS_DESCRIPTION[status]}
-                </span>
-                <span className="space-y-1">
-                  <span className="flex items-center justify-between">
-                    <small className="text-muted-foreground">Share</small>
-                    <small className="tabular-nums">{share}%</small>
-                  </span>
+                </p>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <small className="text-sm text-muted-foreground">Share</small>
+                    <small className="text-sm tabular-nums">{share}%</small>
+                  </div>
                   <span
                     aria-hidden
                     className="block h-1.5 overflow-hidden rounded-full bg-muted"
@@ -369,7 +343,7 @@ export function VerificationPipeline({
                       style={{ width: `${share}%` }}
                     />
                   </span>
-                </span>
+                </div>
               </CardContent>
             </Card>
           );
@@ -379,23 +353,39 @@ export function VerificationPipeline({
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2>Records queue</h2>
-            <p>Filter the queue by verification status.</p>
+            <h2 className="text-subheading">Records queue</h2>
+            <p className="text-sm text-muted-foreground">Filter the queue by verification status.</p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              push({
-                title: "Selected records export prepared",
-                description: `${selected.size} ${selected.size === 1 ? "record" : "records"} included.`,
-                tone: "success",
-              })
-            }
-          >
-            <FileUp aria-hidden />
-            Export selected
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                push({
+                  title: "Import opened",
+                  description: "Choose a graduate records file to continue.",
+                  tone: "info",
+                })
+              }
+            >
+              <FileDown aria-hidden />
+              Import
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                push({
+                  title: "Selected records export prepared",
+                  description: `${selected.size} ${selected.size === 1 ? "record" : "records"} included.`,
+                  tone: "success",
+                })
+              }
+            >
+              <FileUp aria-hidden />
+              Export selected
+            </Button>
+          </div>
         </div>
 
         <Tabs
@@ -429,8 +419,8 @@ export function VerificationPipeline({
                     <Square aria-hidden />
                   )}
                 </Button>
-                <p>Select all visible</p>
-                <small className="text-muted-foreground">
+                <p className="text-base">Select all visible</p>
+                <small className="text-sm text-muted-foreground">
                   {selected.size} selected
                 </small>
               </div>
@@ -474,7 +464,7 @@ export function VerificationPipeline({
                   selected={selected}
                   onToggleSelected={toggleSelected}
                   onStatusChange={updateRecordStatus}
-                  onRequestMarkDispute={setPendingMarkDispute}
+                  onRequestReject={setPendingReject}
                 />
               </CardContent>
             </Card>
@@ -501,7 +491,7 @@ export function VerificationPipeline({
                       selected={selected}
                       onToggleSelected={toggleSelected}
                       onStatusChange={updateRecordStatus}
-                      onRequestMarkDispute={setPendingMarkDispute}
+                      onRequestReject={setPendingReject}
                     />
                   </CardContent>
                 </Card>
@@ -511,24 +501,34 @@ export function VerificationPipeline({
         </Tabs>
 
         <ConfirmDialog
-          open={pendingMarkDispute !== null}
-          onOpenChange={(open) => !open && setPendingMarkDispute(null)}
-          title="Mark this graduate as disputed?"
+          open={pendingReject !== null}
+          onOpenChange={(open) => {
+            if (!open) {
+              setPendingReject(null);
+              setRejectReason("");
+            }
+          }}
+          title="Reject this graduate's credential?"
           description={
-            pendingMarkDispute ? (
+            pendingReject ? (
               <>
-                <strong>{pendingMarkDispute.name}</strong> will be flagged for
-                verification review. Their employer pipeline will be paused
-                until the dispute is resolved.
+                <strong>{pendingReject.name}</strong>&apos;s credential will
+                be rejected. Their employer pipeline will be paused until
+                this is resolved.
               </>
             ) : null
           }
-          confirmLabel="Mark dispute"
+          confirmLabel="Reject"
           destructive
+          noteLabel="Reason for rejection"
+          noteValue={rejectReason}
+          onNoteChange={setRejectReason}
+          noteRequired
           onConfirm={() => {
-            if (pendingMarkDispute)
-              updateRecordStatus(pendingMarkDispute, "Disputed");
-            setPendingMarkDispute(null);
+            if (pendingReject)
+              updateRecordStatus(pendingReject, "Rejected", rejectReason);
+            setPendingReject(null);
+            setRejectReason("");
           }}
         />
       </section>

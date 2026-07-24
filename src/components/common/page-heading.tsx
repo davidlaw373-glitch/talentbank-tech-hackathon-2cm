@@ -18,12 +18,10 @@ export function PageHeading({ title, description, action, eyebrow }: PageHeading
     <header className="flex flex-wrap items-start justify-between gap-3">
       <div className="space-y-2">
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            {eyebrow}
-          </p>
+          <p className="text-caption">{eyebrow}</p>
         ) : null}
-        <h1>{title}</h1>
-        {description ? <p className="text-muted-foreground">{description}</p> : null}
+        <h1 className="text-heading">{title}</h1>
+        {description ? <p className="text-body text-muted-foreground">{description}</p> : null}
       </div>
       {action ? <div className="flex flex-wrap items-center gap-2">{action}</div> : null}
     </header>

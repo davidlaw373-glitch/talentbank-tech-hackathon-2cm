@@ -3,8 +3,8 @@
     "id": 1,
     "credentialId": 13,
     "field": "Capstone project grade",
-    "claim": "Capstone marked Pass; transcript shows Credit. Requesting Pass → Credit correction.",
-    "counter": "Faculty review upheld Credit. Awaiting candidate to submit revised artifact.",
+    "claim": "Final capstone (CSS301) transcript entry reads Credit, but the grade sheet the supervisor emailed on 12 May shows Pass. Requesting the record be corrected to Pass; grade-sheet screenshot attached.",
+    "counter": "Faculty review checked the submission against the rubric and upheld Credit — the emailed grade sheet was provisional, pending the final moderation pass. Candidate has been asked to submit the moderated grade sheet if it differs.",
     "filedDate": "4 days ago",
     "status": "In review"
   },
@@ -12,8 +12,8 @@
     "id": 2,
     "credentialId": 11,
     "field": "Verified credential",
-    "claim": "Skills list missing the PyTorch and CUDA entries from the capstone.",
-    "counter": "Awaiting faculty confirmation; updated record pending sync.",
+    "claim": "Skills list is missing PyTorch and CUDA, both used in the capstone (see GitHub repo linked in the submission and the model-training section of the final report). Requesting both be added to the verified skill set.",
+    "counter": "Awaiting faculty confirmation against the repo commit history before the skill list is updated and synced.",
     "filedDate": "1 week ago",
     "status": "Open"
   },
@@ -21,8 +21,8 @@
     "id": 3,
     "credentialId": 12,
     "field": "Employment outcome",
-    "claim": "Anomaly detection capstone should count toward 'data engineering' track.",
-    "counter": "Outcome updated to reflect track; resolved.",
+    "claim": "Employment outcome is tagged as general Software Engineering, but the offer letter (attached) is for a Data Engineering role at the same employer. Requesting the track be updated to match.",
+    "counter": "Reviewed the offer letter against the role description; outcome updated to Data Engineering and resolved.",
     "filedDate": "2 weeks ago",
     "status": "Resolved"
   }

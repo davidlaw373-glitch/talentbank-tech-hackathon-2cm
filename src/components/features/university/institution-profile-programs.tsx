@@ -145,11 +145,11 @@ export function InstitutionProfilePrograms({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-highlight/40 bg-highlight-soft/30">
         <CardHeader>
           <CardTitle>
             <h2 className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" aria-hidden />
+              <Sparkles className="h-4 w-4 text-highlight" aria-hidden />
               CareerOS insights
             </h2>
           </CardTitle>
@@ -158,7 +158,7 @@ export function InstitutionProfilePrograms({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-base">
             <InsightItem>
               Demand for <strong>Rust</strong> is up 41% in your partner network.
             </InsightItem>

@@ -19,8 +19,8 @@ import { Separator } from "@/components/ui/separator";
 import { PageHeading } from "@/components/common/page-heading";
 import {
   AnalyticsActions,
-  BuildReportButton,
   CurriculumRecommendations,
+  CustomSliceBuilder,
   ReportsArchive,
 } from "@/components/features/university/analytics-interactions";
 
@@ -110,7 +110,7 @@ function EmploymentTrendChart() {
       </div>
       {/* baseline */}
       <div className="h-px w-full bg-border" aria-hidden />
-      <div className="flex flex-wrap items-center gap-4 pt-2 text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-4 pt-2 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-2">
           <span className="h-3 w-3 rounded-sm bg-foreground" aria-hidden />
           Employed
@@ -140,13 +140,13 @@ function SkillDemandList() {
           <li key={s.skill} className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-3">
-                <small className="w-6 text-muted-foreground tabular-nums">
+                <small className="w-6 text-sm text-muted-foreground tabular-nums">
                   {String(i + 1).padStart(2, "0")}
                 </small>
-                <p>{s.skill}</p>
+                <p className="text-base">{s.skill}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-muted-foreground tabular-nums">
+                <span className="text-sm text-muted-foreground tabular-nums">
                   {s.openings} openings
                 </span>
                 <Badge
@@ -261,15 +261,13 @@ export default function UniversityAnalyticsPage() {
 
       <Separator />
 
-      <section className="flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h3>Need a custom slice?</h3>
-          <p className="text-muted-foreground">
-            Combine cohorts, programs, or specific skills in a one-off report.
-          </p>
-        </div>
-        <BuildReportButton />
-      </section>
+      <CustomSliceBuilder
+        cohorts={employmentOutcomes.map((c) => c.cohort)}
+        skills={[...skillDemand]
+          .sort((a, b) => b.openings - a.openings)
+          .slice(0, 8)
+          .map((s) => s.skill)}
+      />
     </div>
   );
 }

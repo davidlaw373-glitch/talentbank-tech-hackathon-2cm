@@ -16,9 +16,9 @@ function StatTile({ label, value, hint }: StatTileProps) {
         <p className="text-3xl font-semibold tracking-tight tabular-nums">
           {value}
         </p>
-        <p className="text-sm font-medium">{label}</p>
+        <p className="text-base font-medium">{label}</p>
         {hint ? (
-          <p className="text-xs text-muted-foreground">{hint}</p>
+          <p className="text-sm text-muted-foreground">{hint}</p>
         ) : null}
       </CardContent>
     </Card>

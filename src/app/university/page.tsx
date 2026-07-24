@@ -7,7 +7,6 @@ import {
   Building2,
   CheckCircle2,
   Clock,
-  FileText,
   GraduationCap,
   ShieldCheck,
   Sparkles,
@@ -23,10 +22,7 @@ import {
   universityProfile,
 } from "@/lib/university-helpers";
 import type { VerificationRecordStatus } from "@/types/university";
-import {
-  DashboardBulkSyncButton,
-  RecentDisputeRow,
-} from "@/components/features/university/dashboard-interactions";
+import { RecentDisputeRow } from "@/components/features/university/dashboard-interactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +32,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -52,23 +47,23 @@ const STATUS_ORDER: VerificationRecordStatus[] = [
   "Verified",
   "Pending review",
   "Action required",
-  "Disputed",
+  "Rejected",
 ];
 
 const STATUS_ICON: Record<VerificationRecordStatus, React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
   Verified: CheckCircle2,
   "Pending review": Clock,
   "Action required": AlertCircle,
-  Disputed: AlertCircle,
+  Rejected: AlertCircle,
 };
 
 // Per-status semantic swatch — verified is sage, pending is muted
-// amber, action-required is highlight copper, disputed is destructive.
+// amber, action-required is highlight copper, rejected is destructive.
 const STATUS_SWATCH: Record<VerificationRecordStatus, string> = {
   Verified: "bg-chart-1",
   "Pending review": "bg-chart-7",
   "Action required": "bg-highlight",
-  Disputed: "bg-destructive",
+  Rejected: "bg-destructive",
 };
 
 function countByStatus() {
@@ -76,7 +71,7 @@ function countByStatus() {
     Verified: 0,
     "Pending review": 0,
     "Action required": 0,
-    Disputed: 0,
+    Rejected: 0,
   };
   for (const g of graduateRecords) counts[g.status] += 1;
   return counts;
@@ -126,11 +121,7 @@ export default function UniversityDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title={`Welcome, ${universityProfile.institutionName}`}
-        description={`${universityProfile.tagline} · Founded ${universityProfile.founded} · ${universityProfile.city}, ${universityProfile.country}`}
-        action={<DashboardBulkSyncButton />}
-      />
+      <PageHeading title="Dashboard" />
 
       {/* Next-action prompt */}
       <Card className="lift-on-hover">
@@ -160,7 +151,7 @@ export default function UniversityDashboardPage() {
 
       {/* Stat tiles */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="space-y-2 p-5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft">
               <Users className="h-4 w-4" aria-hidden />
@@ -168,10 +159,10 @@ export default function UniversityDashboardPage() {
             <div className="text-3xl font-semibold tabular-nums">
               {universityProfile.totalStudents.toLocaleString()}
             </div>
-            <p>Total students</p>
+            <p className="text-base text-muted-foreground">Total students</p>
           </CardContent>
         </Card>
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="space-y-2 p-5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-1/20">
               <GraduationCap className="h-4 w-4" aria-hidden />
@@ -179,10 +170,10 @@ export default function UniversityDashboardPage() {
             <div className="text-3xl font-semibold tabular-nums">
               {universityProfile.activeCohorts}
             </div>
-            <p>Active cohorts</p>
+            <p className="text-base text-muted-foreground">Active cohorts</p>
           </CardContent>
         </Card>
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="space-y-2 p-5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-highlight-soft">
               <Briefcase className="h-4 w-4" aria-hidden />
@@ -190,10 +181,10 @@ export default function UniversityDashboardPage() {
             <div className="text-3xl font-semibold tabular-nums">
               {universityProfile.employmentRate}%
             </div>
-            <p>Employment rate</p>
+            <p className="text-base text-muted-foreground">Employment rate</p>
           </CardContent>
         </Card>
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="space-y-2 p-5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-2/20">
               <Clock className="h-4 w-4" aria-hidden />
@@ -201,10 +192,10 @@ export default function UniversityDashboardPage() {
             <div className="text-3xl font-semibold tabular-nums">
               {universityProfile.medianTimeToHire}
             </div>
-            <p>Median time to hire (months)</p>
+            <p className="text-base text-muted-foreground">Median time to hire (months)</p>
           </CardContent>
         </Card>
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="space-y-2 p-5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-3/20">
               <ShieldCheck className="h-4 w-4" aria-hidden />
@@ -212,7 +203,7 @@ export default function UniversityDashboardPage() {
             <div className="text-3xl font-semibold tabular-nums">
               {universityProfile.verifiedCredentials.toLocaleString()}
             </div>
-            <p>Verified credentials</p>
+            <p className="text-base text-muted-foreground">Verified credentials</p>
           </CardContent>
         </Card>
       </section>
@@ -249,7 +240,7 @@ export default function UniversityDashboardPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Icon className="h-4 w-4" aria-hidden />
-                      <p>{status}</p>
+                      <p className="text-base">{status}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-muted-foreground tabular-nums">
@@ -292,8 +283,8 @@ export default function UniversityDashboardPage() {
                 className="flex items-center justify-between rounded-md border p-3"
               >
                 <div className="space-y-0.5">
-                  <p>{s.skill}</p>
-                  <p className="text-muted-foreground">
+                  <p className="text-base">{s.skill}</p>
+                  <p className="text-sm text-muted-foreground">
                     {s.openings} openings
                   </p>
                 </div>
@@ -311,8 +302,8 @@ export default function UniversityDashboardPage() {
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2>Recent disputes</h2>
-            <p>Latest escalations awaiting faculty review.</p>
+            <h2 className="text-subheading">Recent disputes</h2>
+            <p className="text-sm text-muted-foreground">Latest escalations awaiting faculty review.</p>
           </div>
           <Button asChild variant="outline" size="sm">
             <Link href="/university/disputes">
@@ -336,8 +327,8 @@ export default function UniversityDashboardPage() {
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2>Employment at a glance</h2>
-            <p>Outcomes by cohort year.</p>
+            <h2 className="text-subheading">Employment at a glance</h2>
+            <p className="text-sm text-muted-foreground">Outcomes by cohort year.</p>
           </div>
           <Button asChild variant="outline" size="sm">
             <Link href="/university/employment">
@@ -346,9 +337,9 @@ export default function UniversityDashboardPage() {
             </Link>
           </Button>
         </div>
-        <Card>
+        <Card className="overflow-hidden">
           <CardContent className="p-0">
-            <Table>
+            <Table className="[&_tr:hover]:bg-transparent">
               <TableHeader>
                 <TableRow>
                   <TableHead>Cohort</TableHead>
@@ -390,20 +381,6 @@ export default function UniversityDashboardPage() {
             </Table>
           </CardContent>
         </Card>
-      </section>
-
-      <Separator />
-      <section className="flex flex-wrap items-center justify-between gap-4">
-        <p className="text-muted-foreground">
-          {universityProfile.partnerEmployers} partner employers actively
-          reviewing talent from your cohorts.
-        </p>
-        <Button asChild variant="outline">
-          <Link href="/university/analytics">
-            <FileText aria-hidden />
-            View full report
-          </Link>
-        </Button>
       </section>
     </div>
   );

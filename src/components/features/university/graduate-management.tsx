@@ -40,7 +40,7 @@ const STATUS_ORDER: VerificationRecordStatus[] = [
   "Verified",
   "Pending review",
   "Action required",
-  "Disputed",
+  "Rejected",
 ];
 
 const STATUS_VARIANT: Record<
@@ -50,7 +50,7 @@ const STATUS_VARIANT: Record<
   Verified: "default",
   "Pending review": "secondary",
   "Action required": "outline",
-  Disputed: "destructive",
+  Rejected: "destructive",
 };
 
 const EMPLOYMENT_VARIANT: Record<
@@ -70,7 +70,7 @@ function countByStatus(records: GraduateRecord[]) {
     Verified: 0,
     "Pending review": 0,
     "Action required": 0,
-    Disputed: 0,
+    Rejected: 0,
   };
   for (const graduate of records) counts[graduate.status] += 1;
   return counts;
@@ -123,27 +123,6 @@ export function GraduateManagement({
     setEmployment("all");
   }
 
-  function updateStatus(
-    graduate: GraduateRecord,
-    nextStatus: VerificationRecordStatus,
-  ) {
-    if (graduate.status === nextStatus) return;
-
-    setRecords((current) =>
-      current.map((record) =>
-        record.id === graduate.id ? { ...record, status: nextStatus } : record,
-      ),
-    );
-    push({
-      title:
-        nextStatus === "Verified"
-          ? `${graduate.name} verified`
-          : `${graduate.name} moved to dispute`,
-      description: `Status changed from ${graduate.status} to ${nextStatus}.`,
-      tone: nextStatus === "Verified" ? "success" : "info",
-    });
-  }
-
   return (
     <div className="space-y-8">
       <PageHeading
@@ -187,7 +166,7 @@ export function GraduateManagement({
         </div>
         <div className="space-y-1.5 sm:w-[12rem]">
           <label htmlFor="grad-year" className="block">
-            <small>Graduation year</small>
+            <small className="text-sm font-medium text-foreground">Graduation year</small>
           </label>
           <Select value={year} onValueChange={setYear}>
             <SelectTrigger
@@ -212,7 +191,7 @@ export function GraduateManagement({
         </div>
         <div className="space-y-1.5 sm:w-[14rem]">
           <label htmlFor="grad-employment" className="block">
-            <small>Employment status</small>
+            <small className="text-sm font-medium text-foreground">Employment status</small>
           </label>
           <Select
             value={employment}
@@ -247,8 +226,8 @@ export function GraduateManagement({
             <div className="text-3xl font-semibold tabular-nums">
               {filteredRecords.length}
             </div>
-            <p>Matching graduates</p>
-            <p className="text-muted-foreground">
+            <p className="text-base text-muted-foreground">Matching graduates</p>
+            <p className="text-sm text-muted-foreground">
               {filteredRecords.length} of {records.length} total
             </p>
           </CardContent>
@@ -269,8 +248,8 @@ export function GraduateManagement({
                 <div className="text-3xl font-semibold tabular-nums">
                   {filteredCounts[status]}
                 </div>
-                <p>{status}</p>
-                <p className="text-muted-foreground">
+                <p className="text-base text-muted-foreground">{status}</p>
+                <p className="text-sm text-muted-foreground">
                   {share}% filtered · {allCounts[status]} overall
                 </p>
               </CardContent>
@@ -282,10 +261,10 @@ export function GraduateManagement({
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2>All graduates</h2>
-            <p>Use View to open a graduate detail record.</p>
+            <h2 className="text-subheading">All graduates</h2>
+            <p className="text-sm text-muted-foreground">Use View to open a graduate detail record.</p>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Showing {filteredRecords.length} of {records.length}
           </p>
         </div>
@@ -307,8 +286,8 @@ export function GraduateManagement({
                   className="h-10 w-10 text-muted-foreground"
                   aria-hidden
                 />
-                <h3>No graduates match your filters</h3>
-                <p className="text-muted-foreground">
+                <h3 className="text-subheading">No graduates match your filters</h3>
+                <p className="text-sm text-muted-foreground">
                   Try clearing the search or selecting a different filter.
                 </p>
                 <Button variant="outline" onClick={resetFilters}>
@@ -326,7 +305,7 @@ export function GraduateManagement({
                     <TableHead className="hidden sm:table-cell">
                       Year
                     </TableHead>
-                    <TableHead className="hidden lg:table-cell">GPA</TableHead>
+                    <TableHead className="hidden lg:table-cell text-right">GPA</TableHead>
                     <TableHead className="hidden md:table-cell">
                       Verification
                     </TableHead>
@@ -361,7 +340,7 @@ export function GraduateManagement({
                       <TableCell className="hidden sm:table-cell tabular-nums">
                         {graduate.graduationYear}
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell text-muted-foreground">
+                      <TableCell className="hidden lg:table-cell text-right text-muted-foreground tabular-nums">
                         {graduate.gpa}
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
@@ -391,7 +370,7 @@ export function GraduateManagement({
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap items-center justify-end gap-1">
+                        <div className="flex items-center justify-end">
                           <Button asChild variant="outline" size="sm">
                             <Link
                               href={`/university/graduates/${graduate.id}`}
@@ -401,29 +380,6 @@ export function GraduateManagement({
                               <ArrowRight aria-hidden />
                             </Link>
                           </Button>
-                          {graduate.status !== "Verified" && (
-                            <Button
-                              size="sm"
-                              className="hidden sm:inline-flex"
-                              onClick={() =>
-                                updateStatus(graduate, "Verified")
-                              }
-                            >
-                              Verify
-                            </Button>
-                          )}
-                          {graduate.status !== "Disputed" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="hidden md:inline-flex"
-                              onClick={() =>
-                                updateStatus(graduate, "Disputed")
-                              }
-                            >
-                              Dispute
-                            </Button>
-                          )}
                         </div>
                       </TableCell>
                     </TableRow>

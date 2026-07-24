@@ -1,4 +1,9 @@
-export type CredentialStatus = "Verified" | "Pending" | "Not started";
+export type CredentialStatus =
+  | "Verified"
+  | "Pending"
+  | "Not started"
+  | "Pending review"
+  | "Rejected";
 
 export type EmploymentOutcome =
   | "Employed"

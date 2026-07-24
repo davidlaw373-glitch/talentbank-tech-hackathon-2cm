@@ -32,7 +32,7 @@ function FieldRow({
     <div className="space-y-1.5">
       <label
         htmlFor={id}
-        className="block text-sm font-medium text-foreground"
+        className="block text-sm font-semibold text-foreground"
       >
         {label}
       </label>
@@ -62,7 +62,7 @@ function FieldRow({
           )}
         </div>
       ) : (
-        <p className="text-sm text-foreground">{value}</p>
+        <p className="text-base text-foreground">{value}</p>
       )}
     </div>
   );
@@ -77,8 +77,8 @@ function Mini({
 }) {
   return (
     <div className="flex items-center justify-between rounded-md border bg-background p-3">
-      <small className="text-muted-foreground">{label}</small>
-      <span className="text-sm font-medium">{value}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-base font-semibold">{value}</span>
     </div>
   );
 }

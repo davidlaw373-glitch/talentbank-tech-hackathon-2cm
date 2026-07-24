@@ -5,6 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 /**
  * Confirmation dialog using the native <dialog> element (no new dependency).
@@ -28,6 +29,13 @@ type ConfirmDialogProps = {
   cancelLabel?: string;
   destructive?: boolean;
   requireTyping?: string;
+  /** Optional label for a free-text reason/note field shown above the actions. */
+  noteLabel?: string;
+  /** Controlled value for the reason/note field. Only rendered when `noteLabel` is set. */
+  noteValue?: string;
+  onNoteChange?: (value: string) => void;
+  /** Require the note to be non-empty before the confirm button enables. */
+  noteRequired?: boolean;
   onConfirm: () => void;
 };
 
@@ -40,6 +48,10 @@ export function ConfirmDialog({
   cancelLabel = "Cancel",
   destructive = false,
   requireTyping,
+  noteLabel,
+  noteValue = "",
+  onNoteChange,
+  noteRequired = false,
   onConfirm,
 }: ConfirmDialogProps) {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
@@ -69,7 +81,9 @@ export function ConfirmDialog({
     return () => node.removeEventListener("close", onClose);
   }, [onOpenChange]);
 
-  const canConfirm = !requireTyping || typed === requireTyping;
+  const canConfirm =
+    (!requireTyping || typed === requireTyping) &&
+    (!noteRequired || noteValue.trim().length > 0);
 
   const handleConfirm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -121,6 +135,23 @@ export function ConfirmDialog({
               onChange={(e) => setTyped(e.target.value)}
               autoComplete="off"
               spellCheck={false}
+            />
+          </div>
+        )}
+
+        {noteLabel && (
+          <div className="space-y-1.5">
+            <label
+              htmlFor={`note-${titleId}`}
+              className="block text-sm font-medium text-foreground"
+            >
+              {noteLabel}
+            </label>
+            <Textarea
+              id={`note-${titleId}`}
+              value={noteValue}
+              onChange={(e) => onNoteChange?.(e.target.value)}
+              rows={3}
             />
           </div>
         )}
