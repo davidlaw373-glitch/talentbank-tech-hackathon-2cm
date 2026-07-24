@@ -510,9 +510,14 @@ export function JobDetails({
             </div>
           ) : null}
           <Separator />
-          <Button asChild variant="outline" size="sm">
-            <Link href="#">Visit company</Link>
-          </Button>
+          {employer ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/candidate/companies/${employer.id}`}>
+                Visit company
+                <ArrowRight />
+              </Link>
+            </Button>
+          ) : null}
         </CardContent>
       </Card>
     </div>
