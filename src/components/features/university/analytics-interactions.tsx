@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   BarChart3,
   Download,
@@ -14,6 +15,20 @@ import {
 import { useToast } from "@/components/common/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { SkillDemand } from "@/types/university";
 
 export type AnalyticsReport = {
@@ -113,8 +128,8 @@ export function CurriculumRecommendations({
             </span>
             <div className="flex-1 space-y-2">
               <div className="space-y-1">
-                <p>{recommendation.title}</p>
-                <p className="text-muted-foreground">{recommendation.body}</p>
+                <p className="text-base font-medium">{recommendation.title}</p>
+                <p className="text-sm text-muted-foreground">{recommendation.body}</p>
               </div>
               <Button
                 variant="outline"
@@ -155,8 +170,8 @@ export function ReportsArchive({
                 <FileText className="h-4 w-4" aria-hidden />
               </span>
               <div className="space-y-0.5">
-                <p>{report.title}</p>
-                <p className="text-muted-foreground">{report.issued}</p>
+                <p className="text-base font-medium">{report.title}</p>
+                <p className="text-sm text-muted-foreground">{report.issued}</p>
               </div>
             </div>
             <Badge variant="outline">{report.type}</Badge>
@@ -197,21 +212,146 @@ export function ReportsArchive({
   );
 }
 
-export function BuildReportButton() {
-  const { push } = useToast();
+const REPORT_FORMATS = [
+  { value: "pdf", label: "PDF" },
+  { value: "excel", label: "Excel" },
+  { value: "csv", label: "CSV" },
+] as const;
 
+function ToggleChip({
+  label,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  selected: boolean;
+  onToggle: () => void;
+}) {
   return (
-    <Button
-      onClick={() =>
-        push({
-          title: "Custom report builder opened",
-          description: "Choose cohorts, programs, and skills for this slice.",
-          tone: "info",
-        })
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onToggle}
+      className={
+        selected
+          ? "rounded-full border border-primary bg-primary px-3 py-1 text-sm font-medium text-primary-foreground"
+          : "rounded-full border border-border bg-background px-3 py-1 text-sm font-medium text-muted-foreground hover:border-foreground/40"
       }
     >
-      <BarChart3 aria-hidden />
-      Build report
-    </Button>
+      {label}
+    </button>
+  );
+}
+
+export function CustomSliceBuilder({
+  cohorts,
+  skills,
+}: {
+  cohorts: string[];
+  skills: string[];
+}) {
+  const { push } = useToast();
+  const [selectedCohorts, setSelectedCohorts] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [selectedSkills, setSelectedSkills] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [format, setFormat] = useState<string>("pdf");
+
+  function toggle(
+    setter: (updater: (current: Set<string>) => Set<string>) => void,
+    value: string,
+  ) {
+    setter((current) => {
+      const next = new Set(current);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
+      return next;
+    });
+  }
+
+  const canBuild = selectedCohorts.size > 0;
+
+  return (
+    <Card className="border-dashed">
+      <CardHeader>
+        <CardTitle>
+          <h3 className="text-subheading">Need a custom slice?</h3>
+        </CardTitle>
+        <CardDescription>
+          Combine cohorts, skills, and a format into a one-off report.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Cohorts</p>
+          <div className="flex flex-wrap gap-2">
+            {cohorts.map((cohort) => (
+              <ToggleChip
+                key={cohort}
+                label={cohort}
+                selected={selectedCohorts.has(cohort)}
+                onToggle={() => toggle(setSelectedCohorts, cohort)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Skills (optional)</p>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill) => (
+              <ToggleChip
+                key={skill}
+                label={skill}
+                selected={selectedSkills.has(skill)}
+                onToggle={() => toggle(setSelectedSkills, skill)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Format</p>
+            <Select value={format} onValueChange={setFormat}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REPORT_FORMATS.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>
+                    {f.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            disabled={!canBuild}
+            onClick={() => {
+              const cohortList = Array.from(selectedCohorts).join(", ");
+              const skillList = Array.from(selectedSkills).join(", ");
+              push({
+                title: "Custom report queued",
+                description: `${cohortList}${
+                  skillList ? ` · Skills: ${skillList}` : ""
+                } · ${format.toUpperCase()}`,
+                tone: "success",
+              });
+            }}
+          >
+            <BarChart3 aria-hidden />
+            Build report
+          </Button>
+        </div>
+        {!canBuild && (
+          <p className="text-sm text-muted-foreground">
+            Select at least one cohort to build a report.
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }

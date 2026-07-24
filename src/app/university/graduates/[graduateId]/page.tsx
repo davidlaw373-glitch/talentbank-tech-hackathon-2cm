@@ -26,11 +26,11 @@ export default async function UniversityGraduateDetailPage({ params }: PageProps
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-caption">
           Graduate record
         </p>
-        <h1>{graduate.name}</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-heading">{graduate.name}</h1>
+        <p className="text-body text-muted-foreground">
           {graduate.program} · Class of {graduate.graduationYear}
         </p>
       </header>
@@ -44,7 +44,7 @@ export default async function UniversityGraduateDetailPage({ params }: PageProps
             <CardDescription>Final-year project</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm">{graduate.capstone}</p>
+            <p className="text-base">{graduate.capstone}</p>
           </CardContent>
         </Card>
 

@@ -40,14 +40,14 @@ function StatTile({
   hint?: string;
 }) {
   return (
-    <Card className="lift-on-hover">
+    <Card>
       <CardContent className="space-y-2 p-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
           <Icon className="h-4 w-4" aria-hidden />
         </div>
         <div className="text-3xl font-semibold tabular-nums">{value}</div>
-        <p>{label}</p>
-        {hint && <p className="text-muted-foreground">{hint}</p>}
+        <p className="text-base text-muted-foreground">{label}</p>
+        {hint && <p className="text-sm text-muted-foreground">{hint}</p>}
       </CardContent>
     </Card>
   );
@@ -66,9 +66,9 @@ function OutcomeBar({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p>{label}</p>
+        <p className="text-base">{label}</p>
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground tabular-nums">
+          <span className="text-sm text-muted-foreground tabular-nums">
             {value.toLocaleString()} of {total.toLocaleString()}
           </span>
           <span className="font-semibold tabular-nums">{percent}%</span>
@@ -189,7 +189,7 @@ function CohortDashboard({ cohort }: { cohort: EmploymentRecord }) {
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-3xl font-semibold">{cohort.topEmployer}</p>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Hired {Math.max(
                 4,
                 Math.round(cohort.employed * 0.08)
@@ -211,7 +211,7 @@ function CohortDashboard({ cohort }: { cohort: EmploymentRecord }) {
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-3xl font-semibold">{cohort.topRole}</p>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Median time to offer: 4.2 months.
             </p>
           </CardContent>
@@ -222,8 +222,8 @@ function CohortDashboard({ cohort }: { cohort: EmploymentRecord }) {
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h3>Latest skill demand</h3>
-            <p>Roles open to this cohort right now.</p>
+            <h3 className="text-subheading">Latest skill demand</h3>
+            <p className="text-sm text-muted-foreground">Roles open to this cohort right now.</p>
           </div>
           <Badge variant="outline">{topSkills.length} skills tracked</Badge>
         </div>
@@ -242,21 +242,28 @@ export default function UniversityEmploymentPage() {
         action={<EmploymentExportButton />}
       />
 
-      <Tabs defaultValue={String(employmentOutcomes[0].id)}>
-        <TabsList className="flex flex-wrap">
-          {employmentOutcomes.map((c) => (
-            <TabsTrigger key={c.id} value={String(c.id)}>
-              {c.cohort}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-muted-foreground">Cohort</p>
+        <Tabs defaultValue={String(employmentOutcomes[0].id)}>
+          <TabsList className="flex h-auto flex-wrap justify-start gap-1 bg-muted p-1.5">
+            {employmentOutcomes.map((c) => (
+              <TabsTrigger
+                key={c.id}
+                value={String(c.id)}
+                className="text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                {c.cohort}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        {employmentOutcomes.map((c) => (
-          <TabsContent key={c.id} value={String(c.id)} className="mt-6">
-            <CohortDashboard cohort={c} />
-          </TabsContent>
-        ))}
-      </Tabs>
+          {employmentOutcomes.map((c) => (
+            <TabsContent key={c.id} value={String(c.id)} className="mt-6">
+              <CohortDashboard cohort={c} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
   );
 }

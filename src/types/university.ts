@@ -48,7 +48,7 @@ export type VerificationRecordStatus =
   | "Verified"
   | "Pending review"
   | "Action required"
-  | "Disputed";
+  | "Rejected";
 
 export type LegacyGraduateRecord = {
   id: number;

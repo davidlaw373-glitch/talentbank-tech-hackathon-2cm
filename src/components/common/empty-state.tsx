@@ -28,8 +28,8 @@ export function EmptyState({
           <Icon className="h-5 w-5 text-muted-foreground" aria-hidden />
         </div>
         <div>
-          <p className="text-sm font-medium">{title}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+          <p className="text-base font-medium">{title}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </div>
         {action}
       </CardContent>

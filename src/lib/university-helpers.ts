@@ -62,9 +62,14 @@ function mapCredentialStatusToVerification(
     case "Verified":
       return "Verified";
     case "Pending":
+    case "Pending review":
       return "Pending review";
     case "Not started":
       return "Action required";
+    case "Rejected":
+      return "Rejected";
+    default:
+      return "Pending review";
   }
 }
 
@@ -114,6 +119,62 @@ export function getGraduateRecords(
 }
 
 export const graduateRecords: LegacyGraduateRecord[] = getGraduateRecords();
+
+/**
+ * Academic-record-only view of graduateRecords, for the Graduates directory.
+ * A candidate can hold several credentials (degree, internship, portfolio),
+ * but the directory should show one row per graduate's academic record —
+ * not a duplicate row per piece of evidence they've submitted.
+ */
+export function getAcademicGraduateRecords(
+  universityId: number = DEMO_UNIVERSITY_ID,
+): LegacyGraduateRecord[] {
+  const credentials = getCredentialsForUniversity(universityId).filter(
+    (cred) => cred.type === "Education",
+  );
+  const result: LegacyGraduateRecord[] = [];
+
+  for (const cred of credentials) {
+    let name: string;
+    let initials: string;
+    let program: string;
+    if (cred.candidateId !== null) {
+      const candidate = getCandidate(cred.candidateId);
+      if (!candidate) continue;
+      name = candidate.name;
+      initials = candidate.initials;
+      program = cred.name;
+    } else {
+      const parsed = parseNameAndProgram(cred.name);
+      name = parsed.name;
+      initials = initialsFromName(parsed.name);
+      program = parsed.program;
+    }
+
+    const company = cred.employerId
+      ? getEmployer(cred.employerId)?.companyName
+      : undefined;
+
+    result.push({
+      id: cred.id,
+      name,
+      initials,
+      program,
+      graduationYear: cred.graduationYear ?? 0,
+      gpa: cred.gpa ?? "",
+      status: mapCredentialStatusToVerification(cred.status),
+      skills: cred.skills,
+      capstone: cred.capstone,
+      employment: cred.employment as EmploymentOutcome,
+      company,
+      role: cred.role,
+    });
+  }
+  return result;
+}
+
+export const academicGraduateRecords: LegacyGraduateRecord[] =
+  getAcademicGraduateRecords();
 
 export function getUniversityDisputes(
   universityId: number = DEMO_UNIVERSITY_ID,

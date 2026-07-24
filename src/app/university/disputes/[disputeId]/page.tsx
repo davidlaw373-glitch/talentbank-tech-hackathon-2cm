@@ -26,11 +26,11 @@ export default async function UniversityDisputeDetailPage({ params }: PageProps)
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-caption">
           Dispute thread
         </p>
-        <h1>{dispute.graduateName}</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-heading">{dispute.graduateName}</h1>
+        <p className="text-body text-muted-foreground">
           {dispute.field} · Filed {dispute.filedDate}
         </p>
       </header>
@@ -45,7 +45,7 @@ export default async function UniversityDisputeDetailPage({ params }: PageProps)
           <CardDescription>As filed by the graduate.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm">{dispute.claim}</p>
+          <p className="text-base">{dispute.claim}</p>
         </CardContent>
       </Card>
 
@@ -57,7 +57,7 @@ export default async function UniversityDisputeDetailPage({ params }: PageProps)
           <CardDescription>Reviewer&apos;s response.</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm">{dispute.counter}</p>
+          <p className="text-base">{dispute.counter}</p>
         </CardContent>
       </Card>
 

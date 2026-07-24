@@ -23,11 +23,9 @@ export function InstitutionProfileHeader({
   return (
     <header className="flex flex-wrap items-start justify-between gap-3">
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Institution profile
-        </p>
-        <h1>{profile.institutionName}</h1>
-        <p className="text-muted-foreground">{profile.tagline}</p>
+        <p className="text-caption">Institution profile</p>
+        <h1 className="text-heading">{profile.institutionName}</h1>
+        <p className="text-body text-muted-foreground">{profile.tagline}</p>
       </div>
       {editing ? (
         <div className="flex flex-wrap items-center gap-2">

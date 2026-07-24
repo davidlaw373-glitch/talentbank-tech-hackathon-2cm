@@ -67,8 +67,8 @@ export function SkillDemandRows({ skills }: { skills: SkillDemand[] }) {
                     <TrendingUp className="h-4 w-4" aria-hidden />
                   </span>
                   <div>
-                    <p>{skill.skill}</p>
-                    <p className="text-muted-foreground">
+                    <p className="text-base">{skill.skill}</p>
+                    <p className="text-sm text-muted-foreground">
                       {skill.openings} openings
                     </p>
                   </div>

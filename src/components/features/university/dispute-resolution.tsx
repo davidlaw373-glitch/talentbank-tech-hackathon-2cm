@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Clock,
   Inbox,
-  Plus,
   ShieldAlert,
   X,
 } from "lucide-react";
@@ -115,16 +114,16 @@ function DisputeList({ records, onStatusChange, onRequestReject }: DisputeListPr
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-lg border bg-surface-tint p-4">
-              <small className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <small className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 Candidate claim
               </small>
-              <p className="mt-1">{dispute.claim}</p>
+              <p className="mt-1 text-base">{dispute.claim}</p>
             </div>
             <div className="rounded-lg border bg-card p-4">
-              <small className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <small className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 Faculty counter
               </small>
-              <p className="mt-1">{dispute.counter}</p>
+              <p className="mt-1 text-base">{dispute.counter}</p>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button asChild variant="outline" size="sm">
@@ -157,7 +156,7 @@ function DisputeList({ records, onStatusChange, onRequestReject }: DisputeListPr
                 onClick={() => onStatusChange(dispute, "Resolved")}
               >
                 <CheckCircle2 aria-hidden />
-                {dispute.status === "Resolved" ? "Already resolved" : "Resolve"}
+                Resolve
               </Button>
               <Button
                 variant="destructive"
@@ -222,20 +221,6 @@ export function DisputeResolution({
       <PageHeading
         title="Dispute resolution"
         description="Review, mediate, and resolve disputes between candidates and faculty."
-        action={
-          <Button
-            onClick={() =>
-              push({
-                title: "Opened the dispute form",
-                description: "Add the graduate, claim, and supporting evidence.",
-                tone: "info",
-              })
-            }
-          >
-            <Plus aria-hidden />
-            New dispute
-          </Button>
-        }
       />
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
@@ -249,7 +234,7 @@ export function DisputeResolution({
                   ? CheckCircle2
                   : X;
           return (
-            <Card key={status} className="lift-on-hover">
+            <Card key={status}>
               <CardContent className="space-y-2 p-5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
                   <Icon className="h-4 w-4" aria-hidden />
@@ -257,8 +242,8 @@ export function DisputeResolution({
                 <div className="text-3xl font-semibold tabular-nums">
                   {counts[status]}
                 </div>
-                <p>{status}</p>
-                <p className="text-muted-foreground">
+                <p className="text-base">{status}</p>
+                <p className="text-sm text-muted-foreground">
                   {STATUS_DESCRIPTION[status]}
                 </p>
               </CardContent>
@@ -270,8 +255,8 @@ export function DisputeResolution({
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2>All disputes</h2>
-            <p>Filter by status to focus the queue.</p>
+            <h2 className="text-subheading">All disputes</h2>
+            <p className="text-sm text-muted-foreground">Filter by status to focus the queue.</p>
           </div>
           <Button
             variant="outline"
