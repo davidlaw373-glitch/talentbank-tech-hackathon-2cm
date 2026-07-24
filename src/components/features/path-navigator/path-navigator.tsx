@@ -26,7 +26,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { getMatchScoresForCandidate } from "@/lib/data-helpers";
 import { get as getJob } from "@/data/jobs";
@@ -498,46 +497,17 @@ export function PathNavigator() {
           </CardContent>
         </Card>
       ) : (
-        <>
-          {/* Summary stats for the selected role */}
-          <section
-            aria-label="Selected role summary"
-            className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-6">
+          {/* Target-role selector — sticky sidebar on lg+, full-width grid on mobile */}
+          <aside
+            aria-label="Choose a target role"
+            className="w-full shrink-0 space-y-3 lg:sticky lg:top-4 lg:w-72 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 xl:w-80"
           >
-            <SummaryStat
-              label="AI match"
-              value={selectedRole.score}
-              suffix="/100"
-              icon={Sparkles}
-              swatch="bg-highlight-soft text-foreground"
-            />
-            <SummaryStat
-              label="Verified strengths"
-              value={selectedRole.verifiedStrengths.length}
-              icon={ShieldCheck}
-              swatch="bg-chart-1/20 text-foreground"
-            />
-            <SummaryStat
-              label="Exact gaps"
-              value={selectedRole.gaps.length}
-              icon={Flag}
-              swatch="bg-accent-soft text-foreground"
-            />
-            <SummaryStat
-              label="Roadmap steps"
-              value={selectedRole.roadmap.length}
-              icon={Rocket}
-              swatch="bg-chart-2/20 text-foreground"
-            />
-          </section>
-
-          {/* Target-role selector */}
-          <section aria-label="Choose a target role" className="space-y-3">
             <h2 className="text-card-title">Choose a target role</h2>
             <div
               role="radiogroup"
               aria-label="Target role"
-              className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+              className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1"
             >
               {TARGET_ROLES.map((role) => {
                 const active = role.jobId === selectedRole.jobId;
@@ -573,18 +543,51 @@ export function PathNavigator() {
                 );
               })}
             </div>
-          </section>
+          </aside>
 
-          <Separator />
+          {/* Right column: stats + role panel */}
+          <div className="min-w-0 flex-1 space-y-6">
+            {/* Summary stats for the selected role */}
+            <section
+              aria-label="Selected role summary"
+              className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+            >
+              <SummaryStat
+                label="AI match"
+                value={selectedRole.score}
+                suffix="/100"
+                icon={Sparkles}
+                swatch="bg-highlight-soft text-foreground"
+              />
+              <SummaryStat
+                label="Verified strengths"
+                value={selectedRole.verifiedStrengths.length}
+                icon={ShieldCheck}
+                swatch="bg-chart-1/20 text-foreground"
+              />
+              <SummaryStat
+                label="Exact gaps"
+                value={selectedRole.gaps.length}
+                icon={Flag}
+                swatch="bg-accent-soft text-foreground"
+              />
+              <SummaryStat
+                label="Roadmap steps"
+                value={selectedRole.roadmap.length}
+                icon={Rocket}
+                swatch="bg-chart-2/20 text-foreground"
+              />
+            </section>
 
-          <RolePanel
-            role={selectedRole}
-            isGoal={goalJobId === selectedRole.jobId}
-            showRoadmap={showRoadmap}
-            onToggleGoal={() => toggleGoal(selectedRole)}
-            onToggleRoadmap={() => setShowRoadmap((open) => !open)}
-          />
-        </>
+            <RolePanel
+              role={selectedRole}
+              isGoal={goalJobId === selectedRole.jobId}
+              showRoadmap={showRoadmap}
+              onToggleGoal={() => toggleGoal(selectedRole)}
+              onToggleRoadmap={() => setShowRoadmap((open) => !open)}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

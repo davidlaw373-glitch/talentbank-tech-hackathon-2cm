@@ -25,7 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { get as getCandidate } from "@/data/candidates";
 import { getForCandidate as getCredentialsForCandidate } from "@/data/credentials";
@@ -391,7 +390,6 @@ function ResumePreviewDialog({
 
 export function ResumeAssistant() {
   const { push } = useToast();
-  const [coverLetterTarget, setCoverLetterTarget] = useState("");
   const [versions, setVersions] = useState(VERSIONS);
   const [suggestions, setSuggestions] = useState(SUGGESTIONS);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -743,49 +741,6 @@ export function ResumeAssistant() {
                   </Badge>
                 </div>
               ))}
-            </CardContent>
-          </Card>
-
-          {/* Cover letter generator */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h2 className="flex items-center gap-2">
-                  <Wand2 aria-hidden className="h-4 w-4" />
-                  Generate cover letter
-                </h2>
-              </CardTitle>
-              <CardDescription>
-                Paste the role or company to draft a tailored letter.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <label className="block space-y-1.5">
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Role or company
-                </small>
-                <Input
-                  value={coverLetterTarget}
-                  onChange={(event) => setCoverLetterTarget(event.target.value)}
-                  placeholder="e.g. Senior Frontend Engineer at Northstar Labs"
-                  aria-label="Role or company for cover letter"
-                />
-              </label>
-              <Button
-                className="w-full"
-                onClick={() => {
-                  push({
-                    title: "Cover letter drafted",
-                    description: coverLetterTarget.trim()
-                      ? `Tailored for ${coverLetterTarget.trim()}.`
-                      : "Add a role or company to refine the draft.",
-                    tone: "success",
-                  });
-                }}
-              >
-                <Wand2 aria-hidden />
-                Generate
-              </Button>
             </CardContent>
           </Card>
         </div>
