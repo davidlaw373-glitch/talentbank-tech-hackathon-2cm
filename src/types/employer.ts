@@ -17,6 +17,13 @@ export type Employer = {
   about: string;
   culture: string[];
   benefits: string[];
+  /**
+   * Setup-wizard completion flag. `false` for new registrations; flipped
+   * to `true` once the employer finishes the onboarding flow. Overlaid by
+   * the data accessor for records that predate the wizard so the field
+   * is always present on returned employers.
+   */
+  onboardingComplete: boolean;
 };
 
 export type EmployerIndustry =

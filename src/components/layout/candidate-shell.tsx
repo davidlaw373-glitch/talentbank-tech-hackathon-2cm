@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
+import { SetupBanner } from "@/components/features/onboarding/setup-banner";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { UserMenu } from "@/components/common/user-menu";
 import { cn } from "@/lib/utils";
@@ -51,7 +52,7 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-40 bg-white border-b border-border/20">
+      <header className="sticky top-0 z-40 border-b border-border/20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/75">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-2">
           <Link href="/" aria-label="CareerOS home" className="flex items-center gap-2">
             <BrandMark />
@@ -143,6 +144,7 @@ export function CandidateShell({ children }: { children: React.ReactNode }) {
         )}
       </header>
       <main id="main-content" tabIndex={-1} className="container mx-auto p-4 sm:p-6">
+        <SetupBanner role="candidate" />
         {children}
       </main>
     </div>

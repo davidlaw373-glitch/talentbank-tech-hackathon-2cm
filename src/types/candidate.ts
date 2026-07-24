@@ -40,6 +40,16 @@ export type Candidate = {
   projects: Project[];
   /** Legacy alias kept for the back-compat shim — prefer `Credential`s. */
   evidence: LegacyEvidence[];
+
+  /**
+   * Setup-wizard completion flag. `false` for new registrations; flipped
+   * to `true` once the candidate finishes the onboarding flow. Backed by
+   * `src/lib/onboarding-store.ts` at runtime — the value returned from
+   * `data/candidates.ts#get` is overlaid with `false` for any record that
+   * predates the wizard, so the field is always present on returned
+   * candidates.
+   */
+  onboardingComplete: boolean;
 };
 
 export type Experience = {

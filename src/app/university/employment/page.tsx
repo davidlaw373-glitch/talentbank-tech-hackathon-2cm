@@ -152,7 +152,7 @@ function CohortDashboard({ cohort }: { cohort: EmploymentRecord }) {
         </Card>
 
         {/* Average salary */}
-        <Card className="lift-on-hover">
+        <Card>
           <CardHeader>
             <CardTitle>
               <h3>Average starting salary</h3>
@@ -175,7 +175,7 @@ function CohortDashboard({ cohort }: { cohort: EmploymentRecord }) {
 
       {/* Top employer + Top role */}
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Card className="lift-on-hover">
+        <Card>
           <CardHeader>
             <CardTitle>
               <h3 className="flex items-center gap-2">
@@ -197,7 +197,7 @@ function CohortDashboard({ cohort }: { cohort: EmploymentRecord }) {
             </p>
           </CardContent>
         </Card>
-        <Card className="lift-on-hover">
+        <Card>
           <CardHeader>
             <CardTitle>
               <h3 className="flex items-center gap-2">

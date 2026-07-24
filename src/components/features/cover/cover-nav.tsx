@@ -109,7 +109,7 @@ export function CoverNav() {
                   handleRoleLinkClick(link.roleId);
                   setOpen(false);
                 }}
-                className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent"
+                className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent-soft"
               >
                 {link.label}
               </Link>

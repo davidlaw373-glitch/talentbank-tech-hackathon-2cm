@@ -73,7 +73,7 @@ export function PoolSummary({ entries }: PoolSummaryProps) {
       {stats.map((s) => {
         const Icon = s.icon;
         return (
-          <Card key={s.label} className="lift-on-hover">
+          <Card key={s.label}>
             <CardContent className="space-y-3 p-5 sm:p-6">
               <div
                 className={cn(

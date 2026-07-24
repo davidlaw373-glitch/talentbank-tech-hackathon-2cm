@@ -218,7 +218,7 @@ export function GraduateManagement({
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="space-y-2 p-5">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
               <Users className="h-4 w-4" aria-hidden />
@@ -240,7 +240,7 @@ export function GraduateManagement({
                 )
               : 0;
           return (
-            <Card key={status} className="lift-on-hover">
+            <Card key={status}>
               <CardContent className="space-y-2 p-5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
                   <ShieldCheck className="h-4 w-4" aria-hidden />

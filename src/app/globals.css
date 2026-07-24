@@ -108,85 +108,102 @@
 }
 
 .dark {
-  /* ── Surfaces ───────────────────────────────────────────────────────── */
-  --background: #2a3d31;
-  --surface-1: #344e41;
-  --surface-2: #3d5a47;
-  --surface-3: #243529;
-  --surface-inset: #243529;
-  --surface-tint: #2f4438;
+  /* ── Surfaces ─────────────────────────────────────────────────────────
+   * Dark mode leans toward warm charcoal so the sage brand is an accent,
+   * not the entire canvas. This was previously a deep sage wash that
+   * drowned every page in green and made text-on-sage surfaces feel like
+   * "white on white" once the text token resolved to cream.
+   */
+  --background: #1c1a16;
+  --surface-1: #252320;
+  --surface-2: #2c2a26;
+  --surface-3: #34322d;
+  --surface-inset: #15140f;
+  --surface-tint: #2a2823;
 
   /* ── Foreground text ───────────────────────────────────────────────── */
-  --foreground: #ece4cb;
-  --text-secondary: #c8d4b8;
-  --text-muted: #a3b18a;
-  --text-inverse: #2a3d31;
+  --foreground: #f1ead8;
+  --text-secondary: #e3d6b6;
+  --text-muted: #b8a98a;
+  --text-inverse: #1c1a16;
 
   /* ── Brand / action ────────────────────────────────────────────────── */
-  --card: #344e41;
-  --card-foreground: #ece4cb;
-  --popover: #243529;
-  --popover-foreground: #ece4cb;
+  --card: #252320;
+  --card-foreground: #f1ead8;
+  --popover: #15140f;
+  --popover-foreground: #f1ead8;
   --primary: #ece4cb;
-  --primary-foreground: #2a3d31;
-  --secondary: #6a8a4e;
-  --secondary-foreground: #ece4cb;
-  --muted: #3d5a47;
-  --muted-foreground: #ece4cb;
-  --accent: #8aa66e;
-  --accent-foreground: #1a261d;
-  --accent-soft: #2f4438;
+  --primary-foreground: #1c1a16;
+  --secondary: #c89a5b;
+  /*
+   * Cream foreground on the dark-mode amber/sage panel so cover-manifesto
+   * body copy and the AnimatedMark constellation stay readable. The SVG
+   * itself uses `text-secondary-foreground` (currentColor) for the node
+   * circles, and the icon shapes use `--constellation-icon` (warm
+   * charcoal) — keeping the pair cream-on-dark-charcoal is what makes the
+   * inner icons stand out against the cream nodes.
+   */
+  --secondary-foreground: #f1ead8;
+  --muted: #2c2a26;
+  --muted-foreground: #cdc1a3;
+  --accent: #a3c47c;
+  --accent-foreground: #1c1a16;
+  --accent-soft: #2a3326;
 
   /* ── Highlight ──────────────────────────────────────────────────────── */
-  --highlight: #d49554;
-  --highlight-foreground: #1a1a1a;
+  --highlight: #e8b06a;
+  --highlight-foreground: #1a1408;
   --highlight-soft: #4a3520;
 
-  /* ── Component borders & interactive states ─────────────────────────── */
-  --border: #c8d4b8;
-  --border-subtle: #6a8a4e;
-  --input: #243529;
+  /* ── Component borders & interactive states ───────────────────────────
+   * Border was previously light sage, blending with the cream text and
+   * removing the divider line. Switch to warm grey so the panels now
+   * actually separate from the canvas while staying restrained.
+   */
+  --border: #5a5346;
+  --border-subtle: #463f33;
+  --input: #15140f;
 
-  /* Dark mode: dark forest so the icon reads against the cream
+  /* Dark mode: warm charcoal so the icon reads against the cream
      node circles (the parent svg's foreground flips to cream in
      dark mode, not forest). */
-  --constellation-icon: #1f2e25;
-  --ring: #ece4cb;
-  --ring-offset: #2a3d31;
+  --constellation-icon: #15140f;
+  --ring: #e8b06a;
+  --ring-offset: #1c1a16;
 
   /* ── Semantic system states ─────────────────────────────────────────── */
-  --success: #6a8a4e;
-  --success-foreground: #ece4cb;
-  --warning: #d49554;
-  --warning-foreground: #1a1a1a;
-  --destructive: #c45a45;
-  --destructive-foreground: #ffffff;
-  --info: #6a8a4e;
-  --info-foreground: #ece4cb;
+  --success: #8fb95a;
+  --success-foreground: #1c1a16;
+  --warning: #e8b06a;
+  --warning-foreground: #1a1408;
+  --destructive: #d5604a;
+  --destructive-foreground: #f7ece0;
+  --info: #8fb95a;
+  --info-foreground: #1c1a16;
 
-  /* ── Chart palette ──────────────────────────────────────────────────── */
-  /* Bumped to brighter, more saturated values so the green / orange / red
-     accents (cover-how steps, pipeline bars, score swatches) feel as
-     punchy against the dark sage surfaces as the light-mode counterparts
-     feel against cream. */
-  --chart-1: #a3c47c;
-  --chart-2: #ecaa5a;
-  --chart-3: #8fbf72;
-  --chart-4: #e06444;
-  --chart-5: #ece4cb;
+  /* ── Chart palette ────────────────────────────────────────────────────
+   * Brighter greens / oranges / reds so they hold against the warm
+   * charcoal canvas, but the green share is dialed back so charts stop
+   * reading as a green wash across dense dashboards.
+   */
+  --chart-1: #d68a2e;
+  --chart-2: #c45a45;
+  --chart-3: #8fb95a;
+  --chart-4: #6a8a4e;
+  --chart-5: #f1ead8;
   --chart-6: #c2b48a;
   --chart-7: #e6c478;
   --chart-8: #a4b594;
 
   /* ── Sidebar ────────────────────────────────────────────────────────── */
-  --sidebar: #344e41;
-  --sidebar-foreground: #ece4cb;
-  --sidebar-primary: #8aa66e;
-  --sidebar-primary-foreground: #ece4cb;
-  --sidebar-accent: #2a3d31;
-  --sidebar-accent-foreground: #ece4cb;
-  --sidebar-border: #6a8a4e;
-  --sidebar-ring: #c8d4b8;
+  --sidebar: #252320;
+  --sidebar-foreground: #f1ead8;
+  --sidebar-primary: #e8b06a;
+  --sidebar-primary-foreground: #1c1a16;
+  --sidebar-accent: #2c2a26;
+  --sidebar-accent-foreground: #f1ead8;
+  --sidebar-border: #463f33;
+  --sidebar-ring: #e8b06a;
 }
 
 /*
@@ -416,6 +433,19 @@ section[id] {
   }
 }
 
+/* Staggered reveals — used so form fields and inner header elements
+ * fade in just behind the Card itself. */
+@keyframes reveal-stagger {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes progress-fill {
   from {
     transform: scaleX(0);
@@ -606,7 +636,10 @@ section[id] {
     animation: caret-blink 1s steps(1) infinite;
   }
   .animate-reveal {
-    animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: reveal-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-reveal-stagger {
+    animation: reveal-stagger 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .animate-progress {
     transform-origin: left;

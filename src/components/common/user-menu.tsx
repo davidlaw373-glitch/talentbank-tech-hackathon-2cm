@@ -94,7 +94,7 @@ export function UserMenu({
         aria-label={`Open user menu for ${name}`}
         className={cn(
           "flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none",
-          open && "bg-accent",
+          open && "bg-muted",
         )}
       >
         <Badge

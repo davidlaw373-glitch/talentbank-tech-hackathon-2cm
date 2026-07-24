@@ -28,7 +28,7 @@ export default function RegisterPage() {
         </Link>
       </header>
       <div
-        className="w-full max-w-2xl"
+        className="w-full max-w-5xl"
         aria-label="Loading registration form"
       >
         <Suspense fallback={<CardListSkeleton rows={1} />}>

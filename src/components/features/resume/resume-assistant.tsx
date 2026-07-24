@@ -413,6 +413,7 @@ export function ResumeAssistant() {
     education: [],
     projects: [],
     evidence: [],
+    onboardingComplete: false,
   };
 
   const primaryVersion = versions.find((version) => version.primary);

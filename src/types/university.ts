@@ -20,6 +20,13 @@ export type University = {
   topPrograms: string[];
   partnerEmployers: number;
   verifiedCredentials: number;
+  /**
+   * Setup-wizard completion flag. `false` for new registrations; flipped
+   * to `true` once the institution finishes the onboarding flow. Overlaid
+   * by the data accessor for records that predate the wizard so the field
+   * is always present on returned universities.
+   */
+  onboardingComplete: boolean;
 };
 
 /* ------------------------------------------------------------------ */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Building2,
   Clock,
@@ -15,7 +15,9 @@ import {
 
 import { get as getEmployer } from "@/data/employers";
 import { getEmployerStats } from "@/lib/data-helpers";
+import { onboardingStorageKey } from "@/lib/onboarding-store";
 import type { Employer } from "@/types/employer";
+import type { EmployerDraft } from "@/types/onboarding";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,6 +44,92 @@ type EditableEmployerProfile = Employer & {
   avgTimeToHire: number;
 };
 
+/**
+ * Reconcile a partial persisted draft with the canonical shape. Older
+ * versions of the wizard (or someone mid-flow that errored out) can leave
+ * fields missing or the wrong type in localStorage; defensive defaults
+ * keep `applyEmployerOverlay` from dereferencing `undefined`.
+ */
+function normalizeEmployerDraft(value: unknown): EmployerDraft {
+  const candidate = (value ?? {}) as Partial<EmployerDraft>;
+  return {
+    companyName: candidate.companyName ?? "",
+    industry: candidate.industry ?? "Software & Internet",
+    size: candidate.size ?? "1–10",
+    hq: candidate.hq ?? "",
+    founded: candidate.founded ?? "",
+    website: candidate.website ?? "",
+    tagline: candidate.tagline ?? "",
+    about: candidate.about ?? "",
+    hiringRoles: Array.isArray(candidate.hiringRoles) ? candidate.hiringRoles : [],
+    hiringVolume: candidate.hiringVolume ?? "",
+    workModes: Array.isArray(candidate.workModes) ? candidate.workModes : [],
+    salaryBands: Array.isArray(candidate.salaryBands) ? candidate.salaryBands : [],
+    culture: Array.isArray(candidate.culture) ? candidate.culture : [],
+    benefits: Array.isArray(candidate.benefits) ? candidate.benefits : [],
+  };
+}
+
+function isEmptyEmployerDraft(draft: EmployerDraft): boolean {
+  return (
+    draft.companyName === "" &&
+    draft.hq === "" &&
+    draft.founded === "" &&
+    draft.website === "" &&
+    draft.tagline === "" &&
+    draft.about === "" &&
+    draft.hiringRoles.length === 0 &&
+    draft.hiringVolume === "" &&
+    draft.workModes.length === 0 &&
+    draft.salaryBands.length === 0 &&
+    draft.culture.length === 0 &&
+    draft.benefits.length === 0
+  );
+}
+
+function readPersistedEmployerDraft(): EmployerDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(onboardingStorageKey("employer"));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      parsed.version !== 1 ||
+      !parsed.draft
+    ) {
+      return null;
+    }
+    const draft = normalizeEmployerDraft(parsed.draft);
+    if (isEmptyEmployerDraft(draft)) return null;
+    return draft;
+  } catch {
+    return null;
+  }
+}
+
+function applyEmployerOverlay(
+  seed: EditableEmployerProfile,
+  draft: EmployerDraft,
+): EditableEmployerProfile {
+  const merged: EditableEmployerProfile = { ...seed };
+  if (draft.companyName) merged.companyName = draft.companyName;
+  if (draft.industry) merged.industry = draft.industry;
+  if (draft.size) merged.size = draft.size;
+  if (draft.hq) merged.hq = draft.hq;
+  const foundedNum = Number(draft.founded);
+  if (draft.founded && Number.isFinite(foundedNum) && foundedNum > 0) {
+    merged.founded = foundedNum;
+  }
+  if (draft.website) merged.website = draft.website;
+  if (draft.tagline) merged.tagline = draft.tagline;
+  if (draft.about) merged.about = draft.about;
+  if (draft.culture.length > 0) merged.culture = draft.culture;
+  if (draft.benefits.length > 0) merged.benefits = draft.benefits;
+  return merged;
+}
+
 export function CompanyProfile() {
   const { push } = useToast();
   const seedEmployer = getEmployer(DEMO_EMPLOYER_ID);
@@ -59,6 +147,7 @@ export function CompanyProfile() {
     about: seedEmployer?.about ?? "",
     culture: seedEmployer?.culture ?? [],
     benefits: seedEmployer?.benefits ?? [],
+    onboardingComplete: seedEmployer?.onboardingComplete ?? false,
     openRoles: seedStats.openRoles,
     activeCandidates: seedStats.activeCandidates,
     hiresThisQuarter: seedStats.hiresThisQuarter,
@@ -68,6 +157,27 @@ export function CompanyProfile() {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<EditableEmployerProfile>(seedProfile);
   const [saved, setSaved] = useState<EditableEmployerProfile>(seedProfile);
+
+  // One-time overlay of any persisted onboarding draft after mount. The
+  // wizard owns writes to the same storage key; this component is read-only
+  // so a tab can never clobber an in-progress edit. Deferred to a timer so
+  // the initial paint is stable before the overlay merges in.
+  const overlayAppliedRef = useRef(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (overlayAppliedRef.current) return;
+      overlayAppliedRef.current = true;
+      const persisted = readPersistedEmployerDraft();
+      if (!persisted) return;
+      const merged = applyEmployerOverlay(seedProfile, persisted);
+      setDraft(merged);
+      setSaved(merged);
+    }, 0);
+    return () => clearTimeout(timer);
+    // seedProfile is captured by closure; it is derived from the static
+    // fixture plus derived stats and does not change between renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const setField = <K extends keyof EditableEmployerProfile>(
     key: K,

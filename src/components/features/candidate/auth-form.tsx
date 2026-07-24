@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   CandidateIcon,
@@ -19,6 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { clearRecord, onboardingStorageKey } from "@/lib/onboarding-store";
 import { cn } from "@/lib/utils";
 
 type Role = "candidate" | "employer" | "university";
@@ -50,7 +51,7 @@ const ROLES: {
       "Skills translated from real projects. Matches that explain themselves.",
     accent: "chart-1",
     Icon: CandidateIcon,
-    redirect: { register: "/candidate/profile", login: "/candidate/dashboard" },
+    redirect: { register: "/onboarding/candidate", login: "/candidate/dashboard" },
     registerGoal: {
       label: "What are you looking for?",
     },
@@ -63,7 +64,7 @@ const ROLES: {
       "Ranked shortlists with AI summaries. Structured interviews, no gut calls.",
     accent: "chart-2",
     Icon: EmployerIcon,
-    redirect: { register: "/employer", login: "/employer" },
+    redirect: { register: "/onboarding/employer", login: "/employer" },
     registerGoal: {
       label: "Your company",
     },
@@ -76,7 +77,7 @@ const ROLES: {
       "Verified credentials by the thousands. Outcomes you can stand behind.",
     accent: "chart-4",
     Icon: UniversityIcon,
-    redirect: { register: "/university", login: "/university" },
+    redirect: { register: "/onboarding/university", login: "/university" },
     registerGoal: {
       label: "Your institution",
     },
@@ -130,7 +131,10 @@ function Field({
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const registering = mode === "register";
   const params = useSearchParams();
-  const next = params.get("next");
+  const router = useRouter();
+  // `next` only applies to login — register must always enter the
+  // onboarding flow so a fresh signup can never bypass it via query string.
+  const next = registering ? null : params.get("next");
   // Both /login and /register start with all three role cards deselected.
   // The visitor picks one first, and only then does the auth form expand
   // below — same pattern on both pages so the choice is deliberate.
@@ -144,21 +148,55 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       ? activeRole.redirect.register
       : activeRole.redirect.login;
 
+  /**
+   * Register CTA clears any previously-completed onboarding for this
+   * role before navigating, so a second mock registration starts a fresh
+   * session. Login leaves the record alone so the banner stays in sync.
+   */
+  const handleAuth = () => {
+    if (registering) {
+      const chosen = (role ?? ROLES[0].id) as Role;
+      clearRecord(onboardingStorageKey(chosen));
+    }
+    router.push(targetRedirect);
+  };
+
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div
+      className={cn(
+        "mx-auto flex w-full flex-col gap-5 will-change-[max-width]",
+        registering &&
+          "transition-[max-width] duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+        registering && (hasSelectedRole ? "max-w-2xl" : "max-w-5xl"),
+      )}
+    >
       {/* Role selection — each card has its own accent and personality.
           Shown on both /login and /register; the form below is gated
           until the visitor picks a role (see `hasSelectedRole`).
           /login uses a simplified icon + name only; /register keeps
           the fuller card with hook + descriptor. */}
       <section aria-label="Choose your role">
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <h2
+          className={cn(
+            "font-semibold text-muted-foreground",
+            registering &&
+              "transition-[margin-bottom] duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+            registering && !hasSelectedRole
+              ? "mb-5 text-2xl leading-tight tracking-tight md:text-3xl"
+              : "mb-3 text-xs uppercase tracking-[0.18em]",
+          )}
+        >
           {registering ? "Register As" : "Log in As"}
         </h2>
         <div
           role="radiogroup"
           aria-label="Audience"
-          className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+          className={cn(
+            "grid grid-cols-1 sm:grid-cols-3",
+            registering &&
+              "transition-[gap] duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+            registering && !hasSelectedRole ? "gap-4 lg:gap-5" : "gap-3",
+          )}
         >
             {ROLES.map((r) => {
               const isActive = r.id === role;
@@ -207,8 +245,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                     setHasSelectedRole(true);
                   }}
                   className={cn(
-                    "group relative flex flex-col items-start gap-2 overflow-hidden rounded-xl border-2 px-4 py-3 text-left transition-all",
+                    "group relative flex flex-col items-start overflow-hidden border-2 text-left will-change-[transform,opacity,padding,border-radius,background-color,border-color]",
+                    "transition-[gap,padding,border-radius,min-height,box-shadow,background-color,border-color,color] duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    hasSelectedRole
+                      ? "gap-2 rounded-xl px-4 py-3"
+                      : "gap-4 rounded-2xl px-5 py-5 sm:px-5 sm:py-6 md:min-h-56 md:px-6 md:py-7 lg:min-h-64 lg:px-7 lg:py-8",
                     isActive
                       ? "border-foreground bg-foreground text-background shadow-md"
                       : "border-border bg-card hover:-translate-y-0.5 hover:border-foreground/30 hover:shadow-sm",
@@ -222,17 +264,31 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute inset-x-0 top-0 h-1 origin-left transition-transform",
+                      "absolute inset-x-0 top-0 origin-left transition-[height,opacity,transform] duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
                       `bg-${r.accent}`,
-                      isActive ? "scale-x-100" : "scale-x-50 opacity-60",
+                      !hasSelectedRole
+                        ? "h-1.5 scale-x-100 opacity-100"
+                        : isActive
+                          ? "h-1 scale-x-100"
+                          : "h-1 scale-x-50 opacity-60",
                     )}
                   />
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] opacity-80">
+                  <span
+                    className={cn(
+                      "font-semibold uppercase opacity-80 transition-[font-size,letter-spacing,line-height] duration-[180ms] ease-out",
+                      hasSelectedRole
+                        ? "text-xs leading-tight tracking-[0.18em]"
+                        : "text-sm leading-tight tracking-[0.2em]",
+                    )}
+                  >
                     {r.label}
                   </span>
                   <span
                     className={cn(
-                      "text-sm font-semibold leading-snug",
+                      "font-semibold transition-[font-size,letter-spacing,line-height,color] duration-[180ms] ease-out",
+                      hasSelectedRole
+                        ? "text-sm leading-snug"
+                        : "text-lg leading-tight tracking-tight md:text-xl lg:text-2xl",
                       isActive ? "text-background" : "text-foreground",
                     )}
                   >
@@ -240,7 +296,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                   </span>
                   <span
                     className={cn(
-                      "text-[11px] leading-snug",
+                      "transition-[font-size,line-height,color,opacity] duration-[180ms] ease-out",
+                      hasSelectedRole
+                        ? "text-[11px] leading-snug"
+                        : "text-sm leading-relaxed sm:text-base",
                       isActive
                         ? "text-background/75"
                         : "text-muted-foreground",
@@ -256,10 +315,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
       {/* Form — single column, compact spacing.
           On both /login and /register the form only expands once a role
-          card has been picked. */}
+          card has been picked. Stagger the children so they appear in
+          the order a user fills them: header, name/email, password,
+          goal, footer CTA. */}
       {hasSelectedRole && (
         <Card className={cn("w-full animate-reveal")}>
-        <CardHeader className="space-y-1 pb-2">
+        <CardHeader className="space-y-1 pb-2 animate-reveal-stagger [animation-delay:380ms]">
           <CardTitle>
             <h2>
               {registering ? "Create your account" : "Welcome back"}
@@ -274,15 +335,29 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         <CardContent className="space-y-3">
           {registering && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field
-                id="name"
-                label={
-                  role === "candidate"
-                    ? "Full name"
-                    : `Your name (${activeRole.label})`
-                }
-                autoComplete="name"
-              />
+              <div className="animate-reveal-stagger [animation-delay:480ms]">
+                <Field
+                  id="name"
+                  label={
+                    role === "candidate"
+                      ? "Full name"
+                      : `Your name (${activeRole.label})`
+                  }
+                  autoComplete="name"
+                />
+              </div>
+              <div className="animate-reveal-stagger [animation-delay:540ms]">
+                <Field
+                  id="email"
+                  label="Email"
+                  type="email"
+                  autoComplete="email"
+                />
+              </div>
+            </div>
+          )}
+          {!registering && (
+            <div className="animate-reveal-stagger [animation-delay:480ms]">
               <Field
                 id="email"
                 label="Email"
@@ -291,29 +366,25 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               />
             </div>
           )}
-          {!registering && (
+          <div className="animate-reveal-stagger [animation-delay:600ms]">
             <Field
-              id="email"
-              label="Email"
-              type="email"
-              autoComplete="email"
+              id="password"
+              label="Password"
+              type="password"
+              helper={registering ? "Use 8+ characters with a number." : undefined}
+              autoComplete={registering ? "new-password" : "current-password"}
             />
-          )}
-          <Field
-            id="password"
-            label="Password"
-            type="password"
-            helper={registering ? "Use 8+ characters with a number." : undefined}
-            autoComplete={registering ? "new-password" : "current-password"}
-          />
+          </div>
           {registering && (
-            <Field
-              id="goal"
-              label={activeRole.registerGoal.label}
-            />
+            <div className="animate-reveal-stagger [animation-delay:660ms]">
+              <Field
+                id="goal"
+                label={activeRole.registerGoal.label}
+              />
+            </div>
           )}
           {!registering && (
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs animate-reveal-stagger [animation-delay:660ms]">
               <label className="flex items-center gap-2 text-muted-foreground">
                 <input
                   type="checkbox"
@@ -330,11 +401,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col items-stretch gap-2">
-          <Button asChild size="lg">
-            <Link href={targetRedirect}>
-              {registering ? `Create ${activeRole.label.toLowerCase()} account` : "Log in"}
-            </Link>
+        <CardFooter className="flex animate-reveal-stagger [animation-delay:720ms] flex-col items-stretch gap-2">
+          <Button size="lg" onClick={handleAuth}>
+            {registering ? `Create ${activeRole.label.toLowerCase()} account` : "Log in"}
           </Button>
         </CardFooter>
       </Card>
