@@ -43,6 +43,13 @@ const STATUS_OPTIONS: Array<{ value: JobStatus | "All"; label: string }> = [
   { value: "Closed", label: "Closed" },
 ];
 
+function getLocationArea(job: Job) {
+  const workModeSuffix = ` · ${job.workMode}`;
+  return job.location.endsWith(workModeSuffix)
+    ? job.location.slice(0, -workModeSuffix.length)
+    : job.location;
+}
+
 function statusVariant(status: JobStatus) {
   switch (status) {
     case "Live":
@@ -61,7 +68,16 @@ export default function EmployerJobsPage() {
   const [jobs, setJobs] = useState<Job[]>(getJobsByEmployer(1));
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "All">("All");
+  const [locationFilter, setLocationFilter] = useState("All");
   const [pendingClose, setPendingClose] = useState<Job | null>(null);
+
+  const locationOptions = useMemo(
+    () =>
+      Array.from(new Set(jobs.map(getLocationArea))).sort((a, b) =>
+        a.localeCompare(b),
+      ),
+    [jobs],
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -69,9 +85,11 @@ export default function EmployerJobsPage() {
       const matchesQuery = !q || job.title.toLowerCase().includes(q);
       const matchesStatus =
         statusFilter === "All" || job.status === statusFilter;
-      return matchesQuery && matchesStatus;
+      const matchesLocation =
+        locationFilter === "All" || getLocationArea(job) === locationFilter;
+      return matchesQuery && matchesStatus && matchesLocation;
     });
-  }, [jobs, query, statusFilter]);
+  }, [jobs, locationFilter, query, statusFilter]);
 
   const stats = useMemo(() => {
     return {
@@ -178,7 +196,7 @@ export default function EmployerJobsPage() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-end sm:justify-between">
+        <CardContent className="grid gap-3 p-5 sm:grid-cols-[minmax(0,1fr)_14rem_14rem] sm:items-end">
           <div className="flex flex-1 flex-col gap-1.5">
             <label
               htmlFor="job-search"
@@ -224,6 +242,28 @@ export default function EmployerJobsPage() {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="location-filter"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Location
+            </label>
+            <Select value={locationFilter} onValueChange={setLocationFilter}>
+              <SelectTrigger id="location-filter">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All locations</SelectItem>
+                {locationOptions.map((location) => (
+                  <SelectItem key={location} value={location}>
+                    {location}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
 
@@ -236,6 +276,7 @@ export default function EmployerJobsPage() {
             </h2>
             <p className="text-sm text-muted-foreground">
               Showing {statusFilter === "All" ? "all statuses" : statusFilter.toLowerCase()}
+              {locationFilter === "All" ? "" : ` in ${locationFilter}`}
               {query.trim() ? ` matching "${query.trim()}"` : ""}.
             </p>
           </div>
@@ -253,7 +294,7 @@ export default function EmployerJobsPage() {
               <div>
                 <p className="text-sm font-medium">No jobs match those filters</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Try a broader search or change the status.
+                  Try a broader search or change the status or location.
                 </p>
               </div>
             </CardContent>
