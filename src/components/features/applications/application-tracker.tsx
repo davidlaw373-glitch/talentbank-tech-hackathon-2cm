@@ -203,26 +203,6 @@ export function ApplicationTracker() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Applications
-          </p>
-          <h1>Your applications</h1>
-          <p className="text-muted-foreground">
-            See every job you&apos;ve applied to, where each one stands, and
-            what to do next.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/candidate/jobs">
-            Find more jobs
-            <ArrowRight />
-          </Link>
-        </Button>
-      </header>
-
       {/* Filters */}
       <Card>
         <CardContent className="space-y-4 p-5">
@@ -265,18 +245,26 @@ export function ApplicationTracker() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-            <div className="relative w-full sm:w-72">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden
-              />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search role or company"
-                className="pl-9"
-                aria-label="Search applications"
-              />
+            <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center">
+              <div className="relative w-full sm:w-72">
+                <Search
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden
+                />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search role or company"
+                  className="pl-9"
+                  aria-label="Search applications"
+                />
+              </div>
+              <Button asChild>
+                <Link href="/candidate/jobs">
+                  Find more jobs
+                  <ArrowRight />
+                </Link>
+              </Button>
             </div>
           </div>
 

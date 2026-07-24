@@ -15,7 +15,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -128,34 +127,39 @@ export function ResumeAssistant() {
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Resume & AI Resume Assistant"
-        description="Upload, tailor, and get instant feedback on your resume so every application lands with the strongest story."
-        action={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() =>
-                push({
-                  title: "Tailoring against your top matches…",
-                  tone: "info",
-                })
-              }
-            >
-              <Wand2 aria-hidden />
-              Generate tailored resume
-            </Button>
-            <Button
-              onClick={() =>
-                push({ title: "Resume upload started", tone: "info" })
-              }
-            >
-              <Plus aria-hidden />
-              Upload new resume
-            </Button>
-          </div>
-        }
-      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Resume
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() =>
+              push({
+                title: "Tailoring against your top matches…",
+                tone: "info",
+              })
+            }
+          >
+            <Wand2 aria-hidden />
+            Generate tailored resume
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/candidate/resume/quality-checks">
+              <AlertTriangle aria-hidden />
+              Quality checks
+            </Link>
+          </Button>
+          <Button
+            onClick={() =>
+              push({ title: "Resume upload started", tone: "info" })
+            }
+          >
+            <Plus aria-hidden />
+            Upload new resume
+          </Button>
+        </div>
+      </div>
 
       {/* Two-column layout: preview + assistant */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-5">
