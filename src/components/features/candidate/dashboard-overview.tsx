@@ -422,7 +422,15 @@ export function DashboardOverview() {
                   <p className="truncate text-base font-semibold">{e.name}</p>
                   <p className="text-xs text-muted-foreground">{e.type}</p>
                 </div>
-                <Badge variant={e.status === "Verified" ? "secondary" : "outline"}>
+                <Badge
+                  variant={e.status === "Verified" ? "secondary" : "outline"}
+                  className={
+                    // The secondary variant bakes in `hover:bg-secondary/80`,
+                    // which makes the Verified badge look interactive when
+                    // it isn't. Override the hover so the colour is stable.
+                    e.status === "Verified" ? "hover:bg-secondary" : undefined
+                  }
+                >
                   {e.status}
                 </Badge>
               </div>
@@ -477,6 +485,15 @@ export function DashboardOverview() {
                     <Badge
                       variant={
                         app.stage === "Interview" ? "secondary" : "outline"
+                      }
+                      // The secondary variant bakes in `hover:bg-secondary/80`,
+                      // which makes the "Interview" stage pill look
+                      // interactive when it isn't. Override the hover so
+                      // the colour is stable.
+                      className={
+                        app.stage === "Interview"
+                          ? "hover:bg-secondary"
+                          : undefined
                       }
                     >
                       {app.stage}

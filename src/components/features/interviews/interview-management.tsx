@@ -393,7 +393,14 @@ export function InterviewManagement() {
               You have {upcoming.length} scheduled this week.
             </p>
           </div>
-          <Badge variant="secondary">{upcoming.length} confirmed</Badge>
+          <Badge
+            variant="secondary"
+            // Cancel the secondary variant's `hover:bg-secondary/80` so
+            // the "{n} confirmed" pill doesn't look like a control.
+            className="hover:bg-secondary"
+          >
+            {upcoming.length} confirmed
+          </Badge>
         </div>
 
         {upcoming.length === 0 ? (
@@ -447,7 +454,15 @@ export function InterviewManagement() {
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="secondary">{iv.round}</Badge>
+                        <Badge
+                          variant="secondary"
+                          // Cancel the secondary variant's hover dim so
+                          // the round pill (e.g. "Technical round") stays
+                          // visually stable.
+                          className="hover:bg-secondary"
+                        >
+                          {iv.round}
+                        </Badge>
                         <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                           <Users aria-hidden className="h-3 w-3" />
                           {iv.interviewers.join(", ")}
@@ -705,7 +720,14 @@ export function InterviewManagement() {
                       ? "Hide feedback"
                       : "View feedback"}
                   </Button>
-                  <Badge variant="secondary">Completed</Badge>
+                  <Badge
+                    variant="secondary"
+                    // Cancel the secondary variant's hover dim so the
+                    // "Completed" status pill stays visually stable.
+                    className="hover:bg-secondary"
+                  >
+                    Completed
+                  </Badge>
                 </div>
               </CardContent>
             </Card>

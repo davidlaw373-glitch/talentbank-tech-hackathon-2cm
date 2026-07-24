@@ -307,7 +307,24 @@ export function ApplicationTracker() {
                             <p className="truncate text-base font-semibold tracking-tight">
                               {jobTitle}
                             </p>
-                            <Badge variant={tone}>{app.stage}</Badge>
+                            <Badge
+                              variant={tone}
+                              // The default + secondary variants bake in
+                              // a hover dim, which makes the informational
+                              // stage pill (Screening, Interview, Offer,
+                              // Hired) look like a button. Cancel the
+                              // hover so the colour is stable. Outline
+                              // (Applied) has no hover, so no override.
+                              className={
+                                tone === "default"
+                                  ? "hover:bg-primary"
+                                  : tone === "secondary"
+                                    ? "hover:bg-secondary"
+                                    : undefined
+                              }
+                            >
+                              {app.stage}
+                            </Badge>
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">

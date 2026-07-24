@@ -685,7 +685,14 @@ export function ResumeAssistant() {
                     </span>
                     <p className="text-sm font-medium">{c.label}</p>
                   </div>
-                  <Badge variant={c.count > 0 ? "outline" : "secondary"}>
+                  <Badge
+                    variant={c.count > 0 ? "outline" : "secondary"}
+                    // Cancel the secondary variant's `hover:bg-secondary/80`
+                    // so the "Clear" pill doesn't look like a control.
+                    className={
+                      c.count > 0 ? undefined : "hover:bg-secondary"
+                    }
+                  >
                     {c.count === 0
                       ? "Clear"
                       : `${c.count} found`}
@@ -759,7 +766,16 @@ export function ResumeAssistant() {
                       {v.name}
                     </h3>
                   </CardTitle>
-                  {v.primary && <Badge variant="secondary">Primary</Badge>}
+                  {v.primary && (
+                    <Badge
+                      variant="secondary"
+                      // Cancel the secondary variant's `hover:bg-secondary/80`
+                      // so the "Primary" pill doesn't look like a control.
+                      className="hover:bg-secondary"
+                    >
+                      Primary
+                    </Badge>
+                  )}
                 </div>
                 <CardDescription>
                   {v.date} · {v.size}

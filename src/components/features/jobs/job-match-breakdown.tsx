@@ -38,7 +38,13 @@ export function JobMatchBreakdown({
     <div className="mt-3">
       <div className="flex flex-wrap items-center gap-1.5">
         {visibleMatching.map((skill) => (
-          <Badge key={skill} variant="secondary" className="text-[10px]">
+          <Badge
+            key={skill}
+            variant="secondary"
+            // Cancel the variant's `hover:bg-secondary/80` so the chip
+            // doesn't read as clickable when it isn't.
+            className="text-[10px] hover:bg-secondary"
+          >
             {skill}
           </Badge>
         ))}
@@ -61,7 +67,7 @@ export function JobMatchBreakdown({
                 <Badge
                   key={skill}
                   variant="secondary"
-                  className="text-[10px]"
+                  className="text-[10px] hover:bg-secondary"
                 >
                   {skill}
                 </Badge>

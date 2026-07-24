@@ -213,7 +213,24 @@ export function JobDiscovery() {
                         <h3 className="truncate text-base font-semibold tracking-tight">
                           {job.title}
                         </h3>
-                        <Badge variant={tone.variant}>{tone.label}</Badge>
+                        <Badge
+                          variant={tone.variant}
+                          // The default + secondary variants bake in a
+                          // hover dim, which makes the informational
+                          // "Strong fit" / "Good fit" pill look like a
+                          // button. Cancel the hover so the colour is
+                          // stable. Outline has no hover so it stays as
+                          // the empty fallback.
+                          className={
+                            tone.variant === "default"
+                              ? "hover:bg-primary"
+                              : tone.variant === "secondary"
+                                ? "hover:bg-secondary"
+                                : undefined
+                          }
+                        >
+                          {tone.label}
+                        </Badge>
                       </div>
                       <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5" aria-hidden />
