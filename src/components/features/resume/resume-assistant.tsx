@@ -25,9 +25,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { get as getCandidate } from "@/data/candidates";
+import { getForCandidate as getCredentialsForCandidate } from "@/data/credentials";
+import { get as getUniversity } from "@/data/universities";
+import {
+  getVerifiedCredentials,
+  toCredentialView,
+  type CredentialView,
+} from "@/components/features/candidate/credential-derivations";
 import { cn } from "@/lib/utils";
 
 const RESUME_SCORE = 78;
@@ -94,7 +100,10 @@ const SUGGESTIONS = [
 
 type Resume = NonNullable<ReturnType<typeof getCandidate>>;
 
-function buildResumeText(resume: Resume): string {
+function buildResumeText(
+  resume: Resume,
+  verifiedCredentials: CredentialView[],
+): string {
   const lines: string[] = [];
   lines.push(resume.name.toUpperCase());
   lines.push([resume.title, resume.location].filter(Boolean).join(" · "));
@@ -129,15 +138,29 @@ function buildResumeText(resume: Resume): string {
   lines.push("SKILLS");
   lines.push(resume.skills.join(" · "));
   lines.push("");
-  lines.push("VERIFIED CREDENTIALS");
-  for (const evidence of resume.evidence) {
-    lines.push(`- ${evidence.name} (${evidence.status})`);
+  lines.push("INSTITUTION-VERIFIED CREDENTIALS");
+  for (const credential of verifiedCredentials) {
+    const meta = [
+      credential.institutionName
+        ? `Verified by ${credential.institutionName}`
+        : null,
+      credential.graduationYear ? String(credential.graduationYear) : null,
+      credential.gpa ? `GPA ${credential.gpa}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    lines.push(`- ${credential.name}${meta ? ` — ${meta}` : ""}`);
+    if (credential.capstone) lines.push(`  Capstone: ${credential.capstone}`);
+    if (credential.skills.length > 0) {
+      lines.push(`  Skills: ${credential.skills.join(", ")}`);
+    }
   }
   return lines.join("\n");
 }
 
 function downloadResume(
   resume: Resume,
+  verifiedCredentials: CredentialView[],
   filename: string,
   push: (toast: {
     title: string;
@@ -145,7 +168,7 @@ function downloadResume(
     tone: "info" | "success" | "error";
   }) => void,
 ) {
-  const text = buildResumeText(resume);
+  const text = buildResumeText(resume, verifiedCredentials);
   // The real product would mint a PDF here. For the demo we ship a plain
   // text file with the .txt extension so the browser triggers a download
   // immediately and the user sees the resume content in the saved file.
@@ -175,12 +198,14 @@ function ResumePreviewDialog({
   open,
   onOpenChange,
   candidate,
+  verifiedCredentials,
   filename,
   onDownload,
 }: {
   open: boolean;
   onOpenChange: (next: boolean) => void;
   candidate: Resume;
+  verifiedCredentials: CredentialView[];
   filename: string;
   onDownload: () => void;
 }) {
@@ -336,12 +361,19 @@ function ResumePreviewDialog({
           <Separator />
           <section className="space-y-2">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Verified credentials
+              Institution-verified credentials
             </p>
             <ul className="ml-4 list-disc space-y-1 text-sm leading-relaxed">
-              {candidate.evidence.map((e) => (
-                <li key={e.name}>
-                  {e.name} ({e.status})
+              {verifiedCredentials.map((credential) => (
+                <li key={credential.id}>
+                  {credential.name}
+                  {credential.institutionName
+                    ? ` — Verified by ${credential.institutionName}`
+                    : ""}
+                  {credential.gpa ? ` · GPA ${credential.gpa}` : ""}
+                  {credential.capstone
+                    ? ` · Capstone: ${credential.capstone}`
+                    : ""}
                 </li>
               ))}
             </ul>
@@ -358,7 +390,6 @@ function ResumePreviewDialog({
 
 export function ResumeAssistant() {
   const { push } = useToast();
-  const [coverLetterTarget, setCoverLetterTarget] = useState("");
   const [versions, setVersions] = useState(VERSIONS);
   const [suggestions, setSuggestions] = useState(SUGGESTIONS);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -387,12 +418,20 @@ export function ResumeAssistant() {
   const primaryVersion = versions.find((version) => version.primary);
   const previewFilename = primaryVersion?.name ?? "master_v3.pdf";
 
+  // University-verified credentials with provenance — the only records shown
+  // under the verified heading. Pending/unverified credentials are excluded.
+  const verifiedCredentials = getVerifiedCredentials(
+    getCredentialsForCandidate(candidate.id || 1),
+  ).map((credential) =>
+    toCredentialView(credential, getUniversity(credential.universityId)),
+  );
+
   const handleDownloadCurrent = () => {
-    downloadResume(candidate, previewFilename, push);
+    downloadResume(candidate, verifiedCredentials, previewFilename, push);
   };
 
   const handleDownloadVersion = (filename: string) => {
-    downloadResume(candidate, filename, push);
+    downloadResume(candidate, verifiedCredentials, filename, push);
   };
 
   const makePrimary = (id: string, name: string) => {
@@ -592,12 +631,15 @@ export function ResumeAssistant() {
                 <Separator />
                 <div className="space-y-1">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    Verified credentials
+                    Institution-verified credentials
                   </p>
                   <ul className="ml-3 list-disc space-y-0.5 text-[11px]">
-                    {candidate.evidence.map((e) => (
-                      <li key={e.name}>
-                        {e.name} ({e.status})
+                    {verifiedCredentials.map((credential) => (
+                      <li key={credential.id}>
+                        {credential.name}
+                        {credential.institutionName
+                          ? ` — ${credential.institutionName}`
+                          : ""}
                       </li>
                     ))}
                   </ul>
@@ -699,49 +741,6 @@ export function ResumeAssistant() {
                   </Badge>
                 </div>
               ))}
-            </CardContent>
-          </Card>
-
-          {/* Cover letter generator */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h2 className="flex items-center gap-2">
-                  <Wand2 aria-hidden className="h-4 w-4" />
-                  Generate cover letter
-                </h2>
-              </CardTitle>
-              <CardDescription>
-                Paste the role or company to draft a tailored letter.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <label className="block space-y-1.5">
-                <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Role or company
-                </small>
-                <Input
-                  value={coverLetterTarget}
-                  onChange={(event) => setCoverLetterTarget(event.target.value)}
-                  placeholder="e.g. Senior Frontend Engineer at Northstar Labs"
-                  aria-label="Role or company for cover letter"
-                />
-              </label>
-              <Button
-                className="w-full"
-                onClick={() => {
-                  push({
-                    title: "Cover letter drafted",
-                    description: coverLetterTarget.trim()
-                      ? `Tailored for ${coverLetterTarget.trim()}.`
-                      : "Add a role or company to refine the draft.",
-                    tone: "success",
-                  });
-                }}
-              >
-                <Wand2 aria-hidden />
-                Generate
-              </Button>
             </CardContent>
           </Card>
         </div>
@@ -885,6 +884,7 @@ export function ResumeAssistant() {
         open={previewOpen}
         onOpenChange={setPreviewOpen}
         candidate={candidate}
+        verifiedCredentials={verifiedCredentials}
         filename={previewFilename}
         onDownload={handleDownloadCurrent}
       />

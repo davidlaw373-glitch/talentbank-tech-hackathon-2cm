@@ -25,9 +25,14 @@ function RoleIcon({
       width="24"
       height="24"
       viewBox="0 0 24 24"
-      fill="none"
+      fill="currentColor"
       aria-hidden={ariaHidden}
-      className={cn("text-secondary", className)}
+      // `text-foreground` is the contrasting token against `bg-card` /
+      // surface tints used by the auth role cards. Constellation usage
+      // does NOT use these components — AnimatedMark inlines the icon
+      // paths directly with `fill="var(--background)"` for the
+      // deterministic colour that works inside the parent <svg>.
+      className={cn("text-foreground", className)}
     >
       <g transform="translate(12 12)">{children}</g>
     </svg>

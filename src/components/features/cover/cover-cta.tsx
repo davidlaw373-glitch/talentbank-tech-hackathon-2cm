@@ -115,11 +115,23 @@ export function CoverCta() {
                     </div>
                     <Button
                       asChild
-                      className={`w-full justify-between text-background hover:opacity-90 ${path.accent}`}
+                      // `!whitespace-normal` + `!h-auto` override the
+                      // Button's `whitespace-nowrap` and `h-11` defaults
+                      // so the long CTAs ("Open university workspace") can
+                      // wrap to two lines and the button grows to fit.
+                      className={`!h-auto w-full !whitespace-normal py-2.5 text-background hover:opacity-90 ${path.accent}`}
                     >
-                      <Link href={path.href}>
-                        {path.cta}
-                        <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                      <Link
+                        href={path.href}
+                        className="flex w-full min-h-[2.75rem] items-center justify-between gap-2 text-left"
+                      >
+                        <span className="min-w-0 flex-1 leading-tight">
+                          {path.cta}
+                        </span>
+                        <ArrowRight
+                          aria-hidden
+                          className="shrink-0 transition-transform group-hover:translate-x-1"
+                        />
                       </Link>
                     </Button>
                   </div>

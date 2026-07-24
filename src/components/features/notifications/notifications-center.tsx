@@ -136,12 +136,15 @@ export function NotificationsCenter({
   heading,
   description,
   storageKey,
+  hideHeading = false,
 }: {
   source: NotificationItem[];
   heading: string;
   description: string;
   /** Per-role storage key — keeps read state isolated and shared with the shell bell. */
   storageKey: string;
+  /** Visually hide the heading/description while keeping an accessible h1. */
+  hideHeading?: boolean;
 }) {
   const { isRead, toggle, markAll, unreadCount } = useNotificationReadState(
     source,
@@ -169,14 +172,18 @@ export function NotificationsCenter({
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Notifications
-          </p>
-          <h1 className="text-display">{heading}</h1>
-          <p className="text-muted-foreground">{description}</p>
-        </div>
-        <div className="flex items-center gap-2">
+        {hideHeading ? (
+          <h1 className="sr-only">{heading}</h1>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Notifications
+            </p>
+            <h1 className="text-display">{heading}</h1>
+            <p className="text-muted-foreground">{description}</p>
+          </div>
+        )}
+        <div className="ml-auto flex items-center gap-2">
           {unreadCount > 0 ? (
             <Badge variant="default" className="gap-1">
               <span

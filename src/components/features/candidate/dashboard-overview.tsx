@@ -17,10 +17,16 @@ import {
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
-import { getCandidateContext, getMatchScoresForCandidate } from "@/lib/data-helpers";
+import { getMatchScoresForCandidate } from "@/lib/data-helpers";
 import { getActiveByCandidate } from "@/data/applications";
 import { get as getJob } from "@/data/jobs";
-import { getForCandidate as getActivityForCandidate } from "@/data/activity";
+import { getForCandidate as getCredentialsForCandidate } from "@/data/credentials";
+import { get as getUniversity } from "@/data/universities";
+import {
+  summarizeCredentials,
+  toCredentialView,
+} from "@/components/features/candidate/credential-derivations";
+import { VerifiedCredentialList } from "@/components/features/candidate/verified-credential-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,13 +93,33 @@ const PROGRESS_ITEMS: ProgressItem[] = [
 
 export function DashboardOverview() {
   const { push } = useToast();
-  const [progressItems, setProgressItems] = useState(PROGRESS_ITEMS);
 
   // All derived from JSON at module load — single source of truth.
-  const { candidate } = getCandidateContext(1);
   const applications = getActiveByCandidate(1);
   const allMatchScores = getMatchScoresForCandidate(1);
-  const recentActivity = getActivityForCandidate(1);
+
+  // University-issued credentials drive the verification card + checklist.
+  const credentials = getCredentialsForCandidate(1);
+  const credentialViews = credentials.map((credential) =>
+    toCredentialView(credential, getUniversity(credential.universityId)),
+  );
+  const credentialSummary = summarizeCredentials(credentials);
+
+  const [progressItems, setProgressItems] = useState(() =>
+    PROGRESS_ITEMS.map((item) =>
+      item.id === "verification"
+        ? {
+            ...item,
+            // Verified status is owned by the institution, not the user.
+            done: credentialSummary.verified > 0,
+            hint:
+              credentialSummary.pending > 0
+                ? `${credentialSummary.verified} verified · ${credentialSummary.pending} awaiting review`
+                : `${credentialSummary.verified} verified by your university`,
+          }
+        : item,
+    ),
+  );
 
   const STATS = [
     {
@@ -146,6 +172,8 @@ export function DashboardOverview() {
   const interviewJob = interview ? getJob(interview.jobId) : undefined;
 
   const toggleProgressItem = (id: string) => {
+    // Verification is confirmed by the institution — never user-toggleable.
+    if (id === "verification") return;
     const item = progressItems.find((progressItem) => progressItem.id === id);
     if (!item) return;
     setProgressItems((current) =>
@@ -242,50 +270,6 @@ export function DashboardOverview() {
             </Card>
           );
         })}
-      </section>
-
-      {/* Recent activity — placed directly after the stats so it is visible the moment the candidate signs in */}
-      <section className="space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-card-title">Recent activity</h2>
-            <p className="text-sm text-muted-foreground">
-              Your latest CareerOS updates, in one feed.
-            </p>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/candidate/notifications">
-              View all
-              <ArrowRight aria-hidden />
-            </Link>
-          </Button>
-        </div>
-
-        <Card>
-          <CardContent className="p-5 sm:p-6">
-            <ol className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
-              {recentActivity.map((entry) => (
-                <li
-                  key={entry.id}
-                  className="relative flex items-start gap-3"
-                >
-                  <span
-                    className="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-foreground/60"
-                    aria-hidden
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-base font-medium leading-snug">
-                      {entry.body}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {entry.timestamp}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
       </section>
 
       {/* Profile progress + Verification */}
@@ -407,34 +391,17 @@ export function DashboardOverview() {
                 </h2>
               </CardTitle>
               <CardDescription>
-                Credentials issued by your universities.
+                Credentials issued and verified by your university.
               </CardDescription>
             </div>
-            <Badge variant="outline">{candidate.verificationStatus}</Badge>
+            <Badge variant="outline">
+              {credentialSummary.pending > 0
+                ? `${credentialSummary.verified} verified · ${credentialSummary.pending} in review`
+                : `${credentialSummary.verified} verified`}
+            </Badge>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {candidate.evidence.map((e) => (
-              <div
-                key={e.name}
-                className="flex items-center justify-between rounded-lg border bg-card p-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-semibold">{e.name}</p>
-                  <p className="text-xs text-muted-foreground">{e.type}</p>
-                </div>
-                <Badge
-                  variant={e.status === "Verified" ? "secondary" : "outline"}
-                  className={
-                    // The secondary variant bakes in `hover:bg-secondary/80`,
-                    // which makes the Verified badge look interactive when
-                    // it isn't. Override the hover so the colour is stable.
-                    e.status === "Verified" ? "hover:bg-secondary" : undefined
-                  }
-                >
-                  {e.status}
-                </Badge>
-              </div>
-            ))}
+          <CardContent>
+            <VerifiedCredentialList items={credentialViews} variant="compact" />
           </CardContent>
         </Card>
       </section>

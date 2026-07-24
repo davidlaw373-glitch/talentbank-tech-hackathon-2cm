@@ -65,6 +65,11 @@
   --ring: #344e41;
   --ring-offset: #dad7cd;
 
+  /* Deep-forest constellation icon — sits inside the forest node
+     circles on the cover hero so it reads as a darker accent on top
+     of the slightly lighter node fill. */
+  --constellation-icon: #0f1a13;
+
   /* ── Semantic system states ─────────────────────────────────────────── */
   /* Bumped from the original muted earthy tones to vivid-but-readable
      values that match the vibrancy of the dark-mode palette. Foreground
@@ -141,6 +146,11 @@
   --border: #c8d4b8;
   --border-subtle: #6a8a4e;
   --input: #243529;
+
+  /* Dark mode: dark forest so the icon reads against the cream
+     node circles (the parent svg's foreground flips to cream in
+     dark mode, not forest). */
+  --constellation-icon: #1f2e25;
   --ring: #ece4cb;
   --ring-offset: #2a3d31;
 
@@ -210,6 +220,12 @@
   --text-secondary: #000000;
   --text-muted: #1a1a1a;
   --text-inverse: #ffffff;
+
+  /* Constellation icon — white so it reads against the pure-black
+     node circles (HC mode forces --foreground to #000000). Without
+     this override the token inherits the light-mode deep-forest
+     value and disappears into the black fill. */
+  --constellation-icon: #ffffff;
 
   /* ── Brand / action ────────────────────────────────────────────────── */
   --card: #ffffff;
@@ -512,10 +528,10 @@ section[id] {
 @keyframes node-pulse {
   0%,
   100% {
-    r: 18;
+    r: 26;
   }
   50% {
-    r: 20;
+    r: 28;
   }
 }
 

@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
   Bookmark,
   BookmarkCheck,
   Briefcase,
@@ -200,9 +199,11 @@ export function JobDiscovery() {
               const displayScore = score?.score ?? 0;
               const tone = matchTone(displayScore);
               return (
-                <article
+                <Link
                   key={job.id}
-                  className="block rounded-xl border border-border/20 bg-card p-5 text-card-foreground"
+                  href={`/candidate/jobs/${job.id}`}
+                  aria-label={`View ${job.title} at ${employer?.companyName ?? "Unknown company"}`}
+                  className="group block rounded-xl border border-border/20 bg-card p-5 text-card-foreground outline-none transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-border/40 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -261,7 +262,12 @@ export function JobDiscovery() {
                         size="sm"
                         variant={savedJobIds.has(job.id) ? "default" : "outline"}
                         aria-pressed={savedJobIds.has(job.id)}
-                        onClick={() => toggleSaved(job.id)}
+                        onClick={(e) => {
+                          // The whole card is a link; keep the Save action independent.
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleSaved(job.id);
+                        }}
                       >
                         {savedJobIds.has(job.id) ? (
                           <BookmarkCheck aria-hidden />
@@ -269,12 +275,6 @@ export function JobDiscovery() {
                           <Bookmark aria-hidden />
                         )}
                         {savedJobIds.has(job.id) ? "Saved" : "Save"}
-                      </Button>
-                      <Button asChild size="sm">
-                        <Link href={`/candidate/jobs/${job.id}`}>
-                          View
-                          <ArrowRight aria-hidden />
-                        </Link>
                       </Button>
                       <div className="flex flex-col items-end gap-1">
                         <span className="text-4xl font-semibold tabular-nums leading-none">
@@ -292,7 +292,7 @@ export function JobDiscovery() {
                       </div>
                     </div>
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>
