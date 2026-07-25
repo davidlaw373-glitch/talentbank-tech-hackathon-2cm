@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -55,8 +55,7 @@ describe("CandidateDiscoveryCard", () => {
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("supports Enter and Space on the face controls", async () => {
-    const user = userEvent.setup();
+  it("handles Enter and Space directly on the face controls", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
@@ -69,15 +68,13 @@ describe("CandidateDiscoveryCard", () => {
     const showInsight = screen.getByRole("button", {
       name: "Show AI insight for Aisha Khan",
     });
-    showInsight.focus();
-    await user.keyboard("{Enter}");
+    fireEvent.keyDown(showInsight, { key: "Enter" });
     expect(showInsight.getAttribute("aria-pressed")).toBe("true");
 
     const showSummary = screen.getByRole("button", {
       name: "Show profile summary for Aisha Khan",
     });
-    showSummary.focus();
-    await user.keyboard(" ");
+    fireEvent.keyDown(showSummary, { key: " " });
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
   });
 

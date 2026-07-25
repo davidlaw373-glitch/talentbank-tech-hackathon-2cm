@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -56,6 +56,14 @@ export function CandidateDiscoveryCard({
   const scoreWidth = Math.min(100, Math.max(0, matchScore));
   const stripClass =
     ACCENT_STRIPS[(candidate.id - 1) % ACCENT_STRIPS.length];
+  const handleFlipKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    nextFlipped: boolean,
+  ) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    setFlipped(nextFlipped);
+  };
 
   return (
     <article
@@ -79,6 +87,7 @@ export function CandidateDiscoveryCard({
             aria-pressed={flipped}
             tabIndex={flipped ? -1 : 0}
             onClick={() => setFlipped(true)}
+            onKeyDown={(event) => handleFlipKeyDown(event, true)}
           />
           <div className={cn("h-1.5 shrink-0", stripClass)} aria-hidden />
 
@@ -210,6 +219,7 @@ export function CandidateDiscoveryCard({
             aria-pressed={flipped}
             tabIndex={flipped ? 0 : -1}
             onClick={() => setFlipped(false)}
+            onKeyDown={(event) => handleFlipKeyDown(event, false)}
           />
           <div className={cn("h-1.5 shrink-0", stripClass)} aria-hidden />
 
