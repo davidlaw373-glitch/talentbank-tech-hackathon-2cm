@@ -138,20 +138,18 @@ describe("filterCandidateRows", () => {
         query,
         role: "All",
         stage: "All",
-        verification: "All",
-        sort: "match",
+        sort: "latest",
       }).map((row) => row.candidate.id),
     ).toEqual([1]);
   });
 
-  it("combines role, stage, and verification filters", () => {
+  it("combines role and stage filters", () => {
     expect(
       filterCandidateRows(rows, {
         query: "",
         role: "Data Engineer",
         stage: "Interview",
-        verification: "None",
-        sort: "match",
+        sort: "latest",
       }).map((row) => row.candidate.id),
     ).toEqual([2]);
   });
@@ -162,8 +160,7 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "Rejected",
-        verification: "All",
-        sort: "match",
+        sort: "latest",
       }).map((row) => row.candidate.id),
     ).toEqual([3]);
   });
@@ -174,22 +171,9 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "All",
-        verification: "All",
         sort: "latest",
       }).map((row) => row.candidate.id),
     ).toEqual([2, 3, 1]);
-  });
-
-  it("sorts the highest AI Match first", () => {
-    expect(
-      filterCandidateRows(rows, {
-        query: "",
-        role: "All",
-        stage: "All",
-        verification: "All",
-        sort: "match",
-      }).map((row) => row.matchScore),
-    ).toEqual([94, 71, 62]);
   });
 
   it("prioritizes verified candidates, then AI Match", () => {
@@ -204,7 +188,6 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "All",
-        verification: "All",
         sort: "verified",
       }).map((row) => row.candidate.id),
     ).toEqual([1, 2, 3]);

@@ -33,7 +33,6 @@ import {
   type CandidateView,
   type CandidateDiscoveryFilters,
   type CandidateSort,
-  type CandidateVerificationFilter,
 } from "@/components/features/employer/candidate-discovery";
 
 const DEMO_EMPLOYER_ID = 1;
@@ -42,7 +41,6 @@ const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
   query: "",
   role: "All",
   stage: "All",
-  verification: "All",
   sort: "latest",
 };
 
@@ -220,7 +218,7 @@ export default function EmployerCandidatesPage() {
       <Card className="overflow-hidden border-2 shadow-[5px_6px_0_0_var(--border)]">
         <div className="h-1.5 bg-primary" aria-hidden />
         <CardContent className="bg-surface-inset p-5 md:p-6">
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
               <label htmlFor="candidate-search" className="text-caption">
                 Search candidates
@@ -257,22 +255,6 @@ export default function EmployerCandidatesPage() {
             </FilterSelect>
 
             <FilterSelect
-              id="candidate-verification-filter"
-              label="Verification"
-              value={filters.verification}
-              onValueChange={(value) =>
-                updateFilter(
-                  "verification",
-                  value as CandidateVerificationFilter,
-                )
-              }
-            >
-              <SelectItem value="All">All verification</SelectItem>
-              <SelectItem value="Verified">Verified</SelectItem>
-              <SelectItem value="None">None</SelectItem>
-            </FilterSelect>
-
-            <FilterSelect
               id="candidate-sort"
               label="Sort candidates"
               value={filters.sort}
@@ -280,8 +262,7 @@ export default function EmployerCandidatesPage() {
                 updateFilter("sort", value as CandidateSort)
               }
             >
-              <SelectItem value="latest">Latest applications</SelectItem>
-              <SelectItem value="match">Highest AI Match</SelectItem>
+              <SelectItem value="latest">Latest</SelectItem>
               <SelectItem value="verified">Verified first</SelectItem>
             </FilterSelect>
           </div>

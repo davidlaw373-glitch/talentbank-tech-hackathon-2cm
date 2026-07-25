@@ -4,14 +4,12 @@ import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
 export type CandidateView = ApplicationStage | "Rejected";
-export type CandidateVerificationFilter = "Verified" | "None" | "All";
-export type CandidateSort = "latest" | "match" | "verified";
+export type CandidateSort = "latest" | "verified";
 
 export type CandidateDiscoveryFilters = {
   query: string;
   role: string;
   stage: CandidateStageFilter;
-  verification: CandidateVerificationFilter;
   sort: CandidateSort;
 };
 
@@ -66,15 +64,10 @@ export function filterCandidateRows(
         (filters.stage === "Rejected"
           ? row.app.rejected
           : !row.app.rejected && row.app.stage === filters.stage);
-      const verification =
-        row.verification === "Verified" ? "Verified" : "None";
-
       return (
         (!query || searchable.includes(query)) &&
         (filters.role === "All" || row.job.title === filters.role) &&
-        stageMatches &&
-        (filters.verification === "All" ||
-          verification === filters.verification)
+        stageMatches
       );
     })
     .toSorted((a, b) => {
