@@ -69,13 +69,13 @@ function statusStyle(status: TalentPoolStatus) {
 function scoreTone(score: number) {
   if (score >= 75) return "text-success"; // strong — positive signal
   if (score >= 50) return "text-highlight"; // mid — warm copper
-  return "text-muted-foreground"; // weak — recede
+  return "text-destructive"; // weak — needs attention
 }
 
 function scoreBarClass(score: number) {
   if (score >= 75) return "bg-success";
   if (score >= 50) return "bg-highlight";
-  return "bg-muted-foreground/40";
+  return "bg-destructive";
 }
 
 export type TalentPoolRowProps = {
