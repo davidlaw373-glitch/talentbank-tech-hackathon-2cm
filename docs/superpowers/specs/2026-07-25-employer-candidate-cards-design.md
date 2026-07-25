@@ -162,3 +162,56 @@ console errors, and hydration warnings.
 - Changes to the full candidate-detail information architecture
 - New application-stage or rejection controls on the discovery cards
 - Backend search, pagination, or remote AI generation
+
+## Refinement: signal layout, flip stability, and color restraint
+
+The following refinements supersede any conflicting visual details above.
+
+### Recent Signal
+
+- Every front face reserves the same fixed-height Recent Signal region so the
+  AI Match block aligns across all cards.
+- The role/company heading remains fixed at the top of the region.
+- The achievement body scrolls inside the region when its content exceeds the
+  available height.
+- An icon-only expand control appears at the upper-right of the region. It has
+  an accessible name, visible focus state, and expanded state.
+- Activating the control opens a card-local overlay with the complete role,
+  company, and achievement text. The overlay stays inside the card boundary,
+  does not resize the card, and never becomes a page-level modal.
+- The overlay has its own scroll area and icon-only close control. Opening or
+  closing it must not flip the card.
+
+### Flip interaction
+
+- Front and back faces change only after click/tap or Enter/Space on the
+  corresponding full-surface control.
+- Hover must never change which face is visible.
+- Hover lift and 3D rotation use separate transform layers so the lift
+  transform cannot override `rotateY(180deg)`.
+- The back face remains clickable to return to the front, but the visible
+  `Return to summary` prompt and icon are removed.
+- Star, Recent Signal expansion, overlay close, and profile-detail controls
+  remain isolated from card flipping.
+
+### Reduced palette
+
+- Remove per-candidate chart-color strips and the multicolor discovery-toolbar
+  strip.
+- Use one forest/sage brand accent for card and toolbar strips.
+- Use warm amber only for the AI Match emphasis where needed.
+- Use neutral cream surface layers for signal, screening, and filter regions.
+- Keep semantic status colors only where status meaning requires them; do not
+  add decorative chart colors elsewhere.
+
+### Refinement validation
+
+Add regression coverage that proves:
+
+- Recent Signal uses a stable bounded region with an internal scroll area;
+- expanding shows the complete signal in a card-local overlay;
+- expansion and close controls do not flip the card;
+- the expanded overlay does not expose hidden-face controls;
+- clicking and keyboard activation still flip both directions;
+- hover styling is applied to a layer separate from the rotation plane; and
+- the removed `Return to summary` text is absent.
