@@ -78,14 +78,14 @@ describe("EmployerCandidatesPage", () => {
     expect(pipelineButton.className).toContain("bg-surface-1");
   });
 
-  it("defaults to screening candidates without stage labels on cards", () => {
+  it("defaults to applied candidates without stage labels on cards", () => {
     render(<EmployerCandidatesPage />);
-    const screeningCount = getEmployerCandidateRows(1).filter(
-      (row) => !row.app.rejected && row.app.stage === "Screening",
+    const appliedCount = getEmployerCandidateRows(1).filter(
+      (row) => !row.app.rejected && row.app.stage === "Applied",
     ).length;
     const cards = screen.getAllByRole("article");
 
-    expect(cards).toHaveLength(screeningCount);
+    expect(cards).toHaveLength(appliedCount);
     for (const card of cards) {
       expect(within(card).queryByText("Screening")).toBeNull();
       expect(within(card).queryByText("Interview")).toBeNull();
@@ -97,6 +97,14 @@ describe("EmployerCandidatesPage", () => {
 
   it("includes six varied screening candidate examples", () => {
     render(<EmployerCandidatesPage />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "View candidate pipeline" }),
+    );
+    fireEvent.click(
+      within(
+        screen.getByRole("dialog", { name: "Candidate pipeline" }),
+      ).getByRole("button", { name: "Screening queue" }),
+    );
 
     for (const candidateName of [
       "Maya Chen",

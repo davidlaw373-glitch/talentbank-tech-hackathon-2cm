@@ -51,7 +51,7 @@ export default function EmployerCandidatesPage() {
   const [filters, setFilters] =
     useState<CandidateDiscoveryFilters>(DEFAULT_FILTERS);
   const [candidateView, setCandidateView] =
-    useState<CandidateView>("Screening");
+    useState<CandidateView>("Applied");
   const [pipelineOpen, setPipelineOpen] = useState(false);
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
 
@@ -109,7 +109,7 @@ export default function EmployerCandidatesPage() {
     <div className="relative space-y-8 pb-8">
       <PageHeading
         title="Candidate management"
-        description="Review the screening queue first, save promising people, and use AI Match as supporting evidence."
+        description="Review new applications first, save promising people, and use AI Match as supporting evidence."
         action={
           <Button
             type="button"
@@ -141,7 +141,7 @@ export default function EmployerCandidatesPage() {
                 <p className="text-caption">Candidate pipeline</p>
                 <h2 className="mt-1 text-subheading">Choose a hiring stage</h2>
                 <p className="mt-1 text-meta">
-                  Screening remains the default workspace.
+                  New applications are shown first.
                 </p>
               </div>
               <Button
