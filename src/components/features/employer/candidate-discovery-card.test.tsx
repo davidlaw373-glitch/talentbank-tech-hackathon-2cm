@@ -131,10 +131,11 @@ describe("CandidateDiscoveryCard", () => {
     expect(screen.queryByText("Verified")).toBeNull();
     const verifiedImage = verifiedIcon.querySelector("img");
     expect(decodeURIComponent(verifiedImage?.getAttribute("src") ?? "")).toContain(
-      "/images/verified-badge.png",
+      "/images/verified-badge-clean.png",
     );
     expect(verifiedImage?.getAttribute("width")).toBe("20");
     expect(verifiedImage?.getAttribute("height")).toBe("20");
+    expect(verifiedImage?.className).toContain("block");
 
     rerender(
       <CandidateDiscoveryCard

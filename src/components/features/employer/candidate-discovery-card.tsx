@@ -118,11 +118,12 @@ export function CandidateDiscoveryCard({
                         className="relative h-5 w-5 shrink-0"
                       >
                         <Image
-                          src="/images/verified-badge.png"
+                          src="/images/verified-badge-clean.png"
                           alt=""
                           width={20}
                           height={20}
-                          className="h-5 w-5"
+                          unoptimized
+                          className="block h-5 w-5"
                         />
                       </span>
                     ) : null}
