@@ -217,9 +217,8 @@ export default function EmployerCandidatesPage() {
 
       <Card
         data-slot="candidate-filter-panel"
-        className="overflow-hidden rounded-tl-none rounded-tr-2xl border-2 shadow-[5px_6px_0_0_var(--border)]"
+        className="overflow-hidden rounded-tl-none rounded-tr-3xl border-2 shadow-[5px_6px_0_0_var(--border)]"
       >
-        <div className="h-1.5 bg-primary" aria-hidden />
         <CardContent className="bg-surface-inset p-5 md:p-6">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">

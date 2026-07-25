@@ -153,13 +153,20 @@ describe("EmployerCandidatesPage", () => {
     expect(container.querySelector(".bg-primary")).toBeTruthy();
   });
 
-  it("uses a square top-left and curved top-right on the search panel", () => {
+  it("uses a square top-left, softer top-right, and no top accent strip on the search panel", () => {
     const { container } = render(<EmployerCandidatesPage />);
     const searchPanel = container.querySelector(
       '[data-slot="candidate-filter-panel"]',
     );
 
     expect(searchPanel?.className).toContain("rounded-tl-none");
-    expect(searchPanel?.className).toContain("rounded-tr-2xl");
+    expect(searchPanel?.className).toContain("rounded-tr-3xl");
+    expect(
+      Array.from(searchPanel?.children ?? []).some(
+        (child) =>
+          child.className.includes("h-1.5") &&
+          child.className.includes("bg-primary"),
+      ),
+    ).toBe(false);
   });
 });

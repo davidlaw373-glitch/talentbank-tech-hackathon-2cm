@@ -355,7 +355,7 @@ describe("CandidateDiscoveryCard", () => {
     expect(rotationPlane?.className).not.toContain("lift-on-hover");
   });
 
-  it("keeps both card faces square at top-left and curved at top-right", () => {
+  it("keeps both card faces square at top-left, softer at top-right, and without top accent strips", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
@@ -369,7 +369,14 @@ describe("CandidateDiscoveryCard", () => {
     expect(faces).toHaveLength(2);
     for (const face of faces) {
       expect(face.className).toContain("rounded-tl-none");
-      expect(face.className).toContain("rounded-tr-2xl");
+      expect(face.className).toContain("rounded-tr-3xl");
+      expect(
+        Array.from(face.children).some(
+          (child) =>
+            child.className.includes("h-1.5") &&
+            child.className.includes("bg-primary"),
+        ),
+      ).toBe(false);
     }
   });
 

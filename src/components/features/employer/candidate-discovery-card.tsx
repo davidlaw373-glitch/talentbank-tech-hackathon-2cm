@@ -77,12 +77,12 @@ export function CandidateDiscoveryCard({
           )}
         >
         <section
-          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-none rounded-tr-2xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden]"
+          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-none rounded-tr-3xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden]"
           aria-hidden={flipped}
         >
           <button
             type="button"
-            className="absolute inset-0 z-0 rounded-xl rounded-tl-none rounded-tr-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className="absolute inset-0 z-0 rounded-xl rounded-tl-none rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             aria-label={`Show AI insight for ${candidate.name}`}
             aria-pressed={flipped}
             tabIndex={flipped ? -1 : 0}
@@ -92,8 +92,6 @@ export function CandidateDiscoveryCard({
             }}
             onKeyDown={(event) => handleFlipKeyDown(event, true)}
           />
-          <div className="h-1.5 shrink-0 bg-primary" aria-hidden />
-
           <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
@@ -297,20 +295,18 @@ export function CandidateDiscoveryCard({
         </section>
 
         <section
-          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-none rounded-tr-2xl border-2 border-border bg-surface-tint text-card-foreground shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-none rounded-tr-3xl border-2 border-border bg-surface-tint text-card-foreground shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
           aria-hidden={!flipped}
         >
           <button
             type="button"
-            className="absolute inset-0 z-0 rounded-xl rounded-tl-none rounded-tr-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className="absolute inset-0 z-0 rounded-xl rounded-tl-none rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             aria-label={`Show profile summary for ${candidate.name}`}
             aria-pressed={flipped}
             tabIndex={flipped ? 0 : -1}
             onClick={() => setFlipped(false)}
             onKeyDown={(event) => handleFlipKeyDown(event, false)}
           />
-          <div className="h-1.5 shrink-0 bg-primary" aria-hidden />
-
           <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col p-5">
             <div className="flex min-h-16 shrink-0 items-start justify-between gap-4">
               <div>
