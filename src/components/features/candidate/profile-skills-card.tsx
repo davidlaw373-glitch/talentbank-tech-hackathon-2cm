@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Plus, Sparkles, ShieldCheck, X } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
@@ -17,21 +17,19 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { normalize } from "@/components/features/candidate/credential-derivations";
 import type { DetectedSkill } from "@/components/features/candidate/skill-parser";
+import type { Skill } from "@/types/candidate";
 
 type ProfileSkillsCardProps = {
-  skills: string[];
-  /** Skills backed by a verified university credential — shown first, locked. */
-  verifiedSkills: string[];
+  skills: Skill[];
   /** Parser suggestions detected from the candidate's own prose. */
   suggestions: DetectedSkill[];
-  onChange: (next: string[]) => void;
+  onChange: (next: Skill[]) => void;
   onAcceptSkills: (skills: string[]) => void;
   onDismissSuggestion: (skill: string) => void;
 };
 
 export function ProfileSkillsCard({
   skills,
-  verifiedSkills,
   suggestions,
   onChange,
   onAcceptSkills,
@@ -39,43 +37,76 @@ export function ProfileSkillsCard({
 }: ProfileSkillsCardProps) {
   const { push } = useToast();
   const [draft, setDraft] = useState("");
-  const [pendingRemove, setPendingRemove] = useState<string | null>(null);
+  const [pendingRemove, setPendingRemove] = useState<Skill | null>(null);
+  const [pendingVerifiedRemove, setPendingVerifiedRemove] = useState<
+    Skill | null
+  >(null);
 
-  const verifiedKeys = new Set(verifiedSkills.map(normalize));
-  // Self-reported = candidate skills that aren't already institution-verified.
-  const selfReported = skills.filter((s) => !verifiedKeys.has(normalize(s)));
-  const totalCount = verifiedSkills.length + selfReported.length;
+  // Mint new ids monotonically above the largest existing id so re-adds
+  // never collide with persisted records.
+  const counterRef = useRef(Math.max(0, ...skills.map((s) => s.id), 1000));
+
+  // Verification is now part of each Skill's own status — no separate
+  // "verified skills" projection needed.
+  const verified = skills.filter((s) => s.status === "Verified");
+  const selfReported = skills.filter((s) => s.status !== "Verified");
 
   function addSkill() {
     const value = draft.trim();
     if (!value) return;
     const key = normalize(value);
-    if (verifiedKeys.has(key)) {
+    const existing = skills.find((s) => normalize(s.name) === key);
+    if (existing) {
       setDraft("");
-      push({
-        title: "Already verified",
-        description: `${value} is confirmed by your university.`,
-        tone: "info",
-      });
+      if (existing.status === "Verified") {
+        push({
+          title: "Already verified",
+          description: `${value} is confirmed by your university.`,
+          tone: "info",
+        });
+      } else {
+        push({
+          title: "Already in your list",
+          description: `${value} is already on your skills.`,
+          tone: "info",
+        });
+      }
       return;
     }
-    if (skills.some((s) => normalize(s) === key)) {
-      setDraft("");
-      push({
-        title: "Already in your list",
-        description: `${value} is already on your skills.`,
-        tone: "info",
-      });
-      return;
-    }
-    onChange([...skills, value]);
+    counterRef.current += 1;
+    const next: Skill = {
+      id: counterRef.current,
+      name: value,
+      status: "Not started",
+    };
+    onChange([...skills, next]);
     setDraft("");
     push({ title: "Skill added", description: value, tone: "success" });
   }
 
-  function removeSkill(skill: string) {
-    onChange(skills.filter((s) => s !== skill));
-    push({ title: "Skill removed", description: skill, tone: "info" });
+  function removeSkill(skill: Skill) {
+    onChange(skills.filter((s) => s.id !== skill.id));
+    push({ title: "Skill removed", description: skill.name, tone: "info" });
+  }
+
+  function removeVerifiedSkill(skill: Skill) {
+    onChange(skills.filter((s) => s.id !== skill.id));
+    push({
+      title: "Verified skill removed",
+      description: `${skill.name} needs to be re-verified by your university before it counts toward match scores again.`,
+      tone: "info",
+    });
+  }
+
+  // Clear the other dialog if a request comes in for one of them, so
+  // only one confirm dialog is ever visible at a time.
+  function requestRemoveSelf(skill: Skill) {
+    setPendingVerifiedRemove(null);
+    setPendingRemove(skill);
+  }
+  function requestRemoveVerified(skill: Skill) {
+    setPendingRemove(null);
+    setPendingVerifiedRemove(skill);
   }
 
   function acceptAll() {
@@ -92,33 +123,41 @@ export function ProfileSkillsCard({
 
   return (
     <Card>
-      <CardHeader className="flex-row items-start justify-between space-y-0">
-        <div>
-          <CardTitle>
-            <h2>Skills and capabilities</h2>
-          </CardTitle>
-          <CardDescription>
-            University-verified skills carry the most weight with employers and
-            inform your match scores on every job.
-          </CardDescription>
-        </div>
-        <Badge variant="secondary" className="hover:bg-secondary">
-          {totalCount} listed
-        </Badge>
+      <CardHeader>
+        <CardTitle>
+          <h2>Skills and capabilities</h2>
+        </CardTitle>
+        <CardDescription>
+          University-verified skills carry the most weight with employers and
+          inform your match scores on every job.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* University-verified — authoritative, cannot be removed here. */}
-        {verifiedSkills.length > 0 ? (
+        {/* University-verified — authoritative, but the candidate can
+            opt out (re-verification then becomes required). */}
+        {verified.length > 0 ? (
           <section aria-label="University-verified skills" className="space-y-2">
             <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5 text-foreground" aria-hidden />
               University verified
             </p>
             <div className="flex flex-wrap gap-2">
-              {verifiedSkills.map((skill) => (
-                <Badge key={skill} variant="secondary" className="gap-1 hover:bg-secondary">
+              {verified.map((skill) => (
+                <Badge
+                  key={skill.id}
+                  variant="secondary"
+                  className="gap-1 pr-1 hover:bg-secondary"
+                >
                   <ShieldCheck className="h-3 w-3" aria-hidden />
-                  {skill}
+                  {skill.name}
+                  <button
+                    type="button"
+                    onClick={() => requestRemoveVerified(skill)}
+                    aria-label={`Remove verified skill ${skill.name}`}
+                    className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-foreground/10 text-foreground/80 transition-colors hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  >
+                    <X className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
+                  </button>
                 </Badge>
               ))}
             </div>
@@ -132,12 +171,12 @@ export function ProfileSkillsCard({
           </p>
           <div className="flex flex-wrap items-center gap-2">
             {selfReported.map((skill) => (
-              <Badge key={skill} variant="outline" className="gap-1 pr-1">
-                {skill}
+              <Badge key={skill.id} variant="outline" className="gap-1 pr-1">
+                {skill.name}
                 <button
                   type="button"
-                  onClick={() => setPendingRemove(skill)}
-                  aria-label={`Remove ${skill}`}
+                  onClick={() => requestRemoveSelf(skill)}
+                  aria-label={`Remove ${skill.name}`}
                   className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-foreground/10 text-foreground/80 transition-colors hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 >
                   <X className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
@@ -246,13 +285,31 @@ export function ProfileSkillsCard({
       <ConfirmDialog
         open={pendingRemove !== null}
         onOpenChange={(open) => !open && setPendingRemove(null)}
-        title={`Remove ${pendingRemove ?? ""} from your skills?`}
+        title={`Remove ${pendingRemove?.name ?? ""} from your skills?`}
         description="This skill will no longer count toward your match scores. You can add it back later."
         confirmLabel="Remove skill"
         destructive
         onConfirm={() => {
           if (pendingRemove) removeSkill(pendingRemove);
           setPendingRemove(null);
+        }}
+      />
+      <ConfirmDialog
+        open={pendingVerifiedRemove !== null}
+        onOpenChange={(open) => !open && setPendingVerifiedRemove(null)}
+        title={`Remove verified skill ${pendingVerifiedRemove?.name ?? ""}?`}
+        description={
+          <>
+            Removing a verified skill drops it from your match scores immediately.
+            To restore it, you'll need to <strong>re-add</strong> the skill and have
+            your <strong>university re-verify</strong> it before it counts again.
+          </>
+        }
+        confirmLabel="Remove verified skill"
+        destructive
+        onConfirm={() => {
+          if (pendingVerifiedRemove) removeVerifiedSkill(pendingVerifiedRemove);
+          setPendingVerifiedRemove(null);
         }}
       />
     </Card>

@@ -507,7 +507,7 @@ const buildOriginalDraft = (
   email: candidate.email,
   phone: candidate.phone,
   summary: candidate.summary,
-  skills: [...candidate.skills],
+  skills: candidate.skills.map((skill) => skill.name),
   experience: candidate.experience.map((exp) => ({
     id: exp.id,
     company: exp.company,

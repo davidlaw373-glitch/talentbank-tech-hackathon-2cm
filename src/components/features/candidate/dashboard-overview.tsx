@@ -19,14 +19,10 @@ import {
 import { useToast } from "@/components/common/toast";
 import { getMatchScoresForCandidate } from "@/lib/data-helpers";
 import { getActiveByCandidate } from "@/data/applications";
+import { get as getCandidate } from "@/data/candidates";
 import { get as getJob } from "@/data/jobs";
 import { getForCandidate as getCredentialsForCandidate } from "@/data/credentials";
-import { get as getUniversity } from "@/data/universities";
-import {
-  summarizeCredentials,
-  toCredentialView,
-} from "@/components/features/candidate/credential-derivations";
-import { VerifiedCredentialList } from "@/components/features/candidate/verified-credential-list";
+import { summarizeCredentials } from "@/components/features/candidate/credential-derivations";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +33,101 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { CredentialStatus } from "@/types/credential";
+
+const DEMO_CANDIDATE_ID = 1;
+
+/**
+ * Severity order for the dashboard "needs attention" surface — items the
+ * candidate still owes verification on (rejected or never started come
+ * first, then those waiting on the university).
+ */
+const STATUS_PRIORITY: Record<CredentialStatus, number> = {
+  Rejected: 0,
+  "Not started": 1,
+  Pending: 2,
+  "Pending review": 3,
+  Verified: 4,
+};
+
+function statusLabel(status: CredentialStatus): string {
+  switch (status) {
+    case "Verified":
+      return "Verified";
+    case "Pending":
+    case "Pending review":
+      return "Awaiting review";
+    case "Rejected":
+      return "Rejected";
+    case "Not started":
+      return "Not started";
+  }
+}
+
+function statusTone(
+  status: CredentialStatus,
+): "default" | "secondary" | "destructive" | "outline" {
+  switch (status) {
+    case "Verified":
+      return "default";
+    case "Pending":
+    case "Pending review":
+      return "secondary";
+    case "Rejected":
+      return "destructive";
+    case "Not started":
+      return "outline";
+  }
+}
+
+type UnverifiedItem = {
+  /** Stable key for React. Same id namespace between skills / education /
+   *  projects doesn't collide in practice; we prefix with the kind. */
+  key: string;
+  kind: "skill" | "education" | "project";
+  label: string;
+  sub: string;
+  status: CredentialStatus;
+};
+
+function collectUnverified(candidateId: number): UnverifiedItem[] {
+  const candidate = getCandidate(candidateId);
+  if (!candidate) return [];
+  const out: UnverifiedItem[] = [];
+  for (const skill of candidate.skills) {
+    if (skill.status === "Verified") continue;
+    out.push({
+      key: `skill-${skill.id}`,
+      kind: "skill",
+      label: skill.name,
+      sub: "Skill",
+      status: skill.status,
+    });
+  }
+  for (const edu of candidate.education) {
+    if (edu.status === "Verified") continue;
+    out.push({
+      key: `education-${edu.id}`,
+      kind: "education",
+      label: `${edu.qualification} at ${edu.institution}`,
+      sub: edu.period,
+      status: edu.status,
+    });
+  }
+  for (const project of candidate.projects) {
+    if (project.status === "Verified") continue;
+    out.push({
+      key: `project-${project.id}`,
+      kind: "project",
+      label: project.name,
+      sub: "Project",
+      status: project.status,
+    });
+  }
+  return out.sort(
+    (a, b) => STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status],
+  );
+}
 
 type ProgressItem = {
   id: string;
@@ -98,12 +189,16 @@ export function DashboardOverview() {
   const applications = getActiveByCandidate(1);
   const allMatchScores = getMatchScoresForCandidate(1);
 
-  // University-issued credentials drive the verification card + checklist.
-  const credentials = getCredentialsForCandidate(1);
-  const credentialViews = credentials.map((credential) =>
-    toCredentialView(credential, getUniversity(credential.universityId)),
-  );
+  // University-issued credentials drive the credential-summary hint in
+  // the Profile progress checklist. The dashboard's Verification card
+  // now surfaces unverified candidate-owned items instead.
+  const credentials = getCredentialsForCandidate(DEMO_CANDIDATE_ID);
   const credentialSummary = summarizeCredentials(credentials);
+
+  // Top-N unverified items across skills, education, and projects —
+  // sorted with the most "needs attention" statuses first.
+  const allUnverified = collectUnverified(DEMO_CANDIDATE_ID);
+  const unverifiedPreview = allUnverified.slice(0, 3);
 
   const [progressItems, setProgressItems] = useState(() =>
     PROGRESS_ITEMS.map((item) =>
@@ -380,7 +475,9 @@ export function DashboardOverview() {
           </Card>
         </div>
 
-        {/* Verification — naturally expands to fill the row as Profile progress collapses */}
+        {/* Verification — read-only digest of the candidate's items that
+            still need an institution's stamp. Top 3 only; full list lives
+            on the profile page. */}
         <Card className="lg:flex-1">
           <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
@@ -391,17 +488,74 @@ export function DashboardOverview() {
                 </h2>
               </CardTitle>
               <CardDescription>
-                Credentials issued and verified by your university.
+                Skills, education, and projects still waiting on proof —
+                resolving these lifts your match score.
               </CardDescription>
             </div>
-            <Badge variant="outline">
-              {credentialSummary.pending > 0
-                ? `${credentialSummary.verified} verified · ${credentialSummary.pending} in review`
-                : `${credentialSummary.verified} verified`}
-            </Badge>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/candidate/profile">
+                View all
+                <ArrowRight />
+              </Link>
+            </Button>
           </CardHeader>
-          <CardContent>
-            <VerifiedCredentialList items={credentialViews} variant="compact" />
+          <CardContent className="space-y-2">
+            {unverifiedPreview.length === 0 ? (
+              <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
+                <span
+                  aria-hidden
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-success/15 text-success"
+                >
+                  <BadgeCheck className="h-3.5 w-3.5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">
+                    Everything's verified
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Nothing waiting on proof — strong profile.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              unverifiedPreview.map((item) => {
+                const Icon =
+                  item.kind === "skill"
+                    ? Sparkles
+                    : item.kind === "education"
+                      ? GraduationCap
+                      : FolderGit2;
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center gap-3 rounded-lg border bg-card p-3"
+                  >
+                    <span
+                      aria-hidden
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">
+                        {item.label}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {item.sub}
+                      </p>
+                    </div>
+                    <Badge variant={statusTone(item.status)}>
+                      {statusLabel(item.status)}
+                    </Badge>
+                  </div>
+                );
+              })
+            )}
+            {allUnverified.length > unverifiedPreview.length ? (
+              <p className="pt-1 text-[11px] text-muted-foreground">
+                Showing 3 of {allUnverified.length} unverified items.
+              </p>
+            ) : null}
           </CardContent>
         </Card>
       </section>

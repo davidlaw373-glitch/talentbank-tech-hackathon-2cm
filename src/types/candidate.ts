@@ -1,4 +1,5 @@
 import type { ApplicationStage } from "@/types/application";
+import type { CredentialStatus } from "@/types/credential";
 
 /**
  * New clean Candidate — the person seeking a job. Profile-only fields.
@@ -6,7 +7,7 @@ import type { ApplicationStage } from "@/types/application";
  * stage they are at, whether they were rejected) lives on `Application`,
  * not on the candidate record. Verifications live on `Credential`.
  *
- * Sub-entity lists (experience, education, projects, evidence) keep stable
+ * Sub-entity lists (experience, education, projects) keep stable
  * integer ids so React list keys stay stable across edits and so we can
  * reference them by id from elsewhere (e.g. a credential that points to
  * a specific project).
@@ -26,20 +27,17 @@ export type Candidate = {
   // Profile completion + verification posture
   /** 0–100 completion score shown on the candidate dashboard. */
   profileCompletion: number;
-  /** Short label rendered next to the verification card. */
-  verificationStatus: string;
 
   // Skills
-  skills: string[];
-  /** Three highest-priority skills. Subset of `skills`. */
-  topSkills: string[];
+  skills: Skill[];
+  /** Three highest-priority skills — IDs into `skills`. Reference by id
+   *  so renames in `skills` keep their priority without churn. */
+  topSkills: number[];
 
   // Sub-records
   experience: Experience[];
   education: Education[];
   projects: Project[];
-  /** Legacy alias kept for the back-compat shim — prefer `Credential`s. */
-  evidence: LegacyEvidence[];
 
   /**
    * Setup-wizard completion flag. `false` for new registrations; flipped
@@ -65,6 +63,8 @@ export type Education = {
   institution: string;
   qualification: string;
   period: string;
+  /** Whether this education entry has been verified by the issuer. */
+  status: CredentialStatus;
 };
 
 export type Project = {
@@ -72,19 +72,39 @@ export type Project = {
   name: string;
   description: string;
   skills: string[];
+  /** Whether this project has been verified (e.g. a Capstone or Portfolio credential). */
+  status: CredentialStatus;
 };
 
 /**
- * Legacy evidence shape — kept around because `data/candidate.ts` builds
- * it from the new credential table for the dashboard verification card.
- * Prefer `Credential` for new code.
+ * A single skill on a candidate profile. Each entry carries its own
+ * `status` (same `CredentialStatus` as Education / Project), so the
+ * verified / self-reported split is derivable from the data instead of
+ * needing a separate `verifiedSkills` projection. Ids are unique within
+ * one `Candidate.skills` array — used for React list keys and the
+ * `topSkills` id reference.
  */
-export type LegacyEvidence = {
+export type Skill = {
   id: number;
   name: string;
-  type: string;
-  status: "Verified" | "Pending" | "Not started";
+  /** Whether this skill has been verified by the university / issuer. */
+  status: CredentialStatus;
 };
+
+/**
+ * Resolve `topSkills` (id references) against `skills` and return the
+ * matching `Skill` objects. Tolerant of stale ids — entries that no
+ * longer exist are silently dropped so a render never sees `undefined`.
+ */
+export function resolveTopSkills(
+  skills: Skill[],
+  topSkillIds: number[],
+): Skill[] {
+  const byId = new Map(skills.map((s) => [s.id, s]));
+  return topSkillIds
+    .map((id) => byId.get(id))
+    .filter((s): s is Skill => Boolean(s));
+}
 
 /**
  * A candidate's application to a specific job. The "update" field from

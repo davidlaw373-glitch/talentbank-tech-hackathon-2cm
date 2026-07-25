@@ -53,6 +53,7 @@ export function ProfileProjectsList({
       name: "New project",
       description: "What is it and what did you build?",
       skills: [],
+      status: "Not started",
     };
     onChange([...items, next]);
     setDraft(next);

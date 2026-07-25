@@ -40,6 +40,7 @@ export function ProfileEducationList({
       institution: "New institution",
       qualification: "Degree or program",
       period: "Year–Year",
+      status: "Not started",
     };
     onChange([...items, next]);
     setDraft(next);
