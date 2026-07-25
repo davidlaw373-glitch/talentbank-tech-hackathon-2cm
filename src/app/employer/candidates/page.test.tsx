@@ -31,4 +31,11 @@ describe("EmployerCandidatesPage", () => {
     expect(screen.getByText(/candidates shown/i)).toBeTruthy();
     expect(screen.getAllByText(/AI Match/i).length).toBeGreaterThan(0);
   });
+
+  it("uses a restrained brand palette without decorative chart accents", () => {
+    const { container } = render(<EmployerCandidatesPage />);
+
+    expect(container.querySelector('[class*="bg-chart-"]')).toBeNull();
+    expect(container.querySelector(".bg-primary")).toBeTruthy();
+  });
 });

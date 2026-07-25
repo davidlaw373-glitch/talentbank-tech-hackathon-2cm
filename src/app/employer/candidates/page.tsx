@@ -103,19 +103,13 @@ export default function EmployerCandidatesPage() {
       />
 
       <Card className="overflow-hidden border-2 shadow-[5px_6px_0_0_var(--border)]">
-        <div className="grid h-1.5 grid-cols-5" aria-hidden>
-          <span className="bg-chart-1" />
-          <span className="bg-chart-3" />
-          <span className="bg-highlight" />
-          <span className="bg-chart-5" />
-          <span className="bg-chart-7" />
-        </div>
+        <div className="h-1.5 bg-primary" aria-hidden />
         <CardContent className="space-y-5 bg-surface-inset p-5 md:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-start gap-3">
               <span
                 aria-hidden
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-highlight-soft"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-accent-soft"
               >
                 <SlidersHorizontal className="h-5 w-5" />
               </span>
@@ -220,7 +214,7 @@ export default function EmployerCandidatesPage() {
 
           <div className="flex min-h-10 flex-wrap items-center justify-between gap-3 border-t pt-4">
             <p className="flex items-center gap-2 text-meta">
-              <Sparkles className="h-4 w-4 text-highlight" aria-hidden />
+              <Sparkles className="h-4 w-4 text-primary" aria-hidden />
               AI Match ranks the list; experience and verified evidence stay
               visible on every card.
             </p>
