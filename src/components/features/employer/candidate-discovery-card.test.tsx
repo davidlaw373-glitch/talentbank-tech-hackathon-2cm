@@ -129,8 +129,7 @@ describe("CandidateDiscoveryCard", () => {
     ).toBe("/employer/candidates/2");
   });
 
-  it("provides a dedicated control for opening the AI insight", async () => {
-    const user = userEvent.setup();
+  it("keeps AI insight available through the card without a separate button", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
@@ -140,19 +139,16 @@ describe("CandidateDiscoveryCard", () => {
       />,
     );
 
-    await user.click(
-      screen.getByRole("button", {
+    expect(
+      screen.queryByRole("button", {
         name: "View AI insight for Aisha Khan",
       }),
-    );
-
+    ).toBeNull();
     expect(
-      screen
-        .getByRole("button", {
-          name: "Show profile summary for Aisha Khan",
-        })
-        .getAttribute("aria-pressed"),
-    ).toBe("true");
+      screen.getByRole("button", {
+        name: "Show AI insight for Aisha Khan",
+      }),
+    ).toBeTruthy();
   });
 
   it("expands the complete recent signal inside the card without flipping", async () => {
@@ -179,7 +175,11 @@ describe("CandidateDiscoveryCard", () => {
     expect(boundedSignal.className).toContain("[scrollbar-width:none]");
     expect(boundedSignal.className).toContain("[&::-webkit-scrollbar]:hidden");
     expect(signalProgress.className).toContain("group-hover:opacity-100");
+    expect(signalProgress.className).toContain("h-2");
     expect(boundedSignal.parentElement?.className).toContain("h-36");
+    expect(
+      within(boundedSignal).getByText("Senior Frontend Engineer at Helio"),
+    ).toBeTruthy();
 
     Object.defineProperties(boundedSignal, {
       scrollTop: { configurable: true, value: 50 },
@@ -291,11 +291,11 @@ describe("CandidateDiscoveryCard", () => {
     expect(backFace.className).toContain("bg-surface-tint");
     expect(backFace.className).not.toContain("surface-card");
     expect(profileLink?.parentElement?.className).toContain("justify-center");
-    expect(profileLink?.parentElement?.className).toContain("pb-3");
+    expect(profileLink?.parentElement?.className).toContain("pb-5");
     expect(profileLink?.className).toContain("w-full");
   });
 
-  it("uses a compact signal expansion control and stable back-face sections", () => {
+  it("uses a compact signal expansion control and removes screening notes", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
@@ -307,12 +307,27 @@ describe("CandidateDiscoveryCard", () => {
     const expandSignal = screen.getByRole("button", {
       name: "Expand recent signal for Aisha Khan",
     });
-    const screeningNote = container.querySelector(
-      '[data-slot="screening-note"]',
-    );
 
     expect(expandSignal.className).toContain("h-8");
-    expect(expandSignal.parentElement?.className).toContain("pr-11");
-    expect(screeningNote?.className).toContain("min-h-20");
+    expect(expandSignal.parentElement?.className).not.toContain("pr-11");
+    expect(container.querySelector('[data-slot="screening-note"]')).toBeNull();
+    expect(screen.queryByText("Screening note")).toBeNull();
+  });
+
+  it("shows complete match reasons without line clamping", () => {
+    const { container } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const reasons = container.querySelectorAll('[data-slot="match-reason"]');
+
+    expect(reasons).toHaveLength(3);
+    for (const reason of reasons) {
+      expect(reason.className).not.toContain("line-clamp");
+    }
   });
 });

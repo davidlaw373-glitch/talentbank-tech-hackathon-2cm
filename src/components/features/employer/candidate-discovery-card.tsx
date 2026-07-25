@@ -9,11 +9,9 @@ import {
   MapPin,
   Maximize2,
   Minimize2,
-  RotateCw,
   ShieldCheck,
   Sparkles,
   Star,
-  TriangleAlert,
 } from "lucide-react";
 
 import type { EmployerCandidateRow } from "@/lib/data-helpers";
@@ -165,7 +163,7 @@ export function CandidateDiscoveryCard({
               </p>
             </div>
 
-            <div className="group relative mt-5 h-36 shrink-0 overflow-hidden rounded-lg border bg-surface-2 p-4 pr-11">
+            <div className="group relative mt-5 h-36 shrink-0 overflow-hidden rounded-lg border bg-surface-2 p-4">
               <Button
                 type="button"
                 variant="ghost"
@@ -179,23 +177,23 @@ export function CandidateDiscoveryCard({
               >
                 <Maximize2 aria-hidden />
               </Button>
-              <p className="text-caption">Recent signal</p>
-              <p className="mt-1.5 line-clamp-1 text-body font-medium leading-snug">
-                {latestExperience
-                  ? `${latestExperience.role} at ${latestExperience.company}`
-                  : "No recent role provided"}
-              </p>
+              <p className="pr-10 text-caption">Recent signal</p>
               <div
                 role="region"
                 aria-label={`Recent signal details for ${candidate.name}`}
                 tabIndex={flipped ? -1 : 0}
                 onScroll={handleSignalScroll}
                 className={cn(
-                  "pointer-events-auto mt-2 h-14 overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
+                  "pointer-events-auto mt-1.5 h-[5.25rem] overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
                   SIGNAL_SCROLL_CLASSES,
                 )}
               >
-                {getCandidateAchievement(row)}
+                <p className="pr-9 text-body font-medium leading-snug">
+                  {latestExperience
+                    ? `${latestExperience.role} at ${latestExperience.company}`
+                    : "No recent role provided"}
+                </p>
+                <p className="mt-2">{getCandidateAchievement(row)}</p>
               </div>
               <div
                 role="progressbar"
@@ -203,7 +201,7 @@ export function CandidateDiscoveryCard({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={signalScrollProgress}
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-primary/15 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
+                className="pointer-events-none absolute inset-x-3 bottom-2 h-2 overflow-hidden rounded-full bg-primary/20 opacity-0 shadow-inner transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
               >
                 <span
                   className="block h-full rounded-r-full bg-primary transition-[width] duration-150"
@@ -213,7 +211,7 @@ export function CandidateDiscoveryCard({
             </div>
 
             <div className="mt-auto pt-5">
-              <div className="flex items-end justify-between gap-3">
+              <div className="flex items-end">
                 <div>
                   <p className="flex items-center gap-1.5 text-caption">
                     <Sparkles className="h-3.5 w-3.5" aria-hidden />
@@ -226,18 +224,6 @@ export function CandidateDiscoveryCard({
                     </span>
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="pointer-events-auto relative z-20 mb-0.5"
-                  aria-label={`View AI insight for ${candidate.name}`}
-                  tabIndex={flipped ? -1 : 0}
-                  onClick={() => setFlipped(true)}
-                >
-                  <RotateCw className="h-3.5 w-3.5" aria-hidden />
-                  View AI insight
-                </Button>
               </div>
               <div
                 className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-inset"
@@ -323,7 +309,7 @@ export function CandidateDiscoveryCard({
               </span>
             </div>
 
-            <div className="mt-4 h-[11.75rem] shrink-0 overflow-hidden">
+            <div className="mt-4 shrink-0">
               <p className="text-caption">Why this match</p>
               <ul className="mt-3 space-y-3">
                 {insight.reasons.map((reason, index) => (
@@ -332,23 +318,10 @@ export function CandidateDiscoveryCard({
                       aria-hidden
                       className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
                     />
-                    <span className="line-clamp-2">{reason}</span>
+                    <span data-slot="match-reason">{reason}</span>
                   </li>
                 ))}
               </ul>
-            </div>
-
-            <div
-              data-slot="screening-note"
-              className="mt-4 min-h-20 shrink-0 rounded-lg border bg-surface-1 p-3.5"
-            >
-              <p className="flex items-center gap-2 text-caption">
-                <TriangleAlert className="h-3.5 w-3.5" aria-hidden />
-                Screening note
-              </p>
-              <p className="mt-1.5 line-clamp-2 text-meta leading-relaxed">
-                {insight.caution}
-              </p>
             </div>
 
             {insight.skills.length ? (
@@ -364,7 +337,7 @@ export function CandidateDiscoveryCard({
               </div>
             ) : null}
 
-            <div className="mt-auto flex justify-center pb-3 pt-4">
+            <div className="mt-auto flex justify-center pb-5 pt-4">
               <Button
                 asChild
                 size="sm"
