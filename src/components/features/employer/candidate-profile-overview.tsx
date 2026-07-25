@@ -81,7 +81,7 @@ export function CandidateProfileOverview({
                       isComplete ? "bg-primary" : "bg-border",
                     )}
                   >
-                    {isComplete ? (
+                    {isComplete && !status.rejected ? (
                       <>
                         <span
                           data-slot="timeline-track-glow"
@@ -95,7 +95,7 @@ export function CandidateProfileOverview({
                         />
                       </>
                     ) : null}
-                    {isCurrentTransition ? (
+                    {isCurrentTransition && !status.rejected ? (
                       <>
                         <span
                           data-slot="timeline-current-sweep"
@@ -115,6 +115,10 @@ export function CandidateProfileOverview({
                     "relative z-10 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold tabular-nums",
                     isComplete && "border-primary bg-primary text-primary-foreground",
                     isCurrent &&
+                      status.rejected &&
+                      "border-destructive bg-destructive text-destructive-foreground",
+                    isCurrent &&
+                      !status.rejected &&
                       "border-primary bg-surface-1 text-foreground shadow-[0_0_0_4px_var(--accent-soft)]",
                     !isComplete &&
                       !isCurrent &&
@@ -128,7 +132,7 @@ export function CandidateProfileOverview({
                         : "upcoming"
                   }`}
                 >
-                  {isComplete || isCurrent ? (
+                  {!status.rejected && (isComplete || isCurrent) ? (
                     <span
                       data-slot="timeline-node-wave"
                       aria-hidden

@@ -174,4 +174,30 @@ describe("EmployerCandidateDetailPage", () => {
       "1.2s",
     );
   });
+
+  it("uses a static timeline with a red stopped stage for rejected candidates", async () => {
+    await renderCandidateDetail("7");
+
+    const timeline = screen.getByRole("list", {
+      name: "Hiring progress for Kasper Andersson",
+    });
+    const stoppedStage = timeline.querySelector(
+      '[aria-label="Screening, current"]',
+    );
+
+    expect(
+      timeline.querySelector('[data-slot="timeline-current-sweep"]'),
+    ).toBeNull();
+    expect(
+      timeline.querySelector('[data-slot="timeline-node-wave"]'),
+    ).toBeNull();
+    expect(
+      timeline.querySelector('[data-slot="timeline-track-glow"]'),
+    ).toBeNull();
+    expect(
+      timeline.querySelector('[data-slot="timeline-line-fill"]'),
+    ).toBeNull();
+    expect(stoppedStage?.className).toContain("bg-destructive");
+    expect(stoppedStage?.className).toContain("text-destructive-foreground");
+  });
 });
