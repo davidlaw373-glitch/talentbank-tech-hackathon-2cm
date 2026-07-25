@@ -32,8 +32,7 @@ export function CandidateProfileOverview({
           {timeline.map((step, index) => {
             const isComplete = index < safeCurrentIndex;
             const isCurrent = index === safeCurrentIndex;
-            const isActiveTransition =
-              index === safeCurrentIndex && index < timeline.length - 1;
+            const animationDelay = `${index * 0.55}s`;
 
             return (
               <li
@@ -52,17 +51,17 @@ export function CandidateProfileOverview({
                     <span
                       data-slot="timeline-track-glow"
                       className="animate-timeline-track-glow absolute inset-0 rounded-full bg-primary/55"
-                      style={{ animationDelay: `${index * 0.45}s` }}
+                      style={{ animationDelay }}
                     />
                     <span
-                      data-slot="timeline-flow"
-                      className={cn(
-                        "animate-timeline-flow-down absolute -inset-x-px top-0 h-1/3 rounded-full bg-gradient-to-b from-transparent to-transparent shadow-[0_0_10px_var(--primary)]",
-                        isActiveTransition
-                          ? "via-primary"
-                          : "via-primary/80",
-                      )}
-                      style={{ animationDelay: `${index * 0.45}s` }}
+                      data-slot="timeline-line-fill"
+                      className="animate-timeline-line-fill absolute inset-0 origin-top rounded-full bg-primary"
+                      style={{ animationDelay }}
+                    />
+                    <span
+                      data-slot="timeline-line-runner"
+                      className="animate-timeline-line-runner absolute -left-1 top-0 h-3 w-3 rounded-full border-2 border-surface-1 bg-primary shadow-[0_0_12px_var(--primary)]"
+                      style={{ animationDelay }}
                     />
                   </span>
                 ) : null}
@@ -88,7 +87,10 @@ export function CandidateProfileOverview({
                     data-slot="timeline-node-wave"
                     aria-hidden
                     className="animate-pulse-ring-soft pointer-events-none absolute inset-0 rounded-full border border-primary/35"
-                    style={{ animationDelay: `${index * 0.45}s` }}
+                    style={{
+                      animationDelay,
+                      animationDuration: "3s",
+                    }}
                   />
                   <span className="relative z-10">
                     {isComplete ? (

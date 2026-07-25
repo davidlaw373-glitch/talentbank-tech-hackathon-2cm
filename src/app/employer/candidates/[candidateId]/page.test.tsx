@@ -34,8 +34,11 @@ describe("EmployerCandidateDetailPage", () => {
     expect(
       within(timeline).getByText("Applied").className,
     ).toContain("text-base");
-    const timelineFlows = timeline.querySelectorAll(
-      '[data-slot="timeline-flow"]',
+    const timelineLineFills = timeline.querySelectorAll(
+      '[data-slot="timeline-line-fill"]',
+    );
+    const timelineLineRunners = timeline.querySelectorAll(
+      '[data-slot="timeline-line-runner"]',
     );
     const timelineNodeWaves = timeline.querySelectorAll(
       '[data-slot="timeline-node-wave"]',
@@ -43,12 +46,18 @@ describe("EmployerCandidateDetailPage", () => {
     const timelineTracks = timeline.querySelectorAll(
       '[data-slot="timeline-track-glow"]',
     );
-    expect(timelineFlows).toHaveLength(4);
+    expect(timelineLineFills).toHaveLength(4);
+    expect(timelineLineRunners).toHaveLength(4);
     expect(timelineTracks).toHaveLength(4);
     expect(timelineNodeWaves).toHaveLength(5);
-    for (const flow of timelineFlows) {
-      expect(flow.className).toContain("animate-timeline-flow-down");
-      expect(flow.className).toContain("shadow-[0_0_10px_var(--primary)]");
+    for (const lineFill of timelineLineFills) {
+      expect(lineFill.className).toContain("animate-timeline-line-fill");
+    }
+    for (const lineRunner of timelineLineRunners) {
+      expect(lineRunner.className).toContain("animate-timeline-line-runner");
+      expect(lineRunner.className).toContain(
+        "shadow-[0_0_12px_var(--primary)]",
+      );
     }
     for (const track of timelineTracks) {
       expect(track.className).toContain("animate-timeline-track-glow");
@@ -56,12 +65,14 @@ describe("EmployerCandidateDetailPage", () => {
     for (const nodeWave of timelineNodeWaves) {
       expect(nodeWave.className).toContain("animate-pulse-ring-soft");
     }
-    expect((timelineFlows.item(0) as HTMLElement).style.animationDelay).toBe(
+    expect(
+      (timelineLineRunners.item(0) as HTMLElement).style.animationDelay,
+    ).toBe(
       "0s",
     );
-    expect((timelineFlows.item(1) as HTMLElement).style.animationDelay).toBe(
-      "0.45s",
-    );
+    expect(
+      (timelineLineRunners.item(1) as HTMLElement).style.animationDelay,
+    ).toBe("0.55s");
     expect(within(profileOverview).queryByText("Timeline")).toBeNull();
     expect(
       within(profileOverview).queryByText(

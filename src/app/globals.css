@@ -581,18 +581,33 @@ section[id] {
   }
 }
 
-@keyframes timeline-flow-down {
+@keyframes timeline-line-fill {
   0% {
-    opacity: 0;
-    transform: translateY(-100%);
+    opacity: 0.2;
+    transform: scaleY(0);
   }
-  15%,
-  75% {
+  70% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes timeline-line-runner {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  10%,
+  85% {
     opacity: 1;
   }
   100% {
+    top: calc(100% - 0.75rem);
     opacity: 0;
-    transform: translateY(300%);
   }
 }
 
@@ -718,11 +733,15 @@ section[id] {
     transform-box: fill-box;
     animation: pulse-ring-soft 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
-  .animate-timeline-flow-down {
-    animation: timeline-flow-down 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  .animate-timeline-line-fill {
+    animation: timeline-line-fill 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  .animate-timeline-line-runner {
+    animation: timeline-line-runner 3s
+      cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-timeline-track-glow {
-    animation: timeline-track-glow 2.4s
+    animation: timeline-track-glow 3s
       cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-orbit-ccw {
