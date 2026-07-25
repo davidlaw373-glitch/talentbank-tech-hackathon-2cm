@@ -9,7 +9,6 @@ import {
   MapPin,
   Maximize2,
   Minimize2,
-  ShieldCheck,
   Sparkles,
   Star,
 } from "lucide-react";
@@ -111,26 +110,19 @@ export function CandidateDiscoveryCard({
                     <h2 className="truncate text-subheading">
                       {candidate.name}
                     </h2>
-                    <span
-                      role="img"
-                      aria-label={`${displayedVerification} verification for ${candidate.name}`}
-                      title={`${displayedVerification} verification`}
-                      className={cn(
-                        "shrink-0",
-                        displayedVerification === "Verified"
-                          ? "fill-verification text-verification-foreground"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {displayedVerification === "Verified" ? (
+                    {displayedVerification === "Verified" ? (
+                      <span
+                        role="img"
+                        aria-label={`Verified verification for ${candidate.name}`}
+                        title="Verified"
+                        className="shrink-0"
+                      >
                         <BadgeCheck
-                          className="h-4.5 w-4.5"
+                          className="h-4.5 w-4.5 fill-verification text-verification-foreground"
                           aria-hidden
                         />
-                      ) : (
-                        <ShieldCheck className="h-4.5 w-4.5" aria-hidden />
-                      )}
-                    </span>
+                      </span>
+                    ) : null}
                   </div>
                   <p className="truncate text-meta">{candidate.title}</p>
                 </div>

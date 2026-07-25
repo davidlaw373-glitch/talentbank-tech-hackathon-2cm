@@ -129,7 +129,9 @@ describe("CandidateDiscoveryCard", () => {
       name: "Verified verification for Aisha Khan",
     });
     expect(screen.queryByText("Verified")).toBeNull();
-    expect(verifiedIcon.className).toContain("fill-verification");
+    expect(
+      verifiedIcon.querySelector("svg")?.getAttribute("class"),
+    ).toContain("fill-verification");
 
     rerender(
       <CandidateDiscoveryCard
@@ -143,10 +145,11 @@ describe("CandidateDiscoveryCard", () => {
       />,
     );
 
-    const unverifiedIcon = screen.getByRole("img", {
-      name: `None verification for ${unverifiedRow.candidate.name}`,
-    });
-    expect(unverifiedIcon.className).not.toContain("fill-verification");
+    expect(
+      screen.queryByRole("img", {
+        name: `None verification for ${unverifiedRow.candidate.name}`,
+      }),
+    ).toBeNull();
 
     rerender(
       <CandidateDiscoveryCard
@@ -161,10 +164,10 @@ describe("CandidateDiscoveryCard", () => {
     );
 
     expect(
-      screen.getByRole("img", {
+      screen.queryByRole("img", {
         name: `None verification for ${pendingRow.candidate.name}`,
       }),
-    ).toBeTruthy();
+    ).toBeNull();
     expect(screen.queryByText("Pending")).toBeNull();
   });
 
