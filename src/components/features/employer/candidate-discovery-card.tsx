@@ -105,29 +105,38 @@ export function CandidateDiscoveryCard({
                 </span>
                 <div className="min-w-0">
                   <p className="text-caption">Candidate</p>
-                  <div className="flex min-w-0 items-center gap-1.5">
-                    <h2 className="truncate text-subheading">
-                      {candidate.name}
-                    </h2>
-                    {displayedVerification === "Verified" ? (
-                      <span
-                        role="img"
-                        aria-label={`Verified verification for ${candidate.name}`}
-                        title="Verified"
-                        className="relative h-5 w-5 shrink-0"
-                      >
-                        <Image
-                          src="/images/verified-badge-clean.png"
-                          alt=""
-                          width={20}
-                          height={20}
-                          unoptimized
-                          className="block h-5 w-5"
-                        />
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="truncate text-meta">{candidate.title}</p>
+                  <Link
+                    href={`/employer/candidates/${candidate.id}`}
+                    aria-label={`View ${candidate.name}'s full profile`}
+                    tabIndex={flipped ? -1 : 0}
+                    className="group/profile pointer-events-auto relative z-20 block min-w-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <h2 className="truncate text-subheading underline-offset-4 group-hover/profile:underline group-focus-visible/profile:underline">
+                        {candidate.name}
+                      </h2>
+                      {displayedVerification === "Verified" ? (
+                        <span
+                          role="img"
+                          aria-label={`Verified verification for ${candidate.name}`}
+                          title="Verified"
+                          className="relative h-5 w-5 shrink-0"
+                        >
+                          <Image
+                            src="/images/verified-badge-clean.png"
+                            alt=""
+                            width={20}
+                            height={20}
+                            unoptimized
+                            className="block h-5 w-5"
+                          />
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="truncate text-meta underline-offset-4 group-hover/profile:underline group-focus-visible/profile:underline">
+                      {candidate.title}
+                    </p>
+                  </Link>
                 </div>
               </div>
               <Button

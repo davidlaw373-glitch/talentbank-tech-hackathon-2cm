@@ -115,6 +115,36 @@ describe("CandidateDiscoveryCard", () => {
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("links the candidate name and occupation to the complete profile", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const showInsight = screen.getByRole("button", {
+      name: "Show AI insight for Aisha Khan",
+    });
+    const profileLink = screen.getByRole("link", {
+      name: "View Aisha Khan's full profile",
+    });
+
+    expect(profileLink.getAttribute("href")).toBe("/employer/candidates/2");
+    expect(within(profileLink).getByText("Aisha Khan").className).toContain(
+      "group-hover/profile:underline",
+    );
+    expect(
+      within(profileLink).getByText("Senior Frontend Engineer").className,
+    ).toContain("group-hover/profile:underline");
+
+    profileLink.addEventListener("click", (event) => event.preventDefault());
+    await user.click(profileLink);
+    expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+  });
+
   it("does not show application stage labels on the candidate card", () => {
     render(
       <CandidateDiscoveryCard
@@ -368,7 +398,7 @@ describe("CandidateDiscoveryCard", () => {
     );
     const faces = container.querySelectorAll("article > div > div > section");
     const backFace = faces.item(1);
-    const profileLink = container.querySelector(
+    const profileLink = backFace.querySelector(
       'a[aria-label="View Aisha Khan\'s full profile"]',
     );
 
