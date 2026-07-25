@@ -17,7 +17,6 @@ import {
 import { get as getUniversity } from "@/data/universities";
 import { getUniversityNotifications } from "@/data/notifications";
 import { useNotificationReadState } from "@/hooks/use-notification-read-state";
-import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
@@ -68,9 +67,6 @@ export function UniversityShell({ children }: { children: React.ReactNode }) {
               <BrandMark />
               <small className="font-semibold tracking-tight">CareerOS</small>
             </Link>
-            <Badge variant="secondary" className="hidden sm:inline-flex">
-              University
-            </Badge>
           </div>
 
           <nav

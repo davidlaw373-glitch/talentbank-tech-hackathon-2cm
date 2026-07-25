@@ -42,7 +42,7 @@ const STATUS_DESCRIPTION: Record<DisputeStatus, string> = {
   Rejected: "Dispute was not upheld.",
 };
 
-const STATUS_VARIANT: Record<
+export const STATUS_VARIANT: Record<
   DisputeStatus,
   "default" | "secondary" | "outline" | "destructive"
 > = {
@@ -278,11 +278,19 @@ export function DisputeResolution({
           value={activeTab}
           onValueChange={(value) => setActiveTab(value as DisputeTab)}
         >
-          <TabsList className="flex flex-wrap">
-            <TabsTrigger value="All">All · {disputes.length}</TabsTrigger>
+          <TabsList className="flex h-auto flex-wrap justify-start gap-1">
+            <TabsTrigger value="All" className="gap-2">
+              All
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                {disputes.length}
+              </span>
+            </TabsTrigger>
             {STATUSES.map((status) => (
-              <TabsTrigger key={status} value={status}>
-                {status} · {counts[status]}
+              <TabsTrigger key={status} value={status} className="gap-2">
+                {status}
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                  {counts[status]}
+                </span>
               </TabsTrigger>
             ))}
           </TabsList>

@@ -43,16 +43,6 @@ const STATUS_ORDER: VerificationRecordStatus[] = [
   "Rejected",
 ];
 
-const STATUS_VARIANT: Record<
-  VerificationRecordStatus,
-  "default" | "secondary" | "outline" | "destructive"
-> = {
-  Verified: "default",
-  "Pending review": "secondary",
-  "Action required": "outline",
-  Rejected: "destructive",
-};
-
 const EMPLOYMENT_VARIANT: Record<
   GraduateRecord["employment"],
   "default" | "secondary" | "outline"
@@ -295,7 +285,7 @@ export function GraduateManagement({
                 </Button>
               </div>
             ) : (
-              <Table>
+              <Table className="[&_tr:hover]:bg-transparent">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Graduate</TableHead>
@@ -306,9 +296,6 @@ export function GraduateManagement({
                       Year
                     </TableHead>
                     <TableHead className="hidden lg:table-cell text-right">GPA</TableHead>
-                    <TableHead className="hidden md:table-cell">
-                      Verification
-                    </TableHead>
                     <TableHead className="hidden md:table-cell">
                       Employment
                     </TableHead>
@@ -342,11 +329,6 @@ export function GraduateManagement({
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-right text-muted-foreground tabular-nums">
                         {graduate.gpa}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        <Badge variant={STATUS_VARIANT[graduate.status]}>
-                          {graduate.status}
-                        </Badge>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <Badge

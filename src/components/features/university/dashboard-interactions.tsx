@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DisputeStatus, UniversityDispute } from "@/types/university";
 
-const DISPUTE_VARIANT: Record<
+export const DISPUTE_VARIANT: Record<
   DisputeStatus,
   "default" | "secondary" | "outline" | "destructive"
 > = {

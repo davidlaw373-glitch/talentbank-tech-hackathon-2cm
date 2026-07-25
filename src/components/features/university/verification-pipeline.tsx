@@ -392,11 +392,19 @@ export function VerificationPipeline({
           value={activeTab}
           onValueChange={(value) => changeTab(value as VerificationTab)}
         >
-          <TabsList className="flex flex-wrap">
-            <TabsTrigger value="All">All · {records.length}</TabsTrigger>
+          <TabsList className="flex h-auto flex-wrap justify-start gap-1">
+            <TabsTrigger value="All" className="gap-2">
+              All
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                {records.length}
+              </span>
+            </TabsTrigger>
             {STATUSES.map((status) => (
-              <TabsTrigger key={status} value={status}>
-                {status} · {counts[status]}
+              <TabsTrigger key={status} value={status} className="gap-2">
+                {status}
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                  {counts[status]}
+                </span>
               </TabsTrigger>
             ))}
           </TabsList>
