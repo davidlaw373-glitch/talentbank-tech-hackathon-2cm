@@ -77,12 +77,12 @@ export function CandidateDiscoveryCard({
           )}
         >
         <section
-          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-none rounded-tr-3xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden]"
+          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden]"
           aria-hidden={flipped}
         >
           <button
             type="button"
-            className="absolute inset-0 z-0 rounded-xl rounded-tl-none rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className="absolute inset-0 z-0 rounded-xl rounded-tl-3xl rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             aria-label={`Show AI insight for ${candidate.name}`}
             aria-pressed={flipped}
             tabIndex={flipped ? -1 : 0}
@@ -295,12 +295,12 @@ export function CandidateDiscoveryCard({
         </section>
 
         <section
-          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-none rounded-tr-3xl border-2 border-border bg-surface-tint text-card-foreground shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border bg-surface-tint text-card-foreground shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
           aria-hidden={!flipped}
         >
           <button
             type="button"
-            className="absolute inset-0 z-0 rounded-xl rounded-tl-none rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            className="absolute inset-0 z-0 rounded-xl rounded-tl-3xl rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             aria-label={`Show profile summary for ${candidate.name}`}
             aria-pressed={flipped}
             tabIndex={flipped ? 0 : -1}
