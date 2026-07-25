@@ -17,7 +17,11 @@ import type { Credential, EmploymentOutcome } from "@/types/credential";
 
 import { get as getUniversity } from "@/data/universities";
 import { getForUniversity as getCredentialsForUniversity } from "@/data/credentials";
-import { getForUniversity as getDisputesForUniversity } from "@/data/disputes";
+import {
+  getForUniversity as getDisputesForUniversity,
+  getClaim as getDisputeClaim,
+  getLatestCounter as getDisputeLatestCounter,
+} from "@/data/disputes";
 import { getForUniversity as getCohortOutcomesForUniversity } from "@/data/cohort-outcomes";
 import { list as marketSignalList } from "@/data/market-signals";
 import { get as getEmployer } from "@/data/employers";
@@ -203,10 +207,11 @@ export function getUniversityDisputes(
       graduateName: name,
       graduateInitials: initials,
       field: dispute.field,
-      claim: dispute.claim,
-      counter: dispute.counter,
+      claim: getDisputeClaim(dispute),
+      counter: getDisputeLatestCounter(dispute),
       filedDate: dispute.filedDate,
       status: dispute.status,
+      messages: dispute.messages,
     };
   });
 }

@@ -3,27 +3,76 @@
     "id": 1,
     "credentialId": 13,
     "field": "Capstone project grade",
-    "claim": "Final capstone (CSS301) transcript entry reads Credit, but the grade sheet the supervisor emailed on 12 May shows Pass. Requesting the record be corrected to Pass; grade-sheet screenshot attached.",
-    "counter": "Faculty review checked the submission against the rubric and upheld Credit — the emailed grade sheet was provisional, pending the final moderation pass. Candidate has been asked to submit the moderated grade sheet if it differs.",
     "filedDate": "4 days ago",
-    "status": "In review"
+    "status": "In review",
+    "messages": [
+      {
+        "id": "d1-m1",
+        "author": "candidate",
+        "body": "Final capstone (CSS301) transcript entry reads Credit, but the grade sheet the supervisor emailed on 12 May shows Pass. Requesting the record be corrected to Pass; grade-sheet screenshot attached.",
+        "postedDate": "4 days ago"
+      },
+      {
+        "id": "d1-m2",
+        "author": "faculty",
+        "body": "Faculty review checked the submission against the rubric and upheld Credit — the emailed grade sheet was provisional, pending the final moderation pass. Candidate has been asked to submit the moderated grade sheet if it differs.",
+        "postedDate": "3 days ago"
+      },
+      {
+        "id": "d1-m3",
+        "author": "candidate",
+        "body": "I've attached the moderated grade sheet dated 18 May — it still shows Pass, and the moderation panel's comments reference the same rubric score as the provisional sheet. Could you check against that version?",
+        "postedDate": "2 days ago"
+      },
+      {
+        "id": "d1-m4",
+        "author": "faculty",
+        "body": "Reviewed the moderated sheet — the rubric score you flagged does map to Pass under the updated grade boundaries adopted this term. Escalating to the program committee for final sign-off before we update the record.",
+        "postedDate": "1 day ago",
+        "edited": true
+      }
+    ]
   },
   {
     "id": 2,
     "credentialId": 11,
     "field": "Verified credential",
-    "claim": "Skills list is missing PyTorch and CUDA, both used in the capstone (see GitHub repo linked in the submission and the model-training section of the final report). Requesting both be added to the verified skill set.",
-    "counter": "Awaiting faculty confirmation against the repo commit history before the skill list is updated and synced.",
     "filedDate": "1 week ago",
-    "status": "Open"
+    "status": "Open",
+    "messages": [
+      {
+        "id": "d2-m1",
+        "author": "candidate",
+        "body": "Skills list is missing PyTorch and CUDA, both used in the capstone (see GitHub repo linked in the submission and the model-training section of the final report). Requesting both be added to the verified skill set.",
+        "postedDate": "1 week ago"
+      },
+      {
+        "id": "d2-m2",
+        "author": "faculty",
+        "body": "Awaiting faculty confirmation against the repo commit history before the skill list is updated and synced.",
+        "postedDate": "6 days ago"
+      }
+    ]
   },
   {
     "id": 3,
     "credentialId": 12,
     "field": "Employment outcome",
-    "claim": "Employment outcome is tagged as general Software Engineering, but the offer letter (attached) is for a Data Engineering role at the same employer. Requesting the track be updated to match.",
-    "counter": "Reviewed the offer letter against the role description; outcome updated to Data Engineering and resolved.",
     "filedDate": "2 weeks ago",
-    "status": "Resolved"
+    "status": "Resolved",
+    "messages": [
+      {
+        "id": "d3-m1",
+        "author": "candidate",
+        "body": "Employment outcome is tagged as general Software Engineering, but the offer letter (attached) is for a Data Engineering role at the same employer. Requesting the track be updated to match.",
+        "postedDate": "2 weeks ago"
+      },
+      {
+        "id": "d3-m2",
+        "author": "faculty",
+        "body": "Reviewed the offer letter against the role description; outcome updated to Data Engineering and resolved.",
+        "postedDate": "13 days ago"
+      }
+    ]
   }
 ]

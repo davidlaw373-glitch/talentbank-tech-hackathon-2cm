@@ -1,17 +1,6 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { STATUS_VARIANT } from "@/components/features/university/dispute-resolution";
+import { DisputeThreadView } from "@/components/features/university/dispute-resolution";
 import { universityDisputes } from "@/lib/university-helpers";
 
 type PageProps = {
@@ -25,55 +14,5 @@ export default async function UniversityDisputeDetailPage({ params }: PageProps)
   const dispute = universityDisputes.find((d) => d.id === disputeId);
   if (!dispute) notFound();
 
-  return (
-    <div className="space-y-6">
-      <Button asChild variant="outline" size="sm">
-        <Link href="/university/disputes">
-          <ArrowLeft aria-hidden />
-          Back
-        </Link>
-      </Button>
-
-      <header className="space-y-2">
-        <p className="text-caption">
-          Dispute thread
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-heading">{dispute.graduateName}</h1>
-          <Badge variant={STATUS_VARIANT[dispute.status]}>
-            {dispute.status}
-          </Badge>
-        </div>
-        <p className="text-body text-muted-foreground">
-          {dispute.field} · Filed {dispute.filedDate}
-        </p>
-      </header>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <h2 className="flex items-center gap-2">
-              Candidate claim
-            </h2>
-          </CardTitle>
-          <CardDescription>As filed by the graduate.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-base">{dispute.claim}</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <h2>Faculty counter</h2>
-          </CardTitle>
-          <CardDescription>Reviewer&apos;s response.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-base">{dispute.counter}</p>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <DisputeThreadView initialDispute={dispute} />;
 }

@@ -3,13 +3,17 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  Award,
   AlertCircle,
+  CalendarDays,
   CheckCircle2,
   CheckSquare,
   Clock,
   FileDown,
   FileUp,
+  GraduationCap,
   Inbox,
+  Search,
   ShieldCheck,
   Square,
 } from "lucide-react";
@@ -19,6 +23,7 @@ import { useToast } from "@/components/common/toast";
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -59,7 +64,7 @@ const STATUS_ICON: Record<
   Rejected: AlertCircle,
 };
 
-const STATUS_VARIANT: Record<
+export const STATUS_VARIANT: Record<
   VerificationRecordStatus,
   "default" | "secondary" | "outline" | "destructive"
 > = {
@@ -68,6 +73,17 @@ const STATUS_VARIANT: Record<
   "Action required": "outline",
   Rejected: "destructive",
 };
+
+/** Parses a "3.78 / 4.00" style GPA string into a 0-100 share for the bar. */
+function gpaShare(gpa: string): number {
+  const match = gpa.match(/([\d.]+)\s*\/\s*([\d.]+)/);
+  if (!match) return 0;
+  const [, numerator, denominator] = match;
+  const value = Number(numerator);
+  const scale = Number(denominator);
+  if (!scale) return 0;
+  return Math.max(0, Math.min(100, Math.round((value / scale) * 100)));
+}
 
 function countByStatus(records: GraduateRecord[]) {
   const counts: Record<VerificationRecordStatus, number> = {
@@ -109,22 +125,29 @@ function GraduateList({
   }
 
   return (
-    <ul className="divide-y">
+    <div className="space-y-4">
       {records.map((graduate) => {
         const isSelected = selected.has(graduate.id);
         return (
-          <li
+          <Link
             key={graduate.id}
-            className="flex flex-wrap items-center justify-between gap-4 p-4"
+            href={`/university/graduates/${graduate.id}`}
+            aria-label={`View ${graduate.name}'s record`}
+            className="group block rounded-xl border border-border/20 bg-card p-5 text-card-foreground outline-none transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-border/40 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-4">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
+                className="shrink-0"
                 aria-pressed={isSelected}
                 aria-label={`${isSelected ? "Deselect" : "Select"} ${graduate.name}`}
-                onClick={() => onToggleSelected(graduate.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleSelected(graduate.id);
+                }}
               >
                 {isSelected ? (
                   <CheckSquare aria-hidden />
@@ -132,65 +155,102 @@ function GraduateList({
                   <Square aria-hidden />
                 )}
               </Button>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-foreground">
-                {graduate.initials}
-              </span>
-              <div className="space-y-1">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">
+                <span className="text-sm font-medium">
+                  {graduate.initials}
+                </span>
+              </div>
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-base font-medium">{graduate.name}</p>
+                  <h3 className="truncate text-base font-semibold tracking-tight">
+                    {graduate.name}
+                  </h3>
                   <Badge variant={STATUS_VARIANT[graduate.status]}>
                     {graduate.status}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {graduate.program} · Class of {graduate.graduationYear}
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <GraduationCap className="h-3.5 w-3.5" aria-hidden />
+                  {graduate.program}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  Capstone: {graduate.capstone}
+                <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Award className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span className="truncate">
+                    Capstone: {graduate.capstone}
+                  </span>
                 </p>
-                <div className="flex flex-wrap gap-1 pt-1">
+                <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <CalendarDays className="h-3 w-3" aria-hidden />
+                    Class of {graduate.graduationYear}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-2">
                   {graduate.skills.map((skill) => (
                     <Badge key={skill} variant="outline">
                       {skill}
                     </Badge>
                   ))}
                 </div>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    disabled={graduate.status === "Verified"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onStatusChange(graduate, "Verified");
+                    }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={graduate.status === "Action required"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onStatusChange(graduate, "Action required");
+                    }}
+                  >
+                    Request info
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    disabled={graduate.status === "Rejected"}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onRequestReject(graduate);
+                    }}
+                  >
+                    Reject
+                  </Button>
+                </div>
               </div>
+              {graduate.gpa ? (
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <span className="text-4xl font-semibold tabular-nums leading-none">
+                    {graduate.gpa.split("/")[0].trim()}
+                  </span>
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    GPA
+                  </span>
+                  <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-chart-1"
+                      style={{ width: `${gpaShare(graduate.gpa)}%` }}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/university/graduates/${graduate.id}`}>
-                  View record
-                </Link>
-              </Button>
-              <Button
-                size="sm"
-                disabled={graduate.status === "Verified"}
-                onClick={() => onStatusChange(graduate, "Verified")}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={graduate.status === "Action required"}
-                onClick={() => onStatusChange(graduate, "Action required")}
-              >
-                Request info
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={graduate.status === "Rejected"}
-                onClick={() => onRequestReject(graduate)}
-              >
-                Reject
-              </Button>
-            </div>
-          </li>
+          </Link>
         );
       })}
-    </ul>
+    </div>
   );
 }
 
@@ -206,14 +266,25 @@ export function VerificationPipeline({
   const [pendingReject, setPendingReject] =
     useState<GraduateRecord | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [search, setSearch] = useState("");
 
   const counts = useMemo(() => countByStatus(records), [records]);
+  const searchedRecords = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return records;
+    return records.filter(
+      (record) =>
+        record.name.toLowerCase().includes(query) ||
+        record.program.toLowerCase().includes(query) ||
+        record.capstone.toLowerCase().includes(query),
+    );
+  }, [records, search]);
   const visibleRecords = useMemo(
     () =>
       activeTab === "All"
-        ? records
-        : records.filter((record) => record.status === activeTab),
-    [activeTab, records],
+        ? searchedRecords
+        : searchedRecords.filter((record) => record.status === activeTab),
+    [activeTab, searchedRecords],
   );
   const allVisibleSelected =
     visibleRecords.length > 0 &&
@@ -388,6 +459,28 @@ export function VerificationPipeline({
           </div>
         </div>
 
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <label
+            htmlFor="verification-search"
+            className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Search
+          </label>
+          <div className="relative sm:max-w-sm">
+            <Search
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <Input
+              id="verification-search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Name, program, or capstone"
+              className="pl-9"
+            />
+          </div>
+        </div>
+
         <Tabs
           value={activeTab}
           onValueChange={(value) => changeTab(value as VerificationTab)}
@@ -463,12 +556,12 @@ export function VerificationPipeline({
                   </h3>
                 </CardTitle>
                 <CardDescription>
-                  {records.length} records across every status.
+                  {searchedRecords.length} records across every status.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-4">
                 <GraduateList
-                  records={records}
+                  records={searchedRecords}
                   selected={selected}
                   onToggleSelected={toggleSelected}
                   onStatusChange={updateRecordStatus}
@@ -479,7 +572,7 @@ export function VerificationPipeline({
           </TabsContent>
 
           {STATUSES.map((status) => {
-            const statusRecords = records.filter(
+            const statusRecords = searchedRecords.filter(
               (record) => record.status === status,
             );
             return (
@@ -493,7 +586,7 @@ export function VerificationPipeline({
                       {STATUS_DESCRIPTION[status]}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-0">
+                  <CardContent className="p-4">
                     <GraduateList
                       records={statusRecords}
                       selected={selected}
