@@ -22,35 +22,44 @@ export function CandidateProfileOverview({
   return (
     <section
       aria-label="Candidate resume and hiring progress"
-      className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[13rem_minmax(0,1fr)]"
+      className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[13rem_minmax(0,1fr)]"
     >
-      <aside className="rounded-xl border-2 border-border bg-surface-2 p-5 shadow-sm lg:sticky lg:top-24">
+      <aside className="h-full px-2 py-1 lg:pr-4">
         <ol
           aria-label={`Hiring progress for ${candidate.name}`}
-          className="flex flex-col"
+          className="flex h-full min-h-[32rem] flex-col sm:min-h-[38rem] lg:min-h-0"
         >
           {timeline.map((step, index) => {
             const isComplete = index < safeCurrentIndex;
             const isCurrent = index === safeCurrentIndex;
+            const isActiveTransition =
+              index === safeCurrentIndex && index < timeline.length - 1;
 
             return (
               <li
                 key={`${index}-${step.label}`}
                 aria-current={isCurrent ? "step" : undefined}
-                className="relative grid grid-cols-[2rem_minmax(0,1fr)] gap-3 pb-8 last:pb-0"
+                className="relative grid flex-1 grid-cols-[2.5rem_minmax(0,1fr)] gap-3 last:flex-none"
               >
                 {index < timeline.length - 1 ? (
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute bottom-0 left-[0.9375rem] top-8 w-px",
+                      "absolute bottom-0 left-[1.1875rem] top-10 w-0.5 overflow-hidden",
                       isComplete ? "bg-primary" : "bg-border",
                     )}
-                  />
+                  >
+                    {isActiveTransition ? (
+                      <span
+                        data-slot="timeline-active-flow"
+                        className="animate-timeline-flow-down absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-transparent via-primary to-transparent"
+                      />
+                    ) : null}
+                  </span>
                 ) : null}
                 <span
                   className={cn(
-                    "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold tabular-nums",
+                    "relative z-10 flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold tabular-nums",
                     isComplete && "border-primary bg-primary text-primary-foreground",
                     isCurrent &&
                       "border-primary bg-surface-1 text-foreground shadow-[0_0_0_4px_var(--accent-soft)]",
@@ -67,21 +76,21 @@ export function CandidateProfileOverview({
                   }`}
                 >
                   {isComplete ? (
-                    <Check className="h-3.5 w-3.5" aria-hidden />
+                    <Check className="h-4 w-4" aria-hidden />
                   ) : (
                     index + 1
                   )}
                 </span>
-                <div className="min-w-0 pt-0.5">
+                <div className="min-w-0 pt-1">
                   <p
                     className={cn(
-                      "text-sm font-semibold",
+                      "text-base font-semibold",
                       isCurrent ? "text-foreground" : "text-muted-foreground",
                     )}
                   >
                     {step.label}
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {step.date}
                   </p>
                 </div>

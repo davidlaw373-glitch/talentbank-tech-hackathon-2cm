@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  BadgeCheck,
   Calendar,
   MapPin,
   Sparkles,
@@ -12,7 +11,7 @@ import {
   getEmployerCandidateRows,
   getEmployerInterviewRows,
 } from "@/lib/data-helpers";
-import { STAGE_INDEX, STAGE_VARIANT } from "@/types/application";
+import { STAGE_INDEX } from "@/types/application";
 import { CandidateActions } from "@/components/features/employer/candidate-actions";
 import { CandidateProfileOverview } from "@/components/features/employer/candidate-profile-overview";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +50,7 @@ export default async function EmployerCandidateDetailPage({
   );
   if (!row) notFound();
 
-  const { candidate, app, job, matchScore, verification } = row;
+  const { candidate, app, job, matchScore } = row;
   const stageIndex = app.rejected ? 1 : STAGE_INDEX[app.stage];
   const totalScorecards = getEmployerInterviewRows(DEMO_EMPLOYER_ID)
     .filter((interviewRow) => interviewRow.candidate.id === candidateId)
@@ -71,33 +70,6 @@ export default async function EmployerCandidateDetailPage({
           </Link>
         </Button>
       </div>
-
-      <header className="space-y-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <span
-            aria-hidden
-            className="flex h-14 w-14 items-center justify-center rounded-lg bg-muted text-base font-semibold"
-          >
-            {candidate.initials}
-          </span>
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Candidate profile
-            </p>
-            <h1>{candidate.name}</h1>
-            <p className="text-muted-foreground">{candidate.title}</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={STAGE_VARIANT[app.stage]}>{app.stage}</Badge>
-          {verification === "Verified" ? (
-            <Badge variant="secondary">
-              <BadgeCheck className="h-3 w-3" aria-hidden />
-              Verified
-            </Badge>
-          ) : null}
-        </div>
-      </header>
 
       <CandidateProfileOverview
         candidate={candidate}

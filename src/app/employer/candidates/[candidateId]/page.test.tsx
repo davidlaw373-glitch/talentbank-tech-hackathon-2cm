@@ -23,8 +23,20 @@ describe("EmployerCandidateDetailPage", () => {
     const resume = within(profileOverview).getByRole("article", {
       name: "Resume preview for Rafael Diaz",
     });
+    const timelineContainer = timeline.closest("aside");
 
     expect(timeline.className).toContain("flex-col");
+    expect(timeline.className).toContain("h-full");
+    expect(profileOverview.className).toContain("items-stretch");
+    expect(timelineContainer?.className).not.toContain("border");
+    expect(timelineContainer?.className).not.toContain("bg-surface");
+    expect(timelineContainer?.className).not.toContain("shadow");
+    expect(
+      within(timeline).getByText("Applied").className,
+    ).toContain("text-base");
+    expect(
+      timeline.querySelector('[data-slot="timeline-active-flow"]')?.className,
+    ).toContain("animate-timeline-flow-down");
     expect(within(profileOverview).queryByText("Timeline")).toBeNull();
     expect(
       within(profileOverview).queryByText(
@@ -36,6 +48,7 @@ describe("EmployerCandidateDetailPage", () => {
     expect(within(resume).getByText("Education")).toBeTruthy();
     expect(within(resume).getByText("Skills")).toBeTruthy();
     expect(resume.className).not.toContain("overflow-y-auto");
+    expect(screen.queryByText("Candidate profile")).toBeNull();
 
     const evaluation = container.querySelector(
       '[data-slot="candidate-evaluation"]',
