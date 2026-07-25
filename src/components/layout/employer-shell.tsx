@@ -22,6 +22,7 @@ import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
 import { SetupBanner } from "@/components/features/onboarding/setup-banner";
+import { CandidatePipelineProvider } from "@/components/features/employer/candidate-pipeline-provider";
 import { ThemeToggle } from "@/components/common/theme-toggle";
 import { UserMenu } from "@/components/common/user-menu";
 import { cn } from "@/lib/utils";
@@ -151,8 +152,10 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
         )}
       </header>
       <main id="main-content" tabIndex={-1} className="container mx-auto p-4 sm:p-6">
-        <SetupBanner role="employer" />
-        {children}
+        <CandidatePipelineProvider>
+          <SetupBanner role="employer" />
+          {children}
+        </CandidatePipelineProvider>
       </main>
     </div>
   );

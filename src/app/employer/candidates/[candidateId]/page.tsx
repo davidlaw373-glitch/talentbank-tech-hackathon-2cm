@@ -1,14 +1,9 @@
 import { notFound } from "next/navigation";
-import {
-  Calendar,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 import {
   getEmployerCandidateRows,
 } from "@/lib/data-helpers";
-import { STAGE_INDEX } from "@/types/application";
 import { CandidateActions } from "@/components/features/employer/candidate-actions";
 import { CandidateProfileOverview } from "@/components/features/employer/candidate-profile-overview";
 import { Badge } from "@/components/ui/badge";
@@ -47,13 +42,15 @@ export default async function EmployerCandidateDetailPage({
   if (!row) notFound();
 
   const { candidate, app, job, matchScore } = row;
-  const stageIndex = app.rejected ? 1 : STAGE_INDEX[app.stage];
   return (
     <div className="space-y-8">
       <CandidateProfileOverview
         candidate={candidate}
+        applicationId={app.id}
         timeline={app.timeline}
-        currentIndex={stageIndex}
+        initialStage={app.stage}
+        initialRejected={app.rejected}
+        appliedFor={job.title}
       />
 
       <section
@@ -114,44 +111,16 @@ export default async function EmployerCandidateDetailPage({
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2>Application</h2>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <small className="text-muted-foreground">Applied for</small>
-              <p className="text-sm font-medium">{job.title}</p>
-            </div>
-            <Separator />
-            <div>
-              <small className="text-muted-foreground">Location</small>
-              <p className="flex items-center gap-1.5 text-sm font-medium">
-                <MapPin
-                  className="h-3.5 w-3.5 text-muted-foreground"
-                  aria-hidden
-                />
-                {candidate.location}
-              </p>
-            </div>
-            <Separator />
-            <div>
-              <small className="text-muted-foreground">Applied</small>
-              <p className="flex items-center gap-1.5 text-sm font-medium">
-                <Calendar
-                  className="h-3.5 w-3.5 text-muted-foreground"
-                  aria-hidden
-                />
-                {app.appliedDate}
-              </p>
-            </div>
-            <Separator />
+          <CardContent
+            className="p-5"
+            aria-label="Application actions"
+          >
             <CandidateActions
-              candidateId={candidate.id}
+              applicationId={app.id}
               candidateName={candidate.name}
               appliedFor={job.title}
               initialStage={app.stage}
+              initialRejected={app.rejected}
             />
           </CardContent>
         </Card>

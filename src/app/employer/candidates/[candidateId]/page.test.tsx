@@ -3,6 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/components/features/employer/candidate-actions", () => ({
   CandidateActions: () => <div>Candidate actions</div>,
+  CompleteReviewButton: () => (
+    <button type="button">Complete review</button>
+  ),
 }));
 
 vi.mock("@/components/features/employer/candidate-star-button", () => ({
@@ -12,14 +15,20 @@ vi.mock("@/components/features/employer/candidate-star-button", () => ({
 }));
 
 import EmployerCandidateDetailPage from "./page";
+import { CandidatePipelineProvider } from "@/components/features/employer/candidate-pipeline-provider";
+
+async function renderCandidateDetail(candidateId: string) {
+  const page = await EmployerCandidateDetailPage({
+    params: Promise.resolve({ candidateId }),
+  });
+  return render(
+    <CandidatePipelineProvider>{page}</CandidatePipelineProvider>,
+  );
+}
 
 describe("EmployerCandidateDetailPage", () => {
   it("places a complete resume preview beside a vertical timeline", async () => {
-    const { container } = render(
-      await EmployerCandidateDetailPage({
-        params: Promise.resolve({ candidateId: "5" }),
-      }),
-    );
+    const { container } = await renderCandidateDetail("5");
     const profileOverview = screen.getByRole("region", {
       name: "Candidate resume and hiring progress",
     });
@@ -45,8 +54,12 @@ describe("EmployerCandidateDetailPage", () => {
       name: "Back to candidates",
     });
     expect(backLink.className).toContain("bg-surface-1");
+    expect(backLink.textContent).toBe("");
     expect(
       within(resume).getByRole("button", { name: "Star Rafael Diaz" }),
+    ).toBeTruthy();
+    expect(
+      within(resume).getByRole("button", { name: "Complete review" }),
     ).toBeTruthy();
     expect(
       within(timeline).getByText("Applied").className,
@@ -125,9 +138,12 @@ describe("EmployerCandidateDetailPage", () => {
       }),
     ).toBeTruthy();
     expect(
-      within(evaluation as HTMLElement).getByRole("heading", {
+      within(evaluation as HTMLElement).queryByRole("heading", {
         name: "Application",
       }),
+    ).toBeNull();
+    expect(
+      within(evaluation as HTMLElement).getByLabelText("Application actions"),
     ).toBeTruthy();
     expect(
       profileOverview.compareDocumentPosition(evaluation as Node) &
@@ -136,11 +152,7 @@ describe("EmployerCandidateDetailPage", () => {
   });
 
   it("keeps the current transition sweep free of falling runner balls", async () => {
-    render(
-      await EmployerCandidateDetailPage({
-        params: Promise.resolve({ candidateId: "3" }),
-      }),
-    );
+    await renderCandidateDetail("3");
 
     const timeline = screen.getByRole("list", {
       name: "Hiring progress for Marco Okafor",

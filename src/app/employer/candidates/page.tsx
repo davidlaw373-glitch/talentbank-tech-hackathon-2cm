@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/common/toast";
 import { CandidateDiscoveryCard } from "@/components/features/employer/candidate-discovery-card";
+import { useCandidatePipeline } from "@/components/features/employer/candidate-pipeline-provider";
 import {
   filterCandidateRows,
   filterRowsForCandidateView,
@@ -45,7 +46,8 @@ const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
 
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
-  const [rows] = useState(() =>
+  const { getStatus } = useCandidatePipeline();
+  const [sourceRows] = useState(() =>
     getEmployerCandidateRows(DEMO_EMPLOYER_ID),
   );
   const [filters, setFilters] =
@@ -54,6 +56,26 @@ export default function EmployerCandidatesPage() {
     useState<CandidateView>("Applied");
   const [pipelineOpen, setPipelineOpen] = useState(false);
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
+
+  const rows = useMemo(
+    () =>
+      sourceRows.map((row) => {
+        const status = getStatus(
+          row.app.id,
+          row.app.stage,
+          row.app.rejected,
+        );
+        return {
+          ...row,
+          app: {
+            ...row.app,
+            stage: status.stage,
+            rejected: status.rejected,
+          },
+        };
+      }),
+    [sourceRows, getStatus],
+  );
 
   const rowsForView = useMemo(
     () => filterRowsForCandidateView(rows, candidateView),

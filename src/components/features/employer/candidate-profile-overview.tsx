@@ -1,22 +1,39 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Check, Mail, MapPin, Phone } from "lucide-react";
 
 import type { Candidate, Application } from "@/types/candidate";
+import {
+  STAGE_INDEX,
+  type ApplicationStage,
+} from "@/types/application";
+import { CompleteReviewButton } from "@/components/features/employer/candidate-actions";
+import { useCandidatePipeline } from "@/components/features/employer/candidate-pipeline-provider";
 import { CandidateStarButton } from "@/components/features/employer/candidate-star-button";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type CandidateProfileOverviewProps = {
   candidate: Candidate;
+  applicationId: number;
   timeline: Application["timeline"];
-  currentIndex: number;
+  initialStage: ApplicationStage;
+  initialRejected: boolean;
+  appliedFor: string;
 };
 
 export function CandidateProfileOverview({
   candidate,
+  applicationId,
   timeline,
-  currentIndex,
+  initialStage,
+  initialRejected,
+  appliedFor,
 }: CandidateProfileOverviewProps) {
+  const { getStatus } = useCandidatePipeline();
+  const status = getStatus(applicationId, initialStage, initialRejected);
+  const currentIndex = STAGE_INDEX[status.stage];
   const safeCurrentIndex = Math.max(
     0,
     Math.min(currentIndex, timeline.length - 1),
@@ -31,12 +48,11 @@ export function CandidateProfileOverview({
         <Button
           asChild
           variant="outline"
-          size="sm"
+          size="icon"
           className="self-start bg-surface-1 hover:bg-surface-2"
         >
-          <Link href="/employer/candidates">
+          <Link href="/employer/candidates" aria-label="Back to candidates">
             <ArrowLeft aria-hidden />
-            Back to candidates
           </Link>
         </Button>
         <ol
@@ -249,6 +265,14 @@ export function CandidateProfileOverview({
             </p>
           </section>
         </div>
+
+        <CompleteReviewButton
+          applicationId={applicationId}
+          candidateName={candidate.name}
+          appliedFor={appliedFor}
+          initialStage={initialStage}
+          initialRejected={initialRejected}
+        />
       </article>
     </section>
   );

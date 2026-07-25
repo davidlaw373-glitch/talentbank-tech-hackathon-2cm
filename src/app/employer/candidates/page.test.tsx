@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { getEmployerCandidateRows } from "@/lib/data-helpers";
+import { CandidatePipelineProvider } from "@/components/features/employer/candidate-pipeline-provider";
 
 vi.mock("@/components/common/toast", () => ({
   useToast: () => ({ push: vi.fn() }),
@@ -21,9 +22,17 @@ vi.mock(
 
 import EmployerCandidatesPage from "./page";
 
+function renderCandidatesPage() {
+  return render(
+    <CandidatePipelineProvider>
+      <EmployerCandidatesPage />
+    </CandidatePipelineProvider>,
+  );
+}
+
 describe("EmployerCandidatesPage", () => {
   it("keeps discovery controls visible and renders candidate cards", () => {
-    render(<EmployerCandidatesPage />);
+    renderCandidatesPage();
 
     expect(screen.getByLabelText("Search candidates")).toBeTruthy();
     expect(screen.getByLabelText("Applied role")).toBeTruthy();
@@ -61,7 +70,7 @@ describe("EmployerCandidatesPage", () => {
   });
 
   it("places the pipeline entry in the page heading", () => {
-    render(<EmployerCandidatesPage />);
+    renderCandidatesPage();
     const pageHeader = screen
       .getByRole("heading", { name: "Candidate management" })
       .closest("header");
@@ -79,7 +88,7 @@ describe("EmployerCandidatesPage", () => {
   });
 
   it("defaults to applied candidates without stage labels on cards", () => {
-    render(<EmployerCandidatesPage />);
+    renderCandidatesPage();
     const appliedCount = getEmployerCandidateRows(1).filter(
       (row) => !row.app.rejected && row.app.stage === "Applied",
     ).length;
@@ -96,7 +105,7 @@ describe("EmployerCandidatesPage", () => {
   });
 
   it("adds six varied examples to the applied queue", () => {
-    render(<EmployerCandidatesPage />);
+    renderCandidatesPage();
 
     for (const candidateName of [
       "Daniel Okafor",
@@ -111,7 +120,7 @@ describe("EmployerCandidatesPage", () => {
   });
 
   it("keeps two of the added examples in screening after moving four out", () => {
-    render(<EmployerCandidatesPage />);
+    renderCandidatesPage();
     fireEvent.click(
       screen.getByRole("button", { name: "View candidate pipeline" }),
     );
@@ -135,7 +144,7 @@ describe("EmployerCandidatesPage", () => {
   });
 
   it("opens a left pipeline panel and switches stages without pending", () => {
-    render(<EmployerCandidatesPage />);
+    renderCandidatesPage();
     const offerCount = getEmployerCandidateRows(1).filter(
       (row) => !row.app.rejected && row.app.stage === "Offer",
     ).length;
@@ -175,14 +184,14 @@ describe("EmployerCandidatesPage", () => {
   });
 
   it("uses a restrained brand palette without decorative chart accents", () => {
-    const { container } = render(<EmployerCandidatesPage />);
+    const { container } = renderCandidatesPage();
 
     expect(container.querySelector('[class*="bg-chart-"]')).toBeNull();
     expect(container.querySelector(".bg-primary")).toBeTruthy();
   });
 
   it("uses soft top corners and no top accent strip on the search panel", () => {
-    const { container } = render(<EmployerCandidatesPage />);
+    const { container } = renderCandidatesPage();
     const searchPanel = container.querySelector(
       '[data-slot="candidate-filter-panel"]',
     );
