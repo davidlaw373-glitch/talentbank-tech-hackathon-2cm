@@ -105,7 +105,31 @@ export function CandidateDiscoveryCard({
                 </span>
                 <div className="min-w-0">
                   <p className="text-caption">Candidate</p>
-                  <h2 className="truncate text-subheading">{candidate.name}</h2>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <h2 className="truncate text-subheading">
+                      {candidate.name}
+                    </h2>
+                    <span
+                      role="img"
+                      aria-label={`${verification} verification for ${candidate.name}`}
+                      title={`${verification} verification`}
+                      className={cn(
+                        "shrink-0",
+                        verification === "Verified"
+                          ? "fill-verification text-verification-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {verification === "Verified" ? (
+                        <BadgeCheck
+                          className="h-4.5 w-4.5"
+                          aria-hidden
+                        />
+                      ) : (
+                        <ShieldCheck className="h-4.5 w-4.5" aria-hidden />
+                      )}
+                    </span>
+                  </div>
                   <p className="truncate text-meta">{candidate.title}</p>
                 </div>
               </div>
@@ -135,14 +159,6 @@ export function CandidateDiscoveryCard({
             <div className="mt-4 flex flex-wrap gap-2">
               <Badge variant={app.rejected ? "destructive" : STAGE_VARIANT[app.stage]}>
                 {app.rejected ? "Rejected" : app.stage}
-              </Badge>
-              <Badge variant="outline">
-                {verification === "Verified" ? (
-                  <BadgeCheck className="mr-1 h-3.5 w-3.5" aria-hidden />
-                ) : (
-                  <ShieldCheck className="mr-1 h-3.5 w-3.5" aria-hidden />
-                )}
-                {verification}
               </Badge>
             </div>
 

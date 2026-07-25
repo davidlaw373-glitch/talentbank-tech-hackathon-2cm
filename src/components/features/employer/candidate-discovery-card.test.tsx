@@ -17,6 +17,13 @@ if (!row) {
 }
 
 const match = getMatchScoreByPair(row.candidate.id, row.job.id);
+const unverifiedRow = getEmployerCandidateRows(1).find(
+  (candidateRow) => candidateRow.verification === "None",
+);
+
+if (!unverifiedRow) {
+  throw new Error("An unverified candidate fixture is required for card tests.");
+}
 
 describe("CandidateDiscoveryCard", () => {
   it("flips from the decision summary to AI insight and back", async () => {
@@ -101,6 +108,40 @@ describe("CandidateDiscoveryCard", () => {
 
     expect(onToggleStar).toHaveBeenCalledOnce();
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("shows verification as an icon beside the name without status text", () => {
+    const { rerender } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    const verifiedIcon = screen.getByRole("img", {
+      name: "Verified verification for Aisha Khan",
+    });
+    expect(screen.queryByText("Verified")).toBeNull();
+    expect(verifiedIcon.className).toContain("fill-verification");
+
+    rerender(
+      <CandidateDiscoveryCard
+        row={unverifiedRow}
+        match={getMatchScoreByPair(
+          unverifiedRow.candidate.id,
+          unverifiedRow.job.id,
+        )}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    const unverifiedIcon = screen.getByRole("img", {
+      name: `None verification for ${unverifiedRow.candidate.name}`,
+    });
+    expect(unverifiedIcon.className).not.toContain("fill-verification");
   });
 
   it("links the AI insight to the complete profile", async () => {
