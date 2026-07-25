@@ -7,6 +7,8 @@ import {
   BadgeCheck,
   BriefcaseBusiness,
   MapPin,
+  Maximize2,
+  Minimize2,
   RotateCw,
   ShieldCheck,
   Sparkles,
@@ -25,17 +27,6 @@ import {
   getCandidateAchievement,
 } from "./candidate-discovery";
 
-const ACCENT_STRIPS = [
-  "bg-chart-1",
-  "bg-chart-2",
-  "bg-chart-3",
-  "bg-chart-4",
-  "bg-chart-5",
-  "bg-chart-6",
-  "bg-chart-7",
-  "bg-chart-8",
-] as const;
-
 type CandidateDiscoveryCardProps = {
   row: EmployerCandidateRow;
   match: JobCandidateMatchScore | undefined;
@@ -50,12 +41,11 @@ export function CandidateDiscoveryCard({
   onToggleStar,
 }: CandidateDiscoveryCardProps) {
   const [flipped, setFlipped] = useState(false);
+  const [signalExpanded, setSignalExpanded] = useState(false);
   const { candidate, job, app, matchScore, verification } = row;
   const insight = buildCandidateInsight(row, match);
   const latestExperience = candidate.experience[0];
   const scoreWidth = Math.min(100, Math.max(0, matchScore));
-  const stripClass =
-    ACCENT_STRIPS[(candidate.id - 1) % ACCENT_STRIPS.length];
   const handleFlipKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     nextFlipped: boolean,
@@ -70,12 +60,13 @@ export function CandidateDiscoveryCard({
       className="h-[31rem] min-w-0 animate-reveal [perspective:1200px]"
       aria-label={`${candidate.name}, ${candidate.title}`}
     >
-      <div
-        className={cn(
-          "lift-on-hover relative h-full w-full [transform-style:preserve-3d] transition-transform duration-500 motion-reduce:transition-none",
-          flipped && "[transform:rotateY(180deg)]",
-        )}
-      >
+      <div className="lift-on-hover relative h-full w-full">
+        <div
+          className={cn(
+            "relative h-full w-full [transform-style:preserve-3d] transition-transform duration-500 motion-reduce:transition-none",
+            flipped && "[transform:rotateY(180deg)]",
+          )}
+        >
         <section
           className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden]"
           aria-hidden={flipped}
@@ -86,10 +77,13 @@ export function CandidateDiscoveryCard({
             aria-label={`Show AI insight for ${candidate.name}`}
             aria-pressed={flipped}
             tabIndex={flipped ? -1 : 0}
-            onClick={() => setFlipped(true)}
+            onClick={() => {
+              setSignalExpanded(false);
+              setFlipped(true);
+            }}
             onKeyDown={(event) => handleFlipKeyDown(event, true)}
           />
-          <div className={cn("h-1.5 shrink-0", stripClass)} aria-hidden />
+          <div className="h-1.5 shrink-0 bg-primary" aria-hidden />
 
           <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col p-5">
             <div className="flex items-start justify-between gap-4">
@@ -160,16 +154,33 @@ export function CandidateDiscoveryCard({
               </p>
             </div>
 
-            <div className="mt-5 rounded-lg border bg-surface-2 p-4">
+            <div className="relative mt-5 h-36 shrink-0 overflow-hidden rounded-lg border bg-surface-2 p-4 pr-14">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="pointer-events-auto absolute right-2.5 top-2.5 z-20"
+                aria-label={`Expand recent signal for ${candidate.name}`}
+                aria-expanded={signalExpanded}
+                title={`Expand recent signal for ${candidate.name}`}
+                tabIndex={flipped ? -1 : 0}
+                onClick={() => setSignalExpanded(true)}
+              >
+                <Maximize2 aria-hidden />
+              </Button>
               <p className="text-caption">Recent signal</p>
-              <p className="mt-1.5 text-body font-medium leading-snug">
+              <p className="mt-1.5 line-clamp-1 text-body font-medium leading-snug">
                 {latestExperience
                   ? `${latestExperience.role} at ${latestExperience.company}`
                   : "No recent role provided"}
               </p>
-              <p className="mt-2 line-clamp-3 text-meta leading-relaxed">
+              <div
+                role="region"
+                aria-label={`Recent signal details for ${candidate.name}`}
+                className="mt-2 h-14 overflow-y-auto pr-2 text-meta leading-relaxed"
+              >
                 {getCandidateAchievement(row)}
-              </p>
+              </div>
             </div>
 
             <div className="mt-auto pt-5">
@@ -200,12 +211,45 @@ export function CandidateDiscoveryCard({
                 aria-valuenow={scoreWidth}
               >
                 <span
-                  className="animate-progress-x block h-full rounded-full bg-chart-1"
+                  className="animate-progress-x block h-full rounded-full bg-primary"
                   style={{ width: `${scoreWidth}%` }}
                 />
               </div>
             </div>
           </div>
+
+          {signalExpanded ? (
+            <section
+              role="region"
+              aria-label={`Full recent signal for ${candidate.name}`}
+              className="pointer-events-auto absolute inset-4 z-40 flex flex-col rounded-xl border-2 bg-surface-1 p-5 shadow-xl"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-caption">Recent signal</p>
+                  <h3 className="mt-1 text-subheading">
+                    {latestExperience
+                      ? `${latestExperience.role} at ${latestExperience.company}`
+                      : "No recent role provided"}
+                  </h3>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0"
+                  aria-label={`Close recent signal for ${candidate.name}`}
+                  title={`Close recent signal for ${candidate.name}`}
+                  onClick={() => setSignalExpanded(false)}
+                >
+                  <Minimize2 aria-hidden />
+                </Button>
+              </div>
+              <div className="mt-5 min-h-0 flex-1 overflow-y-auto rounded-lg border bg-surface-2 p-4 text-body leading-relaxed">
+                {getCandidateAchievement(row)}
+              </div>
+            </section>
+          ) : null}
         </section>
 
         <section
@@ -221,7 +265,7 @@ export function CandidateDiscoveryCard({
             onClick={() => setFlipped(false)}
             onKeyDown={(event) => handleFlipKeyDown(event, false)}
           />
-          <div className={cn("h-1.5 shrink-0", stripClass)} aria-hidden />
+          <div className="h-1.5 shrink-0 bg-primary" aria-hidden />
 
           <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col p-5">
             <div className="flex items-start justify-between gap-4">
@@ -244,7 +288,7 @@ export function CandidateDiscoveryCard({
                   <li key={`${index}-${reason}`} className="flex gap-2.5 text-meta">
                     <span
                       aria-hidden
-                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-chart-1"
+                      className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
                     />
                     <span className="line-clamp-2">{reason}</span>
                   </li>
@@ -275,11 +319,7 @@ export function CandidateDiscoveryCard({
               </div>
             ) : null}
 
-            <div className="mt-auto flex items-end justify-between gap-3 pt-5">
-              <p className="flex items-center gap-1.5 text-caption">
-                <RotateCw className="h-3.5 w-3.5" aria-hidden />
-                Return to summary
-              </p>
+            <div className="mt-auto flex justify-end pt-5">
               <Button
                 asChild
                 size="sm"
@@ -297,6 +337,7 @@ export function CandidateDiscoveryCard({
             </div>
           </div>
         </section>
+        </div>
       </div>
     </article>
   );

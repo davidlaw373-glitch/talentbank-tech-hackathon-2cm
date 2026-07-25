@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -127,5 +127,108 @@ describe("CandidateDiscoveryCard", () => {
         })
         .getAttribute("href"),
     ).toBe("/employer/candidates/2");
+  });
+
+  it("expands the complete recent signal inside the card without flipping", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const flip = screen.getByRole("button", {
+      name: "Show AI insight for Aisha Khan",
+    });
+    const boundedSignal = screen.getByRole("region", {
+      name: "Recent signal details for Aisha Khan",
+    });
+
+    expect(boundedSignal.className).toContain("overflow-y-auto");
+    expect(boundedSignal.parentElement?.className).toContain("h-36");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Expand recent signal for Aisha Khan",
+      }),
+    );
+
+    expect(flip.getAttribute("aria-pressed")).toBe("false");
+    const fullSignal = screen.getByRole("region", {
+      name: "Full recent signal for Aisha Khan",
+    });
+    expect(
+      within(fullSignal).getByText(
+        "Owned the design-system rebuild used by 12M daily users across marketing, console, and docs.",
+      ),
+    ).toBeTruthy();
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Close recent signal for Aisha Khan",
+      }),
+    );
+
+    expect(
+      screen.queryByRole("region", {
+        name: "Full recent signal for Aisha Khan",
+      }),
+    ).toBeNull();
+    expect(flip.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("keeps hover lift and card rotation on separate elements", () => {
+    const { container } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const article = container.querySelector("article");
+    const liftLayer = article?.firstElementChild;
+    const rotationPlane = liftLayer?.firstElementChild;
+
+    expect(liftLayer).not.toBe(rotationPlane);
+    expect(liftLayer?.className).toContain("lift-on-hover");
+    expect(rotationPlane?.className).toContain(
+      "[transform-style:preserve-3d]",
+    );
+    expect(rotationPlane?.className).not.toContain("lift-on-hover");
+  });
+
+  it("removes the visible return prompt while the back remains clickable", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Show AI insight for Aisha Khan",
+      }),
+    );
+
+    expect(screen.queryByText("Return to summary")).toBeNull();
+    await user.click(
+      screen.getByRole("button", {
+        name: "Show profile summary for Aisha Khan",
+      }),
+    );
+    expect(
+      screen
+        .getByRole("button", {
+          name: "Show AI insight for Aisha Khan",
+        })
+        .getAttribute("aria-pressed"),
+    ).toBe("false");
   });
 });
