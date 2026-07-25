@@ -87,6 +87,11 @@ export type LegacyUniversityDispute = {
   counter: string;
   filedDate: string;
   status: DisputeStatus;
+  /**
+   * Display name of the faculty member who accepted ("In review")
+   * ownership of this dispute. `null` until someone clicks Accept.
+   */
+  acceptedBy?: string | null;
   /** Full back-and-forth thread, in chronological order. */
   messages: DisputeMessage[];
 };

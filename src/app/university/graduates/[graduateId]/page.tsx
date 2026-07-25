@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { Award, Briefcase, CalendarDays, GraduationCap } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/common/back-button";
 import {
   Card,
   CardContent,
@@ -37,6 +36,8 @@ export default async function UniversityGraduateDetailPage({ params }: PageProps
 
   return (
     <div className="space-y-6">
+      <BackButton fallbackHref="/university/graduates" />
+
       <header className="rounded-xl border border-border/20 bg-card p-5">
         <div className="flex items-start gap-4">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -130,25 +131,24 @@ export default async function UniversityGraduateDetailPage({ params }: PageProps
           <CardTitle>
             <h2>Skills recorded</h2>
           </CardTitle>
-          <CardDescription>From the graduate&apos;s transcript and capstone.</CardDescription>
+          <CardDescription>
+            From the graduate&apos;s credential record.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          {graduate.skills.map((skill) => (
-            <Badge key={skill} variant="outline">
-              {skill}
-            </Badge>
-          ))}
+          {graduate.skills.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No skills have been recorded against this credential.
+            </p>
+          ) : (
+            graduate.skills.map((skill) => (
+              <Badge key={skill} variant="outline">
+                {skill}
+              </Badge>
+            ))
+          )}
         </CardContent>
       </Card>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="outline">
-          <Link href="/university/verification">Back to verification</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/university/graduates">Back to graduates</Link>
-        </Button>
-      </div>
     </div>
   );
 }

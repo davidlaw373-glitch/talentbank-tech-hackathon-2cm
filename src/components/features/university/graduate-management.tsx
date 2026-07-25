@@ -31,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   GraduateRecord,
   VerificationRecordStatus,
@@ -54,6 +55,104 @@ const EMPLOYMENT_VARIANT: Record<
 };
 
 type EmploymentFilter = GraduateRecord["employment"] | "all";
+type StatusTab = "All" | VerificationRecordStatus;
+
+function RecordsTable({
+  records,
+  onReset,
+}: {
+  records: GraduateRecord[];
+  onReset: () => void;
+}) {
+  if (records.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-lg border p-12 text-center">
+        <Users className="h-10 w-10 text-muted-foreground" aria-hidden />
+        <h3 className="text-subheading">No graduates match your filters</h3>
+        <p className="text-sm text-muted-foreground">
+          Try clearing the search or selecting a different filter.
+        </p>
+        <Button variant="outline" onClick={onReset}>
+          Reset filters
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <Table className="[&_tr:hover]:bg-transparent">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Graduate</TableHead>
+          <TableHead className="hidden md:table-cell">Program</TableHead>
+          <TableHead className="hidden sm:table-cell">Year</TableHead>
+          <TableHead className="hidden lg:table-cell text-right">
+            GPA
+          </TableHead>
+          <TableHead className="hidden md:table-cell">Employment</TableHead>
+          <TableHead className="hidden lg:table-cell">Skills</TableHead>
+          <TableHead className="text-right">Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {records.map((graduate) => (
+          <TableRow key={graduate.id}>
+            <TableCell>
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-foreground">
+                  {graduate.initials}
+                </span>
+                <div>
+                  <p>{graduate.name}</p>
+                  <p className="text-muted-foreground">{graduate.id}</p>
+                </div>
+              </div>
+            </TableCell>
+            <TableCell className="hidden md:table-cell">
+              {graduate.program}
+            </TableCell>
+            <TableCell className="hidden sm:table-cell tabular-nums">
+              {graduate.graduationYear}
+            </TableCell>
+            <TableCell className="hidden lg:table-cell text-right text-muted-foreground tabular-nums">
+              {graduate.gpa}
+            </TableCell>
+            <TableCell className="hidden md:table-cell">
+              <Badge variant={EMPLOYMENT_VARIANT[graduate.employment]}>
+                {graduate.employment}
+              </Badge>
+            </TableCell>
+            <TableCell className="hidden lg:table-cell">
+              <div className="flex flex-wrap gap-1">
+                {graduate.skills.slice(0, 3).map((skill) => (
+                  <Badge key={skill} variant="outline">
+                    {skill}
+                  </Badge>
+                ))}
+                {graduate.skills.length > 3 && (
+                  <small className="text-muted-foreground">
+                    +{graduate.skills.length - 3}
+                  </small>
+                )}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center justify-end">
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/university/graduates/${graduate.id}`}>
+                    <span className="sm:hidden">Open</span>
+                    <span className="hidden sm:inline">View</span>
+                    <ArrowRight aria-hidden />
+                  </Link>
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
 
 function countByStatus(records: GraduateRecord[]) {
   const counts: Record<VerificationRecordStatus, number> = {
@@ -80,6 +179,7 @@ export function GraduateManagement({
   const [search, setSearch] = useState("");
   const [year, setYear] = useState("all");
   const [employment, setEmployment] = useState<EmploymentFilter>("all");
+  const [activeStatusTab, setActiveStatusTab] = useState<StatusTab>("All");
 
   const years = useMemo(
     () =>
@@ -107,10 +207,18 @@ export function GraduateManagement({
   const filteredCounts = countByStatus(filteredRecords);
   const allCounts = countByStatus(records);
 
+  const tabFilteredRecords = useMemo(() => {
+    if (activeStatusTab === "All") return filteredRecords;
+    return filteredRecords.filter(
+      (record) => record.status === activeStatusTab,
+    );
+  }, [activeStatusTab, filteredRecords]);
+
   function resetFilters() {
     setSearch("");
     setYear("all");
     setEmployment("all");
+    setActiveStatusTab("All");
   }
 
   return (
@@ -133,79 +241,6 @@ export function GraduateManagement({
           </Button>
         }
       />
-
-      <section className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-        <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
-          <label htmlFor="grad-search" className="block">
-            <small>Search</small>
-          </label>
-          <div className="relative">
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-              aria-hidden
-            />
-            <Input
-              id="grad-search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by name or program"
-              className="pl-9"
-              aria-label="Search graduates by name or program"
-            />
-          </div>
-        </div>
-        <div className="space-y-1.5 sm:w-[12rem]">
-          <label htmlFor="grad-year" className="block">
-            <small className="text-sm font-medium text-foreground">Graduation year</small>
-          </label>
-          <Select value={year} onValueChange={setYear}>
-            <SelectTrigger
-              id="grad-year"
-              className="w-full sm:w-[12rem]"
-              aria-label="Filter by graduation year"
-            >
-              <SelectValue placeholder="All years" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All years</SelectItem>
-              {years.map((graduationYear) => (
-                <SelectItem
-                  key={graduationYear}
-                  value={String(graduationYear)}
-                >
-                  {graduationYear}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5 sm:w-[14rem]">
-          <label htmlFor="grad-employment" className="block">
-            <small className="text-sm font-medium text-foreground">Employment status</small>
-          </label>
-          <Select
-            value={employment}
-            onValueChange={(value) =>
-              setEmployment(value as EmploymentFilter)
-            }
-          >
-            <SelectTrigger
-              id="grad-employment"
-              className="w-full sm:w-[14rem]"
-              aria-label="Filter by employment status"
-            >
-              <SelectValue placeholder="All statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value="Employed">Employed</SelectItem>
-              <SelectItem value="Open to work">Open to work</SelectItem>
-              <SelectItem value="In grad school">In grad school</SelectItem>
-              <SelectItem value="Unknown">Unknown</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </section>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         <Card>
@@ -258,6 +293,79 @@ export function GraduateManagement({
             Showing {filteredRecords.length} of {records.length}
           </p>
         </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+          <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
+            <label htmlFor="grad-search" className="block">
+              <small className="text-sm font-medium text-foreground">Search</small>
+            </label>
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden
+              />
+              <Input
+                id="grad-search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search by name or program"
+                className="pl-9"
+                aria-label="Search graduates by name or program"
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5 sm:w-[12rem]">
+            <label htmlFor="grad-year" className="block">
+              <small className="text-sm font-medium text-foreground">Graduation year</small>
+            </label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger
+                id="grad-year"
+                className="w-full sm:w-[12rem]"
+                aria-label="Filter by graduation year"
+              >
+                <SelectValue placeholder="All years" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All years</SelectItem>
+                {years.map((graduationYear) => (
+                  <SelectItem
+                    key={graduationYear}
+                    value={String(graduationYear)}
+                  >
+                    {graduationYear}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5 sm:w-[14rem]">
+            <label htmlFor="grad-employment" className="block">
+              <small className="text-sm font-medium text-foreground">Employment status</small>
+            </label>
+            <Select
+              value={employment}
+              onValueChange={(value) =>
+                setEmployment(value as EmploymentFilter)
+              }
+            >
+              <SelectTrigger
+                id="grad-employment"
+                className="w-full sm:w-[14rem]"
+                aria-label="Filter by employment status"
+              >
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="Employed">Employed</SelectItem>
+                <SelectItem value="Open to work">Open to work</SelectItem>
+                <SelectItem value="In grad school">In grad school</SelectItem>
+                <SelectItem value="Unknown">Unknown</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <Card>
           <CardHeader className="flex-row items-center justify-between space-y-0">
             <div>
@@ -265,110 +373,43 @@ export function GraduateManagement({
                 <h3>Records</h3>
               </CardTitle>
               <CardDescription>
-                Filtered live by search, graduation year, and employment status.
+                Filtered live by search, graduation year, employment status, and verification tab.
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="p-0">
-            {filteredRecords.length === 0 ? (
-              <div className="flex flex-col items-center gap-3 p-12 text-center">
-                <Users
-                  className="h-10 w-10 text-muted-foreground"
-                  aria-hidden
-                />
-                <h3 className="text-subheading">No graduates match your filters</h3>
-                <p className="text-sm text-muted-foreground">
-                  Try clearing the search or selecting a different filter.
-                </p>
-                <Button variant="outline" onClick={resetFilters}>
-                  Reset filters
-                </Button>
-              </div>
-            ) : (
-              <Table className="[&_tr:hover]:bg-transparent">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Graduate</TableHead>
-                    <TableHead className="hidden md:table-cell">
-                      Program
-                    </TableHead>
-                    <TableHead className="hidden sm:table-cell">
-                      Year
-                    </TableHead>
-                    <TableHead className="hidden lg:table-cell text-right">GPA</TableHead>
-                    <TableHead className="hidden md:table-cell">
-                      Employment
-                    </TableHead>
-                    <TableHead className="hidden lg:table-cell">
-                      Skills
-                    </TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRecords.map((graduate) => (
-                    <TableRow key={graduate.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-foreground">
-                            {graduate.initials}
-                          </span>
-                          <div>
-                            <p>{graduate.name}</p>
-                            <p className="text-muted-foreground">
-                              {graduate.id}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {graduate.program}
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell tabular-nums">
-                        {graduate.graduationYear}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell text-right text-muted-foreground tabular-nums">
-                        {graduate.gpa}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        <Badge
-                          variant={EMPLOYMENT_VARIANT[graduate.employment]}
-                        >
-                          {graduate.employment}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                          {graduate.skills.slice(0, 3).map((skill) => (
-                            <Badge key={skill} variant="outline">
-                              {skill}
-                            </Badge>
-                          ))}
-                          {graduate.skills.length > 3 && (
-                            <small className="text-muted-foreground">
-                              +{graduate.skills.length - 3}
-                            </small>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-end">
-                          <Button asChild variant="outline" size="sm">
-                            <Link
-                              href={`/university/graduates/${graduate.id}`}
-                            >
-                              <span className="sm:hidden">Open</span>
-                              <span className="hidden sm:inline">View</span>
-                              <ArrowRight aria-hidden />
-                            </Link>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+          <CardContent className="space-y-3 p-3">
+            <Tabs
+              value={activeStatusTab}
+              onValueChange={(value) =>
+                setActiveStatusTab(value as StatusTab)
+              }
+            >
+              <TabsList className="flex h-auto flex-wrap justify-start gap-1">
+                <TabsTrigger value="All" className="gap-2">
+                  All
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    {filteredRecords.length}
+                  </span>
+                </TabsTrigger>
+                {STATUS_ORDER.map((status) => (
+                  <TabsTrigger key={status} value={status} className="gap-2">
+                    {status}
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                      {filteredCounts[status]}
+                    </span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              <TabsContent value="All" className="mt-3">
+                <RecordsTable records={tabFilteredRecords} onReset={resetFilters} />
+              </TabsContent>
+              {STATUS_ORDER.map((status) => (
+                <TabsContent key={status} value={status} className="mt-3">
+                  <RecordsTable records={tabFilteredRecords} onReset={resetFilters} />
+                </TabsContent>
+              ))}
+            </Tabs>
           </CardContent>
         </Card>
       </section>

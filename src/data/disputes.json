@@ -31,7 +31,8 @@
         "postedDate": "1 day ago",
         "edited": true
       }
-    ]
+    ],
+    "acceptedBy": "Adelina Goh"
   },
   {
     "id": 2,
@@ -74,5 +75,27 @@
         "postedDate": "13 days ago"
       }
     ]
+  },
+  {
+    "id": 4,
+    "credentialId": 10,
+    "field": "Verifying institution",
+    "filedDate": "3 days ago",
+    "status": "In review",
+    "messages": [
+      {
+        "id": "d4-m1",
+        "author": "candidate",
+        "body": "My transcript issuer is listed as the Department of Computing, but I actually completed the program through the School of Engineering's joint-track pathway. Requesting the issuing institution be updated on the credential.",
+        "postedDate": "3 days ago"
+      },
+      {
+        "id": "d4-m2",
+        "author": "faculty",
+        "body": "Pulled the joint-track agreement and confirmed the candidate finished under the School of Engineering. Issuer will be corrected once the program office countersigns — should be by end of week.",
+        "postedDate": "1 day ago"
+      }
+    ],
+    "acceptedBy": "You"
   }
 ]

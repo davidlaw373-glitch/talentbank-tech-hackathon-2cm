@@ -28,5 +28,12 @@ export type Dispute = {
   field: string;
   filedDate: string;
   status: DisputeStatus;
+  /**
+   * Display name of the faculty member who accepted ("In review")
+   * ownership of this dispute. `null` until a colleague clicks the
+   * Accept task. Once set, only that colleague can resolve, reject,
+   * or post responses — other employees see the thread read-only.
+   */
+  acceptedBy?: string | null;
   messages: DisputeMessage[];
 };

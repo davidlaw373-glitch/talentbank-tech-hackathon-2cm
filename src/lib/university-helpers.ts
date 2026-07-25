@@ -211,6 +211,7 @@ export function getUniversityDisputes(
       counter: getDisputeLatestCounter(dispute),
       filedDate: dispute.filedDate,
       status: dispute.status,
+      acceptedBy: dispute.acceptedBy ?? null,
       messages: dispute.messages,
     };
   });
