@@ -46,10 +46,14 @@ describe("EmployerCandidateDetailPage", () => {
     const timelineTracks = timeline.querySelectorAll(
       '[data-slot="timeline-track-glow"]',
     );
+    const currentTransitionSweeps = timeline.querySelectorAll(
+      '[data-slot="timeline-current-sweep"]',
+    );
     expect(timelineLineFills).toHaveLength(4);
     expect(timelineLineRunners).toHaveLength(4);
     expect(timelineTracks).toHaveLength(4);
     expect(timelineNodeWaves).toHaveLength(5);
+    expect(currentTransitionSweeps).toHaveLength(1);
     for (const lineFill of timelineLineFills) {
       expect(lineFill.className).toContain("animate-timeline-line-fill");
     }
@@ -65,6 +69,18 @@ describe("EmployerCandidateDetailPage", () => {
     for (const nodeWave of timelineNodeWaves) {
       expect(nodeWave.className).toContain("animate-pulse-ring-soft");
     }
+    expect(currentTransitionSweeps.item(0).className).toContain(
+      "animate-timeline-current-sweep",
+    );
+    expect(currentTransitionSweeps.item(0).className).toContain("w-2");
+    expect(currentTransitionSweeps.item(0).className).toContain(
+      "shadow-[0_0_14px_var(--primary)]",
+    );
+    expect(
+      currentTransitionSweeps
+        .item(0)
+        .closest('[data-slot="timeline-connector"]')?.className,
+    ).not.toContain("overflow-hidden");
     expect(
       (timelineLineRunners.item(0) as HTMLElement).style.animationDelay,
     ).toBe(

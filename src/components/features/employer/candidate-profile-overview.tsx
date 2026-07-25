@@ -32,6 +32,8 @@ export function CandidateProfileOverview({
           {timeline.map((step, index) => {
             const isComplete = index < safeCurrentIndex;
             const isCurrent = index === safeCurrentIndex;
+            const isCurrentTransition =
+              index === safeCurrentIndex && index < timeline.length - 1;
             const animationDelay = `${index * 0.55}s`;
 
             return (
@@ -43,8 +45,9 @@ export function CandidateProfileOverview({
                 {index < timeline.length - 1 ? (
                   <span
                     aria-hidden
+                    data-slot="timeline-connector"
                     className={cn(
-                      "absolute bottom-0 left-[1.125rem] top-10 w-1 overflow-hidden rounded-full",
+                      "absolute bottom-0 left-[1.125rem] top-10 w-1 overflow-visible rounded-full",
                       isComplete ? "bg-primary" : "bg-border",
                     )}
                   >
@@ -63,6 +66,12 @@ export function CandidateProfileOverview({
                       className="animate-timeline-line-runner absolute -left-1 top-0 h-3 w-3 rounded-full border-2 border-surface-1 bg-primary shadow-[0_0_12px_var(--primary)]"
                       style={{ animationDelay }}
                     />
+                    {isCurrentTransition ? (
+                      <span
+                        data-slot="timeline-current-sweep"
+                        className="animate-timeline-current-sweep absolute -left-0.5 top-0 h-1/3 w-2 rounded-full bg-primary shadow-[0_0_14px_var(--primary)]"
+                      />
+                    ) : null}
                   </span>
                 ) : null}
                 <span
