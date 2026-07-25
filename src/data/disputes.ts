@@ -24,3 +24,19 @@ export function getForUniversity(universityId: number): Dispute[] {
   );
   return list.filter((d) => credentialIds.has(d.credentialId));
 }
+
+/** The candidate's original claim — always the first message in the thread. */
+export function getClaim(dispute: Dispute): string {
+  return dispute.messages.find((m) => m.author === "candidate")?.body ?? "";
+}
+
+/**
+ * Faculty's most recent response, for list-view summaries. Empty when
+ * faculty hasn't replied yet (dispute is still awaiting a first review).
+ */
+export function getLatestCounter(dispute: Dispute): string {
+  const facultyMessages = dispute.messages.filter((m) => m.author === "faculty");
+  return facultyMessages.length > 0
+    ? facultyMessages[facultyMessages.length - 1].body
+    : "";
+}

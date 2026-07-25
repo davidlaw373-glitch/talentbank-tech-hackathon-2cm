@@ -4,10 +4,14 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   Clock,
   Inbox,
+  Pencil,
+  Search,
+  Send,
   ShieldAlert,
   X,
 } from "lucide-react";
@@ -17,6 +21,9 @@ import { useToast } from "@/components/common/toast";
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Card,
   CardContent,
@@ -25,12 +32,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { cn } from "@/lib/utils";
 import type {
   DisputeStatus,
   UniversityDispute,
 } from "@/types/university";
+import type { DisputeMessage } from "@/types/dispute";
 
 const STATUSES: DisputeStatus[] = ["Open", "In review", "Resolved", "Rejected"];
 type DisputeTab = DisputeStatus | "All";
@@ -73,10 +80,9 @@ function countByStatus(disputes: UniversityDispute[]) {
 type DisputeListProps = {
   records: UniversityDispute[];
   onStatusChange: (dispute: UniversityDispute, status: DisputeStatus) => void;
-  onRequestReject: (dispute: UniversityDispute) => void;
 };
 
-function DisputeList({ records, onStatusChange, onRequestReject }: DisputeListProps) {
+function DisputeList({ records, onStatusChange }: DisputeListProps) {
   if (records.length === 0) {
     return (
       <EmptyState
@@ -123,7 +129,9 @@ function DisputeList({ records, onStatusChange, onRequestReject }: DisputeListPr
               <small className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 Faculty counter
               </small>
-              <p className="mt-1 text-base">{dispute.counter}</p>
+              <p className="mt-1 text-base">
+                {dispute.counter || "No faculty response yet."}
+              </p>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button asChild variant="outline" size="sm">
@@ -150,23 +158,6 @@ function DisputeList({ records, onStatusChange, onRequestReject }: DisputeListPr
                 <Clock aria-hidden />
                 In review
               </Button>
-              <Button
-                size="sm"
-                disabled={dispute.status === "Resolved"}
-                onClick={() => onStatusChange(dispute, "Resolved")}
-              >
-                <CheckCircle2 aria-hidden />
-                Resolve
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={dispute.status === "Rejected"}
-                onClick={() => onRequestReject(dispute)}
-              >
-                <X aria-hidden />
-                Reject
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -183,18 +174,23 @@ export function DisputeResolution({
   const { push } = useToast();
   const [disputes, setDisputes] = useState(initialDisputes);
   const [activeTab, setActiveTab] = useState<DisputeTab>("All");
-  const [pendingReject, setPendingReject] = useState<UniversityDispute | null>(
-    null,
-  );
+  const [search, setSearch] = useState("");
   const counts = useMemo(() => countByStatus(disputes), [disputes]);
+  const filteredDisputes = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return disputes;
+    return disputes.filter(
+      (dispute) =>
+        dispute.graduateName.toLowerCase().includes(query) ||
+        dispute.field.toLowerCase().includes(query) ||
+        dispute.claim.toLowerCase().includes(query),
+    );
+  }, [disputes, search]);
 
   function updateStatus(dispute: UniversityDispute, nextStatus: DisputeStatus) {
     if (dispute.status === nextStatus) {
       push({
-        title:
-          nextStatus === "Resolved"
-            ? "Already resolved"
-            : `${dispute.graduateName} is already ${nextStatus.toLowerCase()}`,
+        title: `${dispute.graduateName} is already ${nextStatus.toLowerCase()}`,
         description: "No status change was needed.",
         tone: "info",
       });
@@ -207,10 +203,7 @@ export function DisputeResolution({
       ),
     );
     push({
-      title:
-        nextStatus === "Resolved"
-          ? "Already resolved"
-          : `${dispute.graduateName}: ${nextStatus}`,
+      title: `${dispute.graduateName}: ${nextStatus}`,
       description: `${dispute.graduateName}'s dispute changed from ${dispute.status} to ${nextStatus}.`,
       tone: nextStatus === "Resolved" ? "success" : "info",
     });
@@ -274,6 +267,28 @@ export function DisputeResolution({
           </Button>
         </div>
 
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <label
+            htmlFor="dispute-search"
+            className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Search
+          </label>
+          <div className="relative sm:max-w-sm">
+            <Search
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <Input
+              id="dispute-search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Graduate, field, or claim"
+              className="pl-9"
+            />
+          </div>
+        </div>
+
         <Tabs
           value={activeTab}
           onValueChange={(value) => setActiveTab(value as DisputeTab)}
@@ -282,7 +297,7 @@ export function DisputeResolution({
             <TabsTrigger value="All" className="gap-2">
               All
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                {disputes.length}
+                {filteredDisputes.length}
               </span>
             </TabsTrigger>
             {STATUSES.map((status) => (
@@ -297,45 +312,352 @@ export function DisputeResolution({
 
           <TabsContent value="All" className="mt-4">
             <DisputeList
-              records={disputes}
+              records={filteredDisputes}
               onStatusChange={updateStatus}
-              onRequestReject={setPendingReject}
             />
           </TabsContent>
 
           {STATUSES.map((status) => (
             <TabsContent key={status} value={status} className="mt-4">
               <DisputeList
-                records={disputes.filter(
+                records={filteredDisputes.filter(
                   (dispute) => dispute.status === status,
                 )}
                 onStatusChange={updateStatus}
-                onRequestReject={setPendingReject}
               />
             </TabsContent>
           ))}
         </Tabs>
-
-        <ConfirmDialog
-          open={pendingReject !== null}
-          onOpenChange={(open) => !open && setPendingReject(null)}
-          title="Reject this dispute?"
-          description={
-            pendingReject ? (
-              <>
-                The dispute for <strong>{pendingReject.graduateName}</strong>{" "}
-                will be marked Rejected. They&apos;ll be notified by email.
-              </>
-            ) : null
-          }
-          confirmLabel="Reject dispute"
-          destructive
-          onConfirm={() => {
-            if (pendingReject) updateStatus(pendingReject, "Rejected");
-            setPendingReject(null);
-          }}
-        />
       </section>
+    </div>
+  );
+}
+
+/** "Candidate claim" for the first message, "Candidate reply" after that. */
+function threadMessageLabel(
+  message: DisputeMessage,
+  index: number,
+  messages: DisputeMessage[],
+): string {
+  if (message.author === "faculty") return "Faculty counter";
+  const isFirstFromCandidate = messages
+    .slice(0, index)
+    .every((m) => m.author !== "candidate");
+  return isFirstFromCandidate ? "Candidate claim" : "Candidate reply";
+}
+
+function ThreadMessageCard({
+  message,
+  label,
+  canEdit,
+  editing,
+  editDraft,
+  onEditDraftChange,
+  onStartEdit,
+  onSaveEdit,
+  onCancelEdit,
+}: {
+  message: DisputeMessage;
+  label: string;
+  canEdit: boolean;
+  editing: boolean;
+  editDraft: string;
+  onEditDraftChange: (value: string) => void;
+  onStartEdit: () => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+}) {
+  const isFaculty = message.author === "faculty";
+  return (
+    <div
+      className={cn(
+        "rounded-lg border p-4",
+        isFaculty ? "bg-card" : "bg-surface-tint",
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="space-y-0.5">
+          <small className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            {label}
+          </small>
+          <p className="text-xs text-muted-foreground">
+            {message.postedDate}
+            {message.edited ? " · Edited" : ""}
+          </p>
+        </div>
+        {canEdit && !editing ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Edit this response"
+            onClick={onStartEdit}
+          >
+            <Pencil aria-hidden />
+          </Button>
+        ) : null}
+      </div>
+
+      {editing ? (
+        <div className="mt-2 space-y-2">
+          <Textarea
+            value={editDraft}
+            onChange={(e) => onEditDraftChange(e.target.value)}
+            rows={3}
+            aria-label="Edit faculty counter"
+          />
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={onCancelEdit}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={!editDraft.trim()}
+              onClick={onSaveEdit}
+            >
+              Save changes
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-1 text-base">{message.body}</p>
+      )}
+    </div>
+  );
+}
+
+export function DisputeThreadView({
+  initialDispute,
+}: {
+  initialDispute: UniversityDispute;
+}) {
+  const { push } = useToast();
+  const [dispute, setDispute] = useState(initialDispute);
+  const [messages, setMessages] = useState<DisputeMessage[]>(
+    initialDispute.messages,
+  );
+  const [reply, setReply] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
+  const [pendingReject, setPendingReject] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+
+  const lastMessage = messages[messages.length - 1] as DisputeMessage | undefined;
+
+  function sendReply() {
+    if (!reply.trim()) return;
+    const message: DisputeMessage = {
+      id: `d${dispute.id}-m${messages.length + 1}`,
+      author: "faculty",
+      body: reply.trim(),
+      postedDate: "Just now",
+    };
+    setMessages((current) => [...current, message]);
+    setReply("");
+    push({
+      title: "Response sent",
+      description: "Your reply was added to the thread and the candidate will be notified.",
+      tone: "success",
+    });
+  }
+
+  function startEdit(message: DisputeMessage) {
+    setEditingId(message.id);
+    setEditDraft(message.body);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditDraft("");
+  }
+
+  function saveEdit() {
+    if (!editingId || !editDraft.trim()) return;
+    setMessages((current) =>
+      current.map((m) =>
+        m.id === editingId ? { ...m, body: editDraft.trim(), edited: true } : m,
+      ),
+    );
+    setEditingId(null);
+    setEditDraft("");
+    push({
+      title: "Response updated",
+      description: "Your edit now shows in the thread, marked as edited.",
+      tone: "success",
+    });
+  }
+
+  function updateStatus(nextStatus: DisputeStatus, reason?: string) {
+    if (dispute.status === nextStatus) {
+      push({
+        title: `Already ${nextStatus.toLowerCase()}`,
+        description: "No status change was needed.",
+        tone: "info",
+      });
+      return;
+    }
+    const previousStatus = dispute.status;
+    setDispute((current) => ({ ...current, status: nextStatus }));
+    push({
+      title: `${dispute.graduateName}: ${nextStatus}`,
+      description: reason
+        ? `Reason: ${reason}`
+        : `Status changed from ${previousStatus}.`,
+      tone: nextStatus === "Resolved" ? "success" : "info",
+    });
+  }
+
+  return (
+    <div className="space-y-6">
+      <Button asChild variant="outline" size="sm">
+        <Link href="/university/disputes">
+          <ArrowLeft aria-hidden />
+          Back
+        </Link>
+      </Button>
+
+      <header className="space-y-2">
+        <p className="text-caption">Dispute thread</p>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-heading">{dispute.graduateName}</h1>
+          <Badge variant={STATUS_VARIANT[dispute.status]}>
+            {dispute.status}
+          </Badge>
+        </div>
+        <p className="text-body text-muted-foreground">
+          {dispute.field} · Filed {dispute.filedDate}
+        </p>
+      </header>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <h2>Dispute thread</h2>
+          </CardTitle>
+          <CardDescription>
+            The full back-and-forth between the candidate and faculty. Once a
+            newer message exists, earlier messages are locked — only the
+            latest, unanswered faculty response can still be edited.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {messages.map((message, index) => (
+            <ThreadMessageCard
+              key={message.id}
+              message={message}
+              label={threadMessageLabel(message, index, messages)}
+              canEdit={
+                message.author === "faculty" && message.id === lastMessage?.id
+              }
+              editing={editingId === message.id}
+              editDraft={editDraft}
+              onEditDraftChange={setEditDraft}
+              onStartEdit={() => startEdit(message)}
+              onSaveEdit={saveEdit}
+              onCancelEdit={cancelEdit}
+            />
+          ))}
+
+          <div className="space-y-2 border-t pt-4">
+            <label
+              htmlFor="faculty-reply"
+              className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Add a faculty response
+            </label>
+            <Textarea
+              id="faculty-reply"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              rows={3}
+              placeholder="Write the faculty's response to the candidate..."
+            />
+            <div className="flex justify-end">
+              <Button size="sm" disabled={!reply.trim()} onClick={sendReply}>
+                <Send aria-hidden />
+                Send response
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <h2>Update status</h2>
+          </CardTitle>
+          <CardDescription>
+            Move this dispute through the resolution pipeline.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={dispute.status === "Open"}
+            onClick={() => updateStatus("Open")}
+          >
+            <AlertCircle aria-hidden />
+            Open
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={dispute.status === "In review"}
+            onClick={() => updateStatus("In review")}
+          >
+            <Clock aria-hidden />
+            In review
+          </Button>
+          <Button
+            size="sm"
+            disabled={dispute.status === "Resolved"}
+            onClick={() => updateStatus("Resolved")}
+          >
+            <CheckCircle2 aria-hidden />
+            Resolve
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={dispute.status === "Rejected"}
+            onClick={() => setPendingReject(true)}
+          >
+            <X aria-hidden />
+            Reject
+          </Button>
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={pendingReject}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingReject(false);
+            setRejectReason("");
+          }
+        }}
+        title="Reject this dispute?"
+        description={
+          <>
+            The dispute for <strong>{dispute.graduateName}</strong> will be
+            marked Rejected. They&apos;ll be notified by email.
+          </>
+        }
+        confirmLabel="Reject dispute"
+        destructive
+        noteLabel="Reason for rejection"
+        noteValue={rejectReason}
+        onNoteChange={setRejectReason}
+        noteRequired
+        onConfirm={() => {
+          updateStatus("Rejected", rejectReason);
+          setPendingReject(false);
+          setRejectReason("");
+        }}
+      />
     </div>
   );
 }
