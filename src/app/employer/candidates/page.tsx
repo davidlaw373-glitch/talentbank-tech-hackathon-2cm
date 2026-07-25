@@ -24,9 +24,10 @@ import { useToast } from "@/components/common/toast";
 import { CandidateDiscoveryCard } from "@/components/features/employer/candidate-discovery-card";
 import {
   filterCandidateRows,
+  filterRowsForCandidateView,
+  type CandidateView,
   type CandidateDiscoveryFilters,
   type CandidateMatchSort,
-  type CandidateStageFilter,
   type CandidateVerificationFilter,
 } from "@/components/features/employer/candidate-discovery";
 
@@ -47,19 +48,26 @@ export default function EmployerCandidatesPage() {
   );
   const [filters, setFilters] =
     useState<CandidateDiscoveryFilters>(DEFAULT_FILTERS);
+  const [candidateView, setCandidateView] =
+    useState<CandidateView>("Screening");
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
+
+  const rowsForView = useMemo(
+    () => filterRowsForCandidateView(rows, candidateView),
+    [rows, candidateView],
+  );
 
   const roleOptions = useMemo(
     () =>
-      Array.from(new Set(rows.map((row) => row.job.title))).sort((a, b) =>
+      Array.from(new Set(rowsForView.map((row) => row.job.title))).sort((a, b) =>
         a.localeCompare(b),
       ),
-    [rows],
+    [rowsForView],
   );
 
   const filtered = useMemo(
-    () => filterCandidateRows(rows, filters),
-    [rows, filters],
+    () => filterCandidateRows(rowsForView, filters),
+    [rowsForView, filters],
   );
 
   const filtersAreActive =
@@ -99,7 +107,7 @@ export default function EmployerCandidatesPage() {
     <div className="space-y-8 pb-8">
       <PageHeading
         title="Candidate management"
-        description="Compare the signals that matter, save promising people, and use AI Match as supporting evidence."
+        description="Review the screening queue first, save promising people, and use AI Match as supporting evidence."
       />
 
       <Card className="overflow-hidden border-2 shadow-[5px_6px_0_0_var(--border)]">
@@ -122,14 +130,37 @@ export default function EmployerCandidatesPage() {
                 </p>
               </div>
             </div>
-            <div className="rounded-lg border bg-surface-1 px-3 py-2">
-              <p className="text-sm font-semibold tabular-nums">
-                {filtered.length} of {rows.length} candidates shown
-              </p>
+            <div className="flex w-full flex-wrap items-end justify-end gap-3 sm:w-auto">
+              <div className="w-full sm:w-56">
+                <FilterSelect
+                  id="candidate-view"
+                  label="Candidate view"
+                  value={candidateView}
+                  onValueChange={(value) =>
+                    setCandidateView(value as CandidateView)
+                  }
+                >
+                  {APPLICATION_STAGES.map((stage) => (
+                    <SelectItem key={stage} value={stage}>
+                      {stage === "Screening"
+                        ? "Screening queue"
+                        : `${stage} candidates`}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="Rejected">
+                    Rejected candidates
+                  </SelectItem>
+                </FilterSelect>
+              </div>
+              <div className="rounded-lg border bg-surface-1 px-3 py-2">
+                <p className="text-sm font-semibold tabular-nums">
+                  {filtered.length} of {rowsForView.length} candidates shown
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
               <label htmlFor="candidate-search" className="text-caption">
                 Search candidates
@@ -166,23 +197,6 @@ export default function EmployerCandidatesPage() {
             </FilterSelect>
 
             <FilterSelect
-              id="candidate-stage-filter"
-              label="Hiring stage"
-              value={filters.stage}
-              onValueChange={(value) =>
-                updateFilter("stage", value as CandidateStageFilter)
-              }
-            >
-              <SelectItem value="All">All stages</SelectItem>
-              {APPLICATION_STAGES.map((stage) => (
-                <SelectItem key={stage} value={stage}>
-                  {stage}
-                </SelectItem>
-              ))}
-              <SelectItem value="Rejected">Rejected</SelectItem>
-            </FilterSelect>
-
-            <FilterSelect
               id="candidate-verification-filter"
               label="Verification"
               value={filters.verification}
@@ -214,8 +228,8 @@ export default function EmployerCandidatesPage() {
           <div className="flex min-h-10 flex-wrap items-center justify-between gap-3 border-t pt-4">
             <p className="flex items-center gap-2 text-meta">
               <Sparkles className="h-4 w-4 text-primary" aria-hidden />
-              AI Match ranks the list; experience and verified evidence stay
-              visible on every card.
+              Showing the {candidateView.toLocaleLowerCase()} view. AI Match
+              supports the review; experience remains the primary signal.
             </p>
             {filtersAreActive ? (
               <Button
@@ -253,17 +267,17 @@ export default function EmployerCandidatesPage() {
         <EmptyState
           icon={SearchX}
           title={
-            rows.length
+            rowsForView.length
               ? "No candidates match these filters"
-              : "No candidates yet"
+              : `No ${candidateView.toLocaleLowerCase()} candidates`
           }
           description={
-            rows.length
+            rowsForView.length
               ? "Try a broader search or clear one of the filters."
-              : "New applicants will appear here once they enter your hiring funnel."
+              : "Choose another candidate view or check back as the hiring pipeline moves."
           }
           action={
-            rows.length ? (
+            rowsForView.length ? (
               <Button
                 type="button"
                 variant="outline"

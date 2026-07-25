@@ -15,7 +15,6 @@ import {
 
 import type { EmployerCandidateRow } from "@/lib/data-helpers";
 import type { JobCandidateMatchScore } from "@/types/match-score";
-import { STAGE_VARIANT } from "@/types/application";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,7 +42,7 @@ export function CandidateDiscoveryCard({
   const [flipped, setFlipped] = useState(false);
   const [signalExpanded, setSignalExpanded] = useState(false);
   const [signalScrollProgress, setSignalScrollProgress] = useState(0);
-  const { candidate, job, app, matchScore, verification } = row;
+  const { candidate, job, matchScore, verification } = row;
   const displayedVerification =
     verification === "Verified" ? "Verified" : "None";
   const insight = buildCandidateInsight(row, match);
@@ -152,12 +151,6 @@ export function CandidateDiscoveryCard({
               >
                 <Star className={cn(starred && "fill-current")} aria-hidden />
               </Button>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Badge variant={app.rejected ? "destructive" : STAGE_VARIANT[app.stage]}>
-                {app.rejected ? "Rejected" : app.stage}
-              </Badge>
             </div>
 
             <div className="mt-5 space-y-3">

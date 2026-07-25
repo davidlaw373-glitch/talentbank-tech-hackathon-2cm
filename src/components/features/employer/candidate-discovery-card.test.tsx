@@ -115,6 +115,19 @@ describe("CandidateDiscoveryCard", () => {
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("does not show application stage labels on the candidate card", () => {
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText(row.app.stage)).toBeNull();
+  });
+
   it("shows verification as an icon beside the name without status text", () => {
     const { rerender } = render(
       <CandidateDiscoveryCard

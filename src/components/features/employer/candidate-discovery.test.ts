@@ -5,6 +5,7 @@ import type { JobCandidateMatchScore } from "@/types/match-score";
 import {
   buildCandidateInsight,
   filterCandidateRows,
+  filterRowsForCandidateView,
   getCandidateAchievement,
 } from "./candidate-discovery";
 
@@ -173,6 +174,42 @@ describe("filterCandidateRows", () => {
         sort: "asc",
       }).map((row) => row.matchScore),
     ).toEqual([62, 71, 94]);
+  });
+});
+
+describe("filterRowsForCandidateView", () => {
+  const rows = [
+    makeRow(1, { stage: "Screening" }),
+    makeRow(2, { stage: "Applied" }),
+    makeRow(3, { stage: "Interview" }),
+    makeRow(4, { stage: "Offer" }),
+    makeRow(5, { stage: "Applied", rejected: true }),
+  ];
+
+  it("shows only the selected active pipeline stage", () => {
+    expect(
+      filterRowsForCandidateView(rows, "Screening").map(
+        (row) => row.candidate.id,
+      ),
+    ).toEqual([1]);
+    expect(
+      filterRowsForCandidateView(rows, "Interview").map(
+        (row) => row.candidate.id,
+      ),
+    ).toEqual([3]);
+  });
+
+  it("keeps rejected candidates out of active views", () => {
+    expect(
+      filterRowsForCandidateView(rows, "Applied").map(
+        (row) => row.candidate.id,
+      ),
+    ).toEqual([2]);
+    expect(
+      filterRowsForCandidateView(rows, "Rejected").map(
+        (row) => row.candidate.id,
+      ),
+    ).toEqual([5]);
   });
 });
 

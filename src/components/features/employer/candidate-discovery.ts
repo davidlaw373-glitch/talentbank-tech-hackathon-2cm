@@ -3,6 +3,7 @@ import type { ApplicationStage } from "@/types/application";
 import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
+export type CandidateView = ApplicationStage | "Rejected";
 export type CandidateVerificationFilter = "Verified" | "None" | "All";
 export type CandidateMatchSort = "desc" | "asc";
 
@@ -26,6 +27,17 @@ export function getCandidateAchievement(row: EmployerCandidateRow): string {
     row.candidate.experience[0]?.description.trim() ||
     row.candidate.summary.trim() ||
     "No impact summary provided yet."
+  );
+}
+
+export function filterRowsForCandidateView(
+  rows: EmployerCandidateRow[],
+  view: CandidateView,
+): EmployerCandidateRow[] {
+  return rows.filter((row) =>
+    view === "Rejected"
+      ? row.app.rejected
+      : !row.app.rejected && row.app.stage === view,
   );
 }
 
