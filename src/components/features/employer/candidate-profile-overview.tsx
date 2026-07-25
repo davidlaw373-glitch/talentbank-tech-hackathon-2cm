@@ -63,18 +63,12 @@ export function CandidateProfileOverview({
                           className="animate-timeline-line-fill absolute inset-0 origin-top rounded-full bg-primary"
                           style={{ animationDelay }}
                         />
-                        <span
-                          data-slot="timeline-line-runner"
-                          className="animate-timeline-line-runner absolute -left-1 top-0 h-3 w-3 rounded-full border-2 border-surface-1 bg-primary shadow-[0_0_12px_var(--primary)]"
-                          style={{ animationDelay }}
-                        />
                       </>
                     ) : null}
                     {isCurrentTransition ? (
                       <span
                         data-slot="timeline-current-sweep"
                         className="animate-timeline-current-sweep absolute -left-0.5 top-0 h-1/3 w-2 rounded-full bg-primary shadow-[0_0_14px_var(--primary)]"
-                        style={{ animationDelay }}
                       />
                     ) : null}
                   </span>

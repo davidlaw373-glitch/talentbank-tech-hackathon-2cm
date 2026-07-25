@@ -37,9 +37,6 @@ describe("EmployerCandidateDetailPage", () => {
     const timelineLineFills = timeline.querySelectorAll(
       '[data-slot="timeline-line-fill"]',
     );
-    const timelineLineRunners = timeline.querySelectorAll(
-      '[data-slot="timeline-line-runner"]',
-    );
     const timelineNodeWaves = timeline.querySelectorAll(
       '[data-slot="timeline-node-wave"]',
     );
@@ -50,18 +47,11 @@ describe("EmployerCandidateDetailPage", () => {
       '[data-slot="timeline-current-sweep"]',
     );
     expect(timelineLineFills).toHaveLength(0);
-    expect(timelineLineRunners).toHaveLength(0);
     expect(timelineTracks).toHaveLength(0);
     expect(timelineNodeWaves).toHaveLength(1);
     expect(currentTransitionSweeps).toHaveLength(1);
     for (const lineFill of timelineLineFills) {
       expect(lineFill.className).toContain("animate-timeline-line-fill");
-    }
-    for (const lineRunner of timelineLineRunners) {
-      expect(lineRunner.className).toContain("animate-timeline-line-runner");
-      expect(lineRunner.className).toContain(
-        "shadow-[0_0_12px_var(--primary)]",
-      );
     }
     for (const track of timelineTracks) {
       expect(track.className).toContain("animate-timeline-track-glow");
@@ -78,7 +68,7 @@ describe("EmployerCandidateDetailPage", () => {
     );
     expect(
       (currentTransitionSweeps.item(0) as HTMLElement).style.animationDelay,
-    ).toBe("0s");
+    ).toBe("");
     expect(
       currentTransitionSweeps
         .item(0)
@@ -90,9 +80,7 @@ describe("EmployerCandidateDetailPage", () => {
         ?.querySelector('[data-slot="timeline-node-wave"]'),
     ).toBeNull();
     expect(
-      currentTransitionSweeps
-        .item(0)
-        .parentElement?.querySelector('[data-slot="timeline-line-runner"]'),
+      timeline.querySelector('[data-slot="timeline-line-runner"]'),
     ).toBeNull();
     expect(within(profileOverview).queryByText("Timeline")).toBeNull();
     expect(
@@ -127,7 +115,7 @@ describe("EmployerCandidateDetailPage", () => {
     ).toBeTruthy();
   });
 
-  it("sequences completed-stage runners before the current transition sweep", async () => {
+  it("keeps the current transition sweep free of falling runner balls", async () => {
     render(
       await EmployerCandidateDetailPage({
         params: Promise.resolve({ candidateId: "3" }),
@@ -137,16 +125,13 @@ describe("EmployerCandidateDetailPage", () => {
     const timeline = screen.getByRole("list", {
       name: "Hiring progress for Marco Okafor",
     });
-    const runners = timeline.querySelectorAll(
-      '[data-slot="timeline-line-runner"]',
-    );
     const currentSweep = timeline.querySelector(
       '[data-slot="timeline-current-sweep"]',
     ) as HTMLElement;
 
-    expect(runners).toHaveLength(2);
-    expect((runners.item(0) as HTMLElement).style.animationDelay).toBe("0s");
-    expect((runners.item(1) as HTMLElement).style.animationDelay).toBe("0.8s");
-    expect(currentSweep.style.animationDelay).toBe("1.6s");
+    expect(
+      timeline.querySelector('[data-slot="timeline-line-runner"]'),
+    ).toBeNull();
+    expect(currentSweep.style.animationDelay).toBe("");
   });
 });
