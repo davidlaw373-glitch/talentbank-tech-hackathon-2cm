@@ -145,7 +145,7 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "Data Engineer",
         stage: "Interview",
-        verification: "Pending",
+        verification: "None",
         sort: "desc",
       }).map((row) => row.candidate.id),
     ).toEqual([2]);

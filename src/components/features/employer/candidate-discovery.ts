@@ -3,9 +3,7 @@ import type { ApplicationStage } from "@/types/application";
 import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
-export type CandidateVerificationFilter =
-  | EmployerCandidateRow["verification"]
-  | "All";
+export type CandidateVerificationFilter = "Verified" | "None" | "All";
 export type CandidateMatchSort = "desc" | "asc";
 
 export type CandidateDiscoveryFilters = {
@@ -56,13 +54,15 @@ export function filterCandidateRows(
         (filters.stage === "Rejected"
           ? row.app.rejected
           : !row.app.rejected && row.app.stage === filters.stage);
+      const verification =
+        row.verification === "Verified" ? "Verified" : "None";
 
       return (
         (!query || searchable.includes(query)) &&
         (filters.role === "All" || row.job.title === filters.role) &&
         stageMatches &&
         (filters.verification === "All" ||
-          row.verification === filters.verification)
+          verification === filters.verification)
       );
     })
     .toSorted((a, b) =>

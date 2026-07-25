@@ -20,9 +20,14 @@ const match = getMatchScoreByPair(row.candidate.id, row.job.id);
 const unverifiedRow = getEmployerCandidateRows(1).find(
   (candidateRow) => candidateRow.verification === "None",
 );
+const pendingRow = getEmployerCandidateRows(1).find(
+  (candidateRow) => candidateRow.verification === "Pending",
+);
 
-if (!unverifiedRow) {
-  throw new Error("An unverified candidate fixture is required for card tests.");
+if (!unverifiedRow || !pendingRow) {
+  throw new Error(
+    "Unverified and pending candidate fixtures are required for card tests.",
+  );
 }
 
 describe("CandidateDiscoveryCard", () => {
@@ -142,6 +147,25 @@ describe("CandidateDiscoveryCard", () => {
       name: `None verification for ${unverifiedRow.candidate.name}`,
     });
     expect(unverifiedIcon.className).not.toContain("fill-verification");
+
+    rerender(
+      <CandidateDiscoveryCard
+        row={pendingRow}
+        match={getMatchScoreByPair(
+          pendingRow.candidate.id,
+          pendingRow.job.id,
+        )}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByRole("img", {
+        name: `None verification for ${pendingRow.candidate.name}`,
+      }),
+    ).toBeTruthy();
+    expect(screen.queryByText("Pending")).toBeNull();
   });
 
   it("links the AI insight to the complete profile", async () => {

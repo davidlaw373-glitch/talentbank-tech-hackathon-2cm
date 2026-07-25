@@ -195,7 +195,6 @@ export default function EmployerCandidatesPage() {
             >
               <SelectItem value="All">All verification</SelectItem>
               <SelectItem value="Verified">Verified</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="None">None</SelectItem>
             </FilterSelect>
 

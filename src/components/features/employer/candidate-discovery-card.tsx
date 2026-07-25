@@ -45,6 +45,8 @@ export function CandidateDiscoveryCard({
   const [signalExpanded, setSignalExpanded] = useState(false);
   const [signalScrollProgress, setSignalScrollProgress] = useState(0);
   const { candidate, job, app, matchScore, verification } = row;
+  const displayedVerification =
+    verification === "Verified" ? "Verified" : "None";
   const insight = buildCandidateInsight(row, match);
   const latestExperience = candidate.experience[0];
   const scoreWidth = Math.min(100, Math.max(0, matchScore));
@@ -111,16 +113,16 @@ export function CandidateDiscoveryCard({
                     </h2>
                     <span
                       role="img"
-                      aria-label={`${verification} verification for ${candidate.name}`}
-                      title={`${verification} verification`}
+                      aria-label={`${displayedVerification} verification for ${candidate.name}`}
+                      title={`${displayedVerification} verification`}
                       className={cn(
                         "shrink-0",
-                        verification === "Verified"
+                        displayedVerification === "Verified"
                           ? "fill-verification text-verification-foreground"
                           : "text-muted-foreground",
                       )}
                     >
-                      {verification === "Verified" ? (
+                      {displayedVerification === "Verified" ? (
                         <BadgeCheck
                           className="h-4.5 w-4.5"
                           aria-hidden
