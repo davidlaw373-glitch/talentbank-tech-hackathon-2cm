@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   LineChart,
   Menu,
-  School,
   ShieldCheck,
   Users,
   X,
@@ -29,7 +28,6 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/university", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/university/profile", label: "Institution", icon: School },
   { href: "/university/graduates", label: "Graduates", icon: Users },
   { href: "/university/verification", label: "Verification", icon: ShieldCheck },
   { href: "/university/disputes", label: "Disputes", icon: CheckCircle2 },

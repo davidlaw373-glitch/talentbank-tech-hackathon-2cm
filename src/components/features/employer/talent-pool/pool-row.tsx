@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeCheck,
   Check,
   Mail,
   Pencil,
@@ -46,27 +47,33 @@ const TAG_OPTIONS: TalentPoolTag[] = [
   "Specialist",
 ];
 
-function statusVariant(status: TalentPoolStatus) {
+function statusStyle(status: TalentPoolStatus) {
   switch (status) {
     case "Active":
-      return "default" as const;
+      return { variant: "default" as const, className: "" };
     case "Contacted":
-      return "secondary" as const;
+      return { variant: "secondary" as const, className: "" };
     case "Re-engaging":
-      return "secondary" as const;
+      return {
+        variant: "outline" as const,
+        className: "border-highlight/40 bg-highlight-soft text-foreground",
+      };
     case "Stale":
-      return "outline" as const;
+      return {
+        variant: "outline" as const,
+        className: "text-muted-foreground",
+      };
   }
 }
 
 function scoreTone(score: number) {
-  if (score >= 75) return "text-chart-1"; // strong — sage
+  if (score >= 75) return "text-success"; // strong — positive signal
   if (score >= 50) return "text-highlight"; // mid — warm copper
   return "text-muted-foreground"; // weak — recede
 }
 
 function scoreBarClass(score: number) {
-  if (score >= 75) return "bg-chart-1";
+  if (score >= 75) return "bg-success";
   if (score >= 50) return "bg-highlight";
   return "bg-muted-foreground/40";
 }
@@ -93,6 +100,7 @@ export function TalentPoolRow({
   const { push } = useToast();
   const [editingNotes, setEditingNotes] = useState(false);
   const [draftNotes, setDraftNotes] = useState(entry.notes);
+  const currentStatusStyle = statusStyle(entry.status);
 
   const updateStatus = (next: string) => {
     const status = next as TalentPoolStatus;
@@ -147,7 +155,12 @@ export function TalentPoolRow({
   };
 
   return (
-    <li className="rounded-md border bg-background p-4 transition-colors hover:bg-accent-soft">
+    <li
+      className={cn(
+        "lift-on-hover rounded-md border border-border/40 bg-surface-1 p-4",
+        selected && "border-highlight/60 bg-highlight-soft/40",
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         {/* Left: identity + meta */}
         <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -157,12 +170,12 @@ export function TalentPoolRow({
               checked={selected}
               onChange={() => onToggleSelect(entry.id)}
               aria-label={`Select ${candidate.name} for bulk outreach`}
-              className="h-4 w-4 cursor-pointer accent-foreground"
+              className="h-4 w-4 cursor-pointer accent-primary"
             />
           </label>
           <span
             aria-hidden
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-foreground"
           >
             {candidate.initials}
           </span>
@@ -174,11 +187,20 @@ export function TalentPoolRow({
               >
                 {candidate.name}
               </Link>
-              <Badge variant={statusVariant(entry.status)}>
+              <Badge
+                variant={currentStatusStyle.variant}
+                className={currentStatusStyle.className}
+              >
                 {entry.status}
               </Badge>
               {verification === "Verified" ? (
-                <Badge variant="outline">Verified</Badge>
+                <Badge
+                  variant="outline"
+                  className="border-accent/30 bg-accent-soft text-foreground"
+                >
+                  <BadgeCheck aria-hidden />
+                  Verified
+                </Badge>
               ) : null}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -199,7 +221,11 @@ export function TalentPoolRow({
             </div>
             <div className="flex flex-wrap gap-1">
               {candidate.topSkills.slice(0, 3).map((s) => (
-                <Badge key={s} variant="secondary" className="text-[10px]">
+                <Badge
+                  key={s}
+                  variant="outline"
+                  className="border-border/40 bg-surface-tint text-[10px] text-muted-foreground"
+                >
                   {s}
                 </Badge>
               ))}
@@ -315,8 +341,8 @@ export function TalentPoolRow({
                 className={cn(
                   "rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   on
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border bg-surface-tint text-muted-foreground hover:text-foreground",
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border/50 bg-surface-tint text-muted-foreground hover:border-primary/50 hover:text-foreground",
                 )}
               >
                 {tag}

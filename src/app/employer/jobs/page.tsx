@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowRight,
   Briefcase,
   Filter,
   Pause,
@@ -536,11 +535,6 @@ function JobRow({
                 </Button>
               </>
             )}
-            <Button asChild variant="ghost" size="icon" aria-label={`Open ${job.title}`}>
-              <Link href={`/employer/jobs/${job.id}`}>
-                <ArrowRight />
-              </Link>
-            </Button>
           </div>
         </div>
       </CardContent>
