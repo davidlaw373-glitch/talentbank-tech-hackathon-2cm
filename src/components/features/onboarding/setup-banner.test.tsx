@@ -20,13 +20,11 @@ describe("SetupBanner", () => {
       name: "Dismiss profile setup reminder",
     });
     expect(dismiss.className).not.toContain("border");
-    const actionColumn = dismiss.parentElement;
-    expect(actionColumn?.className).toContain("flex-col");
+    expect(dismiss.className).toContain("right-1");
+    expect(dismiss.className).toContain("top-1");
     expect(
-      dismiss.compareDocumentPosition(
-        screen.getByRole("link", { name: "Continue setup" }),
-      ) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+      screen.getByRole("link", { name: "Continue setup" }).className,
+    ).toContain("sm:left-1/2");
 
     await user.click(dismiss);
 
