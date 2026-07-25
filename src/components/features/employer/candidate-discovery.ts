@@ -4,7 +4,7 @@ import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
 export type CandidateView = ApplicationStage | "Rejected";
-export type CandidateSort = "latest" | "verified";
+export type CandidateSort = "none" | "latest" | "verified";
 
 export type CandidateDiscoveryFilters = {
   query: string;
@@ -71,6 +71,10 @@ export function filterCandidateRows(
       );
     })
     .toSorted((a, b) => {
+      if (filters.sort === "none") {
+        return 0;
+      }
+
       if (filters.sort === "latest") {
         return (
           b.app.appliedDate.localeCompare(a.app.appliedDate) ||

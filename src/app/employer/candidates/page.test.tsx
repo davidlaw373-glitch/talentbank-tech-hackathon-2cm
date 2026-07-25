@@ -37,16 +37,22 @@ describe("EmployerCandidatesPage", () => {
     expect(sortControl).toBeTruthy();
     expect(
       within(sortControl).getByRole("option", {
+        name: "None",
+      }),
+    ).toBeTruthy();
+    expect(
+      within(sortControl).getByRole("option", {
         name: "Latest",
       }),
     ).toBeTruthy();
     expect(
       within(sortControl).getByRole("option", {
-        name: "Verified first",
+        name: "Verified",
       }),
     ).toBeTruthy();
     expect(within(sortControl).queryByText(/AI Match/i)).toBeNull();
-    expect(within(sortControl).getAllByRole("option")).toHaveLength(2);
+    expect(within(sortControl).getAllByRole("option")).toHaveLength(3);
+    expect((sortControl as HTMLSelectElement).value).toBe("none");
     expect(screen.queryByText(/candidates shown/i)).toBeNull();
     expect(screen.queryByText("Candidate discovery")).toBeNull();
     expect(screen.queryByText("Find the right evidence")).toBeNull();

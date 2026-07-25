@@ -176,6 +176,23 @@ describe("filterCandidateRows", () => {
     ).toEqual([2, 3, 1]);
   });
 
+  it("preserves the original order when sorting is disabled", () => {
+    const unsortedRows = [
+      makeRow(1, { score: 60, appliedDate: "2026-07-01" }),
+      makeRow(2, { score: 95, appliedDate: "2026-07-03" }),
+      makeRow(3, { score: 75, appliedDate: "2026-07-02" }),
+    ];
+
+    expect(
+      filterCandidateRows(unsortedRows, {
+        query: "",
+        role: "All",
+        stage: "All",
+        sort: "none",
+      }).map((row) => row.candidate.id),
+    ).toEqual([1, 2, 3]);
+  });
+
   it("prioritizes verified candidates, then AI Match", () => {
     const mixedRows = [
       makeRow(1, { verification: "Verified", score: 70 }),

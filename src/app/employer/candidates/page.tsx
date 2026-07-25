@@ -41,7 +41,7 @@ const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
   query: "",
   role: "All",
   stage: "All",
-  sort: "latest",
+  sort: "none",
 };
 
 export default function EmployerCandidatesPage() {
@@ -262,8 +262,9 @@ export default function EmployerCandidatesPage() {
                 updateFilter("sort", value as CandidateSort)
               }
             >
+              <SelectItem value="none">None</SelectItem>
               <SelectItem value="latest">Latest</SelectItem>
-              <SelectItem value="verified">Verified first</SelectItem>
+              <SelectItem value="verified">Verified</SelectItem>
             </FilterSelect>
           </div>
         </CardContent>
