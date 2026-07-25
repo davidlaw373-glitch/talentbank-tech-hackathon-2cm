@@ -51,21 +51,25 @@ export function CandidateProfileOverview({
                       isComplete ? "bg-primary" : "bg-border",
                     )}
                   >
-                    <span
-                      data-slot="timeline-track-glow"
-                      className="animate-timeline-track-glow absolute inset-0 rounded-full bg-primary/55"
-                      style={{ animationDelay }}
-                    />
-                    <span
-                      data-slot="timeline-line-fill"
-                      className="animate-timeline-line-fill absolute inset-0 origin-top rounded-full bg-primary"
-                      style={{ animationDelay }}
-                    />
-                    <span
-                      data-slot="timeline-line-runner"
-                      className="animate-timeline-line-runner absolute -left-1 top-0 h-3 w-3 rounded-full border-2 border-surface-1 bg-primary shadow-[0_0_12px_var(--primary)]"
-                      style={{ animationDelay }}
-                    />
+                    {isComplete ? (
+                      <>
+                        <span
+                          data-slot="timeline-track-glow"
+                          className="animate-timeline-track-glow absolute inset-0 rounded-full bg-primary/55"
+                          style={{ animationDelay }}
+                        />
+                        <span
+                          data-slot="timeline-line-fill"
+                          className="animate-timeline-line-fill absolute inset-0 origin-top rounded-full bg-primary"
+                          style={{ animationDelay }}
+                        />
+                        <span
+                          data-slot="timeline-line-runner"
+                          className="animate-timeline-line-runner absolute -left-1 top-0 h-3 w-3 rounded-full border-2 border-surface-1 bg-primary shadow-[0_0_12px_var(--primary)]"
+                          style={{ animationDelay }}
+                        />
+                      </>
+                    ) : null}
                     {isCurrentTransition ? (
                       <span
                         data-slot="timeline-current-sweep"
@@ -92,15 +96,17 @@ export function CandidateProfileOverview({
                         : "upcoming"
                   }`}
                 >
-                  <span
-                    data-slot="timeline-node-wave"
-                    aria-hidden
-                    className="animate-pulse-ring-soft pointer-events-none absolute inset-0 rounded-full border border-primary/35"
-                    style={{
-                      animationDelay,
-                      animationDuration: "3s",
-                    }}
-                  />
+                  {isComplete || isCurrent ? (
+                    <span
+                      data-slot="timeline-node-wave"
+                      aria-hidden
+                      className="animate-pulse-ring-soft pointer-events-none absolute inset-0 rounded-full border border-primary/35"
+                      style={{
+                        animationDelay,
+                        animationDuration: "3s",
+                      }}
+                    />
+                  ) : null}
                   <span className="relative z-10">
                     {isComplete ? (
                       <Check className="h-4 w-4" aria-hidden />

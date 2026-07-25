@@ -49,10 +49,10 @@ describe("EmployerCandidateDetailPage", () => {
     const currentTransitionSweeps = timeline.querySelectorAll(
       '[data-slot="timeline-current-sweep"]',
     );
-    expect(timelineLineFills).toHaveLength(4);
-    expect(timelineLineRunners).toHaveLength(4);
-    expect(timelineTracks).toHaveLength(4);
-    expect(timelineNodeWaves).toHaveLength(5);
+    expect(timelineLineFills).toHaveLength(0);
+    expect(timelineLineRunners).toHaveLength(0);
+    expect(timelineTracks).toHaveLength(0);
+    expect(timelineNodeWaves).toHaveLength(1);
     expect(currentTransitionSweeps).toHaveLength(1);
     for (const lineFill of timelineLineFills) {
       expect(lineFill.className).toContain("animate-timeline-line-fill");
@@ -82,13 +82,15 @@ describe("EmployerCandidateDetailPage", () => {
         .closest('[data-slot="timeline-connector"]')?.className,
     ).not.toContain("overflow-hidden");
     expect(
-      (timelineLineRunners.item(0) as HTMLElement).style.animationDelay,
-    ).toBe(
-      "0s",
-    );
+      timeline
+        .querySelector('[aria-label="Screening, upcoming"]')
+        ?.querySelector('[data-slot="timeline-node-wave"]'),
+    ).toBeNull();
     expect(
-      (timelineLineRunners.item(1) as HTMLElement).style.animationDelay,
-    ).toBe("0.55s");
+      currentTransitionSweeps
+        .item(0)
+        .parentElement?.querySelector('[data-slot="timeline-line-runner"]'),
+    ).toBeNull();
     expect(within(profileOverview).queryByText("Timeline")).toBeNull();
     expect(
       within(profileOverview).queryByText(
