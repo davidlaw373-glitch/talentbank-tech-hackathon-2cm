@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import {
-  PanelLeftOpen,
   Search,
   SearchX,
   X,
@@ -115,10 +114,9 @@ export default function EmployerCandidatesPage() {
           <Button
             type="button"
             variant="outline"
-            className="mt-3"
+            className="mt-3 bg-surface-1 hover:bg-surface-2"
             onClick={() => setPipelineOpen(true)}
           >
-            <PanelLeftOpen aria-hidden />
             View candidate pipeline
           </Button>
         }

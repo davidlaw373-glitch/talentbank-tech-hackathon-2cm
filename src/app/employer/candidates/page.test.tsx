@@ -67,11 +67,15 @@ describe("EmployerCandidatesPage", () => {
       .closest("header");
 
     expect(pageHeader).toBeTruthy();
-    expect(
-      within(pageHeader as HTMLElement).getByRole("button", {
+    const pipelineButton = within(pageHeader as HTMLElement).getByRole(
+      "button",
+      {
         name: "View candidate pipeline",
-      }),
-    ).toBeTruthy();
+      },
+    );
+    expect(pipelineButton).toBeTruthy();
+    expect(pipelineButton.querySelector("svg")).toBeNull();
+    expect(pipelineButton.className).toContain("bg-surface-1");
   });
 
   it("defaults to screening candidates without stage labels on cards", () => {
