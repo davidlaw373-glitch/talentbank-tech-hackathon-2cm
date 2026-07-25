@@ -168,6 +168,9 @@ export default function EmployerCandidatesPage() {
                 <button
                   key={stage}
                   type="button"
+                  aria-label={
+                    stage === "Screening" ? "Screening queue" : stage
+                  }
                   aria-current={candidateView === stage ? "page" : undefined}
                   className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
                     candidateView === stage
@@ -181,7 +184,7 @@ export default function EmployerCandidatesPage() {
                   <span>
                     {stage === "Screening"
                       ? "Screening queue"
-                      : `${stage} candidates`}
+                      : stage}
                   </span>
                   <span className="text-meta tabular-nums">
                     {filterRowsForCandidateView(rows, stage).length}
@@ -191,6 +194,7 @@ export default function EmployerCandidatesPage() {
 
               <button
                 type="button"
+                aria-label="Rejected"
                 aria-current={
                   candidateView === "Rejected" ? "page" : undefined
                 }
@@ -203,7 +207,7 @@ export default function EmployerCandidatesPage() {
                   selectCandidateView("Rejected");
                 }}
               >
-                <span>Rejected candidates</span>
+                <span>Rejected</span>
                 <span className="text-meta tabular-nums">
                   {filterRowsForCandidateView(rows, "Rejected").length}
                 </span>

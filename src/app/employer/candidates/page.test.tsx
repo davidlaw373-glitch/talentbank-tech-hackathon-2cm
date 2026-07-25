@@ -92,7 +92,7 @@ describe("EmployerCandidatesPage", () => {
     expect(within(pipeline).queryByText("Pending")).toBeNull();
 
     fireEvent.click(
-      within(pipeline).getByRole("button", { name: /Offer candidates/i }),
+      within(pipeline).getByRole("button", { name: "Offer" }),
     );
 
     expect(
@@ -106,7 +106,7 @@ describe("EmployerCandidatesPage", () => {
     fireEvent.click(
       within(
         screen.getByRole("dialog", { name: "Candidate pipeline" }),
-      ).getByRole("button", { name: /Rejected candidates/i }),
+      ).getByRole("button", { name: "Rejected" }),
     );
 
     expect(screen.getAllByRole("article")).toHaveLength(rejectedCount);
