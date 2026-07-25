@@ -22,6 +22,7 @@ function makeRow(
     verification?: EmployerCandidateRow["verification"];
     score?: number;
     description?: string;
+    appliedDate?: string;
   } = {},
 ): EmployerCandidateRow {
   const role = overrides.role ?? "Frontend Engineer";
@@ -80,7 +81,7 @@ function makeRow(
       id,
       candidateId: id,
       jobId: id,
-      appliedDate: "2026-07-01",
+      appliedDate: overrides.appliedDate ?? "2026-07-01",
       stage: overrides.stage ?? "Applied",
       rejected: overrides.rejected ?? false,
       nextAction: "Review",
@@ -99,6 +100,7 @@ describe("filterCandidateRows", () => {
       company: "Helio",
       skill: "React",
       score: 94,
+      appliedDate: "2026-07-01",
     }),
     makeRow(2, {
       name: "Miguel Santos",
@@ -109,6 +111,7 @@ describe("filterCandidateRows", () => {
       stage: "Interview",
       verification: "Pending",
       score: 71,
+      appliedDate: "2026-07-03",
     }),
     makeRow(3, {
       name: "Priya Rao",
@@ -119,6 +122,7 @@ describe("filterCandidateRows", () => {
       rejected: true,
       verification: "None",
       score: 62,
+      appliedDate: "2026-07-02",
     }),
   ];
 
@@ -135,7 +139,7 @@ describe("filterCandidateRows", () => {
         role: "All",
         stage: "All",
         verification: "All",
-        sort: "desc",
+        sort: "match",
       }).map((row) => row.candidate.id),
     ).toEqual([1]);
   });
@@ -147,7 +151,7 @@ describe("filterCandidateRows", () => {
         role: "Data Engineer",
         stage: "Interview",
         verification: "None",
-        sort: "desc",
+        sort: "match",
       }).map((row) => row.candidate.id),
     ).toEqual([2]);
   });
@@ -159,21 +163,51 @@ describe("filterCandidateRows", () => {
         role: "All",
         stage: "Rejected",
         verification: "All",
-        sort: "desc",
+        sort: "match",
       }).map((row) => row.candidate.id),
     ).toEqual([3]);
   });
 
-  it("sorts AI Match in ascending order", () => {
+  it("sorts the newest applications first", () => {
     expect(
       filterCandidateRows(rows, {
         query: "",
         role: "All",
         stage: "All",
         verification: "All",
-        sort: "asc",
+        sort: "latest",
+      }).map((row) => row.candidate.id),
+    ).toEqual([2, 3, 1]);
+  });
+
+  it("sorts the highest AI Match first", () => {
+    expect(
+      filterCandidateRows(rows, {
+        query: "",
+        role: "All",
+        stage: "All",
+        verification: "All",
+        sort: "match",
       }).map((row) => row.matchScore),
-    ).toEqual([62, 71, 94]);
+    ).toEqual([94, 71, 62]);
+  });
+
+  it("prioritizes verified candidates, then AI Match", () => {
+    const mixedRows = [
+      makeRow(1, { verification: "Verified", score: 70 }),
+      makeRow(2, { verification: "None", score: 95 }),
+      makeRow(3, { verification: "Pending", score: 80 }),
+    ];
+
+    expect(
+      filterCandidateRows(mixedRows, {
+        query: "",
+        role: "All",
+        stage: "All",
+        verification: "All",
+        sort: "verified",
+      }).map((row) => row.candidate.id),
+    ).toEqual([1, 2, 3]);
   });
 });
 

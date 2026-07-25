@@ -33,7 +33,24 @@ describe("EmployerCandidatesPage", () => {
       screen.getByRole("button", { name: "View candidate pipeline" }),
     ).toBeTruthy();
     expect(screen.getByLabelText("Verification")).toBeTruthy();
-    expect(screen.getByLabelText("Sort candidates")).toBeTruthy();
+    const sortControl = screen.getByLabelText("Sort candidates");
+    expect(sortControl).toBeTruthy();
+    expect(
+      within(sortControl).getByRole("option", {
+        name: "Latest applications",
+      }),
+    ).toBeTruthy();
+    expect(
+      within(sortControl).getByRole("option", {
+        name: "Highest AI Match",
+      }),
+    ).toBeTruthy();
+    expect(
+      within(sortControl).getByRole("option", {
+        name: "Verified first",
+      }),
+    ).toBeTruthy();
+    expect(within(sortControl).queryByText(/lowest/i)).toBeNull();
     expect(screen.queryByText(/candidates shown/i)).toBeNull();
     expect(screen.queryByText("Candidate discovery")).toBeNull();
     expect(screen.queryByText("Find the right evidence")).toBeNull();

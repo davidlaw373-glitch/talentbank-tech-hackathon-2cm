@@ -32,7 +32,7 @@ import {
   filterRowsForCandidateView,
   type CandidateView,
   type CandidateDiscoveryFilters,
-  type CandidateMatchSort,
+  type CandidateSort,
   type CandidateVerificationFilter,
 } from "@/components/features/employer/candidate-discovery";
 
@@ -43,7 +43,7 @@ const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
   role: "All",
   stage: "All",
   verification: "All",
-  sort: "desc",
+  sort: "latest",
 };
 
 export default function EmployerCandidatesPage() {
@@ -277,11 +277,12 @@ export default function EmployerCandidatesPage() {
               label="Sort candidates"
               value={filters.sort}
               onValueChange={(value) =>
-                updateFilter("sort", value as CandidateMatchSort)
+                updateFilter("sort", value as CandidateSort)
               }
             >
-              <SelectItem value="desc">AI Match: highest first</SelectItem>
-              <SelectItem value="asc">AI Match: lowest first</SelectItem>
+              <SelectItem value="latest">Latest applications</SelectItem>
+              <SelectItem value="match">Highest AI Match</SelectItem>
+              <SelectItem value="verified">Verified first</SelectItem>
             </FilterSelect>
           </div>
         </CardContent>

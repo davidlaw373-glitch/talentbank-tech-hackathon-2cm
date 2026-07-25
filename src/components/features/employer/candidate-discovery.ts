@@ -5,14 +5,14 @@ import type { JobCandidateMatchScore } from "@/types/match-score";
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
 export type CandidateView = ApplicationStage | "Rejected";
 export type CandidateVerificationFilter = "Verified" | "None" | "All";
-export type CandidateMatchSort = "desc" | "asc";
+export type CandidateSort = "latest" | "match" | "verified";
 
 export type CandidateDiscoveryFilters = {
   query: string;
   role: string;
   stage: CandidateStageFilter;
   verification: CandidateVerificationFilter;
-  sort: CandidateMatchSort;
+  sort: CandidateSort;
 };
 
 export type CandidateInsight = {
@@ -77,11 +77,24 @@ export function filterCandidateRows(
           verification === filters.verification)
       );
     })
-    .toSorted((a, b) =>
-      filters.sort === "desc"
-        ? b.matchScore - a.matchScore
-        : a.matchScore - b.matchScore,
-    );
+    .toSorted((a, b) => {
+      if (filters.sort === "latest") {
+        return (
+          b.app.appliedDate.localeCompare(a.app.appliedDate) ||
+          b.matchScore - a.matchScore
+        );
+      }
+
+      if (filters.sort === "verified") {
+        const verifiedDifference =
+          Number(b.verification === "Verified") -
+          Number(a.verification === "Verified");
+
+        return verifiedDifference || b.matchScore - a.matchScore;
+      }
+
+      return b.matchScore - a.matchScore;
+    });
 }
 
 export function buildCandidateInsight(
