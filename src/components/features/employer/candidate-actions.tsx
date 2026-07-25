@@ -150,6 +150,8 @@ export function CandidateActions({
       >
         <Button
           type="button"
+          variant="outline"
+          className="bg-muted/45 hover:bg-muted/70"
           disabled={
             status.rejected || STAGE_INDEX[status.stage] >= STAGE_INDEX.Interview
           }
@@ -160,6 +162,8 @@ export function CandidateActions({
         </Button>
         <Button
           type="button"
+          variant="outline"
+          className="bg-muted/45 hover:bg-muted/70"
           disabled={
             status.rejected || STAGE_INDEX[status.stage] >= STAGE_INDEX.Offer
           }
@@ -170,6 +174,8 @@ export function CandidateActions({
         </Button>
         <Button
           type="button"
+          variant="outline"
+          className="bg-muted/45 hover:bg-muted/70"
           disabled={status.rejected}
           onClick={() => openAction("message")}
         >

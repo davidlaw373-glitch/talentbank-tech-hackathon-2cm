@@ -144,7 +144,7 @@ describe("Candidate review actions", () => {
     for (const actionName of ["Interview", "Send offer", "Message"]) {
       expect(
         screen.getByRole("button", { name: actionName }).className,
-      ).toContain("bg-primary");
+      ).toContain("bg-muted/45");
     }
     expect(
       screen.getByRole("button", { name: "Reject" }).className,
