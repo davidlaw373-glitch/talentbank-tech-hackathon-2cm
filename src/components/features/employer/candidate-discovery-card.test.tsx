@@ -164,6 +164,7 @@ describe("CandidateDiscoveryCard", () => {
       name: "Restore to Applied",
     });
     expect(restoreButton.parentElement?.textContent).toContain("AI Match");
+    expect(restoreButton.className).toContain("bg-primary");
 
     await user.click(restoreButton);
 

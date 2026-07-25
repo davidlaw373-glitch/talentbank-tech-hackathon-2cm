@@ -246,9 +246,8 @@ export function CandidateDiscoveryCard({
                 {row.app.rejected && onRestoreToApplied ? (
                   <Button
                     type="button"
-                    variant="outline"
                     size="sm"
-                    className="pointer-events-auto relative z-20 bg-surface-1"
+                    className="pointer-events-auto relative z-20"
                     tabIndex={flipped ? -1 : 0}
                     onClick={() => setRestorePromptOpen(true)}
                   >
