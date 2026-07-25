@@ -69,7 +69,7 @@ export function SetupBanner({ role }: SetupBannerProps) {
       <Button
         asChild
         size="sm"
-        className="ml-auto sm:absolute sm:left-1/2 sm:top-1/2 sm:ml-0 sm:-translate-x-1/2 sm:-translate-y-1/2"
+        className="ml-auto sm:absolute sm:right-10 sm:top-1/2 sm:ml-0 sm:-translate-y-1/2"
       >
         <Link href={`/onboarding/${role}`}>
           Continue setup

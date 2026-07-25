@@ -24,7 +24,7 @@ describe("SetupBanner", () => {
     expect(dismiss.className).toContain("top-1");
     expect(
       screen.getByRole("link", { name: "Continue setup" }).className,
-    ).toContain("sm:left-1/2");
+    ).toContain("sm:right-10");
 
     await user.click(dismiss);
 
