@@ -91,6 +91,21 @@ describe("EmployerCandidatesPage", () => {
     }
   });
 
+  it("includes six varied screening candidate examples", () => {
+    render(<EmployerCandidatesPage />);
+
+    for (const candidateName of [
+      "Maya Chen",
+      "Daniel Okafor",
+      "Elena García",
+      "Priya Nair",
+      "Jonas Berg",
+      "Amara Williams",
+    ]) {
+      expect(screen.getByText(candidateName)).toBeTruthy();
+    }
+  });
+
   it("opens a left pipeline panel and switches stages without pending", () => {
     render(<EmployerCandidatesPage />);
     const offerCount = getEmployerCandidateRows(1).filter(

@@ -100,5 +100,53 @@
     "score": 58,
     "matchingSkills": ["Go", "PostgreSQL", "AWS", "Kubernetes"],
     "missingSkills": ["Incident response", "Observability"]
+  },
+  {
+    "id": 13,
+    "candidateId": 501,
+    "jobId": 6,
+    "score": 96,
+    "matchingSkills": ["TypeScript", "React", "Next.js", "Accessibility", "Design systems"],
+    "missingSkills": []
+  },
+  {
+    "id": 14,
+    "candidateId": 502,
+    "jobId": 7,
+    "score": 89,
+    "matchingSkills": ["TypeScript", "React", "Design systems"],
+    "missingSkills": []
+  },
+  {
+    "id": 15,
+    "candidateId": 503,
+    "jobId": 8,
+    "score": 92,
+    "matchingSkills": ["B2B SaaS", "Developer tools", "Discovery research"],
+    "missingSkills": []
+  },
+  {
+    "id": 16,
+    "candidateId": 504,
+    "jobId": 9,
+    "score": 88,
+    "matchingSkills": ["Figma", "React", "Prototyping"],
+    "missingSkills": []
+  },
+  {
+    "id": 17,
+    "candidateId": 505,
+    "jobId": 10,
+    "score": 94,
+    "matchingSkills": ["Kubernetes", "Incident response", "Observability"],
+    "missingSkills": []
+  },
+  {
+    "id": 18,
+    "candidateId": 506,
+    "jobId": 6,
+    "score": 84,
+    "matchingSkills": ["TypeScript", "React", "Next.js", "Accessibility"],
+    "missingSkills": ["Design systems"]
   }
 ]

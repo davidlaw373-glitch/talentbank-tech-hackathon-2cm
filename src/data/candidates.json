@@ -38840,5 +38840,224 @@
         "status": "Not started"
       }
     ]
+  },
+  {
+    "id": 501,
+    "name": "Maya Chen",
+    "initials": "MC",
+    "title": "Staff Frontend Engineer",
+    "location": "Singapore",
+    "email": "maya.chen@example.com",
+    "phone": "+65 8891 2046",
+    "summary": "Frontend platform specialist with 9 years of experience building accessible design systems and high-traffic product surfaces.",
+    "profileCompletion": 96,
+    "verificationStatus": "Verified",
+    "skills": ["TypeScript", "React", "Next.js", "Accessibility", "Design systems", "Storybook"],
+    "topSkills": ["TypeScript", "React", "Design systems"],
+    "experience": [
+      {
+        "id": 2001,
+        "company": "Orbit Commerce",
+        "role": "Staff Frontend Engineer",
+        "period": "Feb 2022 — present",
+        "description": "Led a design-system migration across 14 product teams, reducing feature delivery time by 28% and raising accessibility compliance to 98%."
+      }
+    ],
+    "education": [
+      {
+        "id": 501,
+        "institution": "National University of Singapore",
+        "qualification": "BComp Computer Science",
+        "period": "2012 — 2016"
+      }
+    ],
+    "projects": [],
+    "evidence": [
+      {
+        "id": 2001,
+        "name": "Computer Science degree",
+        "type": "Education",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 502,
+    "name": "Daniel Okafor",
+    "initials": "DO",
+    "title": "Frontend Platform Engineer",
+    "location": "London, UK",
+    "email": "daniel.okafor@example.com",
+    "phone": "+44 7700 901502",
+    "summary": "Frontend infrastructure engineer focused on performance, developer tooling, and maintainable React platforms.",
+    "profileCompletion": 88,
+    "verificationStatus": "Not verified",
+    "skills": ["TypeScript", "React", "Design systems", "Performance", "Playwright", "CI/CD"],
+    "topSkills": ["TypeScript", "React", "Performance"],
+    "experience": [
+      {
+        "id": 2002,
+        "company": "FinchPay",
+        "role": "Frontend Platform Engineer",
+        "period": "Jun 2021 — present",
+        "description": "Reworked the frontend build pipeline and shared component architecture, cutting CI time by 41% for 60 engineers."
+      }
+    ],
+    "education": [
+      {
+        "id": 502,
+        "institution": "University of Manchester",
+        "qualification": "BSc Software Engineering",
+        "period": "2013 — 2017"
+      }
+    ],
+    "projects": [],
+    "evidence": []
+  },
+  {
+    "id": 503,
+    "name": "Elena García",
+    "initials": "EG",
+    "title": "Senior Platform Product Manager",
+    "location": "Madrid, Spain",
+    "email": "elena.garcia@example.com",
+    "phone": "+34 612 804 503",
+    "summary": "B2B platform product leader experienced in developer tools, discovery research, and multi-market product strategy.",
+    "profileCompletion": 94,
+    "verificationStatus": "Verified",
+    "skills": ["B2B SaaS", "Developer tools", "Discovery research", "Roadmaps", "Product analytics", "Strategy"],
+    "topSkills": ["B2B SaaS", "Developer tools", "Discovery research"],
+    "experience": [
+      {
+        "id": 2003,
+        "company": "CloudHarbor",
+        "role": "Senior Platform Product Manager",
+        "period": "Jan 2021 — present",
+        "description": "Launched a self-serve developer platform adopted by 320 enterprise teams, improving activation by 34% in two quarters."
+      }
+    ],
+    "education": [
+      {
+        "id": 503,
+        "institution": "IE University",
+        "qualification": "MSc Business Analytics",
+        "period": "2015 — 2016"
+      }
+    ],
+    "projects": [],
+    "evidence": [
+      {
+        "id": 2003,
+        "name": "Business Analytics degree",
+        "type": "Education",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 504,
+    "name": "Priya Nair",
+    "initials": "PN",
+    "title": "Design Engineer",
+    "location": "Bengaluru, India",
+    "email": "priya.nair@example.com",
+    "phone": "+91 98765 40504",
+    "summary": "Design engineer bridging product design and production React, with strong prototyping and interaction-system experience.",
+    "profileCompletion": 90,
+    "verificationStatus": "Not verified",
+    "skills": ["Figma", "React", "Prototyping", "Design systems", "Motion design", "Accessibility"],
+    "topSkills": ["Figma", "React", "Prototyping"],
+    "experience": [
+      {
+        "id": 2004,
+        "company": "Canvas Labs",
+        "role": "Design Engineer",
+        "period": "Apr 2022 — present",
+        "description": "Built a production-ready prototyping system that reduced design-to-code handoff time by 45% across mobile and web squads."
+      }
+    ],
+    "education": [
+      {
+        "id": 504,
+        "institution": "Srishti Institute of Art Design and Technology",
+        "qualification": "BDes Interaction Design",
+        "period": "2014 — 2018"
+      }
+    ],
+    "projects": [],
+    "evidence": []
+  },
+  {
+    "id": 505,
+    "name": "Jonas Berg",
+    "initials": "JB",
+    "title": "Site Reliability Engineer",
+    "location": "Stockholm, Sweden",
+    "email": "jonas.berg@example.com",
+    "phone": "+46 70 405 5505",
+    "summary": "Reliability engineer with deep Kubernetes, observability, and incident-response ownership in regulated production environments.",
+    "profileCompletion": 97,
+    "verificationStatus": "Verified",
+    "skills": ["Kubernetes", "Incident response", "Observability", "Go", "Terraform", "AWS"],
+    "topSkills": ["Kubernetes", "Observability", "Incident response"],
+    "experience": [
+      {
+        "id": 2005,
+        "company": "NordLedger",
+        "role": "Site Reliability Engineer",
+        "period": "Sep 2020 — present",
+        "description": "Introduced service-level objectives and automated incident playbooks, reducing critical recovery time from 74 to 19 minutes."
+      }
+    ],
+    "education": [
+      {
+        "id": 505,
+        "institution": "KTH Royal Institute of Technology",
+        "qualification": "MSc Computer Science",
+        "period": "2012 — 2017"
+      }
+    ],
+    "projects": [],
+    "evidence": [
+      {
+        "id": 2005,
+        "name": "Computer Science degree",
+        "type": "Education",
+        "status": "Verified"
+      }
+    ]
+  },
+  {
+    "id": 506,
+    "name": "Amara Williams",
+    "initials": "AW",
+    "title": "Senior Frontend Engineer",
+    "location": "Toronto, Canada",
+    "email": "amara.williams@example.com",
+    "phone": "+1 416 555 0506",
+    "summary": "Product-focused frontend engineer experienced in complex workflows, experimentation, and accessible React applications.",
+    "profileCompletion": 86,
+    "verificationStatus": "Not verified",
+    "skills": ["TypeScript", "React", "Next.js", "Accessibility", "Experimentation", "GraphQL"],
+    "topSkills": ["React", "TypeScript", "Accessibility"],
+    "experience": [
+      {
+        "id": 2006,
+        "company": "Relay Health",
+        "role": "Senior Frontend Engineer",
+        "period": "Nov 2021 — present",
+        "description": "Redesigned a clinical onboarding flow used by 180 hospitals, increasing completion by 22% while meeting WCAG 2.2 AA."
+      }
+    ],
+    "education": [
+      {
+        "id": 506,
+        "institution": "University of Waterloo",
+        "qualification": "BASc Systems Design Engineering",
+        "period": "2013 — 2018"
+      }
+    ],
+    "projects": [],
+    "evidence": []
   }
 ]
