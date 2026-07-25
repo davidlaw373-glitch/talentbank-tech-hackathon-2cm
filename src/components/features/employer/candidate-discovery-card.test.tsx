@@ -1,0 +1,134 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+
+import {
+  getEmployerCandidateRows,
+  getMatchScoreByPair,
+} from "@/lib/data-helpers";
+import { CandidateDiscoveryCard } from "./candidate-discovery-card";
+
+const row = getEmployerCandidateRows(1).find(
+  (candidateRow) => candidateRow.candidate.name === "Aisha Khan",
+);
+
+if (!row) {
+  throw new Error("Aisha Khan fixture is required for candidate card tests.");
+}
+
+const match = getMatchScoreByPair(row.candidate.id, row.job.id);
+
+describe("CandidateDiscoveryCard", () => {
+  it("flips from the decision summary to AI insight and back", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    const showInsight = screen.getByRole("button", {
+      name: "Show AI insight for Aisha Khan",
+    });
+    expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+
+    await user.click(showInsight);
+
+    expect(showInsight.getAttribute("aria-pressed")).toBe("true");
+    expect(
+      screen
+        .getByRole("button", {
+          name: "Show profile summary for Aisha Khan",
+        })
+        .getAttribute("tabindex"),
+    ).toBe("0");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Show profile summary for Aisha Khan",
+      }),
+    );
+
+    expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("supports Enter and Space on the face controls", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    const showInsight = screen.getByRole("button", {
+      name: "Show AI insight for Aisha Khan",
+    });
+    showInsight.focus();
+    await user.keyboard("{Enter}");
+    expect(showInsight.getAttribute("aria-pressed")).toBe("true");
+
+    const showSummary = screen.getByRole("button", {
+      name: "Show profile summary for Aisha Khan",
+    });
+    showSummary.focus();
+    await user.keyboard(" ");
+    expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("stars without flipping", async () => {
+    const user = userEvent.setup();
+    const onToggleStar = vi.fn();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={onToggleStar}
+      />,
+    );
+    const showInsight = screen.getByRole("button", {
+      name: "Show AI insight for Aisha Khan",
+    });
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Save Aisha Khan",
+      }),
+    );
+
+    expect(onToggleStar).toHaveBeenCalledOnce();
+    expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("links the AI insight to the complete profile", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Show AI insight for Aisha Khan",
+      }),
+    );
+
+    expect(
+      screen
+        .getByRole("link", {
+          name: "View Aisha Khan's full profile",
+        })
+        .getAttribute("href"),
+    ).toBe("/employer/candidates/2");
+  });
+});
