@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { STATUS_VARIANT } from "@/components/features/university/dispute-resolution";
 import { universityDisputes } from "@/lib/university-helpers";
 
 type PageProps = {
@@ -25,11 +27,23 @@ export default async function UniversityDisputeDetailPage({ params }: PageProps)
 
   return (
     <div className="space-y-6">
+      <Button asChild variant="outline" size="sm">
+        <Link href="/university/disputes">
+          <ArrowLeft aria-hidden />
+          Back
+        </Link>
+      </Button>
+
       <header className="space-y-2">
         <p className="text-caption">
           Dispute thread
         </p>
-        <h1 className="text-heading">{dispute.graduateName}</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-heading">{dispute.graduateName}</h1>
+          <Badge variant={STATUS_VARIANT[dispute.status]}>
+            {dispute.status}
+          </Badge>
+        </div>
         <p className="text-body text-muted-foreground">
           {dispute.field} · Filed {dispute.filedDate}
         </p>
@@ -60,23 +74,6 @@ export default async function UniversityDisputeDetailPage({ params }: PageProps)
           <p className="text-base">{dispute.counter}</p>
         </CardContent>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <h2>Status</h2>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="outline">{dispute.status}</Badge>
-        </CardContent>
-      </Card>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button asChild variant="outline">
-          <Link href="/university/disputes">Back to disputes</Link>
-        </Button>
-      </div>
     </div>
   );
 }

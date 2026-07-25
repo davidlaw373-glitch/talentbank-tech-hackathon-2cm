@@ -42,7 +42,7 @@ const STATUS_DESCRIPTION: Record<DisputeStatus, string> = {
   Rejected: "Dispute was not upheld.",
 };
 
-const STATUS_VARIANT: Record<
+export const STATUS_VARIANT: Record<
   DisputeStatus,
   "default" | "secondary" | "outline" | "destructive"
 > = {
