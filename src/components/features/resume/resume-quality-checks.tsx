@@ -1299,7 +1299,7 @@ export function ResumeQualityChecks() {
         >
           <Link href="/candidate/resume">
             <ArrowLeft aria-hidden />
-            Back to resume
+            Back
           </Link>
         </Button>
         <Badge variant="secondary">
