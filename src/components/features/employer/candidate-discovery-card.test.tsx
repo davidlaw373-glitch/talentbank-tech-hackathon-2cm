@@ -355,6 +355,24 @@ describe("CandidateDiscoveryCard", () => {
     expect(rotationPlane?.className).not.toContain("lift-on-hover");
   });
 
+  it("keeps both card faces square at top-left and curved at top-right", () => {
+    const { container } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const faces = container.querySelectorAll("article > div > div > section");
+
+    expect(faces).toHaveLength(2);
+    for (const face of faces) {
+      expect(face.className).toContain("rounded-tl-none");
+      expect(face.className).toContain("rounded-tr-2xl");
+    }
+  });
+
   it("removes the visible return prompt while the back remains clickable", async () => {
     const user = userEvent.setup();
     render(

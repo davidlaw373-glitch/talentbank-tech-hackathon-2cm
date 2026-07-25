@@ -152,4 +152,14 @@ describe("EmployerCandidatesPage", () => {
     expect(container.querySelector('[class*="bg-chart-"]')).toBeNull();
     expect(container.querySelector(".bg-primary")).toBeTruthy();
   });
+
+  it("uses a square top-left and curved top-right on the search panel", () => {
+    const { container } = render(<EmployerCandidatesPage />);
+    const searchPanel = container.querySelector(
+      '[data-slot="candidate-filter-panel"]',
+    );
+
+    expect(searchPanel?.className).toContain("rounded-tl-none");
+    expect(searchPanel?.className).toContain("rounded-tr-2xl");
+  });
 });
