@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BrandMark } from "@/components/common/brand-mark";
+import { CoverAnchorLink } from "@/components/features/cover/cover-anchor-link";
 import { Separator } from "@/components/ui/separator";
 
 const COLUMNS: { heading: string; links: string[] }[] = [
@@ -28,14 +29,14 @@ export function CoverFooter() {
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
           <div className="col-span-2 md:col-span-1">
-            <Link
+            <CoverAnchorLink
               href="#top"
               aria-label="CareerOS home"
               className="flex items-center gap-2"
             >
               <BrandMark size={7} />
               <small className="font-semibold tracking-tight">CareerOS</small>
-            </Link>
+            </CoverAnchorLink>
             <p className="mt-3 max-w-[200px] text-sm text-muted-foreground">
               The career operating system connecting candidates, employers,
               and universities.

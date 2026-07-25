@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 import { AnimatedCounter } from "@/components/common/animated-counter";
 import { CursorGlow } from "@/components/common/cursor-glow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
+import { CoverAnchorLink } from "@/components/features/cover/cover-anchor-link";
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -99,13 +99,13 @@ export function CoverHero() {
           style={{ animationDelay: "780ms" }}
         >
           <Button asChild size="lg">
-            <Link href="#start">
+            <CoverAnchorLink href="#start">
               Get started
               <ArrowRight />
-            </Link>
+            </CoverAnchorLink>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="#roles">Explore the platform</Link>
+            <CoverAnchorLink href="#roles">Explore the platform</CoverAnchorLink>
           </Button>
         </div>
 

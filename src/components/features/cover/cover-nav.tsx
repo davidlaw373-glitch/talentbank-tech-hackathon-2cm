@@ -7,11 +7,12 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/common/brand-mark";
 import { ThemeToggle } from "@/components/common/theme-toggle";
+import { CoverAnchorLink } from "@/components/features/cover/cover-anchor-link";
 import { activateCoverRole } from "@/components/features/cover/cover-roles";
 
 type NavLink = {
   label: string;
-  href: string;
+  href: `#${string}`;
   roleId?: string;
 };
 
@@ -22,55 +23,42 @@ const NAV_LINKS: NavLink[] = [
   { label: "Features", href: "#features" },
 ];
 
-function handleRoleLinkClick(roleId: string | undefined) {
-  if (!roleId) return;
-  activateCoverRole(roleId);
-}
-
 export function CoverNav() {
   const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <Link
+        <CoverAnchorLink
           href="#top"
           aria-label="CareerOS home"
           className="flex items-center gap-2"
         >
           <BrandMark />
-          <small className="font-semibold tracking-tight">CareerOS</small>
-        </Link>
+          <small className="font-semibold tracking-tight md:hidden lg:inline">
+            CareerOS
+          </small>
+        </CoverAnchorLink>
 
         <nav
-          className="hidden lg:flex items-center gap-8"
+          className="hidden items-center gap-3 md:flex lg:gap-8"
           aria-label="Primary"
         >
           {NAV_LINKS.map((link) => (
-            <Link
+            <CoverAnchorLink
               key={link.label}
               href={link.href}
-              onClick={() => handleRoleLinkClick(link.roleId)}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              onNavigate={
+                link.roleId ? () => activateCoverRole(link.roleId!) : undefined
+              }
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground lg:text-sm"
             >
               {link.label}
-            </Link>
+            </CoverAnchorLink>
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-2">
-          <ThemeToggle />
-          <Button asChild variant="outline" size="sm">
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/register">Get started</Link>
-          </Button>
-        </div>
-
-        {/* Tablet (md–lg): keep the auth CTAs visible so users have direct
-            access without opening the menu, but tuck the link list away. */}
-        <div className="hidden md:flex lg:hidden items-center gap-2">
+        <div className="hidden items-center gap-2 md:flex">
           <ThemeToggle />
           <Button asChild variant="outline" size="sm">
             <Link href="/login">Sign in</Link>
@@ -102,17 +90,17 @@ export function CoverNav() {
             aria-label="Mobile"
           >
             {NAV_LINKS.map((link) => (
-              <Link
+              <CoverAnchorLink
                 key={link.label}
                 href={link.href}
-                onClick={() => {
-                  handleRoleLinkClick(link.roleId);
+                onNavigate={() => {
+                  if (link.roleId) activateCoverRole(link.roleId);
                   setOpen(false);
                 }}
                 className="rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent-soft"
               >
                 {link.label}
-              </Link>
+              </CoverAnchorLink>
             ))}
             <div className="mt-2 flex flex-col gap-2 pt-2 border-t">
               <Button asChild variant="outline">

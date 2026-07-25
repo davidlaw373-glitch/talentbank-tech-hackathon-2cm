@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { ArrowRight, Check, GraduationCap, Compass, TrendingUp, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { CoverAnchorLink } from "@/components/features/cover/cover-anchor-link";
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { Badge } from "@/components/ui/badge";
@@ -297,10 +297,10 @@ export function CoverPathFinder() {
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <Button asChild>
-                    <Link href="#start">
+                    <CoverAnchorLink href="#start">
                       Get my full roadmap
                       <ArrowRight />
-                    </Link>
+                    </CoverAnchorLink>
                   </Button>
                   <p className="text-xs text-muted-foreground">
                     Adapts to your profile, goals, and live market data.

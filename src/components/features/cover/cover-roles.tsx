@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
+import { CoverAnchorLink } from "@/components/features/cover/cover-anchor-link";
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
 import { TiltCard } from "@/components/common/tilt-card";
@@ -428,10 +428,10 @@ export function CoverRoles() {
                           "hover:opacity-90",
                         )}
                       >
-                        <Link href="#start">
+                        <CoverAnchorLink href="#start">
                           {role.cta}
                           <ArrowRight />
-                        </Link>
+                        </CoverAnchorLink>
                       </Button>
                     </div>
                   </div>

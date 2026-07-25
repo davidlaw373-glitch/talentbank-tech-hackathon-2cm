@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ArrowRight, Activity, TrendingUp } from "lucide-react";
 
+import { CoverAnchorLink } from "@/components/features/cover/cover-anchor-link";
 import { CoverEyebrow } from "@/components/features/cover/cover-eyebrow";
 import { AnimatedCounter } from "@/components/common/animated-counter";
 import { ScrollReveal } from "@/components/common/scroll-reveal";
@@ -205,10 +205,10 @@ export function CoverPlatform() {
                   variant="secondary"
                   className="mt-4 w-full justify-between bg-background text-foreground hover:bg-background/90"
                 >
-                  <Link href="#start">
+                  <CoverAnchorLink href="#start">
                     Try the demo
                     <ArrowRight />
-                  </Link>
+                  </CoverAnchorLink>
                 </Button>
               </div>
             </div>
