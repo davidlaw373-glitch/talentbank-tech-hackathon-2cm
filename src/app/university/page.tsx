@@ -22,7 +22,7 @@ import {
   universityProfile,
 } from "@/lib/university-helpers";
 import type { VerificationRecordStatus } from "@/types/university";
-import { RecentDisputeRow } from "@/components/features/university/dashboard-interactions";
+import { DISPUTE_VARIANT } from "@/components/features/university/dashboard-interactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,14 +32,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { PageHeading } from "@/components/common/page-heading";
 import { cn } from "@/lib/utils";
 
@@ -312,15 +304,51 @@ export default function UniversityDashboardPage() {
             </Link>
           </Button>
         </div>
-        <Card>
-          <CardContent className="p-0">
-            <ul className="divide-y">
-              {recentDisputes.map((dispute) => (
-                <RecentDisputeRow key={dispute.id} dispute={dispute} />
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {recentDisputes.map((dispute) => (
+            <Card key={dispute.id}>
+              <CardContent className="space-y-4 p-5 sm:p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                      <span className="text-sm font-medium">
+                        {dispute.graduateInitials}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-base font-semibold">
+                        {dispute.graduateName}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {dispute.field} · {dispute.filedDate}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant={DISPUTE_VARIANT[dispute.status]}>
+                    {dispute.status}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-lg border bg-surface-tint p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      Claim
+                    </p>
+                    <p className="mt-0.5 line-clamp-1 text-sm">
+                      {dispute.claim}
+                    </p>
+                  </div>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/university/disputes">
+                      View
+                      <ArrowRight aria-hidden />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </section>
 
       {/* Employment at a glance */}
@@ -337,50 +365,49 @@ export default function UniversityDashboardPage() {
             </Link>
           </Button>
         </div>
-        <Card className="overflow-hidden">
-          <CardContent className="p-0">
-            <Table className="[&_tr:hover]:bg-transparent">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Cohort</TableHead>
-                  <TableHead>Employed</TableHead>
-                  <TableHead>Top employer</TableHead>
-                  <TableHead>Top role</TableHead>
-                  <TableHead className="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {employmentOutcomes.map((e) => (
-                  <TableRow key={e.id}>
-                    <TableCell>
-                      <p>{e.cohort}</p>
-                      <p className="text-muted-foreground">
-                        {e.employed} of {e.total}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {employmentOutcomes.map((e) => (
+            <Card key={e.id}>
+              <CardContent className="space-y-4 p-5 sm:p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                      <Building2 className="h-4 w-4" aria-hidden />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-base font-semibold">
+                        {e.cohort}
                       </p>
-                    </TableCell>
-                    <TableCell className="tabular-nums">
-                      {Math.round((e.employed / e.total) * 100)}%
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-2">
-                        <Building2 className="h-4 w-4" aria-hidden />
-                        {e.topEmployer}
-                      </span>
-                    </TableCell>
-                    <TableCell>{e.topRole}</TableCell>
-                    <TableCell>
-                      <Button asChild variant="outline" size="icon" aria-label={`Open ${e.cohort} details`}>
-                        <Link href="/university/employment">
-                          <ArrowRight />
-                        </Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {e.employed} of {e.total} employed
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="outline">
+                    {Math.round((e.employed / e.total) * 100)}%
+                  </Badge>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 rounded-lg border bg-surface-tint p-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      Top employer · role
+                    </p>
+                    <p className="mt-0.5 truncate text-sm">
+                      {e.topEmployer} · {e.topRole}
+                    </p>
+                  </div>
+                  <Button asChild size="sm" variant="outline">
+                    <Link href="/university/employment">
+                      View
+                      <ArrowRight aria-hidden />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </section>
     </div>
   );
