@@ -1,7 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, SearchX, SlidersHorizontal, Sparkles } from "lucide-react";
+import {
+  PanelLeftOpen,
+  Search,
+  SearchX,
+  SlidersHorizontal,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 import { APPLICATION_STAGES } from "@/types/application";
 import {
@@ -50,6 +57,7 @@ export default function EmployerCandidatesPage() {
     useState<CandidateDiscoveryFilters>(DEFAULT_FILTERS);
   const [candidateView, setCandidateView] =
     useState<CandidateView>("Screening");
+  const [pipelineOpen, setPipelineOpen] = useState(false);
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
 
   const rowsForView = useMemo(
@@ -84,6 +92,12 @@ export default function EmployerCandidatesPage() {
     setFilters((current) => ({ ...current, [key]: value }));
   };
 
+  const selectCandidateView = (view: CandidateView) => {
+    setCandidateView(view);
+    setFilters((current) => ({ ...current, role: "All" }));
+    setPipelineOpen(false);
+  };
+
   const toggleStar = (candidateId: number, candidateName: string) => {
     const willSave = !starredIds.has(candidateId);
     setStarredIds((current) => {
@@ -104,11 +118,98 @@ export default function EmployerCandidatesPage() {
   };
 
   return (
-    <div className="space-y-8 pb-8">
+    <div className="relative space-y-8 pb-8">
       <PageHeading
         title="Candidate management"
         description="Review the screening queue first, save promising people, and use AI Match as supporting evidence."
       />
+
+      {pipelineOpen ? (
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-[1px]"
+            aria-label="Close candidate pipeline"
+            onClick={() => setPipelineOpen(false)}
+          />
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Candidate pipeline"
+            className="fixed inset-y-0 left-0 z-50 flex w-[min(22rem,calc(100vw-2rem))] flex-col border-r-2 border-border bg-surface-1 p-5 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4 border-b pb-5">
+              <div>
+                <p className="text-caption">Candidate pipeline</p>
+                <h2 className="mt-1 text-subheading">Choose a hiring stage</h2>
+                <p className="mt-1 text-meta">
+                  Screening remains the default workspace.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                aria-label="Close candidate pipeline panel"
+                onClick={() => setPipelineOpen(false)}
+              >
+                <X aria-hidden />
+              </Button>
+            </div>
+
+            <nav
+              aria-label="Candidate pipeline stages"
+              className="mt-5 space-y-2"
+            >
+              {APPLICATION_STAGES.map((stage) => (
+                <button
+                  key={stage}
+                  type="button"
+                  aria-current={candidateView === stage ? "page" : undefined}
+                  className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
+                    candidateView === stage
+                      ? "border-primary bg-accent-soft text-foreground"
+                      : "border-border bg-surface-2 hover:bg-surface-tint"
+                  }`}
+                  onClick={() => {
+                    selectCandidateView(stage);
+                  }}
+                >
+                  <span>
+                    {stage === "Screening"
+                      ? "Screening queue"
+                      : `${stage} candidates`}
+                  </span>
+                  <span className="text-meta tabular-nums">
+                    {filterRowsForCandidateView(rows, stage).length}
+                  </span>
+                </button>
+              ))}
+
+              <button
+                type="button"
+                aria-current={
+                  candidateView === "Rejected" ? "page" : undefined
+                }
+                className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
+                  candidateView === "Rejected"
+                    ? "border-primary bg-accent-soft text-foreground"
+                    : "border-border bg-surface-2 hover:bg-surface-tint"
+                }`}
+                onClick={() => {
+                  selectCandidateView("Rejected");
+                }}
+              >
+                <span>Rejected candidates</span>
+                <span className="text-meta tabular-nums">
+                  {filterRowsForCandidateView(rows, "Rejected").length}
+                </span>
+              </button>
+            </nav>
+          </aside>
+        </>
+      ) : null}
 
       <Card className="overflow-hidden border-2 shadow-[5px_6px_0_0_var(--border)]">
         <div className="h-1.5 bg-primary" aria-hidden />
@@ -130,28 +231,15 @@ export default function EmployerCandidatesPage() {
                 </p>
               </div>
             </div>
-            <div className="flex w-full flex-wrap items-end justify-end gap-3 sm:w-auto">
-              <div className="w-full sm:w-56">
-                <FilterSelect
-                  id="candidate-view"
-                  label="Candidate view"
-                  value={candidateView}
-                  onValueChange={(value) =>
-                    setCandidateView(value as CandidateView)
-                  }
-                >
-                  {APPLICATION_STAGES.map((stage) => (
-                    <SelectItem key={stage} value={stage}>
-                      {stage === "Screening"
-                        ? "Screening queue"
-                        : `${stage} candidates`}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="Rejected">
-                    Rejected candidates
-                  </SelectItem>
-                </FilterSelect>
-              </div>
+            <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setPipelineOpen(true)}
+              >
+                <PanelLeftOpen aria-hidden />
+                View candidate pipeline
+              </Button>
               <div className="rounded-lg border bg-surface-1 px-3 py-2">
                 <p className="text-sm font-semibold tabular-nums">
                   {filtered.length} of {rowsForView.length} candidates shown

@@ -28,7 +28,10 @@ describe("EmployerCandidatesPage", () => {
     expect(screen.getByLabelText("Search candidates")).toBeTruthy();
     expect(screen.getByLabelText("Applied role")).toBeTruthy();
     expect(screen.queryByLabelText("Hiring stage")).toBeNull();
-    expect(screen.getByLabelText("Candidate view")).toBeTruthy();
+    expect(screen.queryByLabelText("Candidate view")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "View candidate pipeline" }),
+    ).toBeTruthy();
     expect(screen.getByLabelText("Verification")).toBeTruthy();
     expect(screen.getByLabelText("Sort candidates")).toBeTruthy();
     expect(screen.getByText(/candidates shown/i)).toBeTruthy();
@@ -52,17 +55,44 @@ describe("EmployerCandidatesPage", () => {
     }
   });
 
-  it("uses the candidate-view entry for other pipeline stages without pending", () => {
+  it("opens a left pipeline panel and switches stages without pending", () => {
     render(<EmployerCandidatesPage />);
-    const candidateView = screen.getByLabelText("Candidate view");
-    const appliedCount = getEmployerCandidateRows(1).filter(
-      (row) => !row.app.rejected && row.app.stage === "Applied",
+    const offerCount = getEmployerCandidateRows(1).filter(
+      (row) => !row.app.rejected && row.app.stage === "Offer",
+    ).length;
+    const rejectedCount = getEmployerCandidateRows(1).filter(
+      (row) => row.app.rejected,
     ).length;
 
-    expect(within(candidateView).queryByText("Pending")).toBeNull();
-    fireEvent.change(candidateView, { target: { value: "Applied" } });
+    fireEvent.click(
+      screen.getByRole("button", { name: "View candidate pipeline" }),
+    );
+    const pipeline = screen.getByRole("dialog", {
+      name: "Candidate pipeline",
+    });
+    expect(pipeline.className).toContain("left-0");
+    expect(pipeline.className).toContain("border-r-2");
+    expect(within(pipeline).queryByText("Pending")).toBeNull();
 
-    expect(screen.getAllByRole("article")).toHaveLength(appliedCount);
+    fireEvent.click(
+      within(pipeline).getByRole("button", { name: /Offer candidates/i }),
+    );
+
+    expect(
+      screen.queryByRole("dialog", { name: "Candidate pipeline" }),
+    ).toBeNull();
+    expect(screen.getAllByRole("article")).toHaveLength(offerCount);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "View candidate pipeline" }),
+    );
+    fireEvent.click(
+      within(
+        screen.getByRole("dialog", { name: "Candidate pipeline" }),
+      ).getByRole("button", { name: /Rejected candidates/i }),
+    );
+
+    expect(screen.getAllByRole("article")).toHaveLength(rejectedCount);
   });
 
   it("uses a restrained brand palette without decorative chart accents", () => {
