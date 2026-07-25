@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, type KeyboardEvent, type UIEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
-  BadgeCheck,
   BriefcaseBusiness,
-  Check,
   MapPin,
   Maximize2,
   Minimize2,
@@ -118,15 +117,12 @@ export function CandidateDiscoveryCard({
                         title="Verified"
                         className="relative h-5 w-5 shrink-0"
                       >
-                        <BadgeCheck
-                          className="absolute inset-0 h-5 w-5 fill-verification text-verification"
-                          strokeWidth={1.5}
-                          aria-hidden
-                        />
-                        <Check
-                          className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-primary"
-                          strokeWidth={3}
-                          aria-hidden
+                        <Image
+                          src="/images/verified-badge.png"
+                          alt=""
+                          width={20}
+                          height={20}
+                          className="h-5 w-5"
                         />
                       </span>
                     ) : null}

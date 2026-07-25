@@ -129,14 +129,12 @@ describe("CandidateDiscoveryCard", () => {
       name: "Verified verification for Aisha Khan",
     });
     expect(screen.queryByText("Verified")).toBeNull();
-    expect(
-      verifiedIcon
-        .querySelector(".lucide-badge-check")
-        ?.getAttribute("class"),
-    ).toContain("fill-verification");
-    expect(
-      verifiedIcon.querySelector(".lucide-check")?.getAttribute("class"),
-    ).toContain("text-primary");
+    const verifiedImage = verifiedIcon.querySelector("img");
+    expect(decodeURIComponent(verifiedImage?.getAttribute("src") ?? "")).toContain(
+      "/images/verified-badge.png",
+    );
+    expect(verifiedImage?.getAttribute("width")).toBe("20");
+    expect(verifiedImage?.getAttribute("height")).toBe("20");
 
     rerender(
       <CandidateDiscoveryCard
