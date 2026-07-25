@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent, type UIEvent } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -35,7 +35,7 @@ type CandidateDiscoveryCardProps = {
 };
 
 const SIGNAL_SCROLL_CLASSES =
-  "[scrollbar-width:thin] [scrollbar-color:var(--primary)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/45 [&::-webkit-scrollbar-thumb:hover]:bg-primary/70";
+  "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
 export function CandidateDiscoveryCard({
   row,
@@ -45,6 +45,7 @@ export function CandidateDiscoveryCard({
 }: CandidateDiscoveryCardProps) {
   const [flipped, setFlipped] = useState(false);
   const [signalExpanded, setSignalExpanded] = useState(false);
+  const [signalScrollProgress, setSignalScrollProgress] = useState(0);
   const { candidate, job, app, matchScore, verification } = row;
   const insight = buildCandidateInsight(row, match);
   const latestExperience = candidate.experience[0];
@@ -56,6 +57,13 @@ export function CandidateDiscoveryCard({
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
     setFlipped(nextFlipped);
+  };
+  const handleSignalScroll = (event: UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    const scrollRange = scrollHeight - clientHeight;
+    setSignalScrollProgress(
+      scrollRange > 0 ? Math.round((scrollTop / scrollRange) * 100) : 0,
+    );
   };
 
   return (
@@ -157,12 +165,12 @@ export function CandidateDiscoveryCard({
               </p>
             </div>
 
-            <div className="relative mt-5 h-36 shrink-0 overflow-hidden rounded-lg border bg-surface-2 p-4 pr-14">
+            <div className="group relative mt-5 h-36 shrink-0 overflow-hidden rounded-lg border bg-surface-2 p-4 pr-11">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="pointer-events-auto absolute right-2.5 top-2.5 z-20"
+                className="pointer-events-auto absolute right-2.5 top-2.5 z-20 h-8 w-8 min-h-8 min-w-8 rounded-md [&_svg]:size-3.5"
                 aria-label={`Expand recent signal for ${candidate.name}`}
                 aria-expanded={signalExpanded}
                 title={`Expand recent signal for ${candidate.name}`}
@@ -180,12 +188,27 @@ export function CandidateDiscoveryCard({
               <div
                 role="region"
                 aria-label={`Recent signal details for ${candidate.name}`}
+                tabIndex={flipped ? -1 : 0}
+                onScroll={handleSignalScroll}
                 className={cn(
-                  "mt-2 h-14 overflow-y-auto pr-2 text-meta leading-relaxed",
+                  "pointer-events-auto mt-2 h-14 overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
                   SIGNAL_SCROLL_CLASSES,
                 )}
               >
                 {getCandidateAchievement(row)}
+              </div>
+              <div
+                role="progressbar"
+                aria-label={`${candidate.name} recent signal scroll position`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={signalScrollProgress}
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-1 overflow-hidden bg-primary/15 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                <span
+                  className="block h-full rounded-r-full bg-primary transition-[width] duration-150"
+                  style={{ width: `${Math.max(12, signalScrollProgress)}%` }}
+                />
               </div>
             </div>
 
@@ -272,7 +295,7 @@ export function CandidateDiscoveryCard({
         </section>
 
         <section
-          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl border-2 border-border bg-accent-soft shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl border-2 border-border bg-surface-tint text-card-foreground shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
           aria-hidden={!flipped}
         >
           <button
@@ -287,7 +310,7 @@ export function CandidateDiscoveryCard({
           <div className="h-1.5 shrink-0 bg-primary" aria-hidden />
 
           <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col p-5">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex min-h-16 shrink-0 items-start justify-between gap-4">
               <div>
                 <p className="flex items-center gap-1.5 text-caption">
                   <Sparkles className="h-3.5 w-3.5" aria-hidden />
@@ -300,7 +323,7 @@ export function CandidateDiscoveryCard({
               </span>
             </div>
 
-            <div className="mt-5">
+            <div className="mt-4 h-[11.75rem] shrink-0 overflow-hidden">
               <p className="text-caption">Why this match</p>
               <ul className="mt-3 space-y-3">
                 {insight.reasons.map((reason, index) => (
@@ -315,12 +338,15 @@ export function CandidateDiscoveryCard({
               </ul>
             </div>
 
-            <div className="mt-5 rounded-lg border bg-surface-2 p-3.5">
+            <div
+              data-slot="screening-note"
+              className="mt-4 min-h-20 shrink-0 rounded-lg border bg-surface-1 p-3.5"
+            >
               <p className="flex items-center gap-2 text-caption">
                 <TriangleAlert className="h-3.5 w-3.5" aria-hidden />
                 Screening note
               </p>
-              <p className="mt-1.5 text-meta leading-relaxed">
+              <p className="mt-1.5 line-clamp-2 text-meta leading-relaxed">
                 {insight.caution}
               </p>
             </div>
@@ -338,11 +364,11 @@ export function CandidateDiscoveryCard({
               </div>
             ) : null}
 
-            <div className="mt-auto flex justify-center pb-3 pt-5">
+            <div className="mt-auto flex justify-center pb-3 pt-4">
               <Button
                 asChild
                 size="sm"
-                className="pointer-events-auto relative z-20"
+                className="pointer-events-auto relative z-20 w-full"
               >
                 <Link
                   href={`/employer/candidates/${candidate.id}`}

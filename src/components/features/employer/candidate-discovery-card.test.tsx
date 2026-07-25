@@ -171,13 +171,23 @@ describe("CandidateDiscoveryCard", () => {
     const boundedSignal = screen.getByRole("region", {
       name: "Recent signal details for Aisha Khan",
     });
+    const signalProgress = screen.getByRole("progressbar", {
+      name: "Aisha Khan recent signal scroll position",
+    });
 
     expect(boundedSignal.className).toContain("overflow-y-auto");
-    expect(boundedSignal.className).toContain("[scrollbar-width:thin]");
-    expect(boundedSignal.className).toContain(
-      "[&::-webkit-scrollbar-thumb]:rounded-full",
-    );
+    expect(boundedSignal.className).toContain("[scrollbar-width:none]");
+    expect(boundedSignal.className).toContain("[&::-webkit-scrollbar]:hidden");
+    expect(signalProgress.className).toContain("group-hover:opacity-100");
     expect(boundedSignal.parentElement?.className).toContain("h-36");
+
+    Object.defineProperties(boundedSignal, {
+      scrollTop: { configurable: true, value: 50 },
+      scrollHeight: { configurable: true, value: 100 },
+      clientHeight: { configurable: true, value: 50 },
+    });
+    fireEvent.scroll(boundedSignal);
+    expect(signalProgress.getAttribute("aria-valuenow")).toBe("100");
 
     await user.click(
       screen.getByRole("button", {
@@ -278,8 +288,31 @@ describe("CandidateDiscoveryCard", () => {
     );
 
     expect(container.querySelector("article")?.className).toContain("h-[33rem]");
-    expect(backFace.className).toContain("bg-accent-soft");
+    expect(backFace.className).toContain("bg-surface-tint");
+    expect(backFace.className).not.toContain("surface-card");
     expect(profileLink?.parentElement?.className).toContain("justify-center");
     expect(profileLink?.parentElement?.className).toContain("pb-3");
+    expect(profileLink?.className).toContain("w-full");
+  });
+
+  it("uses a compact signal expansion control and stable back-face sections", () => {
+    const { container } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const expandSignal = screen.getByRole("button", {
+      name: "Expand recent signal for Aisha Khan",
+    });
+    const screeningNote = container.querySelector(
+      '[data-slot="screening-note"]',
+    );
+
+    expect(expandSignal.className).toContain("h-8");
+    expect(expandSignal.parentElement?.className).toContain("pr-11");
+    expect(screeningNote?.className).toContain("min-h-20");
   });
 });

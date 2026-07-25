@@ -77,14 +77,30 @@ export function buildCandidateInsight(
   match: JobCandidateMatchScore | undefined,
 ): CandidateInsight {
   const matchingSkills = match?.matchingSkills.slice(0, 3) ?? [];
+  const latestExperience = row.candidate.experience[0];
+  const evidencedSkills = new Set(
+    [...row.candidate.skills, ...(match?.matchingSkills ?? [])].map((skill) =>
+      skill.toLocaleLowerCase(),
+    ),
+  );
+  const coveredMustHaves = row.job.mustHave.filter((skill) =>
+    evidencedSkills.has(skill.toLocaleLowerCase()),
+  );
+  const coverageSummary = row.job.mustHave.length
+    ? `${coveredMustHaves.length}/${row.job.mustHave.length}${
+        coveredMustHaves.length
+          ? ` (${coveredMustHaves.slice(0, 3).join(", ")})`
+          : ""
+      }`
+    : matchingSkills.length
+      ? matchingSkills.join(", ")
+      : "role-relevant experience";
   const reasons = [
-    matchingSkills.length
-      ? `Matches ${matchingSkills.join(", ")} for ${row.job.title}.`
-      : `Experience aligns with the ${row.job.title} application.`,
-    getCandidateAchievement(row),
-    row.verification === "Verified"
-      ? "Profile evidence includes university-verified credentials."
-      : `Credential review status: ${row.verification.toLowerCase()}.`,
+    latestExperience
+      ? `Current scope: ${latestExperience.role} at ${latestExperience.company} (${latestExperience.period}), providing recent evidence for ${row.job.title}.`
+      : `Current scope: profile experience aligns with ${row.job.title}.`,
+    `Demonstrated impact: ${getCandidateAchievement(row)}`,
+    `Must-have coverage: ${coverageSummary}.`,
   ];
 
   return {
@@ -96,8 +112,10 @@ export function buildCandidateInsight(
           : "Review role gaps before saving",
     reasons,
     caution: match?.missingSkills.length
-      ? `Validate ${match.missingSkills.slice(0, 2).join(" and ")} during screening.`
-      : "No must-have skill gaps identified.",
+      ? `Validate hands-on depth in ${match.missingSkills
+          .slice(0, 2)
+          .join(" and ")} with a recent production example.`
+      : "Confirm ownership depth and decision-making scope in the first interview.",
     skills: matchingSkills,
   };
 }

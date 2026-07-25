@@ -207,6 +207,10 @@ describe("candidate evidence", () => {
     const insight = buildCandidateInsight(row, match);
 
     expect(insight.reasons).toHaveLength(3);
+    expect(insight.reasons[0]).toContain("Current scope");
+    expect(insight.reasons[1]).toContain("Demonstrated impact");
+    expect(insight.reasons[2]).toContain("Must-have coverage");
+    expect(insight.reasons.join(" ")).not.toContain("university-verified");
     expect(insight.caution).toContain("GraphQL");
     expect(insight.skills).toEqual(["React", "TypeScript"]);
   });
@@ -222,6 +226,8 @@ describe("candidate evidence", () => {
       missingSkills: [],
     });
 
-    expect(insight.caution).toBe("No must-have skill gaps identified.");
+    expect(insight.caution).toBe(
+      "Confirm ownership depth and decision-making scope in the first interview.",
+    );
   });
 });
