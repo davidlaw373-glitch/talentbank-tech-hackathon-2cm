@@ -49,12 +49,16 @@ export function CandidateProfileOverview({
                       isComplete ? "bg-primary" : "bg-border",
                     )}
                   >
-                    {isActiveTransition ? (
-                      <span
-                        data-slot="timeline-active-flow"
-                        className="animate-timeline-flow-down absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-transparent via-primary to-transparent"
-                      />
-                    ) : null}
+                    <span
+                      data-slot="timeline-flow"
+                      className={cn(
+                        "animate-timeline-flow-down absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-transparent to-transparent",
+                        isActiveTransition
+                          ? "via-primary"
+                          : "via-primary/55",
+                      )}
+                      style={{ animationDelay: `${index * 0.45}s` }}
+                    />
                   </span>
                 ) : null}
                 <span
@@ -75,11 +79,19 @@ export function CandidateProfileOverview({
                         : "upcoming"
                   }`}
                 >
-                  {isComplete ? (
-                    <Check className="h-4 w-4" aria-hidden />
-                  ) : (
-                    index + 1
-                  )}
+                  <span
+                    data-slot="timeline-node-wave"
+                    aria-hidden
+                    className="animate-pulse-ring-soft pointer-events-none absolute inset-0 rounded-full border border-primary/35"
+                    style={{ animationDelay: `${index * 0.45}s` }}
+                  />
+                  <span className="relative z-10">
+                    {isComplete ? (
+                      <Check className="h-4 w-4" aria-hidden />
+                    ) : (
+                      index + 1
+                    )}
+                  </span>
                 </span>
                 <div className="min-w-0 pt-1">
                   <p

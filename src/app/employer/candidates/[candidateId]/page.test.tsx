@@ -34,9 +34,26 @@ describe("EmployerCandidateDetailPage", () => {
     expect(
       within(timeline).getByText("Applied").className,
     ).toContain("text-base");
-    expect(
-      timeline.querySelector('[data-slot="timeline-active-flow"]')?.className,
-    ).toContain("animate-timeline-flow-down");
+    const timelineFlows = timeline.querySelectorAll(
+      '[data-slot="timeline-flow"]',
+    );
+    const timelineNodeWaves = timeline.querySelectorAll(
+      '[data-slot="timeline-node-wave"]',
+    );
+    expect(timelineFlows).toHaveLength(4);
+    expect(timelineNodeWaves).toHaveLength(5);
+    for (const flow of timelineFlows) {
+      expect(flow.className).toContain("animate-timeline-flow-down");
+    }
+    for (const nodeWave of timelineNodeWaves) {
+      expect(nodeWave.className).toContain("animate-pulse-ring-soft");
+    }
+    expect((timelineFlows.item(0) as HTMLElement).style.animationDelay).toBe(
+      "0s",
+    );
+    expect((timelineFlows.item(1) as HTMLElement).style.animationDelay).toBe(
+      "0.45s",
+    );
     expect(within(profileOverview).queryByText("Timeline")).toBeNull();
     expect(
       within(profileOverview).queryByText(
