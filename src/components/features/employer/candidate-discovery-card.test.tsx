@@ -227,6 +227,7 @@ describe("CandidateDiscoveryCard", () => {
     const activeStatus = screen.getByText(row.app.stage);
     expect(activeStatus.getAttribute("data-slot")).toBe("candidate-status");
     expect(activeStatus.className).toContain("bg-primary");
+    expect(activeStatus.className).toContain("text-primary-foreground");
 
     rerender(
       <CandidateDiscoveryCard

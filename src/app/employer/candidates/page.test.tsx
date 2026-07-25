@@ -42,31 +42,23 @@ describe("EmployerCandidatesPage", () => {
       screen.getByRole("button", { name: "View candidate pipeline" }),
     ).toBeTruthy();
     expect(screen.queryByLabelText("Verification")).toBeNull();
-    const sortControl = screen.getByLabelText("Sort candidates");
+    const sortControl = screen.getByRole("button", {
+      name: "Sort candidates",
+    });
     expect(sortControl).toBeTruthy();
-    expect(
-      within(sortControl).getByRole("option", {
-        name: "None",
-      }),
-    ).toBeTruthy();
-    expect(
-      within(sortControl).getByRole("option", {
-        name: "Latest",
-      }),
-    ).toBeTruthy();
-    expect(
-      within(sortControl).getByRole("option", {
-        name: "Verified",
-      }),
-    ).toBeTruthy();
-    expect(
-      within(sortControl).getByRole("option", {
-        name: "Starred",
-      }),
-    ).toBeTruthy();
-    expect(within(sortControl).queryByText(/AI Match/i)).toBeNull();
-    expect(within(sortControl).getAllByRole("option")).toHaveLength(4);
-    expect((sortControl as HTMLSelectElement).value).toBe("none");
+    expect(sortControl.textContent).toContain("None");
+    fireEvent.pointerDown(sortControl, { button: 0, ctrlKey: false });
+    for (const option of [
+      "Latest",
+      "Verified",
+      "Starred",
+      "AI Match: high to low",
+    ]) {
+      expect(
+        screen.getByRole("menuitemcheckbox", { name: option }),
+      ).toBeTruthy();
+    }
+    expect(screen.getAllByRole("menuitemcheckbox")).toHaveLength(4);
     expect(screen.queryByText(/candidates shown/i)).toBeNull();
     expect(screen.queryByText("Candidate discovery")).toBeNull();
     expect(screen.queryByText("Find the right evidence")).toBeNull();
@@ -116,9 +108,14 @@ describe("EmployerCandidatesPage", () => {
     fireEvent.click(
       within(firstCard).getByRole("button", { name: /^Save / }),
     );
-    fireEvent.change(screen.getByLabelText("Sort candidates"), {
-      target: { value: "starred" },
+    const sortControl = screen.getByRole("button", {
+      name: "Sort candidates",
     });
+    fireEvent.pointerDown(sortControl, { button: 0, ctrlKey: false });
+    fireEvent.click(
+      screen.getByRole("menuitemcheckbox", { name: "Starred" }),
+    );
+    fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
 
     const filteredCards = within(
       screen.getByRole("list", { name: "Candidate results" }),
@@ -127,6 +124,33 @@ describe("EmployerCandidatesPage", () => {
     expect(filteredCards[0].getAttribute("aria-label")).toContain(
       savedCandidateName as string,
     );
+  });
+
+  it("combines multiple candidate sort filters", () => {
+    renderCandidatesPage();
+    const sortControl = screen.getByRole("button", {
+      name: "Sort candidates",
+    });
+
+    fireEvent.pointerDown(sortControl, { button: 0, ctrlKey: false });
+    fireEvent.click(
+      screen.getByRole("menuitemcheckbox", { name: "Verified" }),
+    );
+    fireEvent.click(
+      screen.getByRole("menuitemcheckbox", {
+        name: "AI Match: high to low",
+      }),
+    );
+
+    expect(sortControl.textContent).toContain("2 selected");
+    fireEvent.keyDown(screen.getByRole("menu"), { key: "Escape" });
+    const visibleRows = getEmployerCandidateRows(1).filter(
+      (row) =>
+        !row.app.rejected &&
+        row.app.stage === "Applied" &&
+        row.verification === "Verified",
+    );
+    expect(screen.queryAllByRole("article")).toHaveLength(visibleRows.length);
   });
 
   it("shows every pipeline record from View all", () => {

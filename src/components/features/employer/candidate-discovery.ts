@@ -4,13 +4,13 @@ import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
 export type CandidateView = ApplicationStage | "Rejected" | "All";
-export type CandidateSort = "none" | "latest" | "verified" | "starred";
+export type CandidateSort = "latest" | "verified" | "starred" | "match-desc";
 
 export type CandidateDiscoveryFilters = {
   query: string;
   role: string;
   stage: CandidateStageFilter;
-  sort: CandidateSort;
+  sort: CandidateSort[];
 };
 
 export type CandidateInsight = {
@@ -46,6 +46,7 @@ export function filterCandidateRows(
   starredIds: ReadonlySet<number> = new Set(),
 ): EmployerCandidateRow[] {
   const query = filters.query.trim().toLocaleLowerCase();
+  const selectedSorts = new Set(filters.sort);
 
   return rows
     .filter((row) => {
@@ -70,34 +71,24 @@ export function filterCandidateRows(
         (!query || searchable.includes(query)) &&
         (filters.role === "All" || row.job.title === filters.role) &&
         stageMatches &&
-        (filters.sort !== "starred" || starredIds.has(row.candidate.id))
+        (!selectedSorts.has("starred") || starredIds.has(row.candidate.id)) &&
+        (!selectedSorts.has("verified") ||
+          row.verification === "Verified")
       );
     })
     .toSorted((a, b) => {
-      if (filters.sort === "none") {
-        return 0;
-      }
-
-      if (filters.sort === "starred") {
-        return 0;
-      }
-
-      if (filters.sort === "latest") {
-        return (
-          b.app.appliedDate.localeCompare(a.app.appliedDate) ||
-          b.matchScore - a.matchScore
+      if (selectedSorts.has("latest")) {
+        const dateDifference = b.app.appliedDate.localeCompare(
+          a.app.appliedDate,
         );
+        if (dateDifference) return dateDifference;
       }
 
-      if (filters.sort === "verified") {
-        const verifiedDifference =
-          Number(b.verification === "Verified") -
-          Number(a.verification === "Verified");
-
-        return verifiedDifference || b.matchScore - a.matchScore;
+      if (selectedSorts.has("match-desc")) {
+        return b.matchScore - a.matchScore;
       }
 
-      return b.matchScore - a.matchScore;
+      return 0;
     });
 }
 

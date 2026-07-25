@@ -138,7 +138,7 @@ describe("filterCandidateRows", () => {
         query,
         role: "All",
         stage: "All",
-        sort: "latest",
+        sort: ["latest"],
       }).map((row) => row.candidate.id),
     ).toEqual([1]);
   });
@@ -149,7 +149,7 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "Data Engineer",
         stage: "Interview",
-        sort: "latest",
+        sort: ["latest"],
       }).map((row) => row.candidate.id),
     ).toEqual([2]);
   });
@@ -160,7 +160,7 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "Rejected",
-        sort: "latest",
+        sort: ["latest"],
       }).map((row) => row.candidate.id),
     ).toEqual([3]);
   });
@@ -171,7 +171,7 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "All",
-        sort: "latest",
+        sort: ["latest"],
       }).map((row) => row.candidate.id),
     ).toEqual([2, 3, 1]);
   });
@@ -188,12 +188,12 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "All",
-        sort: "none",
+        sort: [],
       }).map((row) => row.candidate.id),
     ).toEqual([1, 2, 3]);
   });
 
-  it("prioritizes verified candidates, then AI Match", () => {
+  it("filters to verified candidates", () => {
     const mixedRows = [
       makeRow(1, { verification: "Verified", score: 70 }),
       makeRow(2, { verification: "None", score: 95 }),
@@ -205,9 +205,9 @@ describe("filterCandidateRows", () => {
         query: "",
         role: "All",
         stage: "All",
-        sort: "verified",
+        sort: ["verified"],
       }).map((row) => row.candidate.id),
-    ).toEqual([1, 2, 3]);
+    ).toEqual([1]);
   });
 
   it("filters to starred candidates while preserving their order", () => {
@@ -218,11 +218,37 @@ describe("filterCandidateRows", () => {
           query: "",
           role: "All",
           stage: "All",
-          sort: "starred",
+          sort: ["starred"],
         },
         new Set([1, 3]),
       ).map((row) => row.candidate.id),
     ).toEqual([1, 3]);
+  });
+
+  it("sorts AI Match from high to low", () => {
+    expect(
+      filterCandidateRows(rows, {
+        query: "",
+        role: "All",
+        stage: "All",
+        sort: ["match-desc"],
+      }).map((row) => row.candidate.id),
+    ).toEqual([1, 2, 3]);
+  });
+
+  it("combines verified and starred filters with latest sorting", () => {
+    expect(
+      filterCandidateRows(
+        rows,
+        {
+          query: "",
+          role: "All",
+          stage: "All",
+          sort: ["verified", "starred", "latest"],
+        },
+        new Set([1, 2]),
+      ).map((row) => row.candidate.id),
+    ).toEqual([1]);
   });
 });
 

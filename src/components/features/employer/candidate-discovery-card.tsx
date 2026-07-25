@@ -169,7 +169,7 @@ export function CandidateDiscoveryCard({
             <Badge
               data-slot="candidate-status"
               variant={row.app.rejected ? "destructive" : "default"}
-              className="mt-4 self-start shadow-none"
+              className="mt-4 self-start text-primary-foreground shadow-none"
             >
               {statusLabel}
             </Badge>

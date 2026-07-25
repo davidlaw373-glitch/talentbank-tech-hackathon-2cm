@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
+  ChevronDown,
   Search,
   SearchX,
   X,
@@ -17,6 +18,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PageHeading } from "@/components/common/page-heading";
 import { EmptyState } from "@/components/common/empty-state";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -41,8 +50,15 @@ const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
   query: "",
   role: "All",
   stage: "All",
-  sort: "none",
+  sort: [],
 };
+
+const SORT_OPTIONS: Array<{ value: CandidateSort; label: string }> = [
+  { value: "latest", label: "Latest" },
+  { value: "verified", label: "Verified" },
+  { value: "starred", label: "Starred" },
+  { value: "match-desc", label: "AI Match: high to low" },
+];
 
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
@@ -125,6 +141,15 @@ export default function EmployerCandidatesPage() {
         : "You can save this profile again at any time.",
       tone: "info",
     });
+  };
+
+  const toggleSort = (sort: CandidateSort) => {
+    setFilters((current) => ({
+      ...current,
+      sort: current.sort.includes(sort)
+        ? current.sort.filter((selected) => selected !== sort)
+        : [...current.sort, sort],
+    }));
   };
 
   const restoreToApplied = (
@@ -303,19 +328,11 @@ export default function EmployerCandidatesPage() {
               ))}
             </FilterSelect>
 
-            <FilterSelect
-              id="candidate-sort"
-              label="Sort candidates"
-              value={filters.sort}
-              onValueChange={(value) =>
-                updateFilter("sort", value as CandidateSort)
-              }
-            >
-              <SelectItem value="none">None</SelectItem>
-              <SelectItem value="latest">Latest</SelectItem>
-              <SelectItem value="verified">Verified</SelectItem>
-              <SelectItem value="starred">Starred</SelectItem>
-            </FilterSelect>
+            <MultiSortFilter
+              selected={filters.sort}
+              onToggle={toggleSort}
+              onClear={() => updateFilter("sort", [])}
+            />
           </div>
         </CardContent>
       </Card>
@@ -373,6 +390,64 @@ export default function EmployerCandidatesPage() {
           }
         />
       )}
+    </div>
+  );
+}
+
+function MultiSortFilter({
+  selected,
+  onToggle,
+  onClear,
+}: {
+  selected: CandidateSort[];
+  onToggle: (sort: CandidateSort) => void;
+  onClear: () => void;
+}) {
+  const summary =
+    selected.length === 0
+      ? "None"
+      : selected.length === 1
+        ? SORT_OPTIONS.find((option) => option.value === selected[0])?.label
+        : `${selected.length} selected`;
+
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="text-caption">Sort candidates</span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 w-full justify-between bg-surface-1 px-3 text-left text-base font-normal shadow-none"
+            aria-label="Sort candidates"
+          >
+            <span className="truncate">{summary}</span>
+            <ChevronDown className="shrink-0" aria-hidden />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-64"
+        >
+          {SORT_OPTIONS.map((option) => (
+            <DropdownMenuCheckboxItem
+              key={option.value}
+              checked={selected.includes(option.value)}
+              onCheckedChange={() => onToggle(option.value)}
+              onSelect={(event) => event.preventDefault()}
+            >
+              {option.label}
+            </DropdownMenuCheckboxItem>
+          ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            disabled={selected.length === 0}
+            onSelect={onClear}
+          >
+            Clear filters
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
