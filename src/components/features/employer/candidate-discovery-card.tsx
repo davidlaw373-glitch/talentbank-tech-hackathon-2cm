@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   BadgeCheck,
   BriefcaseBusiness,
+  Check,
   MapPin,
   Maximize2,
   Minimize2,
@@ -115,10 +116,16 @@ export function CandidateDiscoveryCard({
                         role="img"
                         aria-label={`Verified verification for ${candidate.name}`}
                         title="Verified"
-                        className="shrink-0"
+                        className="relative h-5 w-5 shrink-0"
                       >
                         <BadgeCheck
-                          className="h-4.5 w-4.5 fill-verification text-verification-foreground"
+                          className="absolute inset-0 h-5 w-5 fill-verification text-verification"
+                          strokeWidth={1.5}
+                          aria-hidden
+                        />
+                        <Check
+                          className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 text-primary"
+                          strokeWidth={3}
                           aria-hidden
                         />
                       </span>

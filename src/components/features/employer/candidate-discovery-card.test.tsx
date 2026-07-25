@@ -130,8 +130,13 @@ describe("CandidateDiscoveryCard", () => {
     });
     expect(screen.queryByText("Verified")).toBeNull();
     expect(
-      verifiedIcon.querySelector("svg")?.getAttribute("class"),
+      verifiedIcon
+        .querySelector(".lucide-badge-check")
+        ?.getAttribute("class"),
     ).toContain("fill-verification");
+    expect(
+      verifiedIcon.querySelector(".lucide-check")?.getAttribute("class"),
+    ).toContain("text-primary");
 
     rerender(
       <CandidateDiscoveryCard
