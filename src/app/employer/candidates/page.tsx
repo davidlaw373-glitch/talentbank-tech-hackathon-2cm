@@ -5,8 +5,6 @@ import {
   PanelLeftOpen,
   Search,
   SearchX,
-  SlidersHorizontal,
-  Sparkles,
   X,
 } from "lucide-react";
 
@@ -78,13 +76,6 @@ export default function EmployerCandidatesPage() {
     [rowsForView, filters],
   );
 
-  const filtersAreActive =
-    filters.query !== DEFAULT_FILTERS.query ||
-    filters.role !== DEFAULT_FILTERS.role ||
-    filters.stage !== DEFAULT_FILTERS.stage ||
-    filters.verification !== DEFAULT_FILTERS.verification ||
-    filters.sort !== DEFAULT_FILTERS.sort;
-
   const updateFilter = <Key extends keyof CandidateDiscoveryFilters>(
     key: Key,
     value: CandidateDiscoveryFilters[Key],
@@ -122,6 +113,17 @@ export default function EmployerCandidatesPage() {
       <PageHeading
         title="Candidate management"
         description="Review the screening queue first, save promising people, and use AI Match as supporting evidence."
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3"
+            onClick={() => setPipelineOpen(true)}
+          >
+            <PanelLeftOpen aria-hidden />
+            View candidate pipeline
+          </Button>
+        }
       />
 
       {pipelineOpen ? (
@@ -213,41 +215,7 @@ export default function EmployerCandidatesPage() {
 
       <Card className="overflow-hidden border-2 shadow-[5px_6px_0_0_var(--border)]">
         <div className="h-1.5 bg-primary" aria-hidden />
-        <CardContent className="space-y-5 bg-surface-inset p-5 md:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <span
-                aria-hidden
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-accent-soft"
-              >
-                <SlidersHorizontal className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-caption">Candidate discovery</p>
-                <h2 className="text-subheading">Find the right evidence</h2>
-                <p className="mt-1 text-meta">
-                  Search identity and experience, then narrow by application
-                  context.
-                </p>
-              </div>
-            </div>
-            <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setPipelineOpen(true)}
-              >
-                <PanelLeftOpen aria-hidden />
-                View candidate pipeline
-              </Button>
-              <div className="rounded-lg border bg-surface-1 px-3 py-2">
-                <p className="text-sm font-semibold tabular-nums">
-                  {filtered.length} of {rowsForView.length} candidates shown
-                </p>
-              </div>
-            </div>
-          </div>
-
+        <CardContent className="bg-surface-inset p-5 md:p-6">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
               <label htmlFor="candidate-search" className="text-caption">
@@ -311,24 +279,6 @@ export default function EmployerCandidatesPage() {
               <SelectItem value="desc">AI Match: highest first</SelectItem>
               <SelectItem value="asc">AI Match: lowest first</SelectItem>
             </FilterSelect>
-          </div>
-
-          <div className="flex min-h-10 flex-wrap items-center justify-between gap-3 border-t pt-4">
-            <p className="flex items-center gap-2 text-meta">
-              <Sparkles className="h-4 w-4 text-primary" aria-hidden />
-              Showing the {candidateView.toLocaleLowerCase()} view. AI Match
-              supports the review; experience remains the primary signal.
-            </p>
-            {filtersAreActive ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setFilters(DEFAULT_FILTERS)}
-              >
-                Clear filters
-              </Button>
-            ) : null}
           </div>
         </CardContent>
       </Card>

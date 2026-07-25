@@ -34,8 +34,25 @@ describe("EmployerCandidatesPage", () => {
     ).toBeTruthy();
     expect(screen.getByLabelText("Verification")).toBeTruthy();
     expect(screen.getByLabelText("Sort candidates")).toBeTruthy();
-    expect(screen.getByText(/candidates shown/i)).toBeTruthy();
+    expect(screen.queryByText(/candidates shown/i)).toBeNull();
+    expect(screen.queryByText("Candidate discovery")).toBeNull();
+    expect(screen.queryByText("Find the right evidence")).toBeNull();
+    expect(screen.queryByText(/Showing the screening view/i)).toBeNull();
     expect(screen.getAllByText(/AI Match/i).length).toBeGreaterThan(0);
+  });
+
+  it("places the pipeline entry in the page heading", () => {
+    render(<EmployerCandidatesPage />);
+    const pageHeader = screen
+      .getByRole("heading", { name: "Candidate management" })
+      .closest("header");
+
+    expect(pageHeader).toBeTruthy();
+    expect(
+      within(pageHeader as HTMLElement).getByRole("button", {
+        name: "View candidate pipeline",
+      }),
+    ).toBeTruthy();
   });
 
   it("defaults to screening candidates without stage labels on cards", () => {
