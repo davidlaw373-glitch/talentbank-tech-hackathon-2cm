@@ -141,6 +141,14 @@ describe("Candidate review actions", () => {
     expect(
       screen.getByLabelText("Candidate application actions").className,
     ).toContain("grid-cols-1");
+    for (const actionName of ["Interview", "Send offer", "Message"]) {
+      expect(
+        screen.getByRole("button", { name: actionName }).className,
+      ).toContain("bg-primary");
+    }
+    expect(
+      screen.getByRole("button", { name: "Reject" }).className,
+    ).toContain("bg-destructive");
     await user.click(screen.getByRole("button", { name: "Interview" }));
     expect(
       screen.getByRole("alertdialog", {
