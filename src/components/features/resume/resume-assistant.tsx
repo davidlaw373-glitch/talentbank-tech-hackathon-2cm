@@ -11,6 +11,7 @@ import {
   Wand2,
   AlertTriangle,
   Eye,
+  Pencil,
   Plus,
   X,
 } from "lucide-react";
@@ -483,8 +484,8 @@ export function ResumeAssistant() {
         </Button>
         <Button asChild variant="outline">
           <Link href="/candidate/resume/quality-checks">
-            <AlertTriangle aria-hidden />
-            Quality checks
+            <Pencil aria-hidden />
+            Edit
           </Link>
         </Button>
         <Button
@@ -755,15 +756,15 @@ export function ResumeAssistant() {
             Switch the version you use when applying.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {versions.map((v) => (
-            <Card key={v.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle>
-                    <h3 className="flex items-center gap-2">
-                      <FileText aria-hidden className="h-4 w-4" />
-                      {v.name}
+            <Card key={v.id} className="flex h-full min-w-0 flex-col">
+              <CardHeader className="min-w-0">
+                <div className="flex min-w-0 items-start justify-between gap-2">
+                  <CardTitle className="min-w-0">
+                    <h3 className="flex min-w-0 items-center gap-2">
+                      <FileText aria-hidden className="h-4 w-4 shrink-0" />
+                      <span className="min-w-0 break-all">{v.name}</span>
                     </h3>
                   </CardTitle>
                   {v.primary && (
@@ -781,7 +782,7 @@ export function ResumeAssistant() {
                   {v.date} · {v.size}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="mt-auto space-y-3">
                 <p className="text-sm text-muted-foreground">{v.use}</p>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button

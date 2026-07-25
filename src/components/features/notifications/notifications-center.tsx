@@ -184,20 +184,12 @@ export function NotificationsCenter({
           </div>
         )}
         <div className="ml-auto flex items-center gap-2">
-          {unreadCount > 0 ? (
-            <Badge variant="default" className="gap-1">
-              <span
-                aria-hidden
-                className="h-1.5 w-1.5 rounded-full bg-highlight-foreground"
-              />
-              {unreadCount} unread
-            </Badge>
-          ) : (
+          {unreadCount === 0 ? (
             <Badge variant="secondary" className="gap-1">
               <CheckCircle2 className="h-3 w-3" aria-hidden />
               All caught up
             </Badge>
-          )}
+          ) : null}
           <Button
             variant="outline"
             size="sm"
@@ -222,7 +214,7 @@ export function NotificationsCenter({
                   Unread
                   {unreadCount > 0 && (
                     <Badge
-                      variant="secondary"
+                      variant="destructive"
                       className="ml-1 h-4 min-w-4 px-1 text-[10px]"
                     >
                       {unreadCount}

@@ -204,7 +204,7 @@ export function JobDetails({
         <Button asChild variant="outline" size="sm">
           <Link href="/candidate/jobs">
             <ArrowLeft />
-            Back to jobs
+            Back
           </Link>
         </Button>
         <div className="flex flex-wrap items-center gap-2">
@@ -448,10 +448,6 @@ export function JobDetails({
               Why this score
             </h2>
           </CardTitle>
-          <CardDescription>
-            CareerOS weighs skills, experience depth, and goals. Tailoring your
-            resume lifts the score for every future application.
-          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <FactorRow

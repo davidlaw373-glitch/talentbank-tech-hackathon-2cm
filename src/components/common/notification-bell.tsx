@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Bell } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type NotificationBellProps = {
   href: string;
@@ -39,9 +38,7 @@ export function NotificationBell({
         {hasBadge ? (
           <span
             aria-hidden
-            className={cn(
-              "absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-semibold tabular-nums text-background",
-            )}
+            className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold tabular-nums text-destructive-foreground"
           >
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>

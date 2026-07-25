@@ -1302,9 +1302,6 @@ export function ResumeQualityChecks() {
             Back to resume
           </Link>
         </Button>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Resume editor &amp; quality checks
-        </p>
         <Badge variant="secondary">
           {issuesByStatus.open.length} of {ISSUES.length} open
         </Badge>
