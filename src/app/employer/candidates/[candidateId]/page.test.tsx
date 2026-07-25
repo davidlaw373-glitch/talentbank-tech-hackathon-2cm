@@ -79,7 +79,7 @@ describe("EmployerCandidateDetailPage", () => {
     expect(timelineLineFills).toHaveLength(0);
     expect(timelineTracks).toHaveLength(0);
     expect(timelineNodeWaves).toHaveLength(1);
-    expect(currentTransitionSweeps).toHaveLength(1);
+    expect(currentTransitionSweeps).toHaveLength(2);
     for (const lineFill of timelineLineFills) {
       expect(lineFill.className).toContain("animate-timeline-line-fill");
     }
@@ -99,6 +99,9 @@ describe("EmployerCandidateDetailPage", () => {
     expect(
       (currentTransitionSweeps.item(0) as HTMLElement).style.animationDelay,
     ).toBe("");
+    expect(
+      (currentTransitionSweeps.item(1) as HTMLElement).style.animationDelay,
+    ).toBe("1.2s");
     expect(
       currentTransitionSweeps
         .item(0)
@@ -132,6 +135,7 @@ describe("EmployerCandidateDetailPage", () => {
       '[data-slot="candidate-evaluation"]',
     );
     expect(evaluation).toBeTruthy();
+    expect((evaluation as HTMLElement).className).not.toContain("items-start");
     expect(
       within(evaluation as HTMLElement).getByRole("heading", {
         name: "Match overview",
@@ -157,13 +161,17 @@ describe("EmployerCandidateDetailPage", () => {
     const timeline = screen.getByRole("list", {
       name: "Hiring progress for Marco Okafor",
     });
-    const currentSweep = timeline.querySelector(
+    const currentSweeps = timeline.querySelectorAll(
       '[data-slot="timeline-current-sweep"]',
-    ) as HTMLElement;
+    );
 
     expect(
       timeline.querySelector('[data-slot="timeline-line-runner"]'),
     ).toBeNull();
-    expect(currentSweep.style.animationDelay).toBe("");
+    expect(currentSweeps).toHaveLength(2);
+    expect((currentSweeps.item(0) as HTMLElement).style.animationDelay).toBe("");
+    expect((currentSweeps.item(1) as HTMLElement).style.animationDelay).toBe(
+      "1.2s",
+    );
   });
 });

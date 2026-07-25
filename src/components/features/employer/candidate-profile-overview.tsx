@@ -96,10 +96,17 @@ export function CandidateProfileOverview({
                       </>
                     ) : null}
                     {isCurrentTransition ? (
-                      <span
-                        data-slot="timeline-current-sweep"
-                        className="animate-timeline-current-sweep absolute -left-0.5 top-0 h-1/3 w-2 rounded-full bg-primary shadow-[0_0_14px_var(--primary)]"
-                      />
+                      <>
+                        <span
+                          data-slot="timeline-current-sweep"
+                          className="animate-timeline-current-sweep absolute -left-0.5 top-0 h-1/3 w-2 rounded-full bg-primary shadow-[0_0_14px_var(--primary)]"
+                        />
+                        <span
+                          data-slot="timeline-current-sweep"
+                          className="animate-timeline-current-sweep absolute -left-0.5 top-0 h-1/3 w-2 rounded-full bg-primary shadow-[0_0_14px_var(--primary)]"
+                          style={{ animationDelay: "1.2s" }}
+                        />
+                      </>
                     ) : null}
                   </span>
                 ) : null}

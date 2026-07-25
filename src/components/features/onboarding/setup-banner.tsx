@@ -37,16 +37,8 @@ export function SetupBanner({ role }: SetupBannerProps) {
     <aside
       role="region"
       aria-label="Profile setup reminder"
-      className="relative mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/40 bg-amber-50 p-4 pr-12 sm:p-5 sm:pr-14 dark:border-amber-200/30 dark:bg-amber-950/30"
+      className="relative mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/40 bg-amber-50 p-4 sm:p-5 dark:border-amber-200/30 dark:bg-amber-950/30"
     >
-      <button
-        type="button"
-        aria-label="Dismiss profile setup reminder"
-        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-highlight-soft hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        onClick={() => setDismissed(true)}
-      >
-        <X className="h-4 w-4" aria-hidden />
-      </button>
       <div className="flex items-start gap-3">
         <span
           aria-hidden
@@ -66,12 +58,22 @@ export function SetupBanner({ role }: SetupBannerProps) {
           </p>
         </div>
       </div>
-      <Button asChild size="sm" className="mr-8">
-        <Link href={`/onboarding/${role}`}>
-          Continue setup
-          <ArrowRight />
-        </Link>
-      </Button>
+      <div className="-mt-2 ml-auto flex shrink-0 flex-col items-end gap-1">
+        <button
+          type="button"
+          aria-label="Dismiss profile setup reminder"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-highlight-soft hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          onClick={() => setDismissed(true)}
+        >
+          <X className="h-4 w-4" aria-hidden />
+        </button>
+        <Button asChild size="sm">
+          <Link href={`/onboarding/${role}`}>
+            Continue setup
+            <ArrowRight />
+          </Link>
+        </Button>
+      </div>
     </aside>
   );
 }

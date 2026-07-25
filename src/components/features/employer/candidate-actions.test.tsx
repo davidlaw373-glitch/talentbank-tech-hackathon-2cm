@@ -138,6 +138,9 @@ describe("Candidate review actions", () => {
       </CandidatePipelineProvider>,
     );
 
+    expect(
+      screen.getByLabelText("Candidate application actions").className,
+    ).toContain("grid-cols-1");
     await user.click(screen.getByRole("button", { name: "Interview" }));
     expect(
       screen.getByRole("alertdialog", {

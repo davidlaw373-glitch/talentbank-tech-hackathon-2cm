@@ -55,7 +55,7 @@ export default async function EmployerCandidateDetailPage({
 
       <section
         data-slot="candidate-evaluation"
-        className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3"
+        className="grid grid-cols-1 gap-4 lg:grid-cols-3"
       >
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -110,9 +110,9 @@ export default async function EmployerCandidateDetailPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardContent
-            className="p-5"
+            className="h-full p-5"
             aria-label="Application actions"
           >
             <CandidateActions

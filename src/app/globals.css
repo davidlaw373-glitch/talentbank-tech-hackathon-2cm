@@ -741,8 +741,8 @@ section[id] {
       cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-timeline-current-sweep {
-    animation: timeline-current-sweep 1.8s
-      cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    animation: timeline-current-sweep 2.4s
+      cubic-bezier(0.16, 1, 0.3, 1) infinite both;
   }
   .animate-orbit-ccw {
     transform-origin: 190px 150px;
