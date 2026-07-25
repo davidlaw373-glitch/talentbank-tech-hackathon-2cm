@@ -601,10 +601,11 @@ section[id] {
     top: 0;
     opacity: 0;
   }
-  10%,
-  85% {
+  2%,
+  18% {
     opacity: 1;
   }
+  20%,
   100% {
     top: calc(100% - 0.75rem);
     opacity: 0;
@@ -628,10 +629,11 @@ section[id] {
     top: 0;
     opacity: 0;
   }
-  10%,
-  82% {
+  2%,
+  18% {
     opacity: 1;
   }
+  20%,
   100% {
     top: 66.666%;
     opacity: 0;
@@ -752,7 +754,7 @@ section[id] {
     animation: timeline-line-fill 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-timeline-line-runner {
-    animation: timeline-line-runner 3s
+    animation: timeline-line-runner 4s
       cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-timeline-track-glow {
@@ -760,7 +762,7 @@ section[id] {
       cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-timeline-current-sweep {
-    animation: timeline-current-sweep 1.8s
+    animation: timeline-current-sweep 4s
       cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-orbit-ccw {

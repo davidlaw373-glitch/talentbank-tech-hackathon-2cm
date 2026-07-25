@@ -77,6 +77,9 @@ describe("EmployerCandidateDetailPage", () => {
       "shadow-[0_0_14px_var(--primary)]",
     );
     expect(
+      (currentTransitionSweeps.item(0) as HTMLElement).style.animationDelay,
+    ).toBe("0s");
+    expect(
       currentTransitionSweeps
         .item(0)
         .closest('[data-slot="timeline-connector"]')?.className,
@@ -122,5 +125,28 @@ describe("EmployerCandidateDetailPage", () => {
       profileOverview.compareDocumentPosition(evaluation as Node) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+  });
+
+  it("sequences completed-stage runners before the current transition sweep", async () => {
+    render(
+      await EmployerCandidateDetailPage({
+        params: Promise.resolve({ candidateId: "3" }),
+      }),
+    );
+
+    const timeline = screen.getByRole("list", {
+      name: "Hiring progress for Marco Okafor",
+    });
+    const runners = timeline.querySelectorAll(
+      '[data-slot="timeline-line-runner"]',
+    );
+    const currentSweep = timeline.querySelector(
+      '[data-slot="timeline-current-sweep"]',
+    ) as HTMLElement;
+
+    expect(runners).toHaveLength(2);
+    expect((runners.item(0) as HTMLElement).style.animationDelay).toBe("0s");
+    expect((runners.item(1) as HTMLElement).style.animationDelay).toBe("0.8s");
+    expect(currentSweep.style.animationDelay).toBe("1.6s");
   });
 });
