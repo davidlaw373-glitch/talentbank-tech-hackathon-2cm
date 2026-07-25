@@ -1,32 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import {
-  ArrowRight,
-  Bookmark,
-  Check,
-  Filter,
-  Search,
-  Star,
-  Trash2,
-} from "lucide-react";
+import { Search, SearchX, SlidersHorizontal, Sparkles } from "lucide-react";
 
+import { APPLICATION_STAGES } from "@/types/application";
 import {
-  APPLICATION_STAGES,
-  NEXT_STAGE,
-  type ApplicationStage,
-} from "@/types/application";
-import { getEmployerCandidateRows, type EmployerCandidateRow } from "@/lib/data-helpers";
-import { Badge } from "@/components/ui/badge";
+  getEmployerCandidateRows,
+  getMatchScoreByPair,
+} from "@/lib/data-helpers";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeading } from "@/components/common/page-heading";
+import { EmptyState } from "@/components/common/empty-state";
 import {
   Select,
   SelectContent,
@@ -35,132 +21,123 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/common/toast";
-import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
-import { cn } from "@/lib/utils";
+import { CandidateDiscoveryCard } from "@/components/features/employer/candidate-discovery-card";
+import {
+  filterCandidateRows,
+  type CandidateDiscoveryFilters,
+  type CandidateMatchSort,
+  type CandidateStageFilter,
+  type CandidateVerificationFilter,
+} from "@/components/features/employer/candidate-discovery";
 
 const DEMO_EMPLOYER_ID = 1;
 
-type StageFilter = ApplicationStage | "All" | "Rejected";
-
-function stageVariant(stage: ApplicationStage) {
-  switch (stage) {
-    case "Applied":
-      return "outline" as const;
-    case "Screening":
-      return "secondary" as const;
-    case "Interview":
-      return "secondary" as const;
-    case "Offer":
-      return "default" as const;
-    case "Hired":
-      return "default" as const;
-  }
-}
+const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
+  query: "",
+  role: "All",
+  stage: "All",
+  verification: "All",
+  sort: "desc",
+};
 
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
-  const { add, remove, isInPool, getByCandidate } = useTalentPool();
-  const [rows, setRows] = useState<EmployerCandidateRow[]>(
+  const [rows] = useState(() =>
     getEmployerCandidateRows(DEMO_EMPLOYER_ID),
   );
+  const [filters, setFilters] =
+    useState<CandidateDiscoveryFilters>(DEFAULT_FILTERS);
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
-  const [stage, setStage] = useState<StageFilter>("All");
-  const [role, setRole] = useState("All");
-  const [query, setQuery] = useState("");
-  const [showAllCandidates, setShowAllCandidates] = useState(false);
-  const [pendingReject, setPendingReject] = useState<EmployerCandidateRow | null>(
-    null,
-  );
-
-  const candidates = rows;
 
   const roleOptions = useMemo(
     () =>
-      Array.from(new Set(candidates.map((candidate) => candidate.job.title))).sort(
-        (a, b) => a.localeCompare(b),
+      Array.from(new Set(rows.map((row) => row.job.title))).sort((a, b) =>
+        a.localeCompare(b),
       ),
-    [candidates],
+    [rows],
   );
 
-  const filtered: EmployerCandidateRow[] = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = candidates.filter((c) => {
-      const matchesStage =
-        stage === "All"
-          ? true
-          : stage === "Rejected"
-            ? c.app.rejected
-            : c.app.stage === stage && !c.app.rejected;
-      const matchesQuery =
-        !q ||
-        `${c.candidate.name} ${c.job.title}`.toLowerCase().includes(q);
-      const matchesRole = role === "All" || c.job.title === role;
-      return matchesStage && matchesQuery && matchesRole;
-    });
-    return [...list].sort((a, b) => b.matchScore - a.matchScore);
-  }, [candidates, stage, query, role]);
-
-  const priorityCandidates = useMemo(
-    () => [...candidates].sort((a, b) => b.matchScore - a.matchScore),
-    [candidates],
+  const filtered = useMemo(
+    () => filterCandidateRows(rows, filters),
+    [rows, filters],
   );
 
-  const displayedCandidates = showAllCandidates
-    ? filtered
-    : priorityCandidates;
+  const filtersAreActive =
+    filters.query !== DEFAULT_FILTERS.query ||
+    filters.role !== DEFAULT_FILTERS.role ||
+    filters.stage !== DEFAULT_FILTERS.stage ||
+    filters.verification !== DEFAULT_FILTERS.verification ||
+    filters.sort !== DEFAULT_FILTERS.sort;
 
-  const updateCandidate = (
-    id: number,
-    patch: Partial<EmployerCandidateRow["app"]>,
+  const updateFilter = <Key extends keyof CandidateDiscoveryFilters>(
+    key: Key,
+    value: CandidateDiscoveryFilters[Key],
   ) => {
-    setRows((prev) =>
-      prev.map((r) =>
-        r.candidate.id === id ? { ...r, app: { ...r.app, ...patch } } : r,
-      ),
-    );
+    setFilters((current) => ({ ...current, [key]: value }));
   };
 
-  const togglePool = (candidateId: number) => {
-    if (isInPool(candidateId)) {
-      const entry = getByCandidate(candidateId);
-      if (entry) remove(entry.id);
-    } else {
-      add({ candidateId });
-    }
-  };
-
-  const toggleStar = (candidateId: number) => {
-    setStarredIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(candidateId)) next.delete(candidateId);
-      else next.add(candidateId);
+  const toggleStar = (candidateId: number, candidateName: string) => {
+    const willSave = !starredIds.has(candidateId);
+    setStarredIds((current) => {
+      const next = new Set(current);
+      if (willSave) next.add(candidateId);
+      else next.delete(candidateId);
       return next;
+    });
+    push({
+      title: willSave
+        ? `${candidateName} saved`
+        : `${candidateName} removed from saved`,
+      description: willSave
+        ? "Their profile is marked for your shortlist review."
+        : "You can save this profile again at any time.",
+      tone: "info",
     });
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-8">
       <PageHeading
         title="Candidate management"
-        description="Everyone in your funnel. Filter by stage, search by name, jump into a profile."
-        action={
-          <Button
-            variant={showAllCandidates ? "outline" : "default"}
-            onClick={() => setShowAllCandidates((current) => !current)}
-          >
-            {showAllCandidates ? "Show priority candidates" : "View all candidates"}
-          </Button>
-        }
+        description="Compare the signals that matter, save promising people, and use AI Match as supporting evidence."
       />
 
-      <Card className="flex h-[calc(100vh-13rem)] min-h-[32rem] flex-col overflow-hidden">
-        {showAllCandidates && (
-          <CardContent className="grid gap-3 border-b bg-surface-inset p-5 sm:grid-cols-[minmax(0,1fr)_14rem_16rem] sm:items-end">
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="candidate-search"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+      <Card className="overflow-hidden border-2 shadow-[5px_6px_0_0_var(--border)]">
+        <div className="grid h-1.5 grid-cols-5" aria-hidden>
+          <span className="bg-chart-1" />
+          <span className="bg-chart-3" />
+          <span className="bg-highlight" />
+          <span className="bg-chart-5" />
+          <span className="bg-chart-7" />
+        </div>
+        <CardContent className="space-y-5 bg-surface-inset p-5 md:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span
+                aria-hidden
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-highlight-soft"
               >
+                <SlidersHorizontal className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-caption">Candidate discovery</p>
+                <h2 className="text-subheading">Find the right evidence</h2>
+                <p className="mt-1 text-meta">
+                  Search identity and experience, then narrow by application
+                  context.
+                </p>
+              </div>
+            </div>
+            <div className="rounded-lg border bg-surface-1 px-3 py-2">
+              <p className="text-sm font-semibold tabular-nums">
+                {filtered.length} of {rows.length} candidates shown
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+            <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
+              <label htmlFor="candidate-search" className="text-caption">
                 Search candidates
               </label>
               <div className="relative">
@@ -170,323 +147,169 @@ export default function EmployerCandidatesPage() {
                 />
                 <Input
                   id="candidate-search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Filter by candidate name"
-                  className="pl-9"
+                  value={filters.query}
+                  onChange={(event) =>
+                    updateFilter("query", event.target.value)
+                  }
+                  placeholder="Search name, role, company, or skill"
+                  className="bg-surface-1 pl-9"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="candidate-stage-filter"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-              >
-                Stage
-              </label>
-              <Select
-                value={stage}
-                onValueChange={(value) => setStage(value as StageFilter)}
-              >
-                <SelectTrigger id="candidate-stage-filter">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All stages</SelectItem>
-                  {APPLICATION_STAGES.map((applicationStage) => (
-                    <SelectItem key={applicationStage} value={applicationStage}>
-                      {applicationStage}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="Rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="candidate-role-filter"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-              >
-                Applied role
-              </label>
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger id="candidate-role-filter">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All roles</SelectItem>
-                  {roleOptions.map((jobTitle) => (
-                    <SelectItem key={jobTitle} value={jobTitle}>
-                      {jobTitle}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        )}
-
-        <CardContent className="min-h-0 flex-1 bg-surface-inset p-3">
-          {displayedCandidates.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-              <span
-                aria-hidden
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
-              >
-                <Filter className="h-5 w-5 text-muted-foreground" />
-              </span>
-              <div>
-                <p className="text-sm font-medium">
-                  No candidates match those filters
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Try a different stage, role, or search.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <ul
-              aria-label={
-                showAllCandidates ? "All candidates" : "Priority candidates"
-              }
-              className={cn(
-                "h-full space-y-3 overflow-y-auto pr-1",
-              )}
+            <FilterSelect
+              id="candidate-role-filter"
+              label="Applied role"
+              value={filters.role}
+              onValueChange={(value) => updateFilter("role", value)}
             >
-              {displayedCandidates.map((candidateRow) => (
-                <CandidateRow
-                  key={candidateRow.candidate.id}
-                  row={candidateRow}
-                  showFullActions={showAllCandidates}
-                  starred={starredIds.has(candidateRow.candidate.id)}
-                  inPool={isInPool(candidateRow.candidate.id)}
-                  onToggleStar={() => toggleStar(candidateRow.candidate.id)}
-                  onTogglePool={() => togglePool(candidateRow.candidate.id)}
-                  onAdvance={() => {
-                    const next = NEXT_STAGE[candidateRow.app.stage];
-                    if (next) {
-                      updateCandidate(candidateRow.candidate.id, { stage: next });
-                    }
-                  }}
-                  onRequestReject={setPendingReject}
-                />
+              <SelectItem value="All">All roles</SelectItem>
+              {roleOptions.map((role) => (
+                <SelectItem key={role} value={role}>
+                  {role}
+                </SelectItem>
               ))}
-            </ul>
-          )}
+            </FilterSelect>
+
+            <FilterSelect
+              id="candidate-stage-filter"
+              label="Hiring stage"
+              value={filters.stage}
+              onValueChange={(value) =>
+                updateFilter("stage", value as CandidateStageFilter)
+              }
+            >
+              <SelectItem value="All">All stages</SelectItem>
+              {APPLICATION_STAGES.map((stage) => (
+                <SelectItem key={stage} value={stage}>
+                  {stage}
+                </SelectItem>
+              ))}
+              <SelectItem value="Rejected">Rejected</SelectItem>
+            </FilterSelect>
+
+            <FilterSelect
+              id="candidate-verification-filter"
+              label="Verification"
+              value={filters.verification}
+              onValueChange={(value) =>
+                updateFilter(
+                  "verification",
+                  value as CandidateVerificationFilter,
+                )
+              }
+            >
+              <SelectItem value="All">All verification</SelectItem>
+              <SelectItem value="Verified">Verified</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="None">None</SelectItem>
+            </FilterSelect>
+
+            <FilterSelect
+              id="candidate-sort"
+              label="Sort candidates"
+              value={filters.sort}
+              onValueChange={(value) =>
+                updateFilter("sort", value as CandidateMatchSort)
+              }
+            >
+              <SelectItem value="desc">AI Match: highest first</SelectItem>
+              <SelectItem value="asc">AI Match: lowest first</SelectItem>
+            </FilterSelect>
+          </div>
+
+          <div className="flex min-h-10 flex-wrap items-center justify-between gap-3 border-t pt-4">
+            <p className="flex items-center gap-2 text-meta">
+              <Sparkles className="h-4 w-4 text-highlight" aria-hidden />
+              AI Match ranks the list; experience and verified evidence stay
+              visible on every card.
+            </p>
+            {filtersAreActive ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setFilters(DEFAULT_FILTERS)}
+              >
+                Clear filters
+              </Button>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
 
-      <ConfirmDialog
-        open={pendingReject !== null}
-        onOpenChange={(open) => !open && setPendingReject(null)}
-        title={`Reject ${pendingReject?.candidate.name ?? "this candidate"}?`}
-        description="A polite rejection email will be sent automatically. They will no longer appear in your active pipeline."
-        confirmLabel="Reject"
-        destructive
-        requireTyping="REJECT"
-        onConfirm={() => {
-          if (pendingReject) {
-            updateCandidate(pendingReject.candidate.id, { rejected: true });
-            push({
-              title: `${pendingReject.candidate.name} rejected`,
-              description: "A polite rejection email will be sent automatically.",
-              tone: "info",
-            });
+      {filtered.length ? (
+        <ul
+          aria-label="Candidate results"
+          className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3"
+        >
+          {filtered.map((row) => (
+            <li key={row.app.id} className="min-w-0">
+              <CandidateDiscoveryCard
+                row={row}
+                match={getMatchScoreByPair(row.candidate.id, row.job.id)}
+                starred={starredIds.has(row.candidate.id)}
+                onToggleStar={() =>
+                  toggleStar(row.candidate.id, row.candidate.name)
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState
+          icon={SearchX}
+          title={
+            rows.length
+              ? "No candidates match these filters"
+              : "No candidates yet"
           }
-          setPendingReject(null);
-        }}
-      />
+          description={
+            rows.length
+              ? "Try a broader search or clear one of the filters."
+              : "New applicants will appear here once they enter your hiring funnel."
+          }
+          action={
+            rows.length ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setFilters(DEFAULT_FILTERS)}
+              >
+                Clear filters
+              </Button>
+            ) : undefined
+          }
+        />
+      )}
     </div>
   );
 }
 
-function CandidateRow({
-  row,
-  showFullActions,
-  starred,
-  inPool,
-  onToggleStar,
-  onTogglePool,
-  onAdvance,
-  onRequestReject,
+function FilterSelect({
+  id,
+  label,
+  value,
+  onValueChange,
+  children,
 }: {
-  row: EmployerCandidateRow;
-  showFullActions: boolean;
-  starred: boolean;
-  inPool: boolean;
-  onToggleStar: () => void;
-  onTogglePool: () => void;
-  onAdvance: () => void;
-  onRequestReject: (row: EmployerCandidateRow) => void;
+  id: string;
+  label: string;
+  value: string;
+  onValueChange: (value: string) => void;
+  children: React.ReactNode;
 }) {
-  const { push } = useToast();
-  const candidate = row.candidate;
-  const job = row.job;
-  const next = NEXT_STAGE[row.app.stage];
-
-  const toggleStar = () => {
-    const willStar = !starred;
-    onToggleStar();
-    push({
-      title: willStar
-        ? `Starred ${candidate.name}`
-        : `Removed ${candidate.name} from starred`,
-      description: willStar
-        ? "They'll surface at the top of your candidates list."
-        : "They won't appear in your starred list anymore.",
-      tone: "info",
-    });
-  };
-
-  const togglePool = () => {
-    onTogglePool();
-    push({
-      title: inPool
-        ? `${candidate.name} removed from talent pool`
-        : `${candidate.name} saved to talent pool`,
-      description: inPool
-        ? "Open the talent pool to re-add them."
-        : "Tag and add notes from the talent pool workspace.",
-      tone: "info",
-    });
-  };
-
-  const advance = () => {
-    if (!next) return;
-    onAdvance();
-    push({
-      title: `${candidate.name} moved to ${next}`,
-      description: `${job.title} · pipeline updated.`,
-      tone: "success",
-    });
-  };
-
-  const reject = () => {
-    if (row.app.rejected) return;
-    onRequestReject(row);
-  };
-
   return (
-    <li className="rounded-xl border bg-card shadow-sm">
-      <div className="flex items-start justify-between gap-3 rounded-xl p-4 transition-colors hover:bg-foreground/5 focus-within:bg-foreground/5">
-        <Link
-          href={`/employer/candidates/${candidate.id}`}
-          className="flex min-w-0 flex-1 items-center gap-3"
-        >
-          <span
-            aria-hidden
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold"
-          >
-            {candidate.initials}
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-medium">{candidate.name}</p>
-              {starred ? (
-                <Badge variant="outline">
-                  <Star className="h-3 w-3 fill-current" aria-hidden />
-                  Starred
-                </Badge>
-              ) : null}
-              {inPool ? (
-                <Badge variant="secondary">
-                  <Bookmark className="h-3 w-3 fill-current" aria-hidden />
-                  In pool
-                </Badge>
-              ) : null}
-            </div>
-            <small className="block truncate text-muted-foreground">
-              {job.title} · {candidate.location}
-            </small>
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              {candidate.topSkills.slice(0, 3).map((s) => (
-                <Badge key={s} variant="secondary" className="text-[10px]">
-                  {s}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </Link>
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">{row.matchScore}% match</Badge>
-            <Badge variant={stageVariant(row.app.stage)}>{row.app.stage}</Badge>
-            <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden />
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleStar}
-              aria-pressed={starred}
-              aria-label={
-                starred
-                  ? `Remove ${candidate.name} from starred`
-                  : `Star ${candidate.name}`
-              }
-            >
-              <Star className={cn(starred && "fill-current")} aria-hidden />
-              {starred ? "Starred" : "Star"}
-            </Button>
-            <Button
-              variant={inPool ? "secondary" : "outline"}
-              size="sm"
-              onClick={togglePool}
-              aria-pressed={inPool}
-              aria-label={
-                inPool
-                  ? `Remove ${candidate.name} from talent pool`
-                  : `Save ${candidate.name} to talent pool`
-              }
-            >
-              <Bookmark
-                className={cn(inPool && "fill-current")}
-                aria-hidden
-              />
-              {inPool ? "In pool" : "Save to pool"}
-            </Button>
-            {showFullActions && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={advance}
-                  disabled={!next || row.app.rejected}
-                  aria-label={
-                    next
-                      ? `Move ${candidate.name} to ${next}`
-                      : `${candidate.name} already at final stage`
-                  }
-                >
-                  {next ? (
-                    <>
-                      Move to {next}
-                      <ArrowRight />
-                    </>
-                  ) : (
-                    <>
-                      <Check />
-                      Final stage
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={reject}
-                  disabled={row.app.rejected}
-                  aria-label={`Reject ${candidate.name}`}
-                >
-                  <Trash2 />
-                  Reject
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </li>
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <label htmlFor={id} className="text-caption">
+        {label}
+      </label>
+      <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger id={id} className="w-full bg-surface-1">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>{children}</SelectContent>
+      </Select>
+    </div>
   );
 }
