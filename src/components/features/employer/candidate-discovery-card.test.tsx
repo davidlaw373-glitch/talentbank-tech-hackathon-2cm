@@ -129,6 +129,32 @@ describe("CandidateDiscoveryCard", () => {
     ).toBe("/employer/candidates/2");
   });
 
+  it("provides a dedicated control for opening the AI insight", async () => {
+    const user = userEvent.setup();
+    render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "View AI insight for Aisha Khan",
+      }),
+    );
+
+    expect(
+      screen
+        .getByRole("button", {
+          name: "Show profile summary for Aisha Khan",
+        })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
+  });
+
   it("expands the complete recent signal inside the card without flipping", async () => {
     const user = userEvent.setup();
     render(
@@ -147,6 +173,10 @@ describe("CandidateDiscoveryCard", () => {
     });
 
     expect(boundedSignal.className).toContain("overflow-y-auto");
+    expect(boundedSignal.className).toContain("[scrollbar-width:thin]");
+    expect(boundedSignal.className).toContain(
+      "[&::-webkit-scrollbar-thumb]:rounded-full",
+    );
     expect(boundedSignal.parentElement?.className).toContain("h-36");
 
     await user.click(
@@ -230,5 +260,26 @@ describe("CandidateDiscoveryCard", () => {
         })
         .getAttribute("aria-pressed"),
     ).toBe("false");
+  });
+
+  it("uses a tinted back face and centers the profile action above the edge", () => {
+    const { container } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+    const faces = container.querySelectorAll("article > div > div > section");
+    const backFace = faces.item(1);
+    const profileLink = container.querySelector(
+      'a[aria-label="View Aisha Khan\'s full profile"]',
+    );
+
+    expect(container.querySelector("article")?.className).toContain("h-[33rem]");
+    expect(backFace.className).toContain("bg-accent-soft");
+    expect(profileLink?.parentElement?.className).toContain("justify-center");
+    expect(profileLink?.parentElement?.className).toContain("pb-3");
   });
 });

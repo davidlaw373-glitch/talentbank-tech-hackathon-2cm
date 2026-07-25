@@ -34,6 +34,9 @@ type CandidateDiscoveryCardProps = {
   onToggleStar: () => void;
 };
 
+const SIGNAL_SCROLL_CLASSES =
+  "[scrollbar-width:thin] [scrollbar-color:var(--primary)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/45 [&::-webkit-scrollbar-thumb:hover]:bg-primary/70";
+
 export function CandidateDiscoveryCard({
   row,
   match,
@@ -57,7 +60,7 @@ export function CandidateDiscoveryCard({
 
   return (
     <article
-      className="h-[31rem] min-w-0 animate-reveal [perspective:1200px]"
+      className="h-[33rem] min-w-0 animate-reveal [perspective:1200px]"
       aria-label={`${candidate.name}, ${candidate.title}`}
     >
       <div className="lift-on-hover relative h-full w-full">
@@ -177,7 +180,10 @@ export function CandidateDiscoveryCard({
               <div
                 role="region"
                 aria-label={`Recent signal details for ${candidate.name}`}
-                className="mt-2 h-14 overflow-y-auto pr-2 text-meta leading-relaxed"
+                className={cn(
+                  "mt-2 h-14 overflow-y-auto pr-2 text-meta leading-relaxed",
+                  SIGNAL_SCROLL_CLASSES,
+                )}
               >
                 {getCandidateAchievement(row)}
               </div>
@@ -197,10 +203,18 @@ export function CandidateDiscoveryCard({
                     </span>
                   </p>
                 </div>
-                <p className="flex items-center gap-1.5 pb-1 text-caption">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="pointer-events-auto relative z-20 mb-0.5"
+                  aria-label={`View AI insight for ${candidate.name}`}
+                  tabIndex={flipped ? -1 : 0}
+                  onClick={() => setFlipped(true)}
+                >
                   <RotateCw className="h-3.5 w-3.5" aria-hidden />
                   View AI insight
-                </p>
+                </Button>
               </div>
               <div
                 className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-inset"
@@ -245,7 +259,12 @@ export function CandidateDiscoveryCard({
                   <Minimize2 aria-hidden />
                 </Button>
               </div>
-              <div className="mt-5 min-h-0 flex-1 overflow-y-auto rounded-lg border bg-surface-2 p-4 text-body leading-relaxed">
+              <div
+                className={cn(
+                  "mt-5 min-h-0 flex-1 overflow-y-auto rounded-lg border bg-surface-2 p-4 pr-3 text-body leading-relaxed",
+                  SIGNAL_SCROLL_CLASSES,
+                )}
+              >
                 {getCandidateAchievement(row)}
               </div>
             </section>
@@ -253,7 +272,7 @@ export function CandidateDiscoveryCard({
         </section>
 
         <section
-          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl border-2 border-border bg-accent-soft shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
           aria-hidden={!flipped}
         >
           <button
@@ -319,7 +338,7 @@ export function CandidateDiscoveryCard({
               </div>
             ) : null}
 
-            <div className="mt-auto flex justify-end pt-5">
+            <div className="mt-auto flex justify-center pb-3 pt-5">
               <Button
                 asChild
                 size="sm"
