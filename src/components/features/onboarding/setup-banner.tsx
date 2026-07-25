@@ -11,7 +11,8 @@
  */
 
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Sparkles, X } from "lucide-react";
 
 import { useOnboardingStatus } from "@/hooks/use-onboarding-status";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ type SetupBannerProps = {
 };
 
 export function SetupBanner({ role }: SetupBannerProps) {
+  const [dismissed, setDismissed] = useState(false);
   const { complete, ready } = useOnboardingStatus({
     role,
     defaultComplete: false,
@@ -29,13 +31,22 @@ export function SetupBanner({ role }: SetupBannerProps) {
 
   if (!ready) return null;
   if (complete) return null;
+  if (dismissed) return null;
 
   return (
     <aside
       role="region"
       aria-label="Profile setup reminder"
-      className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/40 bg-amber-50 p-4 sm:p-5 dark:border-amber-200/30 dark:bg-amber-950/30"
+      className="relative mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/40 bg-amber-50 p-4 pr-12 sm:p-5 sm:pr-14 dark:border-amber-200/30 dark:bg-amber-950/30"
     >
+      <button
+        type="button"
+        aria-label="Dismiss profile setup reminder"
+        className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-highlight-soft hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        onClick={() => setDismissed(true)}
+      >
+        <X className="h-4 w-4" aria-hidden />
+      </button>
       <div className="flex items-start gap-3">
         <span
           aria-hidden
@@ -55,7 +66,7 @@ export function SetupBanner({ role }: SetupBannerProps) {
           </p>
         </div>
       </div>
-      <Button asChild size="sm">
+      <Button asChild size="sm" className="mr-8">
         <Link href={`/onboarding/${role}`}>
           Continue setup
           <ArrowRight />

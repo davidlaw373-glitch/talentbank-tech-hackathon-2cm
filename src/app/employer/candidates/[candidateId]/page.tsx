@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowLeft,
   Calendar,
   MapPin,
   Sparkles,
@@ -9,13 +7,11 @@ import {
 
 import {
   getEmployerCandidateRows,
-  getEmployerInterviewRows,
 } from "@/lib/data-helpers";
 import { STAGE_INDEX } from "@/types/application";
 import { CandidateActions } from "@/components/features/employer/candidate-actions";
 import { CandidateProfileOverview } from "@/components/features/employer/candidate-profile-overview";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -52,25 +48,8 @@ export default async function EmployerCandidateDetailPage({
 
   const { candidate, app, job, matchScore } = row;
   const stageIndex = app.rejected ? 1 : STAGE_INDEX[app.stage];
-  const totalScorecards = getEmployerInterviewRows(DEMO_EMPLOYER_ID)
-    .filter((interviewRow) => interviewRow.candidate.id === candidateId)
-    .reduce(
-      (total, interviewRow) =>
-        total + interviewRow.interview.scorecardItems,
-      0,
-    );
-
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button asChild variant="outline" size="sm">
-          <Link href="/employer/candidates">
-            <ArrowLeft aria-hidden />
-            Back to candidates
-          </Link>
-        </Button>
-      </div>
-
       <CandidateProfileOverview
         candidate={candidate}
         timeline={app.timeline}
@@ -172,56 +151,8 @@ export default async function EmployerCandidateDetailPage({
               candidateId={candidate.id}
               candidateName={candidate.name}
               appliedFor={job.title}
-              initialStarred={false}
               initialStage={app.stage}
             />
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2>Interview kit</h2>
-            </CardTitle>
-            <CardDescription>
-              What your interviewers will be scoring against.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between rounded-md border bg-background p-3">
-              <div>
-                <p className="text-sm font-medium">Scorecard items</p>
-                <small className="text-muted-foreground">
-                  Across scheduled interviews
-                </small>
-              </div>
-              <span className="text-2xl font-semibold tabular-nums">
-                {totalScorecards}
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Use these structured scorecards during the live interview and the
-              AI summary below to compare candidates at the debrief.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2 className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4" aria-hidden />
-                AI summary
-              </h2>
-            </CardTitle>
-            <CardDescription>
-              Generated from the candidate&apos;s profile and application.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{candidate.summary}</p>
           </CardContent>
         </Card>
       </section>

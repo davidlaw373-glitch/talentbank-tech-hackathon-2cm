@@ -5,6 +5,12 @@ vi.mock("@/components/features/employer/candidate-actions", () => ({
   CandidateActions: () => <div>Candidate actions</div>,
 }));
 
+vi.mock("@/components/features/employer/candidate-star-button", () => ({
+  CandidateStarButton: ({ candidateName }: { candidateName: string }) => (
+    <button type="button" aria-label={`Star ${candidateName}`} />
+  ),
+}));
+
 import EmployerCandidateDetailPage from "./page";
 
 describe("EmployerCandidateDetailPage", () => {
@@ -26,14 +32,25 @@ describe("EmployerCandidateDetailPage", () => {
     const timelineContainer = timeline.closest("aside");
 
     expect(timeline.className).toContain("flex-col");
-    expect(timeline.className).toContain("h-full");
+    expect(timeline.className).toContain("flex-1");
+    expect(timelineContainer?.className).toContain("flex-col");
     expect(profileOverview.className).toContain("items-stretch");
     expect(timelineContainer?.className).not.toContain("border");
     expect(timelineContainer?.className).not.toContain("bg-surface");
     expect(timelineContainer?.className).not.toContain("shadow");
+    expect(profileOverview.className).toContain(
+      "lg:grid-cols-[11rem_minmax(0,1fr)]",
+    );
+    const backLink = within(profileOverview).getByRole("link", {
+      name: "Back to candidates",
+    });
+    expect(backLink.className).toContain("bg-surface-1");
+    expect(
+      within(resume).getByRole("button", { name: "Star Rafael Diaz" }),
+    ).toBeTruthy();
     expect(
       within(timeline).getByText("Applied").className,
-    ).toContain("text-base");
+    ).toContain("text-sm");
     const timelineLineFills = timeline.querySelectorAll(
       '[data-slot="timeline-line-fill"]',
     );
@@ -94,6 +111,9 @@ describe("EmployerCandidateDetailPage", () => {
     expect(within(resume).getByText("Skills")).toBeTruthy();
     expect(resume.className).not.toContain("overflow-y-auto");
     expect(screen.queryByText("Candidate profile")).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Interview kit" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "AI summary" })).toBeNull();
+    expect(screen.queryByText("Scorecard items")).toBeNull();
 
     const evaluation = container.querySelector(
       '[data-slot="candidate-evaluation"]',

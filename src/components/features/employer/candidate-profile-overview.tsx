@@ -1,6 +1,9 @@
-import { Check, Mail, MapPin, Phone } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Check, Mail, MapPin, Phone } from "lucide-react";
 
 import type { Candidate, Application } from "@/types/candidate";
+import { CandidateStarButton } from "@/components/features/employer/candidate-star-button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type CandidateProfileOverviewProps = {
@@ -22,12 +25,23 @@ export function CandidateProfileOverview({
   return (
     <section
       aria-label="Candidate resume and hiring progress"
-      className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[13rem_minmax(0,1fr)]"
+      className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[11rem_minmax(0,1fr)]"
     >
-      <aside className="h-full px-2 py-1 lg:pr-4">
+      <aside className="flex h-full flex-col px-1 lg:pr-3">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="self-start bg-surface-1 hover:bg-surface-2"
+        >
+          <Link href="/employer/candidates">
+            <ArrowLeft aria-hidden />
+            Back to candidates
+          </Link>
+        </Button>
         <ol
           aria-label={`Hiring progress for ${candidate.name}`}
-          className="flex h-full min-h-[32rem] flex-col sm:min-h-[38rem] lg:min-h-0"
+          className="mt-5 flex min-h-[28rem] flex-1 flex-col sm:min-h-[34rem] lg:min-h-0"
         >
           {timeline.map((step, index) => {
             const isComplete = index < safeCurrentIndex;
@@ -40,14 +54,14 @@ export function CandidateProfileOverview({
               <li
                 key={`${index}-${step.label}`}
                 aria-current={isCurrent ? "step" : undefined}
-                className="relative grid flex-1 grid-cols-[2.5rem_minmax(0,1fr)] gap-3 last:flex-none"
+                className="relative grid flex-1 grid-cols-[2.25rem_minmax(0,1fr)] gap-2.5 last:flex-none"
               >
                 {index < timeline.length - 1 ? (
                   <span
                     aria-hidden
                     data-slot="timeline-connector"
                     className={cn(
-                      "absolute bottom-0 left-[1.125rem] top-10 w-1 overflow-visible rounded-full",
+                      "absolute bottom-0 left-4 top-9 w-1 overflow-visible rounded-full",
                       isComplete ? "bg-primary" : "bg-border",
                     )}
                   >
@@ -75,7 +89,7 @@ export function CandidateProfileOverview({
                 ) : null}
                 <span
                   className={cn(
-                    "relative z-10 flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold tabular-nums",
+                    "relative z-10 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold tabular-nums",
                     isComplete && "border-primary bg-primary text-primary-foreground",
                     isCurrent &&
                       "border-primary bg-surface-1 text-foreground shadow-[0_0_0_4px_var(--accent-soft)]",
@@ -113,7 +127,7 @@ export function CandidateProfileOverview({
                 <div className="min-w-0 pt-1">
                   <p
                     className={cn(
-                      "text-base font-semibold",
+                      "text-sm font-semibold",
                       isCurrent ? "text-foreground" : "text-muted-foreground",
                     )}
                   >
@@ -131,10 +145,13 @@ export function CandidateProfileOverview({
 
       <article
         aria-label={`Resume preview for ${candidate.name}`}
-        className="rounded-xl border-2 border-border bg-surface-1 p-6 shadow-[6px_8px_0_0_var(--border)] sm:p-8 lg:p-10"
+        className="relative rounded-xl border-2 border-border bg-surface-1 p-6 shadow-[6px_8px_0_0_var(--border)] sm:p-8 lg:p-10"
       >
+        <div className="absolute right-6 top-6 sm:right-8 sm:top-8 lg:right-10 lg:top-10">
+          <CandidateStarButton candidateName={candidate.name} />
+        </div>
         <p className="text-caption">Resume preview</p>
-        <header className="mt-3 border-b border-border pb-6">
+        <header className="mt-3 border-b border-border pb-6 pr-14">
           <h2 className="text-3xl font-semibold tracking-tight">
             {candidate.name}
           </h2>

@@ -6,7 +6,6 @@ import {
   Bookmark,
   Calendar,
   Send,
-  Star,
   Trash2,
   UserPlus,
   X,
@@ -16,43 +15,26 @@ import { NEXT_STAGE, type ApplicationStage } from "@/types/application";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/common/toast";
 import { useTalentPool } from "@/components/features/employer/talent-pool/pool-provider";
-import { cn } from "@/lib/utils";
 
 export function CandidateActions({
   candidateId,
   candidateName,
   appliedFor,
-  initialStarred,
   initialStage,
 }: {
   candidateId: number;
   candidateName: string;
   appliedFor: string;
-  initialStarred: boolean;
   initialStage: ApplicationStage;
 }) {
   const { push } = useToast();
   const { add, remove, getByCandidate, isInPool } = useTalentPool();
-  const [starred, setStarred] = useState(initialStarred);
   const [stage, setStage] = useState<ApplicationStage>(initialStage);
   const [rejected, setRejected] = useState(false);
 
   const poolEntry = getByCandidate(candidateId);
   const inPool = isInPool(candidateId);
   const next = NEXT_STAGE[stage];
-
-  const toggleStar = () => {
-    setStarred((s) => !s);
-    push({
-      title: starred
-        ? `Removed ${candidateName} from starred`
-        : `Starred ${candidateName}`,
-      description: starred
-        ? "They won't appear in your starred list anymore."
-        : "They'll surface at the top of your candidates list.",
-      tone: "info",
-    });
-  };
 
   const advance = () => {
     if (!next) return;
@@ -120,16 +102,6 @@ export function CandidateActions({
   return (
     <>
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          aria-label={starred ? "Remove star" : "Star candidate"}
-          aria-pressed={starred}
-          onClick={toggleStar}
-        >
-          <Star className={cn(starred && "fill-current")} aria-hidden />
-          {starred ? "Starred" : "Star"}
-        </Button>
         <Button
           variant="outline"
           size="sm"
