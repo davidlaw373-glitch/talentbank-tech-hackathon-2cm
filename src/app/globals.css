@@ -596,6 +596,18 @@ section[id] {
   }
 }
 
+@keyframes timeline-track-glow {
+  0%,
+  100% {
+    opacity: 0.3;
+    box-shadow: 0 0 0 var(--primary);
+  }
+  50% {
+    opacity: 0.9;
+    box-shadow: 0 0 8px var(--primary);
+  }
+}
+
 /* Ambient decorative animations — used by hero blur orbs and
    section gradients. Slow and large so they read as atmosphere,
    not motion sickness. */
@@ -708,6 +720,10 @@ section[id] {
   }
   .animate-timeline-flow-down {
     animation: timeline-flow-down 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  .animate-timeline-track-glow {
+    animation: timeline-track-glow 2.4s
+      cubic-bezier(0.16, 1, 0.3, 1) infinite;
   }
   .animate-orbit-ccw {
     transform-origin: 190px 150px;

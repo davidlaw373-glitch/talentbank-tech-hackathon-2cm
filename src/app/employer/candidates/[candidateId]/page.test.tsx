@@ -40,10 +40,18 @@ describe("EmployerCandidateDetailPage", () => {
     const timelineNodeWaves = timeline.querySelectorAll(
       '[data-slot="timeline-node-wave"]',
     );
+    const timelineTracks = timeline.querySelectorAll(
+      '[data-slot="timeline-track-glow"]',
+    );
     expect(timelineFlows).toHaveLength(4);
+    expect(timelineTracks).toHaveLength(4);
     expect(timelineNodeWaves).toHaveLength(5);
     for (const flow of timelineFlows) {
       expect(flow.className).toContain("animate-timeline-flow-down");
+      expect(flow.className).toContain("shadow-[0_0_10px_var(--primary)]");
+    }
+    for (const track of timelineTracks) {
+      expect(track.className).toContain("animate-timeline-track-glow");
     }
     for (const nodeWave of timelineNodeWaves) {
       expect(nodeWave.className).toContain("animate-pulse-ring-soft");

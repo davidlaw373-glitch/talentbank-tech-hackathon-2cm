@@ -45,17 +45,22 @@ export function CandidateProfileOverview({
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute bottom-0 left-[1.1875rem] top-10 w-0.5 overflow-hidden",
+                      "absolute bottom-0 left-[1.125rem] top-10 w-1 overflow-hidden rounded-full",
                       isComplete ? "bg-primary" : "bg-border",
                     )}
                   >
                     <span
+                      data-slot="timeline-track-glow"
+                      className="animate-timeline-track-glow absolute inset-0 rounded-full bg-primary/55"
+                      style={{ animationDelay: `${index * 0.45}s` }}
+                    />
+                    <span
                       data-slot="timeline-flow"
                       className={cn(
-                        "animate-timeline-flow-down absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-transparent to-transparent",
+                        "animate-timeline-flow-down absolute -inset-x-px top-0 h-1/3 rounded-full bg-gradient-to-b from-transparent to-transparent shadow-[0_0_10px_var(--primary)]",
                         isActiveTransition
                           ? "via-primary"
-                          : "via-primary/55",
+                          : "via-primary/80",
                       )}
                       style={{ animationDelay: `${index * 0.45}s` }}
                     />
