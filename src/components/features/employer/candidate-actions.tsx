@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Calendar,
   MessageSquare,
+  RotateCcw,
   Send,
   Trash2,
 } from "lucide-react";
@@ -18,7 +19,12 @@ import { useCandidatePipeline } from "@/components/features/employer/candidate-p
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
-type ReviewAction = "interview" | "offer" | "message" | "reject";
+type ReviewAction =
+  | "interview"
+  | "offer"
+  | "message"
+  | "reject"
+  | "restore";
 
 type CandidateActionProps = {
   applicationId: number;
@@ -128,6 +134,16 @@ export function CandidateActions({
       return;
     }
 
+    if (pendingAction === "restore") {
+      moveToStage(applicationId, "Applied");
+      push({
+        title: `${candidateName} restored to Applied`,
+        description: "They are ready for a fresh application review.",
+        tone: "success",
+      });
+      return;
+    }
+
     if (pendingAction === "reject") {
       reject(applicationId, status.stage, note);
       push({
@@ -182,15 +198,24 @@ export function CandidateActions({
           <MessageSquare aria-hidden />
           Message
         </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          disabled={status.rejected}
-          onClick={() => openAction("reject")}
-        >
-          <Trash2 aria-hidden />
-          Reject
-        </Button>
+        {status.rejected ? (
+          <Button
+            type="button"
+            onClick={() => openAction("restore")}
+          >
+            <RotateCcw aria-hidden />
+            Restore to Applied
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => openAction("reject")}
+          >
+            <Trash2 aria-hidden />
+            Reject
+          </Button>
+        )}
       </div>
 
       <ConfirmDialog
@@ -249,6 +274,14 @@ function getDialogCopy(
       description:
         "Write the message below, then confirm before it is added to the candidate record.",
       confirmLabel: "Send message",
+    };
+  }
+  if (action === "restore") {
+    return {
+      title: `Restore ${candidateName} to Applied?`,
+      description:
+        "This removes the candidate from Rejected and returns them to the Applied pipeline.",
+      confirmLabel: "Restore to Applied",
     };
   }
   return {

@@ -193,4 +193,47 @@ describe("Candidate review actions", () => {
 
     expect(screen.getByText(/current stage: Rejected/)).toBeTruthy();
   });
+
+  it("replaces Reject with an active confirmed restore action for rejected candidates", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <CandidatePipelineProvider>
+        <CandidateActions
+          applicationId={appliedRow.app.id}
+          candidateName={appliedRow.candidate.name}
+          appliedFor={appliedRow.job.title}
+          initialStage={appliedRow.app.stage}
+          initialRejected
+        />
+      </CandidatePipelineProvider>,
+    );
+
+    expect(screen.queryByRole("button", { name: "Reject" })).toBeNull();
+    expect(
+      (screen.getByRole("button", {
+        name: "Restore to Applied",
+      }) as HTMLButtonElement).disabled,
+    ).toBe(false);
+
+    await user.click(
+      screen.getByRole("button", { name: "Restore to Applied" }),
+    );
+    expect(
+      screen.getByRole("alertdialog", {
+        name: "Restore Rafael Diaz to Applied?",
+      }),
+    ).toBeTruthy();
+
+    await user.click(
+      within(
+        screen.getByRole("alertdialog", {
+          name: "Restore Rafael Diaz to Applied?",
+        }),
+      ).getByRole("button", { name: "Restore to Applied" }),
+    );
+
+    expect(screen.getByText(/current stage: Applied/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Reject" })).toBeTruthy();
+  });
 });
