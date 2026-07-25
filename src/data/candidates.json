@@ -39059,5 +39059,78 @@
     ],
     "projects": [],
     "evidence": []
+  },
+  {
+    "id": 507,
+    "name": "Leo Martinez",
+    "initials": "LM",
+    "title": "Go-to-Market Associate",
+    "location": "Mexico City, Mexico",
+    "email": "leo.martinez@example.com",
+    "phone": "+52 55 4050 7507",
+    "summary": "Early-career go-to-market operator with hands-on customer research, campaign analysis, and concise product storytelling experience.",
+    "profileCompletion": 85,
+    "verificationStatus": "Not verified",
+    "skills": ["Curiosity", "Clear writing", "Customer research", "Campaign analysis", "CRM", "Product storytelling"],
+    "topSkills": ["Customer research", "Clear writing", "Campaign analysis"],
+    "experience": [
+      {
+        "id": 2007,
+        "company": "LaunchPad",
+        "role": "Growth Marketing Intern",
+        "period": "Jan 2025 — Jun 2026",
+        "description": "Interviewed 45 prospective users and turned the findings into a launch campaign that increased qualified sign-ups by 31%."
+      }
+    ],
+    "education": [
+      {
+        "id": 507,
+        "institution": "Tecnológico de Monterrey",
+        "qualification": "BBA Marketing",
+        "period": "2022 — 2026"
+      }
+    ],
+    "projects": [],
+    "evidence": []
+  },
+  {
+    "id": 508,
+    "name": "Sophie Laurent",
+    "initials": "SL",
+    "title": "Senior Frontend Engineer",
+    "location": "Paris, France",
+    "email": "sophie.laurent@example.com",
+    "phone": "+33 6 40 50 85 08",
+    "summary": "Senior frontend engineer specializing in accessible React products, design systems, and performance-sensitive customer workflows.",
+    "profileCompletion": 95,
+    "verificationStatus": "Verified",
+    "skills": ["TypeScript", "React", "Design systems", "Accessibility", "Performance", "Playwright"],
+    "topSkills": ["TypeScript", "React", "Design systems"],
+    "experience": [
+      {
+        "id": 2008,
+        "company": "Maison Cloud",
+        "role": "Senior Frontend Engineer",
+        "period": "Mar 2021 — present",
+        "description": "Led a React checkout redesign across six markets, improving conversion by 18% and reducing accessibility defects by 72%."
+      }
+    ],
+    "education": [
+      {
+        "id": 508,
+        "institution": "Université Paris-Saclay",
+        "qualification": "MSc Computer Science",
+        "period": "2014 — 2019"
+      }
+    ],
+    "projects": [],
+    "evidence": [
+      {
+        "id": 2008,
+        "name": "Computer Science degree",
+        "type": "Education",
+        "status": "Verified"
+      }
+    ]
   }
 ]

@@ -95,7 +95,22 @@ describe("EmployerCandidatesPage", () => {
     }
   });
 
-  it("includes six varied screening candidate examples", () => {
+  it("adds six varied examples to the applied queue", () => {
+    render(<EmployerCandidatesPage />);
+
+    for (const candidateName of [
+      "Daniel Okafor",
+      "Elena García",
+      "Priya Nair",
+      "Jonas Berg",
+      "Leo Martinez",
+      "Sophie Laurent",
+    ]) {
+      expect(screen.getByText(candidateName)).toBeTruthy();
+    }
+  });
+
+  it("keeps two of the added examples in screening after moving four out", () => {
     render(<EmployerCandidatesPage />);
     fireEvent.click(
       screen.getByRole("button", { name: "View candidate pipeline" }),
@@ -106,15 +121,16 @@ describe("EmployerCandidatesPage", () => {
       ).getByRole("button", { name: "Screening queue" }),
     );
 
-    for (const candidateName of [
-      "Maya Chen",
+    for (const candidateName of ["Maya Chen", "Amara Williams"]) {
+      expect(screen.getByText(candidateName)).toBeTruthy();
+    }
+    for (const movedCandidateName of [
       "Daniel Okafor",
       "Elena García",
       "Priya Nair",
       "Jonas Berg",
-      "Amara Williams",
     ]) {
-      expect(screen.getByText(candidateName)).toBeTruthy();
+      expect(screen.queryByText(movedCandidateName)).toBeNull();
     }
   });
 

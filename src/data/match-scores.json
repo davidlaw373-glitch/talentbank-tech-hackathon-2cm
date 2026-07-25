@@ -148,5 +148,21 @@
     "score": 84,
     "matchingSkills": ["TypeScript", "React", "Next.js", "Accessibility"],
     "missingSkills": ["Design systems"]
+  },
+  {
+    "id": 19,
+    "candidateId": 507,
+    "jobId": 11,
+    "score": 87,
+    "matchingSkills": ["Curiosity", "Clear writing", "Customer research"],
+    "missingSkills": []
+  },
+  {
+    "id": 20,
+    "candidateId": 508,
+    "jobId": 7,
+    "score": 91,
+    "matchingSkills": ["TypeScript", "React", "Design systems"],
+    "missingSkills": []
   }
 ]
