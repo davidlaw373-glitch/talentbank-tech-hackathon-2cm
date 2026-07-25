@@ -214,8 +214,8 @@ describe("CandidateDiscoveryCard", () => {
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("does not show application stage labels on the candidate card", () => {
-    render(
+  it("shows the current application status on the card front", () => {
+    const { rerender } = render(
       <CandidateDiscoveryCard
         row={row}
         match={match}
@@ -224,7 +224,25 @@ describe("CandidateDiscoveryCard", () => {
       />,
     );
 
-    expect(screen.queryByText(row.app.stage)).toBeNull();
+    const activeStatus = screen.getByText(row.app.stage);
+    expect(activeStatus.getAttribute("data-slot")).toBe("candidate-status");
+    expect(activeStatus.className).toContain("bg-primary");
+
+    rerender(
+      <CandidateDiscoveryCard
+        row={rejectedRow}
+        match={getMatchScoreByPair(
+          rejectedRow.candidate.id,
+          rejectedRow.job.id,
+        )}
+        starred={false}
+        onToggleStar={vi.fn()}
+      />,
+    );
+
+    const rejectedStatus = screen.getByText("Rejected");
+    expect(rejectedStatus.getAttribute("data-slot")).toBe("candidate-status");
+    expect(rejectedStatus.className).toContain("bg-destructive");
   });
 
   it("shows verification as an icon beside the name without status text", () => {
@@ -360,7 +378,11 @@ describe("CandidateDiscoveryCard", () => {
     expect(boundedSignal.className).toContain("[&::-webkit-scrollbar]:hidden");
     expect(signalProgress.className).toContain("group-hover:opacity-100");
     expect(signalProgress.className).toContain("h-2");
-    expect(boundedSignal.parentElement?.className).toContain("h-36");
+    const signalFrame = boundedSignal.parentElement;
+    expect(signalFrame?.className).toContain("flex-1");
+    expect(signalFrame?.className).toContain("flex-col");
+    expect(boundedSignal.className).toContain("flex-1");
+    expect(signalFrame?.nextElementSibling?.className).toContain("mt-5");
     expect(
       within(boundedSignal).getByText("Senior Frontend Engineer at Helio"),
     ).toBeTruthy();
@@ -403,7 +425,7 @@ describe("CandidateDiscoveryCard", () => {
     expect(flip.getAttribute("aria-pressed")).toBe("false");
   });
 
-  it("keeps hover lift and card rotation on separate elements", () => {
+  it("keeps shadow-free hover lift and card rotation on separate elements", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
@@ -417,7 +439,8 @@ describe("CandidateDiscoveryCard", () => {
     const rotationPlane = liftLayer?.firstElementChild;
 
     expect(liftLayer).not.toBe(rotationPlane);
-    expect(liftLayer?.className).toContain("lift-on-hover");
+    expect(liftLayer?.className).toContain("hover:-translate-y-1");
+    expect(liftLayer?.className).not.toContain("lift-on-hover");
     expect(rotationPlane?.className).toContain(
       "[transform-style:preserve-3d]",
     );
@@ -439,6 +462,7 @@ describe("CandidateDiscoveryCard", () => {
     for (const face of faces) {
       expect(face.className).toContain("rounded-tl-3xl");
       expect(face.className).toContain("rounded-tr-3xl");
+      expect(face.className).not.toContain("shadow");
       expect(
         Array.from(face.children).some(
           (child) =>

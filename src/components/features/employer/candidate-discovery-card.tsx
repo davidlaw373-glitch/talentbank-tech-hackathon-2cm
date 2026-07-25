@@ -48,6 +48,7 @@ export function CandidateDiscoveryCard({
   const [signalExpanded, setSignalExpanded] = useState(false);
   const [signalScrollProgress, setSignalScrollProgress] = useState(0);
   const { candidate, job, matchScore, verification } = row;
+  const statusLabel = row.app.rejected ? "Rejected" : row.app.stage;
   const displayedVerification =
     verification === "Verified" ? "Verified" : "None";
   const insight = buildCandidateInsight(row, match);
@@ -74,7 +75,7 @@ export function CandidateDiscoveryCard({
       className="h-[33rem] min-w-0 animate-reveal [perspective:1200px]"
       aria-label={`${candidate.name}, ${candidate.title}`}
     >
-      <div className="lift-on-hover relative h-full w-full">
+      <div className="relative h-full w-full transition-transform duration-300 ease-out hover:-translate-y-1">
         <div
           className={cn(
             "relative h-full w-full [transform-style:preserve-3d] transition-transform duration-500 motion-reduce:transition-none",
@@ -82,7 +83,7 @@ export function CandidateDiscoveryCard({
           )}
         >
         <section
-          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden]"
+          className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border [backface-visibility:hidden]"
           aria-hidden={flipped}
         >
           <button
@@ -165,7 +166,15 @@ export function CandidateDiscoveryCard({
               </Button>
             </div>
 
-            <div className="mt-5 space-y-3">
+            <Badge
+              data-slot="candidate-status"
+              variant={row.app.rejected ? "destructive" : "default"}
+              className="mt-4 self-start shadow-none"
+            >
+              {statusLabel}
+            </Badge>
+
+            <div className="mt-4 space-y-3">
               <div>
                 <p className="text-caption">Applied for</p>
                 <p className="mt-1 flex items-center gap-2 text-body font-medium">
@@ -182,7 +191,7 @@ export function CandidateDiscoveryCard({
               </p>
             </div>
 
-            <div className="group relative mt-5 h-36 shrink-0 overflow-hidden rounded-lg border bg-surface-2 p-4">
+            <div className="group relative mt-5 flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border bg-surface-2 p-4">
               <Button
                 type="button"
                 variant="ghost"
@@ -203,7 +212,7 @@ export function CandidateDiscoveryCard({
                 tabIndex={flipped ? -1 : 0}
                 onScroll={handleSignalScroll}
                 className={cn(
-                  "pointer-events-auto mt-1.5 h-[5.25rem] overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
+                  "pointer-events-auto mt-1.5 min-h-0 flex-1 overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
                   SIGNAL_SCROLL_CLASSES,
                 )}
               >
@@ -229,7 +238,7 @@ export function CandidateDiscoveryCard({
               </div>
             </div>
 
-            <div className="mt-auto pt-5">
+            <div className="mt-5">
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="flex items-center gap-1.5 text-caption">
@@ -312,7 +321,7 @@ export function CandidateDiscoveryCard({
         </section>
 
         <section
-          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border bg-surface-tint text-card-foreground shadow-[5px_6px_0_0_var(--border)] [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border bg-surface-tint text-card-foreground [backface-visibility:hidden] [transform:rotateY(180deg)]"
           aria-hidden={!flipped}
         >
           <button

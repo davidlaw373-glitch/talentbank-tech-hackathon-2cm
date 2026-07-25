@@ -3,8 +3,8 @@ import type { ApplicationStage } from "@/types/application";
 import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
-export type CandidateView = ApplicationStage | "Rejected";
-export type CandidateSort = "none" | "latest" | "verified";
+export type CandidateView = ApplicationStage | "Rejected" | "All";
+export type CandidateSort = "none" | "latest" | "verified" | "starred";
 
 export type CandidateDiscoveryFilters = {
   query: string;
@@ -32,6 +32,7 @@ export function filterRowsForCandidateView(
   rows: EmployerCandidateRow[],
   view: CandidateView,
 ): EmployerCandidateRow[] {
+  if (view === "All") return rows;
   return rows.filter((row) =>
     view === "Rejected"
       ? row.app.rejected
@@ -42,6 +43,7 @@ export function filterRowsForCandidateView(
 export function filterCandidateRows(
   rows: EmployerCandidateRow[],
   filters: CandidateDiscoveryFilters,
+  starredIds: ReadonlySet<number> = new Set(),
 ): EmployerCandidateRow[] {
   const query = filters.query.trim().toLocaleLowerCase();
 
@@ -67,11 +69,16 @@ export function filterCandidateRows(
       return (
         (!query || searchable.includes(query)) &&
         (filters.role === "All" || row.job.title === filters.role) &&
-        stageMatches
+        stageMatches &&
+        (filters.sort !== "starred" || starredIds.has(row.candidate.id))
       );
     })
     .toSorted((a, b) => {
       if (filters.sort === "none") {
+        return 0;
+      }
+
+      if (filters.sort === "starred") {
         return 0;
       }
 

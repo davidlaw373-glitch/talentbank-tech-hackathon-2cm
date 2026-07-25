@@ -209,6 +209,21 @@ describe("filterCandidateRows", () => {
       }).map((row) => row.candidate.id),
     ).toEqual([1, 2, 3]);
   });
+
+  it("filters to starred candidates while preserving their order", () => {
+    expect(
+      filterCandidateRows(
+        rows,
+        {
+          query: "",
+          role: "All",
+          stage: "All",
+          sort: "starred",
+        },
+        new Set([1, 3]),
+      ).map((row) => row.candidate.id),
+    ).toEqual([1, 3]);
+  });
 });
 
 describe("filterRowsForCandidateView", () => {
@@ -244,6 +259,14 @@ describe("filterRowsForCandidateView", () => {
         (row) => row.candidate.id,
       ),
     ).toEqual([5]);
+  });
+
+  it("shows every candidate in the all view", () => {
+    expect(
+      filterRowsForCandidateView(rows, "All").map(
+        (row) => row.candidate.id,
+      ),
+    ).toEqual([1, 2, 3, 4, 5]);
   });
 });
 

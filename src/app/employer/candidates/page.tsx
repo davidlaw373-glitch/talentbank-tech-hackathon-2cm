@@ -91,8 +91,8 @@ export default function EmployerCandidatesPage() {
   );
 
   const filtered = useMemo(
-    () => filterCandidateRows(rowsForView, filters),
-    [rowsForView, filters],
+    () => filterCandidateRows(rowsForView, filters, starredIds),
+    [rowsForView, filters, starredIds],
   );
 
   const updateFilter = <Key extends keyof CandidateDiscoveryFilters>(
@@ -194,6 +194,21 @@ export default function EmployerCandidatesPage() {
               aria-label="Candidate pipeline stages"
               className="mt-5 space-y-2"
             >
+              <button
+                type="button"
+                aria-label="View all"
+                aria-current={candidateView === "All" ? "page" : undefined}
+                className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
+                  candidateView === "All"
+                    ? "border-primary bg-accent-soft text-foreground"
+                    : "border-border bg-surface-2 hover:bg-surface-tint"
+                }`}
+                onClick={() => selectCandidateView("All")}
+              >
+                <span>View all</span>
+                <span className="text-meta tabular-nums">{rows.length}</span>
+              </button>
+
               {APPLICATION_STAGES.map((stage) => (
                 <button
                   key={stage}
@@ -249,7 +264,7 @@ export default function EmployerCandidatesPage() {
 
       <Card
         data-slot="candidate-filter-panel"
-        className="overflow-hidden rounded-tl-3xl rounded-tr-3xl border-2 shadow-[5px_6px_0_0_var(--border)]"
+        className="overflow-hidden rounded-tl-3xl rounded-tr-3xl border-2 shadow-none"
       >
         <CardContent className="bg-surface-inset p-5 md:p-6">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -269,7 +284,7 @@ export default function EmployerCandidatesPage() {
                     updateFilter("query", event.target.value)
                   }
                   placeholder="Search name, role, company, or skill"
-                  className="bg-surface-1 pl-9"
+                  className="bg-surface-1 pl-9 shadow-none"
                 />
               </div>
             </div>
@@ -299,6 +314,7 @@ export default function EmployerCandidatesPage() {
               <SelectItem value="none">None</SelectItem>
               <SelectItem value="latest">Latest</SelectItem>
               <SelectItem value="verified">Verified</SelectItem>
+              <SelectItem value="starred">Starred</SelectItem>
             </FilterSelect>
           </div>
         </CardContent>
@@ -380,7 +396,7 @@ function FilterSelect({
         {label}
       </label>
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger id={id} className="w-full bg-surface-1">
+        <SelectTrigger id={id} className="w-full bg-surface-1 shadow-none">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>{children}</SelectContent>

@@ -59,8 +59,13 @@ describe("EmployerCandidatesPage", () => {
         name: "Verified",
       }),
     ).toBeTruthy();
+    expect(
+      within(sortControl).getByRole("option", {
+        name: "Starred",
+      }),
+    ).toBeTruthy();
     expect(within(sortControl).queryByText(/AI Match/i)).toBeNull();
-    expect(within(sortControl).getAllByRole("option")).toHaveLength(3);
+    expect(within(sortControl).getAllByRole("option")).toHaveLength(4);
     expect((sortControl as HTMLSelectElement).value).toBe("none");
     expect(screen.queryByText(/candidates shown/i)).toBeNull();
     expect(screen.queryByText("Candidate discovery")).toBeNull();
@@ -87,7 +92,7 @@ describe("EmployerCandidatesPage", () => {
     expect(pipelineButton.className).toContain("bg-surface-1");
   });
 
-  it("defaults to applied candidates without stage labels on cards", () => {
+  it("defaults to applied candidates and shows their status on every card", () => {
     renderCandidatesPage();
     const appliedCount = getEmployerCandidateRows(1).filter(
       (row) => !row.app.rejected && row.app.stage === "Applied",
@@ -96,12 +101,48 @@ describe("EmployerCandidatesPage", () => {
 
     expect(cards).toHaveLength(appliedCount);
     for (const card of cards) {
-      expect(within(card).queryByText("Screening")).toBeNull();
-      expect(within(card).queryByText("Interview")).toBeNull();
-      expect(within(card).queryByText("Applied")).toBeNull();
-      expect(within(card).queryByText("Offer")).toBeNull();
-      expect(within(card).queryByText("Rejected")).toBeNull();
+      const status = card.querySelector('[data-slot="candidate-status"]');
+      expect(status?.textContent).toBe("Applied");
     }
+  });
+
+  it("filters the current view to starred candidates", () => {
+    renderCandidatesPage();
+    const results = screen.getByRole("list", { name: "Candidate results" });
+    const firstCard = within(results).getAllByRole("article")[0];
+    const savedCandidateName = firstCard.getAttribute("aria-label")?.split(",")[0];
+    expect(savedCandidateName).toBeTruthy();
+
+    fireEvent.click(
+      within(firstCard).getByRole("button", { name: /^Save / }),
+    );
+    fireEvent.change(screen.getByLabelText("Sort candidates"), {
+      target: { value: "starred" },
+    });
+
+    const filteredCards = within(
+      screen.getByRole("list", { name: "Candidate results" }),
+    ).getAllByRole("article");
+    expect(filteredCards).toHaveLength(1);
+    expect(filteredCards[0].getAttribute("aria-label")).toContain(
+      savedCandidateName as string,
+    );
+  });
+
+  it("shows every pipeline record from View all", () => {
+    renderCandidatesPage();
+    fireEvent.click(
+      screen.getByRole("button", { name: "View candidate pipeline" }),
+    );
+    fireEvent.click(
+      within(
+        screen.getByRole("dialog", { name: "Candidate pipeline" }),
+      ).getByRole("button", { name: "View all" }),
+    );
+
+    expect(screen.getAllByRole("article")).toHaveLength(
+      getEmployerCandidateRows(1).length,
+    );
   });
 
   it("adds six varied examples to the applied queue", () => {
@@ -161,6 +202,9 @@ describe("EmployerCandidatesPage", () => {
     expect(pipeline.className).toContain("left-0");
     expect(pipeline.className).toContain("border-r-2");
     expect(within(pipeline).queryByText("Pending")).toBeNull();
+    expect(
+      within(pipeline).getByRole("button", { name: "View all" }),
+    ).toBeTruthy();
 
     fireEvent.click(
       within(pipeline).getByRole("button", { name: "Offer" }),
@@ -198,6 +242,7 @@ describe("EmployerCandidatesPage", () => {
 
     expect(searchPanel?.className).toContain("rounded-tl-3xl");
     expect(searchPanel?.className).toContain("rounded-tr-3xl");
+    expect(searchPanel?.className).toContain("shadow-none");
     expect(
       Array.from(searchPanel?.children ?? []).some(
         (child) =>
