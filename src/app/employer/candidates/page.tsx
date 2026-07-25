@@ -46,7 +46,7 @@ const DEFAULT_FILTERS: CandidateDiscoveryFilters = {
 
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
-  const { getStatus } = useCandidatePipeline();
+  const { getStatus, moveToStage } = useCandidatePipeline();
   const [sourceRows] = useState(() =>
     getEmployerCandidateRows(DEMO_EMPLOYER_ID),
   );
@@ -124,6 +124,18 @@ export default function EmployerCandidatesPage() {
         ? "Their profile is marked for your shortlist review."
         : "You can save this profile again at any time.",
       tone: "info",
+    });
+  };
+
+  const restoreToApplied = (
+    applicationId: number,
+    candidateName: string,
+  ) => {
+    moveToStage(applicationId, "Applied");
+    push({
+      title: `${candidateName} restored to Applied`,
+      description: "They are ready for a fresh application review.",
+      tone: "success",
     });
   };
 
@@ -305,6 +317,15 @@ export default function EmployerCandidatesPage() {
                 starred={starredIds.has(row.candidate.id)}
                 onToggleStar={() =>
                   toggleStar(row.candidate.id, row.candidate.name)
+                }
+                onRestoreToApplied={
+                  row.app.rejected
+                    ? () =>
+                        restoreToApplied(
+                          row.app.id,
+                          row.candidate.name,
+                        )
+                    : undefined
                 }
               />
             </li>

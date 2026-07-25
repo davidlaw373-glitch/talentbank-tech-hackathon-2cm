@@ -9,6 +9,7 @@ import {
   MapPin,
   Maximize2,
   Minimize2,
+  RotateCcw,
   Sparkles,
   Star,
 } from "lucide-react";
@@ -17,6 +18,7 @@ import type { EmployerCandidateRow } from "@/lib/data-helpers";
 import type { JobCandidateMatchScore } from "@/types/match-score";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { cn } from "@/lib/utils";
 import {
   buildCandidateInsight,
@@ -28,6 +30,7 @@ type CandidateDiscoveryCardProps = {
   match: JobCandidateMatchScore | undefined;
   starred: boolean;
   onToggleStar: () => void;
+  onRestoreToApplied?: () => void;
 };
 
 const SIGNAL_SCROLL_CLASSES =
@@ -38,8 +41,10 @@ export function CandidateDiscoveryCard({
   match,
   starred,
   onToggleStar,
+  onRestoreToApplied,
 }: CandidateDiscoveryCardProps) {
   const [flipped, setFlipped] = useState(false);
+  const [restorePromptOpen, setRestorePromptOpen] = useState(false);
   const [signalExpanded, setSignalExpanded] = useState(false);
   const [signalScrollProgress, setSignalScrollProgress] = useState(0);
   const { candidate, job, matchScore, verification } = row;
@@ -225,7 +230,7 @@ export function CandidateDiscoveryCard({
             </div>
 
             <div className="mt-auto pt-5">
-              <div className="flex items-end">
+              <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="flex items-center gap-1.5 text-caption">
                     <Sparkles className="h-3.5 w-3.5" aria-hidden />
@@ -238,6 +243,19 @@ export function CandidateDiscoveryCard({
                     </span>
                   </p>
                 </div>
+                {row.app.rejected && onRestoreToApplied ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="pointer-events-auto relative z-20 bg-surface-1"
+                    tabIndex={flipped ? -1 : 0}
+                    onClick={() => setRestorePromptOpen(true)}
+                  >
+                    <RotateCcw aria-hidden />
+                    Restore to Applied
+                  </Button>
+                ) : null}
               </div>
               <div
                 className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-inset"
@@ -369,6 +387,14 @@ export function CandidateDiscoveryCard({
         </section>
         </div>
       </div>
+      <ConfirmDialog
+        open={restorePromptOpen}
+        onOpenChange={setRestorePromptOpen}
+        title={`Restore ${candidate.name} to Applied?`}
+        description="This removes the candidate from Rejected and returns them to the Applied pipeline."
+        confirmLabel="Restore to Applied"
+        onConfirm={() => onRestoreToApplied?.()}
+      />
     </article>
   );
 }

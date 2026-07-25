@@ -2,6 +2,31 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+vi.mock("@/components/ui/confirm-dialog", () => ({
+  ConfirmDialog: ({
+    open,
+    title,
+    confirmLabel,
+    onConfirm,
+  }: {
+    open: boolean;
+    title: string;
+    confirmLabel: string;
+    onConfirm: () => void;
+  }) =>
+    open ? (
+      <div role="alertdialog" aria-label={title}>
+        <button
+          type="button"
+          aria-label={`Confirm ${confirmLabel}`}
+          onClick={onConfirm}
+        >
+          {confirmLabel}
+        </button>
+      </div>
+    ) : null,
+}));
+
 import {
   getEmployerCandidateRows,
   getMatchScoreByPair,
@@ -23,10 +48,13 @@ const unverifiedRow = getEmployerCandidateRows(1).find(
 const pendingRow = getEmployerCandidateRows(1).find(
   (candidateRow) => candidateRow.verification === "Pending",
 );
+const rejectedRow = getEmployerCandidateRows(1).find(
+  (candidateRow) => candidateRow.app.rejected,
+);
 
-if (!unverifiedRow || !pendingRow) {
+if (!unverifiedRow || !pendingRow || !rejectedRow) {
   throw new Error(
-    "Unverified and pending candidate fixtures are required for card tests.",
+    "Unverified, pending, and rejected candidate fixtures are required for card tests.",
   );
 }
 
@@ -113,6 +141,46 @@ describe("CandidateDiscoveryCard", () => {
 
     expect(onToggleStar).toHaveBeenCalledOnce();
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("confirms before restoring a rejected candidate to Applied", async () => {
+    const user = userEvent.setup();
+    const onRestoreToApplied = vi.fn();
+
+    render(
+      <CandidateDiscoveryCard
+        row={rejectedRow}
+        match={getMatchScoreByPair(
+          rejectedRow.candidate.id,
+          rejectedRow.job.id,
+        )}
+        starred={false}
+        onToggleStar={vi.fn()}
+        onRestoreToApplied={onRestoreToApplied}
+      />,
+    );
+
+    const restoreButton = screen.getByRole("button", {
+      name: "Restore to Applied",
+    });
+    expect(restoreButton.parentElement?.textContent).toContain("AI Match");
+
+    await user.click(restoreButton);
+
+    expect(onRestoreToApplied).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("alertdialog", {
+        name: `Restore ${rejectedRow.candidate.name} to Applied?`,
+      }),
+    ).toBeTruthy();
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Confirm Restore to Applied",
+      }),
+    );
+
+    expect(onRestoreToApplied).toHaveBeenCalledOnce();
   });
 
   it("links the candidate name and occupation to the complete profile", async () => {
