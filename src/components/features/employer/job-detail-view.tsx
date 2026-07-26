@@ -373,7 +373,7 @@ export function JobDetailView({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button asChild variant="default" size="sm">
-              <Link href="/employer/candidates">
+              <Link href="/employer/applicants">
                 <ExternalLink />
                 View all applications
               </Link>

@@ -182,7 +182,7 @@ export function TalentPoolRow({
           <div className="min-w-0 flex-1 space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <Link
-                href={`/employer/candidates/${candidate.id}`}
+                href={`/employer/applicants/${candidate.id}`}
                 className="text-sm font-semibold hover:underline"
               >
                 {candidate.name}
@@ -359,7 +359,7 @@ export function TalentPoolRow({
           Reach out
         </Button>
         <Button asChild size="sm" variant="outline">
-          <Link href={`/employer/candidates/${candidate.id}`}>
+          <Link href={`/employer/applicants/${candidate.id}`}>
             View profile
             <ArrowRight />
           </Link>

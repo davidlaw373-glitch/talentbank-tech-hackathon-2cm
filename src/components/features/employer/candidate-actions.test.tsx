@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { getEmployerCandidateRows } from "@/lib/data-helpers";
 import { CandidatePipelineProvider } from "@/components/features/employer/candidate-pipeline-provider";
-import EmployerCandidatesPage from "@/app/employer/candidates/page";
+import EmployerApplicantsPage from "@/app/employer/applicants/page";
 import { CandidateActions, CompleteReviewButton } from "./candidate-actions";
 
 vi.mock("@/components/common/toast", () => ({
@@ -76,7 +76,7 @@ describe("Candidate review actions", () => {
           initialStage={appliedRow.app.stage}
           initialRejected={appliedRow.app.rejected}
         />
-        <EmployerCandidatesPage />
+        <EmployerApplicantsPage />
       </CandidatePipelineProvider>,
     );
 

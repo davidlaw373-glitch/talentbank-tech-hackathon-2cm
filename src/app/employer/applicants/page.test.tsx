@@ -66,12 +66,19 @@ describe("EmployerCandidatesPage", () => {
     expect(screen.getAllByText(/AI Match/i).length).toBeGreaterThan(0);
   });
 
-  it("places the pipeline entry with the page actions", () => {
+  it("places the pipeline entry in the page heading", () => {
     renderCandidatesPage();
-    const pipelineButton = screen.getByRole("button", {
-      name: "View candidate pipeline",
-    });
+    const pageHeader = screen
+      .getByRole("heading", { name: "Candidate management" })
+      .closest("header");
 
+    expect(pageHeader).toBeTruthy();
+    const pipelineButton = within(pageHeader as HTMLElement).getByRole(
+      "button",
+      {
+        name: "View candidate pipeline",
+      },
+    );
     expect(pipelineButton).toBeTruthy();
     expect(pipelineButton.querySelector("svg")).toBeNull();
     expect(pipelineButton.className).toContain("bg-surface-1");

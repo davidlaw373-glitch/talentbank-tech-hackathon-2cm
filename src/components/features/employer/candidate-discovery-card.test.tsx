@@ -159,7 +159,7 @@ describe("CandidateDiscoveryCard", () => {
       screen.getAllByRole("link", {
         name: "View Aisha Khan's full profile",
       })[0]?.getAttribute("href"),
-    ).toBe("/employer/candidates/2");
+    ).toBe("/employer/applicants/2");
     expect(container.querySelector("article")?.className).toContain("h-96");
   });
 
@@ -216,7 +216,7 @@ describe("CandidateDiscoveryCard", () => {
       name: "View Aisha Khan's full profile",
     });
 
-    expect(profileLink.getAttribute("href")).toBe("/employer/candidates/2");
+    expect(profileLink.getAttribute("href")).toBe("/employer/applicants/2");
     expect(within(profileLink).getByText("Aisha Khan").className).toContain(
       "group-hover/profile:underline",
     );
@@ -329,7 +329,7 @@ describe("CandidateDiscoveryCard", () => {
           name: "View Aisha Khan's full profile",
         })
         .getAttribute("href"),
-    ).toBe("/employer/candidates/2");
+    ).toBe("/employer/applicants/2");
   });
 
   it("keeps AI insight available through the card without a separate button", () => {

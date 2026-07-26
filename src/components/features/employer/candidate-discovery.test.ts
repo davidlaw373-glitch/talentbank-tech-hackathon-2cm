@@ -36,7 +36,6 @@ function makeRow(
       phone: "+65 0000 0000",
       summary: "Product-minded engineer with strong delivery signals.",
       profileCompletion: 90,
-      verificationStatus: "Verified",
       skills: [{ id: 1, name: overrides.skill ?? "React", status: "Verified" }],
       topSkills: [1],
       experience: [
@@ -52,7 +51,6 @@ function makeRow(
       ],
       education: [],
       projects: [],
-      evidence: [],
       onboardingComplete: true,
     },
     job: {

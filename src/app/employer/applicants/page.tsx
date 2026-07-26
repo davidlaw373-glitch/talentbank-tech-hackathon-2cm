@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PageHeading } from "@/components/common/page-heading";
 import { EmptyState } from "@/components/common/empty-state";
 import {
   DropdownMenu,
@@ -164,16 +165,20 @@ export default function EmployerCandidatesPage() {
 
   return (
     <div className="relative space-y-8 pb-8">
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          className="bg-surface-1 hover:bg-surface-2"
-          onClick={() => setPipelineOpen(true)}
-        >
-          View candidate pipeline
-        </Button>
-      </div>
+      <PageHeading
+        title="Applicant management"
+        description="Review new applications first, save promising people, and use AI Match as supporting evidence."
+        action={
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3 bg-surface-1 hover:bg-surface-2"
+            onClick={() => setPipelineOpen(true)}
+          >
+            View candidate pipeline
+          </Button>
+        }
+      />
 
       {pipelineOpen ? (
         <>
@@ -285,13 +290,10 @@ export default function EmployerCandidatesPage() {
         data-slot="candidate-filter-panel"
         className="overflow-hidden rounded-tl-3xl rounded-tr-3xl border-2 shadow-none"
       >
-        <CardContent className="p-5 md:p-6">
+        <CardContent className="bg-surface-inset p-5 md:p-6">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
-              <label
-                htmlFor="candidate-search"
-                className="text-eyebrow"
-              >
+              <label htmlFor="candidate-search" className="text-caption">
                 Search candidates
               </label>
               <div className="relative">
@@ -306,7 +308,7 @@ export default function EmployerCandidatesPage() {
                     updateFilter("query", event.target.value)
                   }
                   placeholder="Search name, role, company, or skill"
-                  className="pl-9"
+                  className="bg-surface-1 pl-9 shadow-none"
                 />
               </div>
             </div>
@@ -408,15 +410,13 @@ function MultiSortFilter({
 
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <span className="text-eyebrow">
-        Sort candidates
-      </span>
+      <span className="text-caption">Sort candidates</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
             variant="outline"
-            className="h-11 w-full justify-between px-3 text-left text-base font-normal"
+            className="h-11 w-full justify-between bg-surface-1 px-3 text-left text-base font-normal shadow-none"
             aria-label="Sort candidates"
           >
             <span className="truncate">{summary}</span>
@@ -465,14 +465,11 @@ function FilterSelect({
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <label
-        htmlFor={id}
-        className="text-eyebrow"
-      >
+      <label htmlFor={id} className="text-caption">
         {label}
       </label>
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger id={id} className="w-full">
+        <SelectTrigger id={id} className="w-full bg-surface-1 shadow-none">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>{children}</SelectContent>

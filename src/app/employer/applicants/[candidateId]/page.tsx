@@ -4,6 +4,7 @@ import { Sparkles } from "lucide-react";
 import {
   getEmployerCandidateRows,
 } from "@/lib/data-helpers";
+import { resolveTopSkills } from "@/types/candidate";
 import { CandidateActions } from "@/components/features/employer/candidate-actions";
 import { CandidateProfileOverview } from "@/components/features/employer/candidate-profile-overview";
 import { Badge } from "@/components/ui/badge";
@@ -95,9 +96,9 @@ export default async function EmployerCandidateDetailPage({
             <div className="space-y-2">
               <h3 className="text-base font-semibold">Top skills</h3>
               <div className="flex flex-wrap gap-2">
-                {candidate.topSkills.map((skill) => (
-                  <Badge key={skill} variant="secondary">
-                    {skill}
+                {resolveTopSkills(candidate.skills, candidate.topSkills).map((skill) => (
+                  <Badge key={skill.id} variant="secondary">
+                    {skill.name}
                   </Badge>
                 ))}
               </div>

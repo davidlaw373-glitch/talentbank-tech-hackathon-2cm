@@ -120,7 +120,7 @@ export function CandidateDiscoveryCard({
           ) : null}
           {linkWholeCard ? (
             <Link
-              href={`/employer/candidates/${candidate.id}`}
+              href={`/employer/applicants/${candidate.id}`}
               aria-label={`View ${candidate.name}'s full profile`}
               className="absolute inset-0 z-20 rounded-xl rounded-tl-3xl rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             />
@@ -150,7 +150,7 @@ export function CandidateDiscoveryCard({
                     </div>
                   ) : (
                     <Link
-                      href={`/employer/candidates/${candidate.id}`}
+                      href={`/employer/applicants/${candidate.id}`}
                       aria-label={`View ${candidate.name}'s full profile`}
                       tabIndex={flipped ? -1 : 0}
                       className="group/profile pointer-events-auto relative z-20 block min-w-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -291,7 +291,7 @@ export function CandidateDiscoveryCard({
                     className="pointer-events-auto relative z-20 shrink-0"
                   >
                     <Link
-                      href={`/employer/candidates/${candidate.id}`}
+                      href={`/employer/applicants/${candidate.id}`}
                       aria-label={`View ${candidate.name}'s full profile`}
                     >
                       View profile
@@ -431,7 +431,7 @@ export function CandidateDiscoveryCard({
                 className="pointer-events-auto relative z-20 w-full"
               >
                 <Link
-                  href={`/employer/candidates/${candidate.id}`}
+                  href={`/employer/applicants/${candidate.id}`}
                   aria-label={`View ${candidate.name}'s full profile`}
                   tabIndex={flipped ? 0 : -1}
                 >

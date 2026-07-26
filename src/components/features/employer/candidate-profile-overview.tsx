@@ -51,7 +51,7 @@ export function CandidateProfileOverview({
           size="icon"
           className="self-start bg-surface-1 hover:bg-surface-2"
         >
-          <Link href="/employer/candidates" aria-label="Back to candidates">
+          <Link href="/employer/applicants" aria-label="Back to candidates">
             <ArrowLeft aria-hidden />
           </Link>
         </Button>
@@ -272,7 +272,7 @@ export function CandidateProfileOverview({
           <section className="pt-6">
             <h3 className="text-caption">Skills</h3>
             <p className="mt-3 text-meta leading-relaxed">
-              {candidate.skills.join(" · ")}
+              {candidate.skills.map((s) => s.name).join(" · ")}
             </p>
           </section>
         </div>

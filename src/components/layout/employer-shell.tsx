@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/employer", label: "Dashboard", icon: LayoutDashboard },
   { href: "/employer/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/employer/candidates", label: "Candidates", icon: Users },
+  { href: "/employer/applicants", label: "Applicants", icon: Users },
   { href: "/employer/interviews", label: "Interviews", icon: Calendar },
   { href: "/employer/offers", label: "Offers", icon: CircleCheck },
   { href: "/employer/talent-pool", label: "Talent pool", icon: Sparkles },

@@ -148,7 +148,7 @@ export default function EmployerDashboardPage() {
             </div>
             <Button asChild>
               <Link
-                href={`/employer/candidates/${recentApplicants[0].candidate.id}`}
+                href={`/employer/applicants/${recentApplicants[0].candidate.id}`}
               >
                 Review application
                 <ArrowRight />
@@ -288,7 +288,7 @@ export default function EmployerDashboardPage() {
               </CardDescription>
             </div>
             <Button asChild variant="outline" size="sm">
-              <Link href="/employer/candidates">
+              <Link href="/employer/applicants">
                 View all
                 <ArrowRight />
               </Link>
@@ -407,7 +407,7 @@ function RecentApplicantRow({
 
   return (
     <Link
-      href={`/employer/candidates/${row.candidate.id}`}
+      href={`/employer/applicants/${row.candidate.id}`}
       className="flex items-center justify-between gap-3 rounded-md border bg-background p-3 transition-colors hover:bg-accent-soft"
     >
       <div className="flex min-w-0 items-center gap-3">

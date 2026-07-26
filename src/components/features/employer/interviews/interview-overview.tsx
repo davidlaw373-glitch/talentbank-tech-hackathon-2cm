@@ -182,7 +182,7 @@ export function InterviewOverview() {
                 </p>
               </div>
               <Button asChild size="sm">
-                <Link href="/employer/candidates">Review candidates</Link>
+                <Link href="/employer/applicants">Review candidates</Link>
               </Button>
             </CardContent>
           </Card>
