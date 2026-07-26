@@ -143,6 +143,32 @@ describe("CandidateDiscoveryCard", () => {
     expect(showInsight.getAttribute("aria-pressed")).toBe("false");
   });
 
+  it("supports the job-detail variant without save or recent-signal controls", () => {
+    const { container } = render(
+      <CandidateDiscoveryCard
+        row={row}
+        match={match}
+        showRecentSignal={false}
+        showStar={false}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Save Aisha Khan" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("region", {
+        name: "Recent signal details for Aisha Khan",
+      }),
+    ).toBeNull();
+    expect(
+      screen.getAllByRole("link", {
+        name: "View Aisha Khan's full profile",
+      })[0]?.getAttribute("href"),
+    ).toBe("/employer/candidates/2");
+    expect(container.querySelector("article")?.className).toContain("h-96");
+  });
+
   it("confirms before restoring a rejected candidate to Applied", async () => {
     const user = userEvent.setup();
     const onRestoreToApplied = vi.fn();

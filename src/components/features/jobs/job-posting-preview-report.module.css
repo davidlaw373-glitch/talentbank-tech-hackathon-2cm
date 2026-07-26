@@ -1,0 +1,11 @@
+.reportHeader {
+  border-bottom: 1px solid var(--foreground);
+  padding-bottom: 2.5rem;
+}
+
+.reportFlow {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+  padding-top: 2.5rem;
+}

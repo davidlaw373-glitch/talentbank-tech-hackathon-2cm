@@ -153,7 +153,9 @@ export function EmployerShell({ children }: { children: React.ReactNode }) {
       </header>
       <main id="main-content" tabIndex={-1} className="container mx-auto p-4 sm:p-6">
         <CandidatePipelineProvider>
-          <SetupBanner role="employer" />
+          {pathname !== "/employer/jobs/all" ? (
+            <SetupBanner role="employer" />
+          ) : null}
           {children}
         </CandidatePipelineProvider>
       </main>
