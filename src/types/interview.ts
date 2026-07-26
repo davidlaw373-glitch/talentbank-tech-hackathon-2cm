@@ -22,6 +22,8 @@ export type Interview = {
   applicationId: number;
   type: InterviewType;
   interviewers: string[];
+  /** ISO timestamp used for calendar grouping and sorting. */
+  scheduledAt: string;
   /** Human-readable scheduling line, e.g. "Tomorrow · 10:00 SGT". */
   scheduledFor: string;
   duration: number;

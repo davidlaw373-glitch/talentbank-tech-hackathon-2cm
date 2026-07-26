@@ -52,6 +52,7 @@ export function getEmployerInterviewSeedRows(): EmployerInterviewRow[] {
       Interview,
       | "type"
       | "interviewers"
+      | "scheduledAt"
       | "scheduledFor"
       | "duration"
       | "status"
@@ -61,6 +62,7 @@ export function getEmployerInterviewSeedRows(): EmployerInterviewRow[] {
     {
       type: "Technical",
       interviewers: ["Priya Anand", "Daniel Wong"],
+      scheduledAt: "2026-07-31T09:30:00+08:00",
       scheduledFor: "Fri · 09:30 SGT",
       duration: 60,
       status: "Scheduled",
@@ -69,6 +71,7 @@ export function getEmployerInterviewSeedRows(): EmployerInterviewRow[] {
     {
       type: "Behavioural",
       interviewers: ["Mei Tan"],
+      scheduledAt: "2026-08-03T11:00:00+08:00",
       scheduledFor: "Mon · 11:00 SGT",
       duration: 45,
       status: "Scheduled",
@@ -77,6 +80,7 @@ export function getEmployerInterviewSeedRows(): EmployerInterviewRow[] {
     {
       type: "Final",
       interviewers: ["Jordan Lee", "Anika Patel"],
+      scheduledAt: "2026-08-04T16:00:00+08:00",
       scheduledFor: "Tue · 16:00 SGT",
       duration: 60,
       status: "Pending confirmation",

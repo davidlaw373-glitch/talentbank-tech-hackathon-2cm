@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/select";
 import { getEmployerCandidateRows } from "@/lib/data-helpers";
 import type { Interview, InterviewType } from "@/types/interview";
+import { toSingaporeIso } from "./interview-calendar-data";
 import { INTERVIEW_TYPES } from "./interview-data";
 
 export type ScheduleInterviewValues = Pick<
   Interview,
   | "type"
   | "interviewers"
+  | "scheduledAt"
   | "scheduledFor"
   | "duration"
   | "scorecardItems"
@@ -75,7 +77,7 @@ function InterviewScheduleDialogContent({
   );
   const [type, setType] = useState<InterviewType>("Technical");
   const [interviewers, setInterviewers] = useState("");
-  const [scheduledFor, setScheduledFor] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
   const [duration, setDuration] = useState("60");
   const [scorecardItems, setScorecardItems] = useState("5");
 
@@ -113,7 +115,8 @@ function InterviewScheduleDialogContent({
               .split(",")
               .map((name) => name.trim())
               .filter(Boolean),
-            scheduledFor,
+            scheduledAt: toSingaporeIso(scheduledAt),
+            scheduledFor: `${scheduledAt.slice(0, 10)} · ${scheduledAt.slice(11)} SGT`,
             duration: Number(duration),
             scorecardItems: Number(scorecardItems),
           });
@@ -173,9 +176,9 @@ function InterviewScheduleDialogContent({
           <FormField label="Date and time" htmlFor="schedule-time">
             <Input
               id="schedule-time"
-              value={scheduledFor}
-              onChange={(event) => setScheduledFor(event.target.value)}
-              placeholder="e.g. 25 Jul · 10:00 SGT"
+              type="datetime-local"
+              value={scheduledAt}
+              onChange={(event) => setScheduledAt(event.target.value)}
               required
             />
           </FormField>
