@@ -57,6 +57,39 @@ describe("InterviewCalendar", () => {
     ).toBe("7");
   });
 
+  it("keeps the selected day when moving to the next month", async () => {
+    const user = userEvent.setup();
+    render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
+
+    await user.click(screen.getByRole("button", { name: "Next month" }));
+
+    const selectedDate = screen.getByRole("gridcell", {
+      name: "Wednesday, August 26, 2026, 0 scheduled interviews",
+    });
+    expect(selectedDate.getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("clamps the selected day when the target month is shorter", async () => {
+    const user = userEvent.setup();
+    render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
+
+    await user.click(
+      screen.getByRole("gridcell", {
+        name: "Friday, July 31, 2026, 1 scheduled interview",
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "Next month" }));
+    await user.click(screen.getByRole("button", { name: "Next month" }));
+
+    expect(
+      screen
+        .getByRole("gridcell", {
+          name: "Wednesday, September 30, 2026, 0 scheduled interviews",
+        })
+        .getAttribute("aria-selected"),
+    ).toBe("true");
+  });
+
   it("selects a date and exposes its complete daily agenda", async () => {
     const user = userEvent.setup();
     render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
