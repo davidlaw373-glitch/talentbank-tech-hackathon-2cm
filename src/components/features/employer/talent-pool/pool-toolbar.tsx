@@ -56,7 +56,7 @@ export function PoolToolbar({
           <div className="flex flex-1 flex-col gap-1.5">
             <label
               htmlFor="pool-search"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Search pool
             </label>
@@ -77,7 +77,7 @@ export function PoolToolbar({
           <div className="flex w-full flex-col gap-1.5 sm:w-48">
             <label
               htmlFor="pool-status"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Status
             </label>

@@ -108,7 +108,7 @@ export function JobDiscovery() {
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <label
                 htmlFor="job-search"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-eyebrow"
               >
                 Search
               </label>
@@ -130,7 +130,7 @@ export function JobDiscovery() {
             <div className="flex flex-col gap-1.5 sm:w-[12rem]">
               <label
                 htmlFor="work-mode-filter"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-eyebrow"
               >
                 Work mode
               </label>
@@ -150,7 +150,7 @@ export function JobDiscovery() {
             <div className="flex flex-col gap-1.5 sm:w-[12rem]">
               <label
                 htmlFor="sort"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-eyebrow"
               >
                 Sort by
               </label>

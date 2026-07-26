@@ -18,7 +18,7 @@ type FieldRowProps = {
 export function FieldRow({ label, children }: FieldRowProps) {
   return (
     <div className="space-y-1.5">
-      <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <small className="text-eyebrow">
         {label}
       </small>
       {children}

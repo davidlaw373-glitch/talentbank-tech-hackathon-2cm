@@ -212,7 +212,7 @@ export default function EmployerDashboardPage() {
                 >
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
-                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <div className="text-stat">
                   {s.value}
                 </div>
                 <div>

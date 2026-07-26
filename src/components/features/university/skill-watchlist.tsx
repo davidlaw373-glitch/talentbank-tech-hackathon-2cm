@@ -41,7 +41,7 @@ export function SkillWatchlist({ skills }: { skills: SkillDemand[] }) {
   return (
     <div className="space-y-3">
       {pinned.length > 0 ? (
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-eyebrow">
           Watching {pinned.length} {pinned.length === 1 ? "skill" : "skills"}
         </p>
       ) : null}

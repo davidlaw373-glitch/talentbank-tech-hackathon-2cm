@@ -170,7 +170,7 @@ function DisplayRow({
   return (
     <div>
       {label ? (
-        <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <small className="text-eyebrow">
           {label}
         </small>
       ) : null}
@@ -187,7 +187,7 @@ function DisplayRow({
 function DisplayBlock({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <small className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <small className="text-eyebrow">
         {label}
       </small>
       <p className="mt-1 text-sm">{value}</p>

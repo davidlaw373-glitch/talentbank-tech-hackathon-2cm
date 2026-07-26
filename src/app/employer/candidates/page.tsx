@@ -290,7 +290,7 @@ export default function EmployerCandidatesPage() {
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
               <label
                 htmlFor="candidate-search"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                className="text-eyebrow"
               >
                 Search candidates
               </label>
@@ -408,7 +408,7 @@ function MultiSortFilter({
 
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <span className="text-eyebrow">
         Sort candidates
       </span>
       <DropdownMenu>
@@ -467,7 +467,7 @@ function FilterSelect({
     <div className="flex min-w-0 flex-col gap-1.5">
       <label
         htmlFor={id}
-        className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+        className="text-eyebrow"
       >
         {label}
       </label>

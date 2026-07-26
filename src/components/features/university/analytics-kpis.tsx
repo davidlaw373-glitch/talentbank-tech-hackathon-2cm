@@ -179,7 +179,7 @@ function KpiTile({ kpi }: { kpi: Kpi }) {
           </div>
           <DeltaBadge delta={kpi.delta} />
         </div>
-        <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+        <div className="text-stat">
           <AnimatedCounter
             value={kpi.value}
             prefix={kpi.prefix}

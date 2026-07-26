@@ -249,7 +249,7 @@ export function ApplicationTracker() {
               <div className="flex w-full flex-col gap-1.5 sm:w-72">
                 <label
                   htmlFor="application-search"
-                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                  className="text-eyebrow"
                 >
                   Search
                 </label>

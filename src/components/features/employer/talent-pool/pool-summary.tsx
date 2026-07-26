@@ -83,7 +83,7 @@ export function PoolSummary({ entries }: PoolSummaryProps) {
               >
                 <Icon className="h-5 w-5" aria-hidden />
               </div>
-              <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+              <div className="text-stat-compact">
                 {s.value}
               </div>
               <div>

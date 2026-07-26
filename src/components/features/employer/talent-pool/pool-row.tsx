@@ -281,7 +281,7 @@ export function TalentPoolRow({
       {/* Notes */}
       <div className="mt-4 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-eyebrow">
             Notes
           </p>
           {!editingNotes ? (
@@ -326,7 +326,7 @@ export function TalentPoolRow({
 
       {/* Tags */}
       <div className="mt-4 space-y-2">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-eyebrow">
           Tags
         </p>
         <div className="flex flex-wrap gap-1.5">

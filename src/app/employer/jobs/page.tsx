@@ -171,7 +171,7 @@ export default function EmployerJobsPage() {
                   <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                  <p className="text-stat">
                     {s.value}
                   </p>
                   <p className="text-base font-semibold tracking-tight">{s.label}</p>

@@ -144,7 +144,7 @@ export function CoverPathFinder() {
                     </div>
                     <div className="flex-1 text-left">
                       <p
-                        className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                        className="text-eyebrow"
                         aria-hidden
                       >
                         {path.nickname}
@@ -205,7 +205,7 @@ export function CoverPathFinder() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                     <div className="flex-1 rounded-lg border bg-background p-4">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <p className="text-eyebrow">
                         You are here
                       </p>
                       <p className="mt-1.5 text-sm font-medium sm:text-base">
@@ -269,7 +269,7 @@ export function CoverPathFinder() {
                 {/* Metrics row */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg border bg-background p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       Estimated time
                     </p>
                     <p className="mt-1.5 text-2xl font-semibold tracking-tight tabular-nums">
@@ -277,7 +277,7 @@ export function CoverPathFinder() {
                     </p>
                   </div>
                   <div className="rounded-lg border bg-background p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       AI match for you
                     </p>
                     <div className="mt-1.5 flex items-baseline gap-1">

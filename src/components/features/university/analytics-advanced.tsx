@@ -266,7 +266,7 @@ function VerificationAnalyticsPanel() {
         <div className="space-y-2 border-t pt-3">
           <div className="flex items-center gap-2">
             <Gavel className="h-4 w-4" aria-hidden />
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Disputes by category
             </p>
           </div>

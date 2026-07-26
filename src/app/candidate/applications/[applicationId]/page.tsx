@@ -288,7 +288,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
                 <span className="flex h-7 w-7 items-center justify-center rounded-md bg-chart-1/20 text-foreground">
                   <Check className="h-4 w-4" aria-hidden />
                 </span>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-eyebrow">
                   Skills · 60%
                 </p>
               </div>
@@ -331,7 +331,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
                 <span className="flex h-7 w-7 items-center justify-center rounded-md bg-chart-2/20 text-foreground">
                   <TrendingUp className="h-4 w-4" aria-hidden />
                 </span>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-eyebrow">
                   Experience · 25%
                 </p>
               </div>
@@ -354,7 +354,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
                 <span className="flex h-7 w-7 items-center justify-center rounded-md bg-highlight-soft text-foreground">
                   <Target className="h-4 w-4" aria-hidden />
                 </span>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-eyebrow">
                   Goals · 15%
                 </p>
               </div>
@@ -392,7 +392,7 @@ export default async function CandidateApplicationDetailPage({ params }: PagePro
 
           {/* Profile boost — actionable, specific */}
           <div className="rounded-lg border bg-surface-tint p-4">
-            <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="flex items-center gap-2 text-eyebrow">
               <Flag className="h-3.5 w-3.5" aria-hidden />
               Lift your score for future applications
             </p>

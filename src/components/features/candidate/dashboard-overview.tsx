@@ -292,7 +292,7 @@ export function DashboardOverview() {
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-eyebrow">
                 Next action
               </p>
               <p className="mt-1 text-base font-semibold">
@@ -314,7 +314,7 @@ export function DashboardOverview() {
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-eyebrow">
                 Next action
               </p>
               <p className="mt-1 text-base font-semibold">
@@ -349,7 +349,7 @@ export function DashboardOverview() {
                 >
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
-                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <div className="text-stat">
                   {s.value}
                   {s.suffix ?? ""}
                 </div>
@@ -628,7 +628,7 @@ export function DashboardOverview() {
                       it here to avoid duplicating that view. */}
                   <div className="flex items-center justify-between gap-3 rounded-lg border bg-surface-tint p-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <p className="text-eyebrow">
                         Next
                       </p>
                       <p className="mt-0.5 truncate text-sm">

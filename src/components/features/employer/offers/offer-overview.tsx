@@ -127,7 +127,7 @@ export function OfferOverview() {
                 <Icon className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <p className="text-stat">
                   {value}
                 </p>
                 <p className="text-base font-semibold tracking-tight">{label}</p>

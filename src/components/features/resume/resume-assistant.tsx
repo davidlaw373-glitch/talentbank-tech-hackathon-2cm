@@ -292,14 +292,14 @@ function ResumePreviewDialog({
           </header>
           <Separator />
           <section className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Summary
             </p>
             <p className="text-sm leading-relaxed">{candidate.summary}</p>
           </section>
           <Separator />
           <section className="space-y-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Experience
             </p>
             {candidate.experience.map((exp) => (
@@ -321,7 +321,7 @@ function ResumePreviewDialog({
           </section>
           <Separator />
           <section className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Education
             </p>
             {candidate.education.map((edu) => (
@@ -337,7 +337,7 @@ function ResumePreviewDialog({
           </section>
           <Separator />
           <section className="space-y-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Projects
             </p>
             {candidate.projects.map((proj) => (
@@ -352,7 +352,7 @@ function ResumePreviewDialog({
           </section>
           <Separator />
           <section className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Skills
             </p>
             <p className="text-sm leading-relaxed">
@@ -361,7 +361,7 @@ function ResumePreviewDialog({
           </section>
           <Separator />
           <section className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-eyebrow">
               Institution-verified credentials
             </p>
             <ul className="ml-4 list-disc space-y-1 text-sm leading-relaxed">
@@ -555,14 +555,14 @@ export function ResumeAssistant() {
                 </header>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Summary
                   </p>
                   <p className="text-xs">{candidate.summary}</p>
                 </div>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Experience
                   </p>
                   {candidate.experience.map((exp) => (
@@ -586,7 +586,7 @@ export function ResumeAssistant() {
                 </div>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Skills
                   </p>
                   <p className="text-[11px]">
@@ -601,7 +601,7 @@ export function ResumeAssistant() {
                 className="flex aspect-[8.5/11] flex-col gap-3 rounded-md border bg-background p-5"
               >
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Education
                   </p>
                   {candidate.education.map((edu) => (
@@ -617,7 +617,7 @@ export function ResumeAssistant() {
                 </div>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Projects
                   </p>
                   {candidate.projects.map((proj) => (
@@ -632,7 +632,7 @@ export function ResumeAssistant() {
                 </div>
                 <Separator />
                 <div className="space-y-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Institution-verified credentials
                   </p>
                   <ul className="ml-3 list-disc space-y-0.5 text-[11px]">
@@ -677,7 +677,7 @@ export function ResumeAssistant() {
                     <span className="text-4xl font-semibold tabular-nums leading-none">
                       {RESUME_SCORE}
                     </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <span className="text-eyebrow">
                       / 100
                     </span>
                   </div>

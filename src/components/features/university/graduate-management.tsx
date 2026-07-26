@@ -98,14 +98,14 @@ function RecordsList({
             </div>
 
             <div className="hidden w-24 shrink-0 sm:block">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-eyebrow">
                 Year
               </p>
               <p className="text-sm tabular-nums">{graduate.graduationYear}</p>
             </div>
 
             <div className="hidden w-24 shrink-0 text-right lg:block">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-eyebrow">
                 GPA
               </p>
               <p className="text-sm tabular-nums text-muted-foreground">
@@ -206,7 +206,7 @@ export function GraduateManagement({
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
               <Users className="h-4 w-4" aria-hidden />
             </div>
-            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            <div className="text-stat">
               {filteredRecords.length}
             </div>
             <p className="text-base text-muted-foreground">Matching graduates</p>
@@ -228,7 +228,7 @@ export function GraduateManagement({
                 <div className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
                   <ShieldCheck className="h-4 w-4" aria-hidden />
                 </div>
-                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <div className="text-stat">
                   {filteredCounts[status]}
                 </div>
                 <p className="text-base text-muted-foreground">{status}</p>
@@ -258,7 +258,7 @@ export function GraduateManagement({
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
             <label
               htmlFor="grad-search"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Search
             </label>
@@ -280,7 +280,7 @@ export function GraduateManagement({
           <div className="space-y-1.5 sm:w-[12rem]">
             <label
               htmlFor="grad-year"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Graduation year
             </label>
@@ -308,7 +308,7 @@ export function GraduateManagement({
           <div className="space-y-1.5 sm:w-[14rem]">
             <label
               htmlFor="grad-employment"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Employment status
             </label>

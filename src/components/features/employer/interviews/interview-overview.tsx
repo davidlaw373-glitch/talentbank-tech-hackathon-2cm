@@ -140,7 +140,7 @@ export function InterviewOverview() {
                 <Icon className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-3xl font-semibold tracking-tight tabular-nums">
+                <p className="text-stat-compact">
                   {value}
                 </p>
                 <p className="text-sm font-medium">{label}</p>

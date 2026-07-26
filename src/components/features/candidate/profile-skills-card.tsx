@@ -137,7 +137,7 @@ export function ProfileSkillsCard({
             opt out (re-verification then becomes required). */}
         {verified.length > 0 ? (
           <section aria-label="University-verified skills" className="space-y-2">
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-eyebrow">
               <ShieldCheck className="h-3.5 w-3.5 text-foreground" aria-hidden />
               University verified
             </p>
@@ -166,7 +166,7 @@ export function ProfileSkillsCard({
 
         {/* Self-reported — removable. */}
         <section aria-label="Self-reported skills" className="space-y-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-eyebrow">
             Self-reported
           </p>
           <div className="flex flex-wrap items-center gap-2">

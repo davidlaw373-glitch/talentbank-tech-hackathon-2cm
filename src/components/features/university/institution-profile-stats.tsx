@@ -13,7 +13,7 @@ function StatTile({ label, value, hint }: StatTileProps) {
   return (
     <Card>
       <CardContent className="space-y-1 p-5">
-        <p className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+        <p className="text-stat">
           {value}
         </p>
         <p className="text-base font-medium">{label}</p>

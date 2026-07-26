@@ -129,7 +129,7 @@ function RolePanel({
           <CardContent>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-stretch">
               <div className="rounded-lg border bg-background p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-eyebrow">
                   Where you are
                 </p>
                 <p className="mt-1.5 text-sm font-medium">
@@ -431,7 +431,7 @@ function RolePanel({
                 key={trend.skill}
                 className="rounded-lg border bg-card p-4"
               >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-eyebrow">
                   {trend.skill}
                 </p>
                 <p

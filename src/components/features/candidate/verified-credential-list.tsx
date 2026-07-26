@@ -118,7 +118,7 @@ export function VerifiedCredentialList({
 
             {variant === "full" && item.skills.length > 0 ? (
               <div className="mt-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-eyebrow">
                   Institution-recorded skills
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -153,7 +153,7 @@ function MetaCell({
 }) {
   return (
     <div className={className}>
-      <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <dt className="text-eyebrow">
         {label}
       </dt>
       <dd className="mt-0.5 text-sm font-medium">{value}</dd>

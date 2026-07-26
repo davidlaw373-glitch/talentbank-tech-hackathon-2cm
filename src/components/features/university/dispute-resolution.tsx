@@ -446,7 +446,7 @@ export function DisputeResolution({
                 >
                   <Icon className="h-4 w-4" aria-hidden />
                 </div>
-                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+                <div className="text-stat">
                   {value}
                 </div>
                 <p className="text-base text-muted-foreground">{status}</p>
@@ -487,7 +487,7 @@ export function DisputeResolution({
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
             <label
               htmlFor="dispute-search"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Search
             </label>
@@ -509,7 +509,7 @@ export function DisputeResolution({
           <div className="space-y-1.5 sm:w-[16rem]">
             <label
               htmlFor="dispute-field"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Field
             </label>

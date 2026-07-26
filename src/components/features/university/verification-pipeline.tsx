@@ -393,7 +393,7 @@ export function VerificationPipeline({
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
             <label
               htmlFor="verification-search"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Search
             </label>
@@ -415,7 +415,7 @@ export function VerificationPipeline({
           <div className="space-y-1.5 sm:w-[12rem]">
             <label
               htmlFor="verification-year"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Graduation year
             </label>
@@ -443,7 +443,7 @@ export function VerificationPipeline({
           <div className="space-y-1.5 sm:w-[14rem]">
             <label
               htmlFor="verification-employment"
-              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              className="text-eyebrow"
             >
               Employment status
             </label>

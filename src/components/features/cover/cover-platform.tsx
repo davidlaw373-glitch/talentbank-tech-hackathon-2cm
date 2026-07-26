@@ -167,7 +167,7 @@ export function CoverPlatform() {
                 </div>
                 <div className="grid grid-cols-3 border-t">
                   <div className="border-r px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       Placements
                     </p>
                     <p className="mt-1 text-2xl font-semibold tabular-nums">
@@ -175,7 +175,7 @@ export function CoverPlatform() {
                     </p>
                   </div>
                   <div className="border-r px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       Verified
                     </p>
                     <p className="mt-1 text-2xl font-semibold tabular-nums">
@@ -183,7 +183,7 @@ export function CoverPlatform() {
                     </p>
                   </div>
                   <div className="px-5 py-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       Universities
                     </p>
                     <p className="mt-1 text-2xl font-semibold tabular-nums">

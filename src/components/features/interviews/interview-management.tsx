@@ -426,7 +426,7 @@ export function InterviewManagement() {
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                     {/* Left — date + time prominent */}
                     <div className="flex shrink-0 flex-col items-start gap-1 rounded-lg border bg-surface-tint p-4 sm:w-44">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      <p className="text-eyebrow">
                         {iv.when}
                       </p>
                       <p className="text-2xl font-semibold tracking-tight tabular-nums leading-tight">

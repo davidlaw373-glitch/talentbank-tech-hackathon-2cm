@@ -121,7 +121,7 @@ export default function UniversityDashboardPage() {
               <Sparkles className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="text-eyebrow">
                 Next action
               </p>
               <p className="text-sm font-medium">{facultyNextAction.title}</p>
@@ -146,7 +146,7 @@ export default function UniversityDashboardPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft">
               <Users className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            <div className="text-stat">
               {universityProfile.totalStudents.toLocaleString()}
             </div>
             <p className="text-base text-muted-foreground">Total students</p>
@@ -157,7 +157,7 @@ export default function UniversityDashboardPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-1/20">
               <GraduationCap className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            <div className="text-stat">
               {universityProfile.activeCohorts}
             </div>
             <p className="text-base text-muted-foreground">Active cohorts</p>
@@ -168,7 +168,7 @@ export default function UniversityDashboardPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-highlight-soft">
               <Briefcase className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            <div className="text-stat">
               {universityProfile.employmentRate}%
             </div>
             <p className="text-base text-muted-foreground">Employment rate</p>
@@ -179,7 +179,7 @@ export default function UniversityDashboardPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-2/20">
               <Clock className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            <div className="text-stat">
               {universityProfile.medianTimeToHire}
             </div>
             <p className="text-base text-muted-foreground">Median time to hire (months)</p>
@@ -190,7 +190,7 @@ export default function UniversityDashboardPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-3/20">
               <ShieldCheck className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            <div className="text-stat">
               {universityProfile.verifiedCredentials.toLocaleString()}
             </div>
             <p className="text-base text-muted-foreground">Verified credentials</p>
@@ -322,7 +322,7 @@ export default function UniversityDashboardPage() {
                 </div>
 
                 <div className="hidden min-w-0 flex-1 basis-48 md:block">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-eyebrow">
                     Claim
                   </p>
                   <p className="truncate text-sm">{dispute.claim}</p>
@@ -380,7 +380,7 @@ export default function UniversityDashboardPage() {
                   </div>
 
                   <div className="hidden min-w-0 flex-1 basis-48 md:block">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       Top employer · role
                     </p>
                     <p className="truncate text-sm">
@@ -389,7 +389,7 @@ export default function UniversityDashboardPage() {
                   </div>
 
                   <div className="w-20 shrink-0 text-right">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <p className="text-eyebrow">
                       Employed
                     </p>
                     <p className="text-sm font-semibold tabular-nums">
