@@ -121,7 +121,7 @@ export function InterviewCalendar({
     <div className="space-y-6">
       <div
         data-testid="calendar-workspace"
-        className="space-y-5 rounded-3xl border bg-accent-soft/30 p-4 shadow-sm sm:p-5"
+        className="space-y-5 rounded-3xl border bg-surface-tint p-4 shadow-sm sm:p-5"
       >
         <header className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
           <Button
@@ -328,7 +328,7 @@ export function InterviewCalendar({
 
       <section
         aria-labelledby="selected-day-heading"
-        className="space-y-4 rounded-2xl border bg-highlight-soft/45 p-4 sm:p-5"
+        className="space-y-4 rounded-2xl border bg-highlight-soft p-4 sm:p-5"
       >
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
