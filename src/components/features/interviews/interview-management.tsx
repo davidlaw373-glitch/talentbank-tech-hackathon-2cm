@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { useToast } from "@/components/common/toast";
+import { PrepCardCarousel } from "@/components/features/interviews/prep-card-carousel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -569,115 +570,20 @@ export function InterviewManagement() {
           </CardHeader>
           {prepOpen && (
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                {/* Mock questions */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      <h3 className="flex items-center gap-2">
-                        <MessageSquare aria-hidden className="h-4 w-4" />
-                        Mock questions
-                      </h3>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <ol className="space-y-2">
-                      {MOCK_QUESTIONS.map((q, i) => (
-                        <li
-                          key={q}
-                          className="rounded-md border bg-card p-3"
-                        >
-                          <div className="flex items-start gap-3">
-                            <span
-                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold"
-                              aria-hidden
-                            >
-                              {i + 1}
-                            </span>
-                            {/* min-w-0 lets the long question wrap inside this
-                                flex child — without it, the intrinsic width
-                                of the text pushes the card past its column. */}
-                            <p className="min-w-0 flex-1 text-sm leading-relaxed text-foreground">
-                              {q}
-                            </p>
-                          </div>
-                          <div className="mt-3 flex justify-end">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() =>
-                                push({
-                                  title: "Practice session started",
-                                  description: q,
-                                  tone: "info",
-                                })
-                              }
-                            >
-                              Practice
-                            </Button>
-                          </div>
-                        </li>
-                      ))}
-                    </ol>
-                  </CardContent>
-                </Card>
-
-                {/* Company research */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      <h3>Company research</h3>
-                    </CardTitle>
-                    <CardDescription>{prepInterview.company} snapshot</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {COMPANY_NOTES.map((note) => (
-                        <li
-                          key={note}
-                          className="flex items-start gap-2 rounded-md border bg-card p-3 text-xs leading-relaxed"
-                        >
-                          <span
-                            className="mt-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-foreground/60"
-                            aria-hidden
-                          />
-                          <span>{note}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                {/* Scorecard preview */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      <h3>Scorecard preview</h3>
-                    </CardTitle>
-                    <CardDescription>What your interviewers will rate.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {SCORECARD.map((line) => (
-                        <li
-                          key={line}
-                          className="flex items-center justify-between gap-3 rounded-md border bg-card p-3 text-xs"
-                        >
-                          {/* min-w-0 lets the long label wrap inside this
-                              flex child so the badge on the right is never
-                              crowded off the card at narrow widths. */}
-                          <span className="min-w-0 flex-1 leading-relaxed">
-                            {line}
-                          </span>
-                          <Badge variant="outline" className="shrink-0">
-                            1–5
-                          </Badge>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
+              <PrepCardCarousel
+                key={prepInterview.id}
+                prepInterview={prepInterview}
+                mockQuestions={MOCK_QUESTIONS}
+                companyNotes={COMPANY_NOTES}
+                scorecard={SCORECARD}
+                onPractice={(question) =>
+                  push({
+                    title: "Practice session started",
+                    description: question,
+                    tone: "info",
+                  })
+                }
+              />
             </CardContent>
           )}
         </Card>
