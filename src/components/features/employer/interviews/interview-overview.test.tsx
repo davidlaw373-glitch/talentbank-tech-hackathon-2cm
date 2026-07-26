@@ -26,8 +26,14 @@ describe("InterviewOverview", () => {
       "http://localhost:3000/employer/interviews/all",
     );
     expect(
-      screen.getByRole("button", { name: "Schedule interview" }),
-    ).toBeTruthy();
+      screen.getByRole("link", { name: "Scheduled calendar" }),
+    ).toHaveProperty(
+      "href",
+      "http://localhost:3000/employer/interviews/calendar",
+    );
+    expect(
+      screen.queryByRole("button", { name: "Schedule interview" }),
+    ).toBeNull();
     expect(
       screen.queryByRole("textbox", { name: "Search interviews" }),
     ).toBeNull();

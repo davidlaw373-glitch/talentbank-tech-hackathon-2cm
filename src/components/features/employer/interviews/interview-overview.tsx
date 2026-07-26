@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Calendar,
-  CalendarPlus,
+  CalendarDays,
   ClipboardList,
   Clock,
   Filter,
@@ -15,10 +15,7 @@ import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  getEmployerCandidateRows,
-  type EmployerInterviewRow,
-} from "@/lib/data-helpers";
+import type { EmployerInterviewRow } from "@/lib/data-helpers";
 import type { InterviewStatus } from "@/types/interview";
 import {
   getEmployerInterviewSeedRows,
@@ -28,18 +25,12 @@ import {
   InterviewRow,
   type InterviewRowActions,
 } from "./interview-row";
-import {
-  InterviewScheduleDialog,
-  type ScheduleInterviewValues,
-} from "./interview-schedule-dialog";
 
 export function InterviewOverview() {
   const { push } = useToast();
   const [rows, setRows] = useState<EmployerInterviewRow[]>(
     getEmployerInterviewSeedRows,
   );
-  const [scheduleOpen, setScheduleOpen] = useState(false);
-  const scheduleCandidates = useMemo(() => getEmployerCandidateRows(1), []);
 
   const counts = useMemo(
     () => ({
@@ -114,30 +105,6 @@ export function InterviewOverview() {
     onView: () => undefined,
   });
 
-  const scheduleInterview = (
-    candidateRow: ReturnType<typeof getEmployerCandidateRows>[number],
-    interviewDetails: ScheduleInterviewValues,
-  ) => {
-    const nextId = Math.max(0, ...rows.map((row) => row.interview.id)) + 1;
-    const newRow: EmployerInterviewRow = {
-      application: candidateRow.app,
-      candidate: candidateRow.candidate,
-      job: candidateRow.job,
-      interview: {
-        id: nextId,
-        applicationId: candidateRow.app.id,
-        status: "Scheduled",
-        ...interviewDetails,
-      },
-    };
-    setRows((current) => [newRow, ...current]);
-    push({
-      title: `Interview scheduled with ${candidateRow.candidate.name}`,
-      description: `${interviewDetails.type} · ${interviewDetails.scheduledFor}`,
-      tone: "success",
-    });
-  };
-
   const summaries = [
     { label: "Upcoming", value: counts.upcoming, icon: Calendar },
     { label: "Pending confirmation", value: counts.pending, icon: Clock },
@@ -155,9 +122,11 @@ export function InterviewOverview() {
         title="Interview management"
         description="Review priority interviews and act on what needs attention next."
         action={
-          <Button onClick={() => setScheduleOpen(true)}>
-            <CalendarPlus />
-            Schedule interview
+          <Button asChild>
+            <Link href="/employer/interviews/calendar">
+              <CalendarDays />
+              Scheduled calendar
+            </Link>
           </Button>
         }
       />
@@ -216,12 +185,11 @@ export function InterviewOverview() {
                   No priority interviews yet
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Schedule an interview when a candidate is ready for the next
-                  step.
+                  Move a candidate forward when they are ready for an interview.
                 </p>
               </div>
-              <Button size="sm" onClick={() => setScheduleOpen(true)}>
-                Schedule interview
+              <Button asChild size="sm">
+                <Link href="/employer/candidates">Review candidates</Link>
               </Button>
             </CardContent>
           </Card>
@@ -238,13 +206,6 @@ export function InterviewOverview() {
           </ul>
         )}
       </section>
-
-      <InterviewScheduleDialog
-        open={scheduleOpen}
-        candidates={scheduleCandidates}
-        onOpenChange={setScheduleOpen}
-        onSchedule={scheduleInterview}
-      />
     </div>
   );
 }
