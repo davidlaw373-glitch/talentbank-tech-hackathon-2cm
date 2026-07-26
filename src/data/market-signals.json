@@ -1,10 +1,58 @@
 [
-  { "id": 1, "skill": "TypeScript", "openings": 312, "delta": 18 },
-  { "id": 2, "skill": "React", "openings": 287, "delta": 12 },
-  { "id": 3, "skill": "Python", "openings": 264, "delta": 9 },
-  { "id": 4, "skill": "Go", "openings": 142, "delta": 24 },
-  { "id": 5, "skill": "Kubernetes", "openings": 96, "delta": 31 },
-  { "id": 6, "skill": "Rust", "openings": 58, "delta": 41 },
-  { "id": 7, "skill": "LLM evaluation", "openings": 44, "delta": 68 },
-  { "id": 8, "skill": "SQL", "openings": 188, "delta": 4 }
+  {
+    "id": 1,
+    "skill": "TypeScript",
+    "openings": 312,
+    "delta": 18,
+    "history": [198, 214, 238, 264, 312]
+  },
+  {
+    "id": 2,
+    "skill": "React",
+    "openings": 287,
+    "delta": 12,
+    "history": [205, 222, 241, 256, 287]
+  },
+  {
+    "id": 3,
+    "skill": "Python",
+    "openings": 264,
+    "delta": 9,
+    "history": [196, 215, 228, 242, 264]
+  },
+  {
+    "id": 4,
+    "skill": "Go",
+    "openings": 142,
+    "delta": 24,
+    "history": [68, 82, 98, 114, 142]
+  },
+  {
+    "id": 5,
+    "skill": "Kubernetes",
+    "openings": 96,
+    "delta": 31,
+    "history": [38, 48, 61, 73, 96]
+  },
+  {
+    "id": 6,
+    "skill": "Rust",
+    "openings": 58,
+    "delta": 41,
+    "history": [16, 22, 31, 41, 58]
+  },
+  {
+    "id": 7,
+    "skill": "LLM evaluation",
+    "openings": 44,
+    "delta": 68,
+    "history": [4, 8, 14, 26, 44]
+  },
+  {
+    "id": 8,
+    "skill": "SQL",
+    "openings": 188,
+    "delta": 4,
+    "history": [165, 172, 178, 181, 188]
+  }
 ]

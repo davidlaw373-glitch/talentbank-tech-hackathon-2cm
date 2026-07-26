@@ -16,7 +16,6 @@ import {
   Square,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -242,12 +241,13 @@ export function VerificationPipeline({
   const { push } = useToast();
   const [records, setRecords] = useState(initialRecords);
   const [selected, setSelected] = useState<Set<number>>(() => new Set());
-  const [collapsed, setCollapsed] = useState<Set<number>>(() => new Set());
+  const [collapsed, setCollapsed] = useState<Set<number>>(
+    () => new Set(initialRecords.filter((r) => r.status === "Verified").map((r) => r.id)),
+  );
   const [pendingApprove, setPendingApprove] =
     useState<GraduateRecord | null>(null);
   const [pendingReject, setPendingReject] =
     useState<GraduateRecord | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
   const [search, setSearch] = useState("");
   const [year, setYear] = useState("all");
   const [employment, setEmployment] = useState("all");
@@ -355,19 +355,9 @@ export function VerificationPipeline({
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Verification pipeline"
-        description="Approve, request more information, or escalate disputes from a single queue."
-      />
-
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-subheading">Records queue</h2>
-            <p className="text-sm text-muted-foreground">Search and refine the queue, then take action on the records you need.</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
               variant="outline"
               size="sm"
               onClick={() =>
@@ -396,7 +386,6 @@ export function VerificationPipeline({
               Export selected
             </Button>
           </div>
-        </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
@@ -565,10 +554,7 @@ export function VerificationPipeline({
         <ConfirmDialog
           open={pendingReject !== null}
           onOpenChange={(open) => {
-            if (!open) {
-              setPendingReject(null);
-              setRejectReason("");
-            }
+            if (!open) setPendingReject(null);
           }}
           title="Reject this graduate's credential?"
           description={
@@ -582,13 +568,10 @@ export function VerificationPipeline({
           }
           confirmLabel="Reject"
           destructive
-          noteLabel="Reason for rejection"
-          noteValue={rejectReason}
-          onNoteChange={setRejectReason}
-          noteRequired
+          requireTyping="REJECT"
           onConfirm={() => {
             if (pendingReject) {
-              updateRecordStatus(pendingReject, "Rejected", rejectReason);
+              updateRecordStatus(pendingReject, "Rejected");
               setCollapsed((current) => {
                 const next = new Set(current);
                 next.add(pendingReject.id);
@@ -596,7 +579,6 @@ export function VerificationPipeline({
               });
             }
             setPendingReject(null);
-            setRejectReason("");
           }}
         />
       </section>

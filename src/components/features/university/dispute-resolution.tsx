@@ -14,7 +14,6 @@ import {
   X,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { BackButton } from "@/components/common/back-button";
 import { useToast } from "@/components/common/toast";
 import { EmptyState } from "@/components/common/empty-state";
@@ -423,11 +422,6 @@ export function DisputeResolution({
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Dispute resolution"
-        description="Review, mediate, and resolve disputes between candidates and faculty."
-      />
-
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {STATUSES.map((status) => {
           const Icon =
@@ -452,7 +446,7 @@ export function DisputeResolution({
                 >
                   <Icon className="h-4 w-4" aria-hidden />
                 </div>
-                <div className="text-3xl font-semibold tabular-nums">
+                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
                   {value}
                 </div>
                 <p className="text-base text-muted-foreground">{status}</p>

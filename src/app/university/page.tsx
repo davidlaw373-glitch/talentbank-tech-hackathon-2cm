@@ -6,6 +6,7 @@ import {
   Briefcase,
   Building2,
   CheckCircle2,
+  ChevronRight,
   Clock,
   GraduationCap,
   ShieldCheck,
@@ -32,7 +33,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PageHeading } from "@/components/common/page-heading";
 import { cn } from "@/lib/utils";
 
 const STATUS_ORDER: VerificationRecordStatus[] = [
@@ -113,8 +113,6 @@ export default function UniversityDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeading title="Dashboard" />
-
       {/* Next-action prompt */}
       <Card className="lift-on-hover">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
@@ -144,55 +142,55 @@ export default function UniversityDashboardPage() {
       {/* Stat tiles */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-soft">
-              <Users className="h-4 w-4" aria-hidden />
+          <CardContent className="space-y-3 p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft">
+              <Users className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-3xl font-semibold tabular-nums">
+            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
               {universityProfile.totalStudents.toLocaleString()}
             </div>
             <p className="text-base text-muted-foreground">Total students</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-1/20">
-              <GraduationCap className="h-4 w-4" aria-hidden />
+          <CardContent className="space-y-3 p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-1/20">
+              <GraduationCap className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-3xl font-semibold tabular-nums">
+            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
               {universityProfile.activeCohorts}
             </div>
             <p className="text-base text-muted-foreground">Active cohorts</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-highlight-soft">
-              <Briefcase className="h-4 w-4" aria-hidden />
+          <CardContent className="space-y-3 p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-highlight-soft">
+              <Briefcase className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-3xl font-semibold tabular-nums">
+            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
               {universityProfile.employmentRate}%
             </div>
             <p className="text-base text-muted-foreground">Employment rate</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-2/20">
-              <Clock className="h-4 w-4" aria-hidden />
+          <CardContent className="space-y-3 p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-2/20">
+              <Clock className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-3xl font-semibold tabular-nums">
+            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
               {universityProfile.medianTimeToHire}
             </div>
             <p className="text-base text-muted-foreground">Median time to hire (months)</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="space-y-2 p-5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chart-3/20">
-              <ShieldCheck className="h-4 w-4" aria-hidden />
+          <CardContent className="space-y-3 p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-3/20">
+              <ShieldCheck className="h-5 w-5" aria-hidden />
             </div>
-            <div className="text-3xl font-semibold tabular-nums">
+            <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
               {universityProfile.verifiedCredentials.toLocaleString()}
             </div>
             <p className="text-base text-muted-foreground">Verified credentials</p>
@@ -207,7 +205,7 @@ export default function UniversityDashboardPage() {
             <div>
               <CardTitle>
                 <h2 className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4" aria-hidden />
+                  <ShieldCheck className="h-5 w-5" aria-hidden />
                   Verification pipeline
                 </h2>
               </CardTitle>
@@ -291,123 +289,123 @@ export default function UniversityDashboardPage() {
       </section>
 
       {/* Recent disputes */}
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-subheading">Recent disputes</h2>
-            <p className="text-sm text-muted-foreground">Latest escalations awaiting faculty review.</p>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/university/disputes">
-              Open disputes
-              <ArrowRight />
-            </Link>
-          </Button>
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-subheading">Recent disputes</h2>
+          <p className="text-sm text-muted-foreground">Latest escalations awaiting faculty review.</p>
         </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <ul className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/40 bg-card">
           {recentDisputes.map((dispute) => (
-            <Card key={dispute.id}>
-              <CardContent className="space-y-4 p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-                      <span className="text-sm font-medium">
-                        {dispute.graduateInitials}
-                      </span>
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-base font-semibold">
-                        {dispute.graduateName}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {dispute.field} · {dispute.filedDate}
-                      </p>
-                    </div>
-                  </div>
+            <li key={dispute.id}>
+              <Link
+                href={`/university/disputes/${dispute.id}`}
+                aria-label={`Open ${dispute.graduateName} dispute`}
+                className={cn(
+                  "group flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 transition-colors",
+                  "hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium text-foreground"
+                >
+                  {dispute.graduateInitials}
+                </span>
+
+                <div className="min-w-0 flex-1 basis-48">
+                  <p className="truncate text-base font-semibold">
+                    {dispute.graduateName}
+                  </p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {dispute.field} · {dispute.filedDate}
+                  </p>
+                </div>
+
+                <div className="hidden min-w-0 flex-1 basis-48 md:block">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    Claim
+                  </p>
+                  <p className="truncate text-sm">{dispute.claim}</p>
+                </div>
+
+                <div className="w-28 shrink-0">
                   <Badge variant={DISPUTE_VARIANT[dispute.status]}>
                     {dispute.status}
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 rounded-lg border bg-surface-tint p-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Claim
-                    </p>
-                    <p className="mt-0.5 line-clamp-1 text-sm">
-                      {dispute.claim}
-                    </p>
-                  </div>
-                  <Button asChild size="sm" variant="outline">
-                    <Link href="/university/disputes">
-                      View
-                      <ArrowRight aria-hidden />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <ChevronRight
+                  aria-hidden
+                  className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
+                />
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       {/* Employment at a glance */}
-      <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-subheading">Employment at a glance</h2>
-            <p className="text-sm text-muted-foreground">Outcomes by cohort year.</p>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/university/employment">
-              Full report
-              <ArrowRight />
-            </Link>
-          </Button>
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-subheading">Employment at a glance</h2>
+          <p className="text-sm text-muted-foreground">Outcomes by cohort year.</p>
         </div>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {employmentOutcomes.map((e) => (
-            <Card key={e.id}>
-              <CardContent className="space-y-4 p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-                      <Building2 className="h-4 w-4" aria-hidden />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-base font-semibold">
-                        {e.cohort}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {e.employed} of {e.total} employed
-                      </p>
-                    </div>
-                  </div>
-                  <Badge variant="outline">
-                    {Math.round((e.employed / e.total) * 100)}%
-                  </Badge>
-                </div>
+        <ul className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/40 bg-card">
+          {employmentOutcomes.map((e) => {
+            const pct = Math.round((e.employed / e.total) * 100);
+            return (
+              <li key={e.id}>
+                <Link
+                  href="/university/analytics"
+                  aria-label={`Open ${e.cohort} in analytics`}
+                  className={cn(
+                    "group flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 transition-colors",
+                    "hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5",
+                  )}
+                >
+                  <span
+                    aria-hidden
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted"
+                  >
+                    <Building2 className="h-5 w-5 text-muted-foreground" />
+                  </span>
 
-                <div className="flex items-center justify-between gap-3 rounded-lg border bg-surface-tint p-3">
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 basis-48">
+                    <p className="truncate text-base font-semibold">
+                      {e.cohort}
+                    </p>
+                    <p className="truncate text-sm text-muted-foreground">
+                      {e.employed} of {e.total} employed
+                    </p>
+                  </div>
+
+                  <div className="hidden min-w-0 flex-1 basis-48 md:block">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                       Top employer · role
                     </p>
-                    <p className="mt-0.5 truncate text-sm">
+                    <p className="truncate text-sm">
                       {e.topEmployer} · {e.topRole}
                     </p>
                   </div>
-                  <Button asChild size="sm" variant="outline">
-                    <Link href="/university/employment">
-                      View
-                      <ArrowRight aria-hidden />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+                  <div className="w-20 shrink-0 text-right">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      Employed
+                    </p>
+                    <p className="text-sm font-semibold tabular-nums">
+                      {pct}%
+                    </p>
+                  </div>
+
+                  <ChevronRight
+                    aria-hidden
+                    className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
+                  />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </div>
   );
