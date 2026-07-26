@@ -113,221 +113,229 @@ export function InterviewCalendar({
 
   return (
     <div className="space-y-6">
-      <header className="space-y-5 border-b pb-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <Button
-              asChild
-              variant="outline"
-              size="icon"
-              className="shrink-0 bg-surface-1 hover:bg-surface-2"
-            >
-              <Link
-                href="/employer/interviews"
-                aria-label="Back to interview overview"
-              >
-                <ArrowLeft />
-              </Link>
-            </Button>
-            <div>
-              <p className="text-caption uppercase text-muted-foreground">
-                Scheduled interviews
-              </p>
-              <h1 className="text-heading">
-                {MONTHS[viewMonth]} {viewYear}
-              </h1>
-              <p className="mt-1 text-body text-muted-foreground">
-                Browse confirmed interview dates, candidates, and panels.
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setViewYear(today.year);
-              setViewMonth(today.monthIndex);
-              setSelectedDate(today.key);
-            }}
+      <header className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <Button
+          asChild
+          variant="outline"
+          size="icon"
+          className="shrink-0 bg-surface-1 shadow-sm hover:bg-surface-2"
+        >
+          <Link
+            href="/employer/interviews"
+            aria-label="Back to interview overview"
           >
-            Today
-          </Button>
-        </div>
+            <ArrowLeft />
+          </Link>
+        </Button>
 
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Previous month"
-              onClick={() => shiftMonth(-1)}
+        <div className="grid grid-cols-2 gap-3 sm:w-[24rem]">
+          <div className="space-y-1.5">
+            <label htmlFor="calendar-year" className="text-caption">
+              Year
+            </label>
+            <Select
+              value={String(viewYear)}
+              onValueChange={(value) => setMonth(Number(value), viewMonth)}
             >
-              <ChevronLeft />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Next month"
-              onClick={() => shiftMonth(1)}
-            >
-              <ChevronRight />
-            </Button>
+              <SelectTrigger id="calendar-year" aria-label="Year">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={String(year)}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-
-          <div className="grid grid-cols-2 gap-3 md:w-[24rem]">
-            <div className="space-y-1.5">
-              <label htmlFor="calendar-year" className="text-caption">
-                Year
-              </label>
-              <Select
-                value={String(viewYear)}
-                onValueChange={(value) => setMonth(Number(value), viewMonth)}
-              >
-                <SelectTrigger id="calendar-year" aria-label="Year">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {years.map((year) => (
-                    <SelectItem key={year} value={String(year)}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="calendar-month" className="text-caption">
-                Month
-              </label>
-              <Select
-                value={String(viewMonth)}
-                onValueChange={(value) =>
-                  setMonth(viewYear, Number(value))
-                }
-              >
-                <SelectTrigger id="calendar-month" aria-label="Month">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MONTHS.map((month, index) => (
-                    <SelectItem key={month} value={String(index)}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="calendar-month" className="text-caption">
+              Month
+            </label>
+            <Select
+              value={String(viewMonth)}
+              onValueChange={(value) => setMonth(viewYear, Number(value))}
+            >
+              <SelectTrigger id="calendar-month" aria-label="Month">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {MONTHS.map((month, index) => (
+                  <SelectItem key={month} value={String(index)}>
+                    {month}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </header>
 
-      <section>
-        <div
-          role="grid"
-          aria-label={`${MONTHS[viewMonth]} ${viewYear} calendar`}
-          className={`${styles.calendarGrid} border-x border-t bg-surface-inset`}
-        >
-          {WEEKDAYS.map((day) => (
+      <section
+        aria-label="Scheduled interview calendar"
+        className="space-y-4"
+      >
+        <div className={styles.calendarFrame}>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Previous month"
+            onClick={() => shiftMonth(-1)}
+            className={cn(
+              styles.previousRail,
+              "bg-surface-1 shadow-md hover:bg-highlight-soft",
+            )}
+          >
+            <ChevronLeft />
+          </Button>
+
+          <div
+            className={cn(
+              styles.calendarShell,
+              "rounded-2xl border bg-surface-1 shadow-[0_14px_40px_hsl(var(--foreground)/0.08)]",
+            )}
+          >
             <div
-              key={day}
-              role="columnheader"
-              className="border-b border-r px-1 py-2 text-center text-caption last:border-r-0 sm:px-2"
+              role="grid"
+              aria-label={`${MONTHS[viewMonth]} ${viewYear} calendar`}
+              className={styles.calendarGrid}
             >
-              {day}
-            </div>
-          ))}
+              {WEEKDAYS.map((day, index) => (
+                <div
+                  key={day}
+                  role="columnheader"
+                  className={cn(
+                    "border-b border-r border-border/50 bg-surface-tint px-1 py-3 text-center text-caption uppercase tracking-[0.12em] text-muted-foreground last:border-r-0 sm:px-2",
+                    index >= 5 && "bg-highlight-soft/50",
+                  )}
+                >
+                  {day}
+                </div>
+              ))}
 
-          {days.map((day, index) => {
-            const events = scheduledByDate.get(day.key) ?? [];
-            const eventLabel = `${events.length} scheduled ${
-              events.length === 1 ? "interview" : "interviews"
-            }`;
+              {days.map((day, index) => {
+                const events = scheduledByDate.get(day.key) ?? [];
+                const eventLabel = `${events.length} scheduled ${
+                  events.length === 1 ? "interview" : "interviews"
+                }`;
+                const isWeekend = index % 7 >= 5;
 
-            return (
-              <button
-                key={day.key}
-                type="button"
-                role="gridcell"
-                aria-label={`${getDateLabel(day.key)}, ${eventLabel}`}
-                aria-selected={selectedDate === day.key}
-                onClick={() => {
-                  setSelectedDate(day.key);
-                  if (!day.inCurrentMonth) {
-                    const parts = getKeyParts(day.key);
-                    setViewYear(parts.year);
-                    setViewMonth(parts.monthIndex);
-                  }
-                }}
-                className={cn(
-                  "min-h-20 border-b border-r p-1 text-left transition-colors focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-h-32 sm:p-2",
-                  (index + 1) % 7 === 0 && "border-r-0",
-                  day.inCurrentMonth
-                    ? "bg-surface-1"
-                    : "bg-surface-inset text-muted-foreground",
-                  selectedDate === day.key &&
-                    "bg-highlight-soft ring-2 ring-inset ring-primary",
-                )}
-              >
-                <span className="flex items-center justify-between gap-1">
-                  <span
+                return (
+                  <button
+                    key={day.key}
+                    type="button"
+                    role="gridcell"
+                    aria-label={`${getDateLabel(day.key)}, ${eventLabel}`}
+                    aria-selected={selectedDate === day.key}
+                    onClick={() => {
+                      setSelectedDate(day.key);
+                      if (!day.inCurrentMonth) {
+                        const parts = getKeyParts(day.key);
+                        setViewYear(parts.year);
+                        setViewMonth(parts.monthIndex);
+                      }
+                    }}
                     className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-full text-sm tabular-nums",
-                      day.isToday &&
-                        "bg-primary font-semibold text-primary-foreground",
+                      "group min-h-20 border-b border-r border-border/40 p-1.5 text-left transition-[background-color,box-shadow] duration-200 hover:bg-accent-soft/40 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-h-32 sm:p-2.5",
+                      (index + 1) % 7 === 0 && "border-r-0",
+                      day.inCurrentMonth
+                        ? isWeekend
+                          ? "bg-surface-inset/45"
+                          : "bg-surface-1"
+                        : "bg-surface-inset text-muted-foreground",
+                      selectedDate === day.key &&
+                        "bg-highlight-soft ring-2 ring-inset ring-primary hover:bg-highlight-soft",
                     )}
                   >
-                    {day.dayNumber}
-                  </span>
-                  {events.length > 0 && (
-                    <span className="inline-flex items-center gap-1 text-caption sm:hidden">
-                      <CalendarClock className="h-3 w-3" aria-hidden />
-                      {events.length}
+                    <span className="flex items-center justify-between gap-1">
+                      <span
+                        className={cn(
+                          "flex h-7 w-7 items-center justify-center rounded-full text-sm tabular-nums transition-transform duration-200 group-hover:scale-105",
+                          day.isToday &&
+                            "bg-primary font-semibold text-primary-foreground shadow-sm",
+                        )}
+                      >
+                        {day.dayNumber}
+                      </span>
+                      {events.length > 0 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-secondary sm:hidden">
+                          <CalendarClock className="h-3 w-3" aria-hidden />
+                          {events.length}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
 
-                <span className="mt-1 hidden space-y-1 sm:block">
-                  {events.slice(0, 2).map((row) => (
-                    <span
-                      key={row.interview.id}
-                      className="block rounded-md border bg-accent-soft px-2 py-1.5"
-                    >
-                      <span className="block truncate text-xs font-semibold">
-                        {row.candidate.name}
-                      </span>
-                      <span className="block truncate text-[10px] text-muted-foreground">
-                        {row.job.title}
-                      </span>
-                      <span className="mt-0.5 block text-[10px] font-medium tabular-nums">
-                        {formatCalendarTime(row.interview.scheduledAt)}
-                      </span>
+                    <span className="mt-1.5 hidden space-y-1.5 sm:block">
+                      {events.slice(0, 2).map((row) => (
+                        <span
+                          key={row.interview.id}
+                          className="relative block overflow-hidden rounded-lg border border-accent/30 bg-accent-soft px-2.5 py-2 shadow-sm"
+                        >
+                          <span
+                            aria-hidden
+                            className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary"
+                          />
+                          <span className="block truncate text-xs font-semibold text-foreground">
+                            {row.candidate.name}
+                          </span>
+                          <span className="block truncate text-[10px] text-muted-foreground">
+                            {row.job.title}
+                          </span>
+                          <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold tabular-nums text-secondary">
+                            <Clock className="h-3 w-3" aria-hidden />
+                            {formatCalendarTime(row.interview.scheduledAt)}
+                          </span>
+                        </span>
+                      ))}
+                      {events.length > 2 && (
+                        <span className="block pl-1 text-[10px] font-semibold text-secondary">
+                          +{events.length - 2} more
+                        </span>
+                      )}
                     </span>
-                  ))}
-                  {events.length > 2 && (
-                    <span className="block text-[10px] font-semibold text-secondary">
-                      +{events.length - 2} more
-                    </span>
-                  )}
-                </span>
-              </button>
-            );
-          })}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Next month"
+            onClick={() => shiftMonth(1)}
+            className={cn(
+              styles.nextOverlay,
+              "bg-surface-1 shadow-lg hover:bg-highlight-soft",
+            )}
+          >
+            <ChevronRight />
+          </Button>
         </div>
       </section>
 
-      <section aria-labelledby="selected-day-heading" className="space-y-3">
-        <div>
-          <p className="text-caption uppercase text-muted-foreground">
-            Selected date
-          </p>
-          <h2 id="selected-day-heading">{getDateLabel(selectedDate, false)}</h2>
-          <p className="text-meta text-muted-foreground">
+      <section
+        aria-labelledby="selected-day-heading"
+        className="space-y-4 rounded-2xl border bg-surface-inset/60 p-4 sm:p-5"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="text-caption uppercase text-muted-foreground">
+              Selected date
+            </p>
+            <h2 id="selected-day-heading" className="text-subheading">
+              {getDateLabel(selectedDate, false)}
+            </h2>
+          </div>
+          <p className="rounded-full border bg-surface-1 px-3 py-1 text-meta text-muted-foreground shadow-sm">
             {selectedRows.length} scheduled{" "}
             {selectedRows.length === 1 ? "interview" : "interviews"}
           </p>
         </div>
 
         {selectedRows.length === 0 ? (
-          <Card>
+          <Card className="border-dashed bg-surface-1/80 shadow-none">
             <CardContent className="flex min-h-28 items-center justify-center p-6 text-center text-body text-muted-foreground">
               No scheduled interviews on this date.
             </CardContent>
