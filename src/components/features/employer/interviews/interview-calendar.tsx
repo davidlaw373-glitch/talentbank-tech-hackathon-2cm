@@ -29,6 +29,7 @@ import {
   getScheduledRowsByDate,
 } from "./interview-calendar-data";
 import { getEmployerInterviewSeedRows } from "./interview-data";
+import styles from "./interview-calendar.module.css";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTHS = [
@@ -219,11 +220,16 @@ export function InterviewCalendar({
         </div>
       </header>
 
-      <section aria-label={`${MONTHS[viewMonth]} ${viewYear} calendar`}>
-        <div className="grid grid-cols-7 border-x border-t bg-surface-inset">
+      <section>
+        <div
+          role="grid"
+          aria-label={`${MONTHS[viewMonth]} ${viewYear} calendar`}
+          className={`${styles.calendarGrid} border-x border-t bg-surface-inset`}
+        >
           {WEEKDAYS.map((day) => (
             <div
               key={day}
+              role="columnheader"
               className="border-b border-r px-1 py-2 text-center text-caption last:border-r-0 sm:px-2"
             >
               {day}
@@ -240,8 +246,9 @@ export function InterviewCalendar({
               <button
                 key={day.key}
                 type="button"
+                role="gridcell"
                 aria-label={`${getDateLabel(day.key)}, ${eventLabel}`}
-                aria-pressed={selectedDate === day.key}
+                aria-selected={selectedDate === day.key}
                 onClick={() => {
                   setSelectedDate(day.key);
                   if (!day.inCurrentMonth) {

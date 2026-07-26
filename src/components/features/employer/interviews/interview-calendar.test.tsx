@@ -8,6 +8,8 @@ describe("InterviewCalendar", () => {
   it("shows scheduled candidate, role, and time on the matching date", () => {
     render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
 
+    expect(screen.getByRole("grid", { name: "July 2026 calendar" })).toBeTruthy();
+    expect(screen.getAllByRole("gridcell")).toHaveLength(42);
     expect(screen.getAllByText("Aisha Khan").length).toBeGreaterThan(0);
     expect(
       screen.getAllByText("Senior Frontend Engineer").length,
@@ -34,7 +36,7 @@ describe("InterviewCalendar", () => {
     render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
 
     await user.click(
-      screen.getByRole("button", {
+      screen.getByRole("gridcell", {
         name: "Monday, July 27, 2026, 1 scheduled interview",
       }),
     );
