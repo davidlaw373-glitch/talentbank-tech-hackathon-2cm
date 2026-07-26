@@ -1,0 +1,24 @@
+.toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.filters {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr) 14rem 17rem;
+    align-items: end;
+  }
+}
+
+@media (max-width: 639px) {
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
