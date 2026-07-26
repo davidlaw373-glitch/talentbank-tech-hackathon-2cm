@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 import type { EmployerCandidateRow } from "@/lib/data-helpers";
-import type { JobCandidateMatchScore } from "@/types/match-score";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -27,7 +26,6 @@ import {
 
 type CandidateDiscoveryCardProps = {
   row: EmployerCandidateRow;
-  match: JobCandidateMatchScore | undefined;
   starred?: boolean;
   onToggleStar?: () => void;
   onRestoreToApplied?: () => void;
@@ -44,7 +42,6 @@ const SIGNAL_SCROLL_CLASSES =
 
 export function CandidateDiscoveryCard({
   row,
-  match,
   starred = false,
   onToggleStar,
   onRestoreToApplied,
@@ -63,7 +60,7 @@ export function CandidateDiscoveryCard({
   const statusLabel = row.app.rejected ? "Rejected" : row.app.stage;
   const displayedVerification =
     verification === "Verified" ? "Verified" : "None";
-  const insight = buildCandidateInsight(row, match);
+  const insight = buildCandidateInsight(row);
   const latestExperience = candidate.experience[0];
   const scoreWidth = Math.min(100, Math.max(0, matchScore));
   const handleFlipKeyDown = (

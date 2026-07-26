@@ -11,7 +11,6 @@ import {
 import { APPLICATION_STAGES } from "@/types/application";
 import {
   getEmployerCandidateRows,
-  getMatchScoreByPair,
 } from "@/lib/data-helpers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -346,7 +345,6 @@ export default function EmployerCandidatesPage() {
             <li key={row.app.id} className="min-w-0">
               <CandidateDiscoveryCard
                 row={row}
-                match={getMatchScoreByPair(row.candidate.id, row.job.id)}
                 starred={starredIds.has(row.candidate.id)}
                 onToggleStar={() =>
                   toggleStar(row.candidate.id, row.candidate.name)

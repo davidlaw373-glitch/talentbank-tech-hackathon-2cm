@@ -36,18 +36,28 @@ function deriveMatchFactors(
   matchScore: ReturnType<typeof getMatchScoreByPair>,
 ): MatchFactors {
   const overall = matchScore?.score ?? 0;
-  const matchingSkills = matchScore?.matchingSkills ?? [];
-  const missingSkills = matchScore?.missingSkills ?? [];
-  const requiredCount = job?.requirements.length ?? 0;
+  const mustHave = job?.mustHave ?? [];
 
-  // Skills (60%): ratio of job requirements covered by the candidate.
+  // Derive matching/missing skills from all candidate declared skills vs job must-haves.
+  const candidateSkills = new Set(candidate.skills.map((s) => s.name));
+  const matchingSkills = mustHave.filter((skill) =>
+    candidateSkills.has(skill),
+  );
+  const missingSkills = mustHave.filter(
+    (skill) => !candidateSkills.has(skill),
+  );
+  const requiredCount = mustHave.length;
+
+  // Skills (60%): ratio of job must-have skills covered by the candidate.
   const skillsContribution =
     requiredCount === 0
       ? overall
       : Math.round((matchingSkills.length / requiredCount) * 100);
 
   // Experience (25%): pull the most relevant experience row for this role.
-  const candidateSkillsLower = new Set(candidate.skills.map((s) => s.name.toLowerCase()));
+  const candidateSkillsLower = new Set(
+    candidate.skills.map((s) => s.name.toLowerCase()),
+  );
   const topRelevantExperience =
     candidate.experience.find((exp) =>
       exp.role
@@ -58,10 +68,13 @@ function deriveMatchFactors(
         exp.role.toLowerCase().includes(skill.toLowerCase()),
       ),
     ) ?? candidate.experience[0];
-  const experienceContribution = Math.max(
-    0,
-    Math.min(100, Math.round(overall * 0.95 + 5)),
-  );
+
+  // Derive experience contribution from tenure and relevance.
+  // More years in a relevant role → higher score, capped at 100.
+  const expYears = topRelevantExperience?.period ?? "";
+  const yearsMatch = expYears.match(/(\d+)\+/);
+  const yearsCount = yearsMatch ? parseInt(yearsMatch[1]) : 0;
+  const experienceContribution = yearsCount >= 5 ? 96 : yearsCount >= 3 ? 85 : yearsCount >= 1 ? 74 : 55;
   const experienceDetail = topRelevantExperience
     ? `${topRelevantExperience.role} at ${topRelevantExperience.company} (${topRelevantExperience.period}) is the closest match — the role expects ${job?.department ?? "this function"}-level ownership and your tenure shows it.`
     : `Limited direct role history matched — surface adjacent projects so the experience signal strengthens.`;

@@ -159,17 +159,25 @@ export function JobDetails({
   job,
   matchScore,
   employer,
+  candidateSkills = [],
 }: {
   job: Job;
   matchScore?: JobCandidateMatchScore;
   employer?: Employer;
+  candidateSkills?: string[];
 }) {
   const { push } = useToast();
   const [saved, setSaved] = useState(false);
   const score = matchScore?.score ?? 0;
   const companyName = employer?.companyName ?? "Unknown company";
-  const matchingSkills = matchScore?.matchingSkills ?? [];
-  const missingSkills = matchScore?.missingSkills ?? [];
+  const mustHave = job.mustHave ?? [];
+  const candidateSkillsSet = new Set(candidateSkills);
+  const matchingSkills = mustHave.filter((skill) =>
+    candidateSkillsSet.has(skill),
+  );
+  const missingSkills = mustHave.filter(
+    (skill) => !candidateSkillsSet.has(skill),
+  );
   const benefits = employer?.benefits ?? [];
   const { skillsContribution, experienceContribution, goalsContribution, experienceDetail, goalsDetail } =
     deriveFactorScores(score, matchingSkills, missingSkills, job.title);
