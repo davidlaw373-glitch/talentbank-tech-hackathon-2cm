@@ -199,7 +199,7 @@ export default function EmployerCandidatesPage() {
         data-slot="candidate-filter-panel"
         className="overflow-hidden rounded-tl-3xl rounded-tr-3xl border-2 shadow-none"
       >
-        <CardContent className="space-y-5 bg-surface-inset p-5 md:p-6">
+        <CardContent className="space-y-5 p-5 md:p-6">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
               <label htmlFor="candidate-search" className="text-caption">
