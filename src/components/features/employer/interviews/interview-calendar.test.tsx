@@ -35,13 +35,28 @@ describe("InterviewCalendar", () => {
     render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
 
     expect(screen.getByRole("grid", { name: "July 2026 calendar" })).toBeTruthy();
-    expect(screen.getAllByRole("gridcell")).toHaveLength(42);
     expect(screen.getAllByText("Aisha Khan").length).toBeGreaterThan(0);
     expect(
       screen.getAllByText("Senior Frontend Engineer").length,
     ).toBeGreaterThan(0);
     expect(screen.getAllByText("10:00").length).toBeGreaterThan(0);
     expect(screen.queryByText("Sara Park")).toBeNull();
+  });
+
+  it("exposes only dates from the viewed month as gridcells", () => {
+    render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
+
+    expect(screen.getAllByRole("gridcell")).toHaveLength(31);
+    expect(
+      screen.queryByRole("gridcell", {
+        name: "Monday, June 29, 2026, 0 scheduled interviews",
+      }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("gridcell", {
+        name: "Monday, August 3, 2026, 1 scheduled interview",
+      }),
+    ).toBeNull();
   });
 
   it("moves to the next month and updates the month selector", async () => {
@@ -57,34 +72,29 @@ describe("InterviewCalendar", () => {
     ).toBe("7");
   });
 
-  it("keeps the selected day when moving to the next month", async () => {
+  it("keeps the explicit selected date while browsing another month", async () => {
     const user = userEvent.setup();
     render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
 
     await user.click(screen.getByRole("button", { name: "Next month" }));
 
-    const selectedDate = screen.getByRole("gridcell", {
-      name: "Wednesday, August 26, 2026, 0 scheduled interviews",
-    });
-    expect(selectedDate.getAttribute("aria-selected")).toBe("true");
-  });
-
-  it("clamps the selected day when the target month is shorter", async () => {
-    const user = userEvent.setup();
-    render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
-
-    await user.click(
-      screen.getByRole("gridcell", {
-        name: "Friday, July 31, 2026, 1 scheduled interview",
+    expect(
+      screen.getByRole("heading", {
+        name: "Sunday, July 26",
       }),
-    );
-    await user.click(screen.getByRole("button", { name: "Next month" }));
-    await user.click(screen.getByRole("button", { name: "Next month" }));
+    ).toBeTruthy();
+    expect(
+      screen
+        .getAllByRole("gridcell")
+        .every((cell) => cell.getAttribute("aria-selected") === "false"),
+    ).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: "Previous month" }));
 
     expect(
       screen
         .getByRole("gridcell", {
-          name: "Wednesday, September 30, 2026, 0 scheduled interviews",
+          name: "Sunday, July 26, 2026, 0 scheduled interviews",
         })
         .getAttribute("aria-selected"),
     ).toBe("true");
