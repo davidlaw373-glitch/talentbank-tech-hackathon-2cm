@@ -799,12 +799,15 @@ export function DisputeTracker({
           </Button>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
-            <label htmlFor="candidate-dispute-search" className="block">
-              <small className="text-sm font-medium text-foreground">
-                Search
-              </small>
+            <label
+              htmlFor="candidate-dispute-search"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Search
             </label>
             <div className="relative">
               <Search
@@ -822,10 +825,11 @@ export function DisputeTracker({
             </div>
           </div>
           <div className="space-y-1.5 sm:w-[14rem]">
-            <label htmlFor="candidate-dispute-status" className="block">
-              <small className="text-sm font-medium text-foreground">
-                Status
-              </small>
+            <label
+              htmlFor="candidate-dispute-status"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Status
             </label>
             <Select
               value={statusFilter}
@@ -850,7 +854,9 @@ export function DisputeTracker({
               </SelectContent>
             </Select>
           </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <DisputeList records={filteredDisputes} onOpenThread={openThread} />
       </section>

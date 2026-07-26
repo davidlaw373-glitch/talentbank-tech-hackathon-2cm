@@ -157,7 +157,7 @@ export function TalentPoolRow({
   return (
     <li
       className={cn(
-        "lift-on-hover rounded-md border border-border/40 bg-surface-1 p-4",
+        "rounded-md border border-border/40 bg-surface-1 p-4",
         selected && "border-highlight/60 bg-highlight-soft/40",
       )}
     >

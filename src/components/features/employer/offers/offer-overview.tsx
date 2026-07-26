@@ -11,7 +11,7 @@ import {
   TimerOff,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/components/common/toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -95,43 +95,42 @@ export function OfferOverview() {
   };
 
   const summaries = [
-    { label: "Pending", value: counts.Pending, icon: Clock },
-    { label: "Accepted", value: counts.Accepted, icon: CircleCheck },
-    { label: "Declined", value: counts.Declined, icon: CircleX },
-    { label: "Expired", value: counts.Expired, icon: TimerOff },
+    { label: "Pending", value: counts.Pending, icon: Clock, swatch: "bg-highlight-soft" },
+    { label: "Accepted", value: counts.Accepted, icon: CircleCheck, swatch: "bg-chart-1/20" },
+    { label: "Declined", value: counts.Declined, icon: CircleX, swatch: "bg-destructive/10" },
+    { label: "Expired", value: counts.Expired, icon: TimerOff, swatch: "bg-chart-2/20" },
   ];
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Offer management"
-        description="Review priority offers and act on what needs attention next."
-        action={
-          <Button onClick={() => setComposerOpen(true)}>
-            <Send />
-            Send offer
-          </Button>
-        }
-      />
+    <div className="flex justify-end">
+        <Button onClick={() => setComposerOpen(true)}>
+          <Send />
+          Send offer
+        </Button>
+      </div>
 
       <section
         aria-label="Offer decision counts"
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
       >
-        {summaries.map(({ label, value, icon: Icon }) => (
+        {summaries.map(({ label, value, icon: Icon, swatch }) => (
           <Card key={label}>
             <CardContent className="flex items-center gap-3 p-5">
               <span
                 aria-hidden
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-lg",
+                  swatch
+                )}
               >
                 <Icon className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-3xl font-semibold tracking-tight tabular-nums">
+                <p className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
                   {value}
                 </p>
-                <p className="text-sm font-medium">{label}</p>
+                <p className="text-base font-semibold tracking-tight">{label}</p>
               </div>
             </CardContent>
           </Card>

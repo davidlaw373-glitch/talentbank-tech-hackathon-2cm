@@ -11,7 +11,6 @@ import {
   Users,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -118,18 +117,14 @@ export function InterviewOverview() {
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Interview management"
-        description="Review priority interviews and act on what needs attention next."
-        action={
-          <Button asChild>
-            <Link href="/employer/interviews/calendar">
-              <CalendarDays />
-              Scheduled calendar
-            </Link>
-          </Button>
-        }
-      />
+      <div className="flex justify-end">
+        <Button asChild>
+          <Link href="/employer/interviews/calendar">
+            <CalendarDays />
+            Scheduled calendar
+          </Link>
+        </Button>
+      </div>
 
       <section
         aria-label="Interview status counts"

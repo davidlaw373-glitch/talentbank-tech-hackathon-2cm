@@ -23,12 +23,13 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { PageHeading } from "@/components/common/page-heading";
+import { EmptyState } from "@/components/common/empty-state";
 import { useToast } from "@/components/common/toast";
 import {
   JobEditorDialog,
   type JobEditorValues,
 } from "@/components/features/employer/job-editor-dialog";
+import { cn } from "@/lib/utils";
 import pageStyles from "./page.module.css";
 
 function statusVariant(status: JobStatus) {
@@ -138,18 +139,12 @@ export default function EmployerJobsPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Job management"
-        description="Review priority roles and jump into a posting."
-        action={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button onClick={onNewJob}>
-              <Plus />
-              New job
-            </Button>
-          </div>
-        }
-      />
+      <div className="flex justify-end">
+        <Button onClick={onNewJob}>
+          <Plus />
+          New job
+        </Button>
+      </div>
 
       {/* Stats */}
       <section
@@ -157,10 +152,10 @@ export default function EmployerJobsPage() {
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
       >
         {[
-          { label: "Total jobs", value: stats.total, icon: Briefcase },
-          { label: "Live", value: stats.live, icon: Briefcase },
-          { label: "Drafts", value: stats.draft, icon: Pencil },
-          { label: "Paused", value: stats.paused, icon: Pause },
+          { label: "Total jobs", value: stats.total, icon: Briefcase, swatch: "bg-accent-soft" },
+          { label: "Live", value: stats.live, icon: Briefcase, swatch: "bg-chart-1/20" },
+          { label: "Drafts", value: stats.draft, icon: Pencil, swatch: "bg-highlight-soft" },
+          { label: "Paused", value: stats.paused, icon: Pause, swatch: "bg-chart-2/20" },
         ].map((s) => {
           const Icon = s.icon;
           return (
@@ -168,15 +163,18 @@ export default function EmployerJobsPage() {
               <CardContent className="flex items-center gap-3 p-5">
                 <span
                   aria-hidden
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg",
+                    s.swatch,
+                  )}
                 >
                   <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-3xl font-semibold tracking-tight tabular-nums">
+                  <p className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
                     {s.value}
                   </p>
-                  <p className="text-sm font-medium">{s.label}</p>
+                  <p className="text-base font-semibold tracking-tight">{s.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -195,29 +193,18 @@ export default function EmployerJobsPage() {
           </div>
           <Button
             asChild
-            className="bg-amber-50 text-foreground hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-950/50"
+            className="bg-highlight-soft text-foreground hover:bg-highlight-soft/80"
           >
             <Link href="/employer/jobs/all">View all jobs</Link>
           </Button>
         </div>
 
         {displayedJobs.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-              <span
-                aria-hidden
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
-              >
-                <Filter className="h-5 w-5 text-muted-foreground" />
-              </span>
-              <div>
-                <p className="text-sm font-medium">No jobs match those filters</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Try a broader search or change the status or location.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Filter}
+            title="No jobs match those filters"
+            description="Try a broader search or change the status or location."
+          />
         ) : (
           <div
             aria-label="Priority jobs"

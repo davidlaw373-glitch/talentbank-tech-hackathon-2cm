@@ -173,7 +173,7 @@ export function JobDetailView({
         </div>
         <Button
           type="button"
-          className="ml-auto bg-amber-50 text-foreground hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-950/50"
+          className="ml-auto bg-highlight-soft text-foreground hover:bg-highlight-soft/80"
           onClick={() => setPreviewOpen(true)}
         >
           <Eye />

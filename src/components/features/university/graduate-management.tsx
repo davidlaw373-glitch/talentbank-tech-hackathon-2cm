@@ -252,10 +252,15 @@ export function GraduateManagement({
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
-            <label htmlFor="grad-search" className="block">
-              <small className="text-sm font-medium text-foreground">Search</small>
+            <label
+              htmlFor="grad-search"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Search
             </label>
             <div className="relative">
               <Search
@@ -273,8 +278,11 @@ export function GraduateManagement({
             </div>
           </div>
           <div className="space-y-1.5 sm:w-[12rem]">
-            <label htmlFor="grad-year" className="block">
-              <small className="text-sm font-medium text-foreground">Graduation year</small>
+            <label
+              htmlFor="grad-year"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Graduation year
             </label>
             <Select value={year} onValueChange={setYear}>
               <SelectTrigger
@@ -298,8 +306,11 @@ export function GraduateManagement({
             </Select>
           </div>
           <div className="space-y-1.5 sm:w-[14rem]">
-            <label htmlFor="grad-employment" className="block">
-              <small className="text-sm font-medium text-foreground">Employment status</small>
+            <label
+              htmlFor="grad-employment"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Employment status
             </label>
             <Select
               value={employment}
@@ -323,7 +334,9 @@ export function GraduateManagement({
               </SelectContent>
             </Select>
           </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
         <div className="space-y-3">
           <div className="flex items-end justify-between gap-4">
             <div>

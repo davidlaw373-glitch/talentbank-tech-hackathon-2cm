@@ -53,12 +53,7 @@ export function InterviewRow({
 
   return (
     <li>
-      <Card
-        className={cn(
-          "lift-on-hover",
-          showCompleteActions && "border-2 border-foreground",
-        )}
-      >
+      <Card className={cn(showCompleteActions && "border-2 border-foreground")}>
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-start gap-3">
             <span

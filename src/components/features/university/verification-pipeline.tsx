@@ -387,10 +387,15 @@ export function VerificationPipeline({
             </Button>
           </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
-            <label htmlFor="verification-search" className="block">
-              <small className="text-sm font-medium text-foreground">Search</small>
+            <label
+              htmlFor="verification-search"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Search
             </label>
             <div className="relative">
               <Search
@@ -408,8 +413,11 @@ export function VerificationPipeline({
             </div>
           </div>
           <div className="space-y-1.5 sm:w-[12rem]">
-            <label htmlFor="verification-year" className="block">
-              <small className="text-sm font-medium text-foreground">Graduation year</small>
+            <label
+              htmlFor="verification-year"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Graduation year
             </label>
             <Select value={year} onValueChange={setYear}>
               <SelectTrigger
@@ -433,8 +441,11 @@ export function VerificationPipeline({
             </Select>
           </div>
           <div className="space-y-1.5 sm:w-[14rem]">
-            <label htmlFor="verification-employment" className="block">
-              <small className="text-sm font-medium text-foreground">Employment status</small>
+            <label
+              htmlFor="verification-employment"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Employment status
             </label>
             <Select value={employment} onValueChange={setEmployment}>
               <SelectTrigger
@@ -453,7 +464,9 @@ export function VerificationPipeline({
               </SelectContent>
             </Select>
           </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

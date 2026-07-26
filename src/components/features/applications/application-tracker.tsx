@@ -245,19 +245,28 @@ export function ApplicationTracker() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
-            <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center">
-              <div className="relative w-full sm:w-72">
-                <Search
-                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search role or company"
-                  className="pl-9"
-                  aria-label="Search applications"
-                />
+            <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-end">
+              <div className="flex w-full flex-col gap-1.5 sm:w-72">
+                <label
+                  htmlFor="application-search"
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                >
+                  Search
+                </label>
+                <div className="relative">
+                  <Search
+                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden
+                  />
+                  <Input
+                    id="application-search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search role or company"
+                    className="pl-9"
+                    aria-label="Search applications"
+                  />
+                </div>
               </div>
               <Button asChild>
                 <Link href="/candidate/jobs">

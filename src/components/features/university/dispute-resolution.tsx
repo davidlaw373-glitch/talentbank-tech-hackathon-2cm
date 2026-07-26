@@ -481,10 +481,15 @@ export function DisputeResolution({
           </Button>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
-            <label htmlFor="dispute-search" className="block">
-              <small className="text-sm font-medium text-foreground">Search</small>
+            <label
+              htmlFor="dispute-search"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Search
             </label>
             <div className="relative">
               <Search
@@ -502,8 +507,11 @@ export function DisputeResolution({
             </div>
           </div>
           <div className="space-y-1.5 sm:w-[16rem]">
-            <label htmlFor="dispute-field" className="block">
-              <small className="text-sm font-medium text-foreground">Field</small>
+            <label
+              htmlFor="dispute-field"
+              className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              Field
             </label>
             <Select value={field} onValueChange={setField}>
               <SelectTrigger
@@ -523,7 +531,9 @@ export function DisputeResolution({
               </SelectContent>
             </Select>
           </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <DisputeList
           records={filteredDisputes}

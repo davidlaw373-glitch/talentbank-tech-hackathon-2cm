@@ -349,7 +349,7 @@ export function InterviewCalendar({
         ) : (
           <div className="grid gap-3 lg:grid-cols-2">
             {selectedRows.map((row) => (
-              <Card key={row.interview.id} className="lift-on-hover">
+              <Card key={row.interview.id}>
                 <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">

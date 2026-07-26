@@ -20,7 +20,6 @@ import {
   getEmployerInterviewRows,
   getEmployerStats,
 } from "@/lib/data-helpers";
-import { get as getEmployer } from "@/data/employers";
 import { getByEmployer as getJobsByEmployer, getApplicantCount } from "@/data/jobs";
 import {
   APPLICATION_STAGES,
@@ -37,7 +36,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PageHeading } from "@/components/common/page-heading";
+import { EmptyState } from "@/components/common/empty-state";
 import { useToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
 
@@ -86,7 +85,6 @@ function priorityOrder(
 export default function EmployerDashboardPage() {
   const { push } = useToast();
 
-  const employer = getEmployer(DEMO_EMPLOYER_ID);
   const candidateRows = getEmployerCandidateRows(DEMO_EMPLOYER_ID);
   const interviewRows = getEmployerInterviewRows(DEMO_EMPLOYER_ID);
   const stats = getEmployerStats(DEMO_EMPLOYER_ID);
@@ -127,31 +125,19 @@ export default function EmployerDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero */}
-      <section className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Employer dashboard
-        </p>
-        <PageHeading
-          title={`Welcome back, ${employer?.companyName ?? "there"}`}
-          description="A snapshot of your hiring funnel today, the candidates moving, and what to do next."
-          action={
-            <Button onClick={onPostJob}>
-              <Plus />
-              Post a job
-            </Button>
-          }
-        />
-      </section>
+      <div className="flex justify-end">
+        <Button onClick={onPostJob}>
+          <Plus />
+          Post a job
+        </Button>
+      </div>
 
       {/* Next-action prompt */}
       {recentApplicants[0] ? (
-        <Card className="lift-on-hover">
+        <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5 sm:p-6">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Next action
-              </p>
+              <p className="text-caption">Next action</p>
               <p className="mt-1 text-sm font-medium">
                 Review {recentApplicants[0].candidate.name}&apos;s application for{" "}
                 {recentApplicants[0].job.title}
@@ -170,7 +156,14 @@ export default function EmployerDashboardPage() {
             </Button>
           </CardContent>
         </Card>
-      ) : null}
+      ) : (
+        <EmptyState
+          icon={Users}
+          title="No applicants yet"
+          description="Post a live role to start receiving applications."
+          action={<Button onClick={onPostJob}>Post a job</Button>}
+        />
+      )}
 
       {/* Stats */}
       <section
@@ -219,11 +212,11 @@ export default function EmployerDashboardPage() {
                 >
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
-                <div className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                <div className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
                   {s.value}
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{s.label}</p>
+                  <p className="text-base font-semibold tracking-tight">{s.label}</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {s.delta}
                   </p>
@@ -268,7 +261,7 @@ export default function EmployerDashboardPage() {
                 <div className="h-2.5 overflow-hidden rounded-full bg-muted">
                   <div
                     aria-hidden
-                    className="h-full rounded-full bg-foreground/80"
+                    className="h-full rounded-full bg-primary"
                     style={{ width: `${pct}%` }}
                   />
                 </div>

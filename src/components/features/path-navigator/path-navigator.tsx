@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -482,7 +483,19 @@ export function PathNavigator() {
 
   return (
     <div className="space-y-8">
-      <h1 className="sr-only">Career Path Navigator</h1>
+      <PageHeading
+        eyebrow="Career path navigator"
+        title="Path finder"
+        description="Bookmark target roles and map the bridge from where you are to where you want to be. Score each role against your verified skills, plan the gaps, and follow through."
+        action={
+          goalJobId !== null ? (
+            <Badge variant="secondary" className="gap-1">
+              <Target aria-hidden className="h-3 w-3" />
+              Following {TARGET_ROLES.find((r) => r.jobId === goalJobId)?.title}
+            </Badge>
+          ) : null
+        }
+      />
 
       {selectedRole === null ? (
         <Card>
