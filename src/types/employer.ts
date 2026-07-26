@@ -13,6 +13,8 @@ export type Employer = {
   size: CompanySize;
   founded: number;
   website: string;
+  contactEmail?: string;
+  contactPhone?: string;
   hq: string;
   about: string;
   culture: string[];

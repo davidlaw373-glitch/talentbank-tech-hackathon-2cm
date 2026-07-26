@@ -1,0 +1,30 @@
+.carouselProgress {
+  transition: opacity 180ms ease;
+}
+
+.carousel:hover .carouselProgress,
+.carousel:focus-within .carouselProgress {
+  opacity: 1;
+}
+
+.applicantCard {
+  flex-basis: 84%;
+}
+
+@media (min-width: 640px) {
+  .applicantCard {
+    flex-basis: 68%;
+  }
+}
+
+@media (min-width: 768px) {
+  .applicantCard {
+    flex-basis: calc(50% - 0.5rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .applicantCard {
+    flex-basis: calc(25% - 0.75rem);
+  }
+}

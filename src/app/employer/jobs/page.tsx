@@ -9,7 +9,7 @@ import {
   Pencil,
   Play,
   Plus,
-  Search,
+  RefreshCw,
   Users,
   X,
 } from "lucide-react";
@@ -22,36 +22,14 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import {
   JobEditorDialog,
   type JobEditorValues,
 } from "@/components/features/employer/job-editor-dialog";
-
-const STATUS_OPTIONS: Array<{ value: JobStatus | "All"; label: string }> = [
-  { value: "All", label: "All statuses" },
-  { value: "Live", label: "Live" },
-  { value: "Draft", label: "Draft" },
-  { value: "Paused", label: "Paused" },
-  { value: "Closed", label: "Closed" },
-];
-
-function getLocationArea(job: Job) {
-  const workModeSuffix = ` · ${job.workMode}`;
-  return job.location.endsWith(workModeSuffix)
-    ? job.location.slice(0, -workModeSuffix.length)
-    : job.location;
-}
+import pageStyles from "./page.module.css";
 
 function statusVariant(status: JobStatus) {
   switch (status) {
@@ -69,40 +47,15 @@ function statusVariant(status: JobStatus) {
 export default function EmployerJobsPage() {
   const { push } = useToast();
   const [jobs, setJobs] = useState<Job[]>(getJobsByEmployer(1));
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<JobStatus | "All">("All");
-  const [locationFilter, setLocationFilter] = useState("All");
-  const [showAllJobs, setShowAllJobs] = useState(false);
   const [newJobOpen, setNewJobOpen] = useState(false);
+  const [pendingPause, setPendingPause] = useState<Job | null>(null);
+  const [finalPause, setFinalPause] = useState<Job | null>(null);
   const [pendingClose, setPendingClose] = useState<Job | null>(null);
   const [finalClose, setFinalClose] = useState<Job | null>(null);
 
-  const locationOptions = useMemo(
-    () =>
-      Array.from(new Set(jobs.map(getLocationArea))).sort((a, b) =>
-        a.localeCompare(b),
-      ),
-    [jobs],
-  );
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return jobs.filter((job) => {
-      const matchesQuery = !q || job.title.toLowerCase().includes(q);
-      const matchesStatus =
-        statusFilter === "All" || job.status === statusFilter;
-      const matchesLocation =
-        locationFilter === "All" || getLocationArea(job) === locationFilter;
-      return matchesQuery && matchesStatus && matchesLocation;
-    });
-  }, [jobs, locationFilter, query, statusFilter]);
-
   const displayedJobs = useMemo(
-    () =>
-      showAllJobs
-        ? filtered
-        : [...jobs].sort((a, b) => b.filledScore - a.filledScore),
-    [filtered, jobs, showAllJobs],
+    () => [...jobs].sort((a, b) => b.filledScore - a.filledScore),
+    [jobs],
   );
 
   const stats = useMemo(() => {
@@ -187,14 +140,9 @@ export default function EmployerJobsPage() {
     <div className="space-y-8">
       <PageHeading
         title="Job management"
-        description="All your open, draft, and paused roles — search, filter, and jump into a posting."
+        description="Review priority roles and jump into a posting."
         action={
           <div className="flex flex-wrap items-center gap-2">
-            {showAllJobs && (
-              <Button variant="outline" onClick={() => setShowAllJobs(false)}>
-                Show priority jobs
-              </Button>
-            )}
             <Button onClick={onNewJob}>
               <Plus />
               New job
@@ -204,7 +152,7 @@ export default function EmployerJobsPage() {
       />
 
       {/* Stats */}
-      {!showAllJobs && <section
+      <section
         aria-label="Job status counts"
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
       >
@@ -234,120 +182,10 @@ export default function EmployerJobsPage() {
             </Card>
           );
         })}
-      </section>}
-
-      {/* Filters */}
-      {showAllJobs && (
-        <Card className="overflow-hidden">
-          <CardContent className="grid gap-3 bg-surface-inset p-5 sm:grid-cols-[minmax(0,1fr)_14rem_14rem] sm:items-end">
-            <div className="flex flex-1 flex-col gap-1.5">
-              <label
-                htmlFor="job-search"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-              >
-                Search jobs
-              </label>
-              <div className="relative">
-                <Search
-                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                  aria-hidden
-                />
-                <Input
-                  id="job-search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Filter by job title"
-                  className="pl-9"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5 sm:w-56">
-              <label
-                htmlFor="status-filter"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-              >
-                Status
-              </label>
-              <Select
-                value={statusFilter}
-                onValueChange={(v) => setStatusFilter(v as JobStatus | "All")}
-              >
-                <SelectTrigger id="status-filter">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="location-filter"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-              >
-                Location
-              </label>
-              <Select value={locationFilter} onValueChange={setLocationFilter}>
-                <SelectTrigger id="location-filter">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All locations</SelectItem>
-                  {locationOptions.map((location) => (
-                    <SelectItem key={location} value={location}>
-                      {location}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-          <div className="border-t bg-surface-inset p-3">
-            {displayedJobs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 p-12 text-center">
-                <span
-                  aria-hidden
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-muted"
-                >
-                  <Filter className="h-5 w-5 text-muted-foreground" />
-                </span>
-                <div>
-                  <p className="text-sm font-medium">
-                    No jobs match those filters
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Try a broader search or change the status or location.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div
-                aria-label="All jobs"
-                className="max-h-[32rem] space-y-3 overflow-y-auto pr-1"
-              >
-                {displayedJobs.map((job: Job) => (
-                  <JobRow
-                    key={job.id}
-                    job={job}
-                    showActions
-                    onTogglePause={() => onTogglePause(job)}
-                    onRequestClose={setPendingClose}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
+      </section>
 
       {/* Results */}
-      {!showAllJobs && <section className="space-y-3">
+      <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2>Priority jobs</h2>
@@ -356,10 +194,10 @@ export default function EmployerJobsPage() {
             </p>
           </div>
           <Button
-            variant="outline"
-            onClick={() => setShowAllJobs(true)}
+            asChild
+            className="bg-amber-50 text-foreground hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-950/50"
           >
-            View all jobs
+            <Link href="/employer/jobs/all">View all jobs</Link>
           </Button>
         </div>
 
@@ -382,22 +220,51 @@ export default function EmployerJobsPage() {
           </Card>
         ) : (
           <div
-            aria-label={showAllJobs ? "All jobs" : "Priority jobs"}
-            className="max-h-[32rem] space-y-3 overflow-y-auto rounded-xl border bg-surface-inset p-3 pr-2"
+            aria-label="Priority jobs"
+            className="space-y-3"
           >
             {displayedJobs.map((job: Job) => (
               <JobRow
                 key={job.id}
                 job={job}
-                showActions={showAllJobs}
-                onTogglePause={() => onTogglePause(job)}
+                onRequestPause={setPendingPause}
                 onRequestClose={setPendingClose}
               />
             ))}
           </div>
         )}
-      </section>}
+      </section>
 
+      <ConfirmDialog
+        open={pendingPause !== null}
+        onOpenChange={(open) => !open && setPendingPause(null)}
+        title={`${pendingPause?.status === "Paused" ? "Resume" : "Pause"} ${pendingPause?.title ?? "this job posting"}?`}
+        description={
+          pendingPause?.status === "Paused"
+            ? "This role will become visible to candidates and start accepting applicants again."
+            : "This role will stop appearing in candidate searches until it is resumed."
+        }
+        confirmLabel={
+          pendingPause?.status === "Paused" ? "Continue to resume" : "Continue to pause"
+        }
+        onConfirm={() => {
+          setFinalPause(pendingPause);
+          setPendingPause(null);
+        }}
+      />
+      <ConfirmDialog
+        open={finalPause !== null}
+        onOpenChange={(open) => !open && setFinalPause(null)}
+        title={`Confirm ${finalPause?.status === "Paused" ? "resuming" : "pausing"} this job`}
+        description={`Please confirm that you want to ${finalPause?.status === "Paused" ? "resume" : "pause"} ${finalPause?.title ?? "this job posting"}.`}
+        confirmLabel={
+          finalPause?.status === "Paused" ? "Yes, resume job" : "Yes, pause job"
+        }
+        onConfirm={() => {
+          if (finalPause) onTogglePause(finalPause);
+          setFinalPause(null);
+        }}
+      />
       <ConfirmDialog
         open={pendingClose !== null}
         onOpenChange={(open) => !open && setPendingClose(null)}
@@ -439,17 +306,17 @@ export default function EmployerJobsPage() {
   );
 }
 
-function JobRow({
+export function JobRow({
   job,
-  showActions,
-  onTogglePause,
+  onRequestPause,
   onRequestClose,
 }: {
   job: Job;
-  showActions: boolean;
-  onTogglePause: () => void;
+  onRequestPause: (job: Job) => void;
   onRequestClose: (job: Job) => void;
 }) {
+  const [flipped, setFlipped] = useState(false);
+
   return (
     <Card className="group relative lift-on-hover">
       <Link
@@ -483,58 +350,100 @@ function JobRow({
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-end gap-1">
-            <span className="flex items-center gap-1.5 text-sm font-medium tabular-nums">
-              <Users className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-              {job.applicants}
-            </span>
-            <small className="text-muted-foreground">applicants</small>
-          </div>
-          <div className="hidden w-32 sm:mt-3 sm:block">
-            <div
-              aria-hidden
-              className="h-2 w-full overflow-hidden rounded-full bg-muted"
+        <div
+          className={`${pageStyles.actionPanelShell} pointer-events-auto h-16 w-64 max-w-full shrink-0 [perspective:900px]`}
+        >
+          <div
+            className={`${pageStyles.actionPanel} relative h-full w-full origin-center rounded-lg border border-transparent bg-transparent [transform-style:preserve-3d] ${
+              flipped
+                ? pageStyles.actionPanelFlipped
+                : ""
+            }`}
+          >
+            <button
+              type="button"
+              aria-label={`Show actions for ${job.title}`}
+              aria-pressed={flipped}
+              aria-hidden={flipped}
+              tabIndex={flipped ? -1 : 0}
+              onClick={() => setFlipped(true)}
+              className={`${pageStyles.panelFace} absolute inset-0 flex items-center justify-end gap-4 rounded-lg px-3 text-left ${
+                flipped
+                  ? "pointer-events-none"
+                  : ""
+              }`}
             >
-              <span
-                className="block h-full rounded-full bg-chart-1"
-                style={{ width: `${job.filledScore}%` }}
-              />
+              <span className="flex flex-col items-end gap-1">
+                <span className="flex items-center gap-1.5 text-sm font-medium tabular-nums">
+                  <Users
+                    className="h-3.5 w-3.5 text-muted-foreground"
+                    aria-hidden
+                  />
+                  {job.applicants}
+                </span>
+                <small className="text-muted-foreground">applicants</small>
+              </span>
+              <span className="hidden w-32 sm:mt-3 sm:block">
+                <span
+                  aria-hidden
+                  className="block h-2 w-full overflow-hidden rounded-full bg-muted"
+                >
+                  <span
+                    className="block h-full rounded-full bg-chart-1"
+                    style={{ width: `${job.filledScore}%` }}
+                  />
+                </span>
+                <small className="mt-1 block text-right text-muted-foreground">
+                  {job.filledScore}% filled
+                </small>
+              </span>
+            </button>
+
+            <div
+              aria-hidden={!flipped}
+              className={`${pageStyles.panelFace} ${pageStyles.panelBack} absolute inset-0 flex items-center justify-center gap-1 rounded-lg bg-surface-2/70 px-1 ${
+                flipped
+                  ? ""
+                  : "pointer-events-none"
+              }`}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onRequestPause(job)}
+                disabled={
+                  !flipped || job.status === "Closed" || job.status === "Draft"
+                }
+                aria-label={
+                  job.status === "Paused"
+                    ? `Resume ${job.title}`
+                    : `Pause ${job.title}`
+                }
+              >
+                {job.status === "Paused" ? <Play /> : <Pause />}
+                {job.status === "Paused" ? "Resume" : "Pause"}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setFlipped(false)}
+                disabled={!flipped}
+                aria-label={`Show applicants and hiring progress for ${job.title}`}
+                className="h-9 min-h-9 w-9 min-w-9 shrink-0 rounded-lg border border-border bg-surface-1/80"
+              >
+                <RefreshCw />
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => onRequestClose(job)}
+                disabled={!flipped || job.status === "Closed"}
+                aria-label={`Close ${job.title}`}
+              >
+                <X />
+                Close
+              </Button>
             </div>
-            <small className="mt-1 block text-right text-muted-foreground">
-              {job.filledScore}% filled
-            </small>
-          </div>
-          <div className="pointer-events-auto flex items-center gap-2">
-            {showActions && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onTogglePause}
-                  disabled={job.status === "Closed" || job.status === "Draft"}
-                  aria-pressed={job.status === "Paused"}
-                  aria-label={
-                    job.status === "Paused"
-                      ? `Resume ${job.title}`
-                      : `Pause ${job.title}`
-                  }
-                >
-                  {job.status === "Paused" ? <Play /> : <Pause />}
-                  {job.status === "Paused" ? "Resume" : "Pause"}
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onRequestClose(job)}
-                  disabled={job.status === "Closed"}
-                  aria-label={`Close ${job.title}`}
-                >
-                  <X />
-                  Close
-                </Button>
-              </>
-            )}
           </div>
         </div>
       </CardContent>

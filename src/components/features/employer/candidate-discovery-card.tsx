@@ -28,9 +28,15 @@ import {
 type CandidateDiscoveryCardProps = {
   row: EmployerCandidateRow;
   match: JobCandidateMatchScore | undefined;
-  starred: boolean;
-  onToggleStar: () => void;
+  starred?: boolean;
+  onToggleStar?: () => void;
   onRestoreToApplied?: () => void;
+  enableInsightFlip?: boolean;
+  linkWholeCard?: boolean;
+  showMatchScore?: boolean;
+  showProfileAction?: boolean;
+  showRecentSignal?: boolean;
+  showStar?: boolean;
 };
 
 const SIGNAL_SCROLL_CLASSES =
@@ -39,9 +45,15 @@ const SIGNAL_SCROLL_CLASSES =
 export function CandidateDiscoveryCard({
   row,
   match,
-  starred,
+  starred = false,
   onToggleStar,
   onRestoreToApplied,
+  enableInsightFlip = true,
+  linkWholeCard = false,
+  showMatchScore = true,
+  showProfileAction = false,
+  showRecentSignal = true,
+  showStar = true,
 }: CandidateDiscoveryCardProps) {
   const [flipped, setFlipped] = useState(false);
   const [restorePromptOpen, setRestorePromptOpen] = useState(false);
@@ -72,7 +84,16 @@ export function CandidateDiscoveryCard({
 
   return (
     <article
-      className="h-[33rem] min-w-0 animate-reveal [perspective:1200px]"
+      className={cn(
+        "min-w-0 animate-reveal [perspective:1200px]",
+        showRecentSignal
+          ? "h-[33rem]"
+          : !showMatchScore
+            ? "h-64"
+            : showProfileAction
+              ? "h-80"
+              : "h-96",
+      )}
       aria-label={`${candidate.name}, ${candidate.title}`}
     >
       <div className="relative h-full w-full transition-transform duration-300 ease-out hover:-translate-y-1">
@@ -86,18 +107,27 @@ export function CandidateDiscoveryCard({
           className="surface-card absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border [backface-visibility:hidden]"
           aria-hidden={flipped}
         >
-          <button
-            type="button"
-            className="absolute inset-0 z-0 rounded-xl rounded-tl-3xl rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-            aria-label={`Show AI insight for ${candidate.name}`}
-            aria-pressed={flipped}
-            tabIndex={flipped ? -1 : 0}
-            onClick={() => {
-              setSignalExpanded(false);
-              setFlipped(true);
-            }}
-            onKeyDown={(event) => handleFlipKeyDown(event, true)}
-          />
+          {enableInsightFlip ? (
+            <button
+              type="button"
+              className="absolute inset-0 z-0 rounded-xl rounded-tl-3xl rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+              aria-label={`Show AI insight for ${candidate.name}`}
+              aria-pressed={flipped}
+              tabIndex={flipped ? -1 : 0}
+              onClick={() => {
+                setSignalExpanded(false);
+                setFlipped(true);
+              }}
+              onKeyDown={(event) => handleFlipKeyDown(event, true)}
+            />
+          ) : null}
+          {linkWholeCard ? (
+            <Link
+              href={`/employer/candidates/${candidate.id}`}
+              aria-label={`View ${candidate.name}'s full profile`}
+              className="absolute inset-0 z-20 rounded-xl rounded-tl-3xl rounded-tr-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+            />
+          ) : null}
           <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
@@ -109,61 +139,63 @@ export function CandidateDiscoveryCard({
                 </span>
                 <div className="min-w-0">
                   <p className="text-caption">Candidate</p>
-                  <Link
-                    href={`/employer/candidates/${candidate.id}`}
-                    aria-label={`View ${candidate.name}'s full profile`}
-                    tabIndex={flipped ? -1 : 0}
-                    className="group/profile pointer-events-auto relative z-20 block min-w-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
+                  {linkWholeCard ? (
+                    <div className="min-w-0">
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <h2 className="truncate text-subheading">
+                          {candidate.name}
+                        </h2>
+                        {displayedVerification === "Verified" ? (
+                          <VerificationBadge candidateName={candidate.name} />
+                        ) : null}
+                      </div>
+                      <p className="truncate text-meta">{candidate.title}</p>
+                    </div>
+                  ) : (
+                    <Link
+                      href={`/employer/candidates/${candidate.id}`}
+                      aria-label={`View ${candidate.name}'s full profile`}
+                      tabIndex={flipped ? -1 : 0}
+                      className="group/profile pointer-events-auto relative z-20 block min-w-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    >
                     <div className="flex min-w-0 items-center gap-1.5">
                       <h2 className="truncate text-subheading underline-offset-4 group-hover/profile:underline group-focus-visible/profile:underline">
                         {candidate.name}
                       </h2>
                       {displayedVerification === "Verified" ? (
-                        <span
-                          role="img"
-                          aria-label={`Verified verification for ${candidate.name}`}
-                          title="Verified"
-                          className="relative h-5 w-5 shrink-0"
-                        >
-                          <Image
-                            src="/images/verified-badge-clean.png"
-                            alt=""
-                            width={20}
-                            height={20}
-                            unoptimized
-                            className="block h-5 w-5"
-                          />
-                        </span>
+                        <VerificationBadge candidateName={candidate.name} />
                       ) : null}
                     </div>
                     <p className="truncate text-meta underline-offset-4 group-hover/profile:underline group-focus-visible/profile:underline">
                       {candidate.title}
                     </p>
-                  </Link>
+                    </Link>
+                  )}
                 </div>
               </div>
-              <Button
-                type="button"
-                variant={starred ? "secondary" : "outline"}
-                size="icon"
-                className="pointer-events-auto relative z-20 shrink-0"
-                aria-label={
-                  starred
-                    ? `Remove ${candidate.name} from saved`
-                    : `Save ${candidate.name}`
-                }
-                aria-pressed={starred}
-                title={
-                  starred
-                    ? `Remove ${candidate.name} from saved`
-                    : `Save ${candidate.name}`
-                }
-                tabIndex={flipped ? -1 : 0}
-                onClick={onToggleStar}
-              >
-                <Star className={cn(starred && "fill-current")} aria-hidden />
-              </Button>
+              {showStar && onToggleStar ? (
+                <Button
+                  type="button"
+                  variant={starred ? "secondary" : "outline"}
+                  size="icon"
+                  className="pointer-events-auto relative z-20 shrink-0"
+                  aria-label={
+                    starred
+                      ? `Remove ${candidate.name} from saved`
+                      : `Save ${candidate.name}`
+                  }
+                  aria-pressed={starred}
+                  title={
+                    starred
+                      ? `Remove ${candidate.name} from saved`
+                      : `Save ${candidate.name}`
+                  }
+                  tabIndex={flipped ? -1 : 0}
+                  onClick={onToggleStar}
+                >
+                  <Star className={cn(starred && "fill-current")} aria-hidden />
+                </Button>
+              ) : null}
             </div>
 
             <Badge
@@ -191,54 +223,57 @@ export function CandidateDiscoveryCard({
               </p>
             </div>
 
-            <div className="group relative mt-5 flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border bg-surface-2 p-4">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="pointer-events-auto absolute right-2.5 top-2.5 z-20 h-8 w-8 min-h-8 min-w-8 rounded-md [&_svg]:size-3.5"
-                aria-label={`Expand recent signal for ${candidate.name}`}
-                aria-expanded={signalExpanded}
-                title={`Expand recent signal for ${candidate.name}`}
-                tabIndex={flipped ? -1 : 0}
-                onClick={() => setSignalExpanded(true)}
-              >
-                <Maximize2 aria-hidden />
-              </Button>
-              <p className="pr-10 text-caption">Recent signal</p>
-              <div
-                role="region"
-                aria-label={`Recent signal details for ${candidate.name}`}
-                tabIndex={flipped ? -1 : 0}
-                onScroll={handleSignalScroll}
-                className={cn(
-                  "pointer-events-auto mt-1.5 min-h-0 flex-1 overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
-                  SIGNAL_SCROLL_CLASSES,
-                )}
-              >
-                <p className="pr-9 text-body font-medium leading-snug">
-                  {latestExperience
-                    ? `${latestExperience.role} at ${latestExperience.company}`
-                    : "No recent role provided"}
-                </p>
-                <p className="mt-2">{getCandidateAchievement(row)}</p>
+            {showRecentSignal ? (
+              <div className="group relative mt-5 flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border bg-surface-2 p-4">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="pointer-events-auto absolute right-2.5 top-2.5 z-20 h-8 w-8 min-h-8 min-w-8 rounded-md [&_svg]:size-3.5"
+                  aria-label={`Expand recent signal for ${candidate.name}`}
+                  aria-expanded={signalExpanded}
+                  title={`Expand recent signal for ${candidate.name}`}
+                  tabIndex={flipped ? -1 : 0}
+                  onClick={() => setSignalExpanded(true)}
+                >
+                  <Maximize2 aria-hidden />
+                </Button>
+                <p className="pr-10 text-caption">Recent signal</p>
+                <div
+                  role="region"
+                  aria-label={`Recent signal details for ${candidate.name}`}
+                  tabIndex={flipped ? -1 : 0}
+                  onScroll={handleSignalScroll}
+                  className={cn(
+                    "pointer-events-auto mt-1.5 min-h-0 flex-1 overflow-y-auto pr-1 text-meta leading-relaxed focus-visible:outline-none",
+                    SIGNAL_SCROLL_CLASSES,
+                  )}
+                >
+                  <p className="pr-9 text-body font-medium leading-snug">
+                    {latestExperience
+                      ? `${latestExperience.role} at ${latestExperience.company}`
+                      : "No recent role provided"}
+                  </p>
+                  <p className="mt-2">{getCandidateAchievement(row)}</p>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-label={`${candidate.name} recent signal scroll position`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={signalScrollProgress}
+                  className="pointer-events-none absolute inset-x-3 bottom-2 h-2 overflow-hidden rounded-full bg-primary/20 opacity-0 shadow-inner transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
+                >
+                  <span
+                    className="block h-full rounded-r-full bg-primary transition-[width] duration-150"
+                    style={{ width: `${Math.max(12, signalScrollProgress)}%` }}
+                  />
+                </div>
               </div>
-              <div
-                role="progressbar"
-                aria-label={`${candidate.name} recent signal scroll position`}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={signalScrollProgress}
-                className="pointer-events-none absolute inset-x-3 bottom-2 h-2 overflow-hidden rounded-full bg-primary/20 opacity-0 shadow-inner transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
-              >
-                <span
-                  className="block h-full rounded-r-full bg-primary transition-[width] duration-150"
-                  style={{ width: `${Math.max(12, signalScrollProgress)}%` }}
-                />
-              </div>
-            </div>
+            ) : null}
 
-            <div className="mt-5">
+            {showMatchScore ? (
+            <div className={showRecentSignal ? "mt-5" : "mt-auto"}>
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="flex items-center gap-1.5 text-caption">
@@ -252,6 +287,21 @@ export function CandidateDiscoveryCard({
                     </span>
                   </p>
                 </div>
+                {showProfileAction ? (
+                  <Button
+                    asChild
+                    size="sm"
+                    className="pointer-events-auto relative z-20 shrink-0"
+                  >
+                    <Link
+                      href={`/employer/candidates/${candidate.id}`}
+                      aria-label={`View ${candidate.name}'s full profile`}
+                    >
+                      View profile
+                      <ArrowUpRight aria-hidden />
+                    </Link>
+                  </Button>
+                ) : null}
                 {row.app.rejected && onRestoreToApplied ? (
                   <Button
                     type="button"
@@ -279,9 +329,10 @@ export function CandidateDiscoveryCard({
                 />
               </div>
             </div>
+            ) : null}
           </div>
 
-          {signalExpanded ? (
+          {showRecentSignal && signalExpanded ? (
             <section
               role="region"
               aria-label={`Full recent signal for ${candidate.name}`}
@@ -320,6 +371,7 @@ export function CandidateDiscoveryCard({
           ) : null}
         </section>
 
+        {enableInsightFlip ? (
         <section
           className="absolute inset-0 flex h-full flex-col overflow-hidden rounded-xl rounded-tl-3xl rounded-tr-3xl border-2 border-border bg-surface-tint text-card-foreground [backface-visibility:hidden] [transform:rotateY(180deg)]"
           aria-hidden={!flipped}
@@ -393,6 +445,7 @@ export function CandidateDiscoveryCard({
             </div>
           </div>
         </section>
+        ) : null}
         </div>
       </div>
       <ConfirmDialog
@@ -404,5 +457,25 @@ export function CandidateDiscoveryCard({
         onConfirm={() => onRestoreToApplied?.()}
       />
     </article>
+  );
+}
+
+function VerificationBadge({ candidateName }: { candidateName: string }) {
+  return (
+    <span
+      role="img"
+      aria-label={`Verified verification for ${candidateName}`}
+      title="Verified"
+      className="relative h-5 w-5 shrink-0"
+    >
+      <Image
+        src="/images/verified-badge-clean.png"
+        alt=""
+        width={20}
+        height={20}
+        unoptimized
+        className="block h-5 w-5"
+      />
+    </span>
   );
 }
