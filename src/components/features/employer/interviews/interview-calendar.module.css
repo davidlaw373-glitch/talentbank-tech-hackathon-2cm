@@ -23,6 +23,7 @@
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: auto repeat(6, 7.5rem);
 }
 
 @media (max-width: 639px) {
@@ -49,5 +50,9 @@
   .calendarShell {
     grid-column: 1 / -1;
     grid-row: 2;
+  }
+
+  .calendarGrid {
+    grid-template-rows: auto repeat(6, 4.5rem);
   }
 }

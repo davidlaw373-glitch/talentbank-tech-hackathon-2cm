@@ -112,7 +112,7 @@ export function InterviewCalendar({
     <div className="space-y-6">
       <div
         data-testid="calendar-workspace"
-        className="space-y-5 rounded-3xl border bg-surface-tint p-4 shadow-sm sm:p-5"
+        className="space-y-5 rounded-3xl border bg-calendar-surface p-4 shadow-sm sm:p-5"
       >
         <header className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
           <Button
@@ -246,7 +246,7 @@ export function InterviewCalendar({
                         setSelectedDate(day.key);
                       }}
                       className={cn(
-                        "group min-h-20 border-b border-r border-border/40 p-1.5 text-left transition-colors duration-200 hover:bg-accent-soft/40 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-h-32 sm:p-2.5",
+                        "group border-b border-r border-border/40 p-1.5 text-left transition-colors duration-200 hover:bg-accent-soft/40 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:p-2.5",
                         (index + 1) % 7 === 0 && "border-r-0",
                         isWeekend ? "bg-surface-inset/45" : "bg-surface-1",
                         selectedDate === day.key &&
@@ -323,7 +323,7 @@ export function InterviewCalendar({
 
       <section
         aria-labelledby="selected-day-heading"
-        className="space-y-4 rounded-2xl border bg-highlight-soft p-4 sm:p-5"
+        className="space-y-4 rounded-2xl border bg-calendar-surface p-4 sm:p-5"
       >
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
