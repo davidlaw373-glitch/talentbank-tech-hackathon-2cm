@@ -47,7 +47,7 @@ function deriveMatchFactors(
       : Math.round((matchingSkills.length / requiredCount) * 100);
 
   // Experience (25%): pull the most relevant experience row for this role.
-  const candidateSkillsLower = new Set(candidate.skills.map((s) => s.toLowerCase()));
+  const candidateSkillsLower = new Set(candidate.skills.map((s) => s.name.toLowerCase()));
   const topRelevantExperience =
     candidate.experience.find((exp) =>
       exp.role
@@ -72,7 +72,10 @@ function deriveMatchFactors(
     /front|ui|react|vue|web/i.test(job?.department ?? "");
   const candidateIsFrontend =
     /front|ui|react|vue|web/i.test(candidate.title) ||
-    candidate.topSkills.some((s) => /front|react|vue|css|ui|web/i.test(s));
+    candidate.topSkills.some((id) => {
+      const skill = candidate.skills.find((s) => s.id === id);
+      return skill && /front|react|vue|css|ui|web/i.test(skill.name);
+    });
   const goalsContribution =
     roleIsFrontend && candidateIsFrontend ? 95 : 78;
   const goalsDetail =

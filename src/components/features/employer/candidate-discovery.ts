@@ -99,7 +99,7 @@ export function buildCandidateInsight(
   const matchingSkills = match?.matchingSkills.slice(0, 3) ?? [];
   const latestExperience = row.candidate.experience[0];
   const evidencedSkills = new Set(
-    [...row.candidate.skills, ...(match?.matchingSkills ?? [])].map((skill) =>
+    [...row.candidate.skills.map((s) => s.name), ...(match?.matchingSkills ?? [])].map((skill) =>
       skill.toLocaleLowerCase(),
     ),
   );

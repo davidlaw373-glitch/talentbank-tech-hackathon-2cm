@@ -10,6 +10,7 @@ import {
   FileText,
   LayoutDashboard,
   Menu,
+  MessageSquareDot,
   Route as RouteIcon,
   X,
 } from "lucide-react";
@@ -32,6 +33,7 @@ const links = [
   { href: "/candidate/applications", label: "Applications", icon: ClipboardList },
   { href: "/candidate/resume", label: "Resume", icon: FileText },
   { href: "/candidate/interviews", label: "Interviews", icon: Calendar },
+  { href: "/candidate/disputes", label: "Disputes", icon: MessageSquareDot },
   { href: "/candidate/path-navigator", label: "Path finder", icon: RouteIcon },
 ];
 

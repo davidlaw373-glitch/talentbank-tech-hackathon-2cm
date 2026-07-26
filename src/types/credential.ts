@@ -1,8 +1,8 @@
 export type CredentialStatus =
   | "Verified"
   | "Pending"
-  | "Not started"
   | "Pending review"
+  | "Not started"
   | "Rejected";
 
 export type EmploymentOutcome =

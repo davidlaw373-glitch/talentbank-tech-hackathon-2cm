@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CheckCircle2,
-  GraduationCap,
   LayoutDashboard,
   LineChart,
   Menu,
@@ -17,6 +16,7 @@ import {
 import { get as getUniversity } from "@/data/universities";
 import { getUniversityNotifications } from "@/data/notifications";
 import { useNotificationReadState } from "@/hooks/use-notification-read-state";
+import { Badge } from "@/components/ui/badge";
 import { BrandMark } from "@/components/common/brand-mark";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/common/notification-bell";
@@ -30,11 +30,6 @@ const links = [
   { href: "/university/graduates", label: "Graduates", icon: Users },
   { href: "/university/verification", label: "Verification", icon: ShieldCheck },
   { href: "/university/disputes", label: "Disputes", icon: CheckCircle2 },
-  {
-    href: "/university/employment",
-    label: "Employment",
-    icon: GraduationCap,
-  },
   { href: "/university/analytics", label: "Analytics", icon: LineChart },
 ];
 
@@ -66,6 +61,9 @@ export function UniversityShell({ children }: { children: React.ReactNode }) {
             >
               <BrandMark />
               <small className="font-semibold tracking-tight">CareerOS</small>
+              <Badge variant="secondary" className="ml-1 hidden sm:inline-flex">
+                University
+              </Badge>
             </Link>
           </div>
 

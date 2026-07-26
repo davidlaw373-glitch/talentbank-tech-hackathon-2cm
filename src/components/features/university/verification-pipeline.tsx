@@ -3,22 +3,24 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
+  Award,
   AlertCircle,
-  CheckCircle2,
+  CalendarDays,
   CheckSquare,
-  Clock,
   FileDown,
   FileUp,
+  GraduationCap,
   Inbox,
+  Search,
   ShieldCheck,
   Square,
 } from "lucide-react";
 
-import { PageHeading } from "@/components/common/page-heading";
 import { useToast } from "@/components/common/toast";
 import { EmptyState } from "@/components/common/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -26,40 +28,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { cn } from "@/lib/utils";
 import type {
   GraduateRecord,
   VerificationRecordStatus,
 } from "@/types/university";
 
-const STATUSES: VerificationRecordStatus[] = [
-  "Verified",
-  "Pending review",
-  "Action required",
-  "Rejected",
-];
-
-type VerificationTab = VerificationRecordStatus | "All";
-
-const STATUS_DESCRIPTION: Record<VerificationRecordStatus, string> = {
-  Verified: "Credentials confirmed by faculty.",
-  "Pending review": "Awaiting faculty sign-off.",
-  "Action required": "Missing information from candidate.",
-  Rejected: "Rejected by faculty; awaiting resolution.",
-};
-
-const STATUS_ICON: Record<
-  VerificationRecordStatus,
-  React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>
-> = {
-  Verified: CheckCircle2,
-  "Pending review": Clock,
-  "Action required": AlertCircle,
-  Rejected: AlertCircle,
-};
-
-const STATUS_VARIANT: Record<
+export const STATUS_VARIANT: Record<
   VerificationRecordStatus,
   "default" | "secondary" | "outline" | "destructive"
 > = {
@@ -69,33 +52,37 @@ const STATUS_VARIANT: Record<
   Rejected: "destructive",
 };
 
-function countByStatus(records: GraduateRecord[]) {
-  const counts: Record<VerificationRecordStatus, number> = {
-    Verified: 0,
-    "Pending review": 0,
-    "Action required": 0,
-    Rejected: 0,
-  };
-  for (const graduate of records) counts[graduate.status] += 1;
-  return counts;
+/** Parses a "3.78 / 4.00" style GPA string into a 0-100 share for the bar. */
+function gpaShare(gpa: string): number {
+  const match = gpa.match(/([\d.]+)\s*\/\s*([\d.]+)/);
+  if (!match) return 0;
+  const [, numerator, denominator] = match;
+  const value = Number(numerator);
+  const scale = Number(denominator);
+  if (!scale) return 0;
+  return Math.max(0, Math.min(100, Math.round((value / scale) * 100)));
 }
 
 type GraduateListProps = {
   records: GraduateRecord[];
   selected: Set<number>;
+  collapsed: Set<number>;
   onToggleSelected: (graduateId: number) => void;
   onStatusChange: (
     graduate: GraduateRecord,
     status: VerificationRecordStatus,
   ) => void;
+  onRequestApprove: (graduate: GraduateRecord) => void;
   onRequestReject: (graduate: GraduateRecord) => void;
 };
 
 function GraduateList({
   records,
   selected,
+  collapsed,
   onToggleSelected,
   onStatusChange,
+  onRequestApprove,
   onRequestReject,
 }: GraduateListProps) {
   if (records.length === 0) {
@@ -109,88 +96,140 @@ function GraduateList({
   }
 
   return (
-    <ul className="divide-y">
+    <div className="space-y-4">
       {records.map((graduate) => {
         const isSelected = selected.has(graduate.id);
+        const isCollapsed = collapsed.has(graduate.id);
+        const wrapperClass = cn(
+          "block overflow-hidden rounded-xl border border-border/20 bg-card p-5 text-card-foreground outline-none transition-all duration-700 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          isCollapsed
+            ? "pointer-events-none max-h-0 -translate-y-2 border-transparent p-0 opacity-0"
+            : "max-h-[2000px] translate-y-0 opacity-100 hover:-translate-y-0.5 hover:shadow-md",
+        );
         return (
-          <li
-            key={graduate.id}
-            className="flex flex-wrap items-center justify-between gap-4 p-4"
-          >
-            <div className="flex items-start gap-3">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-pressed={isSelected}
-                aria-label={`${isSelected ? "Deselect" : "Select"} ${graduate.name}`}
-                onClick={() => onToggleSelected(graduate.id)}
-              >
-                {isSelected ? (
-                  <CheckSquare aria-hidden />
-                ) : (
-                  <Square aria-hidden />
-                )}
-              </Button>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-foreground">
-                {graduate.initials}
-              </span>
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-base font-medium">{graduate.name}</p>
-                  <Badge variant={STATUS_VARIANT[graduate.status]}>
-                    {graduate.status}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {graduate.program} · Class of {graduate.graduationYear}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Capstone: {graduate.capstone}
-                </p>
-                <div className="flex flex-wrap gap-1 pt-1">
-                  {graduate.skills.map((skill) => (
-                    <Badge key={skill} variant="outline">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
+          <div key={graduate.id} aria-hidden={isCollapsed}>
+            <Link
+              href={`/university/graduates/${graduate.id}`}
+              aria-label={`View ${graduate.name}'s record`}
+              className={wrapperClass}
+            >
+              <div className="flex items-start gap-4">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0"
+                    aria-pressed={isSelected}
+                    aria-label={`${isSelected ? "Deselect" : "Select"} ${graduate.name}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onToggleSelected(graduate.id);
+                    }}
+                  >
+                    {isSelected ? (
+                      <CheckSquare aria-hidden />
+                    ) : (
+                      <Square aria-hidden />
+                    )}
+                  </Button>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <span className="text-sm font-medium">
+                      {graduate.initials}
+                    </span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="truncate text-base font-semibold tracking-tight">
+                        {graduate.name}
+                      </h3>
+                      <Badge variant={STATUS_VARIANT[graduate.status]}>
+                        {graduate.status}
+                      </Badge>
+                    </div>
+                    <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <GraduationCap className="h-3.5 w-3.5" aria-hidden />
+                      {graduate.program}
+                    </p>
+                    <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <Award className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                      <span className="truncate">
+                        Capstone: {graduate.capstone}
+                      </span>
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <CalendarDays className="h-3 w-3" aria-hidden />
+                        Class of {graduate.graduationYear}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 pt-2">
+                      {graduate.skills.map((skill) => (
+                        <Badge key={skill} variant="outline">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <Button
+                        size="sm"
+                        disabled={graduate.status === "Verified"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onRequestApprove(graduate);
+                        }}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={graduate.status === "Action required"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onStatusChange(graduate, "Action required");
+                        }}
+                      >
+                        Request info
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={graduate.status === "Rejected"}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onRequestReject(graduate);
+                        }}
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  </div>
+                  {graduate.gpa ? (
+                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="text-4xl font-semibold tabular-nums leading-none">
+                        {graduate.gpa.split("/")[0].trim()}
+                      </span>
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        GPA
+                      </span>
+                      <div className="mt-2 h-1 w-12 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-chart-1"
+                          style={{ width: `${gpaShare(graduate.gpa)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
               </div>
-            </div>
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button asChild variant="outline" size="sm">
-                <Link href={`/university/graduates/${graduate.id}`}>
-                  View record
-                </Link>
-              </Button>
-              <Button
-                size="sm"
-                disabled={graduate.status === "Verified"}
-                onClick={() => onStatusChange(graduate, "Verified")}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={graduate.status === "Action required"}
-                onClick={() => onStatusChange(graduate, "Action required")}
-              >
-                Request info
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                disabled={graduate.status === "Rejected"}
-                onClick={() => onRequestReject(graduate)}
-              >
-                Reject
-              </Button>
-            </div>
-          </li>
+            </Link>
+          </div>
         );
       })}
-    </ul>
+    </div>
   );
 }
 
@@ -201,28 +240,44 @@ export function VerificationPipeline({
 }) {
   const { push } = useToast();
   const [records, setRecords] = useState(initialRecords);
-  const [activeTab, setActiveTab] = useState<VerificationTab>("All");
   const [selected, setSelected] = useState<Set<number>>(() => new Set());
+  const [collapsed, setCollapsed] = useState<Set<number>>(
+    () => new Set(initialRecords.filter((r) => r.status === "Verified").map((r) => r.id)),
+  );
+  const [pendingApprove, setPendingApprove] =
+    useState<GraduateRecord | null>(null);
   const [pendingReject, setPendingReject] =
     useState<GraduateRecord | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
+  const [search, setSearch] = useState("");
+  const [year, setYear] = useState("all");
+  const [employment, setEmployment] = useState("all");
 
-  const counts = useMemo(() => countByStatus(records), [records]);
-  const visibleRecords = useMemo(
+  const years = useMemo(
     () =>
-      activeTab === "All"
-        ? records
-        : records.filter((record) => record.status === activeTab),
-    [activeTab, records],
+      Array.from(new Set(records.map((record) => record.graduationYear))).sort(
+        (a, b) => b - a,
+      ),
+    [records],
   );
-  const allVisibleSelected =
-    visibleRecords.length > 0 &&
-    visibleRecords.every((record) => selected.has(record.id));
 
-  function changeTab(value: VerificationTab) {
-    setActiveTab(value);
-    setSelected(new Set());
-  }
+  const searchedRecords = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return records.filter((record) => {
+      const matchesSearch =
+        query.length === 0 ||
+        record.name.toLowerCase().includes(query) ||
+        record.program.toLowerCase().includes(query) ||
+        record.capstone.toLowerCase().includes(query);
+      const matchesYear =
+        year === "all" || record.graduationYear === Number(year);
+      const matchesEmployment =
+        employment === "all" || record.employment === employment;
+      return matchesSearch && matchesYear && matchesEmployment;
+    });
+  }, [records, search, year, employment]);
+  const allVisibleSelected =
+    searchedRecords.length > 0 &&
+    searchedRecords.every((record) => selected.has(record.id));
 
   function toggleSelected(graduateId: number) {
     setSelected((current) => {
@@ -237,9 +292,9 @@ export function VerificationPipeline({
     setSelected((current) => {
       const next = new Set(current);
       if (allVisibleSelected) {
-        for (const record of visibleRecords) next.delete(record.id);
+        for (const record of searchedRecords) next.delete(record.id);
       } else {
-        for (const record of visibleRecords) next.add(record.id);
+        for (const record of searchedRecords) next.add(record.id);
       }
       return next;
     });
@@ -300,64 +355,9 @@ export function VerificationPipeline({
 
   return (
     <div className="space-y-8">
-      <PageHeading
-        title="Verification pipeline"
-        description="Approve, request more information, or escalate disputes from a single queue."
-      />
-
-      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {STATUSES.map((status) => {
-          const Icon = STATUS_ICON[status];
-          const value = counts[status];
-          const share =
-            records.length > 0 ? Math.round((value / records.length) * 100) : 0;
-          return (
-            <Card key={status}>
-              <CardContent className="space-y-3 p-5">
-                <div className="flex items-center justify-between">
-                  <span
-                    aria-hidden
-                    className="flex h-9 w-9 items-center justify-center rounded-md bg-muted"
-                  >
-                    <Icon className="h-4 w-4" aria-hidden />
-                  </span>
-                  <Badge variant={STATUS_VARIANT[status]}>{status}</Badge>
-                </div>
-                <div className="text-4xl font-semibold tabular-nums">
-                  {value}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {STATUS_DESCRIPTION[status]}
-                </p>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <small className="text-sm text-muted-foreground">Share</small>
-                    <small className="text-sm tabular-nums">{share}%</small>
-                  </div>
-                  <span
-                    aria-hidden
-                    className="block h-1.5 overflow-hidden rounded-full bg-muted"
-                  >
-                    <span
-                      className="block h-full rounded-full bg-foreground animate-progress-x"
-                      style={{ width: `${share}%` }}
-                    />
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </section>
-
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-subheading">Records queue</h2>
-            <p className="text-sm text-muted-foreground">Filter the queue by verification status.</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
               variant="outline"
               size="sm"
               onClick={() =>
@@ -386,135 +386,175 @@ export function VerificationPipeline({
               Export selected
             </Button>
           </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+          <div className="min-w-0 flex-1 space-y-1.5 sm:min-w-[16rem]">
+            <label htmlFor="verification-search" className="block">
+              <small className="text-sm font-medium text-foreground">Search</small>
+            </label>
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden
+              />
+              <Input
+                id="verification-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name, program, or capstone"
+                className="pl-9"
+                aria-label="Search records by name, program, or capstone"
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5 sm:w-[12rem]">
+            <label htmlFor="verification-year" className="block">
+              <small className="text-sm font-medium text-foreground">Graduation year</small>
+            </label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger
+                id="verification-year"
+                className="w-full sm:w-[12rem]"
+                aria-label="Filter by graduation year"
+              >
+                <SelectValue placeholder="All years" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All years</SelectItem>
+                {years.map((graduationYear) => (
+                  <SelectItem
+                    key={graduationYear}
+                    value={String(graduationYear)}
+                  >
+                    {graduationYear}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5 sm:w-[14rem]">
+            <label htmlFor="verification-employment" className="block">
+              <small className="text-sm font-medium text-foreground">Employment status</small>
+            </label>
+            <Select value={employment} onValueChange={setEmployment}>
+              <SelectTrigger
+                id="verification-employment"
+                className="w-full sm:w-[14rem]"
+                aria-label="Filter by employment status"
+              >
+                <SelectValue placeholder="All statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="Employed">Employed</SelectItem>
+                <SelectItem value="Open to work">Open to work</SelectItem>
+                <SelectItem value="In grad school">In grad school</SelectItem>
+                <SelectItem value="Unknown">Unknown</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => changeTab(value as VerificationTab)}
-        >
-          <TabsList className="flex h-auto flex-wrap justify-start gap-1">
-            <TabsTrigger value="All" className="gap-2">
-              All
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                {records.length}
-              </span>
-            </TabsTrigger>
-            {STATUSES.map((status) => (
-              <TabsTrigger key={status} value={status} className="gap-2">
-                {status}
-                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                  {counts[status]}
-                </span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          <Card className="mt-4">
-            <CardContent className="flex flex-wrap items-center justify-between gap-3 p-3">
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-pressed={allVisibleSelected}
-                  aria-label={`${allVisibleSelected ? "Deselect" : "Select"} all visible records`}
-                  onClick={toggleAllVisible}
-                  disabled={visibleRecords.length === 0}
-                >
-                  {allVisibleSelected ? (
-                    <CheckSquare aria-hidden />
-                  ) : (
-                    <Square aria-hidden />
-                  )}
-                </Button>
-                <p className="text-base">Select all visible</p>
-                <small className="text-sm text-muted-foreground">
-                  {selected.size} selected
-                </small>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => bulkUpdate("Verified")}
-                >
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h3 className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" aria-hidden />
+                All records
+              </h3>
+            </CardTitle>
+            <CardDescription>
+              {searchedRecords.length} records across every status.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 border-b p-3">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-pressed={allVisibleSelected}
+                aria-label={`${allVisibleSelected ? "Deselect" : "Select"} all visible records`}
+                onClick={toggleAllVisible}
+                disabled={searchedRecords.length === 0}
+              >
+                {allVisibleSelected ? (
                   <CheckSquare aria-hidden />
-                  Approve selected
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => bulkUpdate("Action required")}
-                >
-                  <AlertCircle aria-hidden />
-                  Request info on selected
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                ) : (
+                  <Square aria-hidden />
+                )}
+              </Button>
+              <p className="text-base">Select all visible</p>
+              <small className="text-sm text-muted-foreground">
+                {selected.size} selected
+              </small>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => bulkUpdate("Verified")}
+              >
+                <CheckSquare aria-hidden />
+                Approve selected
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => bulkUpdate("Action required")}
+              >
+                <AlertCircle aria-hidden />
+                Request info on selected
+              </Button>
+            </div>
+          </CardContent>
 
-          <TabsContent value="All" className="mt-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  <h3 className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4" aria-hidden />
-                    All records
-                  </h3>
-                </CardTitle>
-                <CardDescription>
-                  {records.length} records across every status.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <GraduateList
-                  records={records}
-                  selected={selected}
-                  onToggleSelected={toggleSelected}
-                  onStatusChange={updateRecordStatus}
-                  onRequestReject={setPendingReject}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <CardContent className="space-y-4 p-4">
+            <GraduateList
+              records={searchedRecords}
+              selected={selected}
+              collapsed={collapsed}
+              onToggleSelected={toggleSelected}
+              onStatusChange={updateRecordStatus}
+              onRequestApprove={setPendingApprove}
+              onRequestReject={setPendingReject}
+            />
+          </CardContent>
+        </Card>
 
-          {STATUSES.map((status) => {
-            const statusRecords = records.filter(
-              (record) => record.status === status,
-            );
-            return (
-              <TabsContent key={status} value={status} className="mt-3">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      <h3>{status}</h3>
-                    </CardTitle>
-                    <CardDescription>
-                      {STATUS_DESCRIPTION[status]}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <GraduateList
-                      records={statusRecords}
-                      selected={selected}
-                      onToggleSelected={toggleSelected}
-                      onStatusChange={updateRecordStatus}
-                      onRequestReject={setPendingReject}
-                    />
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            );
-          })}
-        </Tabs>
+        <ConfirmDialog
+          open={pendingApprove !== null}
+          onOpenChange={(open) => {
+            if (!open) setPendingApprove(null);
+          }}
+          title="Approve this graduate's credential?"
+          description={
+            pendingApprove ? (
+              <>
+                <strong>{pendingApprove.name}</strong>&apos;s credential will
+                be marked as Verified. Employers will see this update
+                immediately.
+              </>
+            ) : null
+          }
+          confirmLabel="Approve"
+          onConfirm={() => {
+            if (pendingApprove) {
+              updateRecordStatus(pendingApprove, "Verified");
+              setCollapsed((current) => {
+                const next = new Set(current);
+                next.add(pendingApprove.id);
+                return next;
+              });
+            }
+            setPendingApprove(null);
+          }}
+        />
 
         <ConfirmDialog
           open={pendingReject !== null}
           onOpenChange={(open) => {
-            if (!open) {
-              setPendingReject(null);
-              setRejectReason("");
-            }
+            if (!open) setPendingReject(null);
           }}
           title="Reject this graduate's credential?"
           description={
@@ -528,15 +568,17 @@ export function VerificationPipeline({
           }
           confirmLabel="Reject"
           destructive
-          noteLabel="Reason for rejection"
-          noteValue={rejectReason}
-          onNoteChange={setRejectReason}
-          noteRequired
+          requireTyping="REJECT"
           onConfirm={() => {
-            if (pendingReject)
-              updateRecordStatus(pendingReject, "Rejected", rejectReason);
+            if (pendingReject) {
+              updateRecordStatus(pendingReject, "Rejected");
+              setCollapsed((current) => {
+                const next = new Set(current);
+                next.add(pendingReject.id);
+                return next;
+              });
+            }
             setPendingReject(null);
-            setRejectReason("");
           }}
         />
       </section>

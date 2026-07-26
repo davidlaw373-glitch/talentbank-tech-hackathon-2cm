@@ -2,19 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { ProfileBasicInfo } from "@/components/features/candidate/profile-basic-info";
 import { ProfileEducationList } from "@/components/features/candidate/profile-education-list";
 import { ProfileExperienceList } from "@/components/features/candidate/profile-experience-list";
 import { ProfileProjectsList } from "@/components/features/candidate/profile-projects-list";
 import { ProfileSkillsCard } from "@/components/features/candidate/profile-skills-card";
-import { ProfileVerificationCard } from "@/components/features/candidate/profile-verification-card";
 import {
-  dedupe,
-  getVerifiedSkillSet,
   normalize,
-  toCredentialView,
 } from "@/components/features/candidate/credential-derivations";
 import {
   buildSkillLexicon,
@@ -22,11 +16,10 @@ import {
 } from "@/components/features/candidate/skill-parser";
 import { get as getCandidate } from "@/data/candidates";
 import { getForCandidate as getCredentialsForCandidate } from "@/data/credentials";
-import { get as getUniversity } from "@/data/universities";
 import { list as marketSignals } from "@/data/market-signals";
 import { list as jobs } from "@/data/jobs";
 import { onboardingStorageKey } from "@/lib/onboarding-store";
-import type { Candidate } from "@/types/candidate";
+import type { Candidate, Skill } from "@/types/candidate";
 import type { CandidateDraft } from "@/types/onboarding";
 
 function isEmptyDraft(draft: CandidateDraft): boolean {
@@ -86,29 +79,18 @@ export function ProfileOverview() {
     phone: "",
     summary: "",
     profileCompletion: 0,
-    verificationStatus: "Not started",
     skills: [],
     topSkills: [],
     experience: [],
     education: [],
     projects: [],
-    evidence: [],
     onboardingComplete: false,
   };
 
   // University-issued credentials — immutable, never held in editable state.
+  // Drives the deterministic skill parser's lexicon only; verification now
+  // lives on each `Skill.status`, so no separate verified-skill projection.
   const credentials = getCredentialsForCandidate(DEMO_CANDIDATE_ID);
-  const credentialViews = useMemo(
-    () =>
-      credentials.map((credential) =>
-        toCredentialView(credential, getUniversity(credential.universityId)),
-      ),
-    [credentials],
-  );
-  const verifiedSkills = useMemo(
-    () => getVerifiedSkillSet(credentials),
-    [credentials],
-  );
 
   // Data-driven skill lexicon powering the deterministic parser.
   const lexicon = useMemo(
@@ -127,8 +109,7 @@ export function ProfileOverview() {
   const [experience, setExperience] = useState(safeSeed.experience);
   const [education, setEducation] = useState(safeSeed.education);
   const [projects, setProjects] = useState(safeSeed.projects);
-  const [skills, setSkills] = useState<string[]>(safeSeed.skills);
-  const [evidence, setEvidence] = useState(safeSeed.evidence);
+  const [skills, setSkills] = useState<Skill[]>(safeSeed.skills);
   const [dismissed, setDismissed] = useState<string[]>([]);
 
   // Apply the persisted onboarding draft once after mount. The wizard owns
@@ -152,12 +133,34 @@ export function ProfileOverview() {
         summary: persisted.summary || prev.summary,
       }));
       if (persisted.skills.length > 0) {
-        setSkills((prev) => dedupe([...prev, ...persisted.skills]));
+        setSkills((prev) => {
+          const existing = new Set(prev.map((s) => normalize(s.name)));
+          // Mint ids above the largest existing id so the hydrated entries
+          // never collide with persisted records.
+          let nextId = Math.max(0, ...prev.map((s) => s.id), 1000);
+          const additions = persisted.skills
+            .map((name) => name.trim())
+            .filter((name) => name !== "")
+            .filter((name) => !existing.has(normalize(name)))
+            .map<Skill>((name) => ({
+              id: ++nextId,
+              name,
+              status: "Not started",
+            }));
+          if (additions.length === 0) return prev;
+          return [...prev, ...additions];
+        });
       }
       if (persisted.projects.length > 0) {
         setProjects((prev) => {
           const next = [...prev];
-          for (const project of persisted.projects) {
+          // Skip empty-name placeholders left behind by the wizard's
+          // "Add project" button — they're never saved back to candidates
+          // and would render as blank cards here.
+          const valid = persisted.projects.filter(
+            (project) => project.name.trim() !== "",
+          );
+          for (const project of valid) {
             const idx = next.findIndex((p) => p.name === project.name);
             const mapped = {
               id:
@@ -167,6 +170,7 @@ export function ProfileOverview() {
               name: project.name,
               description: project.description,
               skills: project.skills,
+              status: "Not started" as const,
             };
             if (idx >= 0) next[idx] = mapped;
             else next.push(mapped);
@@ -179,18 +183,33 @@ export function ProfileOverview() {
   }, []);
 
   // Suggestions are derived (never stored) so editing prose updates them live.
+  // The candidate's existing skills — verified or not — are excluded so we
+  // never re-suggest something the candidate already has.
   const suggestions = useMemo(
     () =>
       detectCandidateSkills(
         { summary: basics.summary, experience, projects },
         lexicon,
-        [...skills, ...verifiedSkills, ...dismissed],
+        [...skills.map((s) => s.name), ...dismissed],
       ),
-    [basics.summary, experience, projects, lexicon, skills, verifiedSkills, dismissed],
+    [basics.summary, experience, projects, lexicon, skills, dismissed],
   );
 
   const acceptSkills = (incoming: string[]) => {
-    setSkills((current) => dedupe([...current, ...incoming]));
+    setSkills((current) => {
+      const existing = new Set(current.map((s) => normalize(s.name)));
+      let nextId = Math.max(0, ...current.map((s) => s.id), 1000);
+      const additions = incoming
+        .map((name) => name.trim())
+        .filter((name) => name !== "")
+        .filter((name) => !existing.has(normalize(name)))
+        .map<Skill>((name) => ({
+          id: ++nextId,
+          name,
+          status: "Not started",
+        }));
+      return [...current, ...additions];
+    });
   };
   const dismissSuggestion = (skill: string) => {
     setDismissed((current) =>
@@ -204,62 +223,27 @@ export function ProfileOverview() {
     <div className="space-y-6">
       <ProfileBasicInfo value={basics} onSave={setBasics} />
 
-      <Tabs defaultValue="career" className="space-y-4">
-        <TabsList>
-          <TabsTrigger
-            value="career"
-            className="cursor-pointer text-muted-foreground transition-colors hover:bg-accent-soft hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
-          >
-            Career story
-          </TabsTrigger>
-          <TabsTrigger
-            value="skills"
-            className="cursor-pointer text-muted-foreground transition-colors hover:bg-accent-soft hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
-          >
-            Skills
-          </TabsTrigger>
-          <TabsTrigger
-            value="verification"
-            className="cursor-pointer text-muted-foreground transition-colors hover:bg-accent-soft hover:text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
-          >
-            Verification
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="career" className="space-y-4">
-          <ProfileExperienceList
-            items={experience}
-            onChange={setExperience}
-            lexicon={lexicon}
-            onAcceptSkills={acceptSkills}
-          />
-          <ProfileEducationList items={education} onChange={setEducation} />
-          <ProfileProjectsList
-            items={projects}
-            onChange={setProjects}
-            lexicon={lexicon}
-          />
-        </TabsContent>
-
-        <TabsContent value="skills">
-          <ProfileSkillsCard
-            skills={skills}
-            verifiedSkills={verifiedSkills}
-            suggestions={suggestions}
-            onChange={setSkills}
-            onAcceptSkills={acceptSkills}
-            onDismissSuggestion={dismissSuggestion}
-          />
-        </TabsContent>
-
-        <TabsContent value="verification">
-          <ProfileVerificationCard
-            credentials={credentialViews}
-            items={evidence}
-            onChange={setEvidence}
-          />
-        </TabsContent>
-      </Tabs>
+      <div className="space-y-4">
+        <ProfileSkillsCard
+          skills={skills}
+          suggestions={suggestions}
+          onChange={setSkills}
+          onAcceptSkills={acceptSkills}
+          onDismissSuggestion={dismissSuggestion}
+        />
+        <ProfileExperienceList
+          items={experience}
+          onChange={setExperience}
+          lexicon={lexicon}
+          onAcceptSkills={acceptSkills}
+        />
+        <ProfileEducationList items={education} onChange={setEducation} />
+        <ProfileProjectsList
+          items={projects}
+          onChange={setProjects}
+          lexicon={lexicon}
+        />
+      </div>
     </div>
   );
 }

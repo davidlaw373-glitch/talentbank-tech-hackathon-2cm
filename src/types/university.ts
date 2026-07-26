@@ -1,3 +1,5 @@
+import type { DisputeMessage } from "@/types/dispute";
+
 /**
  * New clean University — the institution that issues credentials. Cohort
  * outcomes, graduates, and disputes live in their own tables
@@ -79,10 +81,19 @@ export type LegacyUniversityDispute = {
   graduateName: string;
   graduateInitials: string;
   field: string;
+  /** Candidate's original claim — the first message in the thread. */
   claim: string;
+  /** Faculty's most recent response, if any — for list-view summaries. */
   counter: string;
   filedDate: string;
   status: DisputeStatus;
+  /**
+   * Display name of the faculty member who accepted ("In review")
+   * ownership of this dispute. `null` until someone clicks Accept.
+   */
+  acceptedBy?: string | null;
+  /** Full back-and-forth thread, in chronological order. */
+  messages: DisputeMessage[];
 };
 
 export type LegacyEmploymentRecord = {

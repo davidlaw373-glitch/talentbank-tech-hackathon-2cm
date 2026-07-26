@@ -1,3 +1,5 @@
+import type { CredentialStatus } from "@/types/credential";
+
 export type VerificationStatus = "Verified" | "Pending" | "Not started";
 
 export type Experience = {
@@ -13,6 +15,7 @@ export type Education = {
   institution: string;
   qualification: string;
   period: string;
+  status: CredentialStatus;
 };
 
 export type Project = {
@@ -20,6 +23,7 @@ export type Project = {
   name: string;
   description: string;
   skills: string[];
+  status: CredentialStatus;
 };
 
 export type Evidence = {
