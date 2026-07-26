@@ -113,8 +113,11 @@ function OfferComposerDialogContent({
               </SelectTrigger>
               <SelectContent>
                 {candidates.map((row) => (
-                  <SelectItem key={row.app.id} value={String(row.app.id)}>
-                    {row.candidate.name} · {row.job.title}
+                  <SelectItem
+                    key={row.app.id}
+                    value={String(row.app.id)}
+                  >
+                    {`${row.candidate.name} · ${row.job.title}`}
                   </SelectItem>
                 ))}
               </SelectContent>

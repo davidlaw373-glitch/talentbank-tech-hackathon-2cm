@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { getEmployerOfferSeedRows } from "./offer-data";
@@ -99,5 +99,37 @@ describe("OfferRow", () => {
     expect(
       screen.getByRole("button", { name: /Open offer details/ }),
     ).toBeTruthy();
+  });
+
+  it("fires onSend when the Send button is clicked, not onView", () => {
+    render(
+      <OfferRow
+        row={unsentPending}
+        mode="priority"
+        reminderCoolingDown={false}
+        actions={actions}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Send offer/ }));
+
+    expect(actions.onSend).toHaveBeenCalledTimes(1);
+    expect(actions.onView).not.toHaveBeenCalled();
+  });
+
+  it("fires onRemind when the Remind button is clicked, not onView", () => {
+    render(
+      <OfferRow
+        row={sentPending}
+        mode="priority"
+        reminderCoolingDown={false}
+        actions={actions}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Remind/ }));
+
+    expect(actions.onRemind).toHaveBeenCalledTimes(1);
+    expect(actions.onView).not.toHaveBeenCalled();
   });
 });

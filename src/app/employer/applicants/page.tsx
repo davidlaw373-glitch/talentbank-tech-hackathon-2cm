@@ -1,17 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  ChevronDown,
-  Search,
-  SearchX,
-  X,
-} from "lucide-react";
+import { ChevronDown, Search, SearchX } from "lucide-react";
 
 import { APPLICATION_STAGES } from "@/types/application";
-import {
-  getEmployerCandidateRows,
-} from "@/lib/data-helpers";
+import { getEmployerCandidateRows } from "@/lib/data-helpers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -42,6 +35,7 @@ import {
   type CandidateDiscoveryFilters,
   type CandidateSort,
 } from "@/components/features/employer/candidate-discovery";
+import { cn } from "@/lib/utils";
 
 const DEMO_EMPLOYER_ID = 1;
 
@@ -59,6 +53,22 @@ const SORT_OPTIONS: Array<{ value: CandidateSort; label: string }> = [
   { value: "match-desc", label: "AI Match: high to low" },
 ];
 
+const PIPELINE_VIEW_LABEL: Record<CandidateView, string> = {
+  All: "All",
+  Applied: "Applied",
+  Screening: "Screening",
+  Interview: "Interview",
+  Offer: "Offer",
+  Hired: "Hired",
+  Rejected: "Rejected",
+};
+
+const PIPELINE_VIEWS: CandidateView[] = [
+  "All",
+  ...APPLICATION_STAGES,
+  "Rejected",
+];
+
 export default function EmployerCandidatesPage() {
   const { push } = useToast();
   const { getStatus, moveToStage } = useCandidatePipeline();
@@ -69,7 +79,6 @@ export default function EmployerCandidatesPage() {
     useState<CandidateDiscoveryFilters>(DEFAULT_FILTERS);
   const [candidateView, setCandidateView] =
     useState<CandidateView>("Applied");
-  const [pipelineOpen, setPipelineOpen] = useState(false);
   const [starredIds, setStarredIds] = useState<Set<number>>(new Set());
 
   const rows = useMemo(
@@ -110,6 +119,23 @@ export default function EmployerCandidatesPage() {
     [rowsForView, filters, starredIds],
   );
 
+  const pipelineCounts = useMemo(() => {
+    const counts: Record<CandidateView, number> = {
+      All: rows.length,
+      Applied: 0,
+      Screening: 0,
+      Interview: 0,
+      Offer: 0,
+      Hired: 0,
+      Rejected: 0,
+    };
+    for (const view of PIPELINE_VIEWS) {
+      if (view === "All") continue;
+      counts[view] = filterRowsForCandidateView(rows, view).length;
+    }
+    return counts;
+  }, [rows]);
+
   const updateFilter = <Key extends keyof CandidateDiscoveryFilters>(
     key: Key,
     value: CandidateDiscoveryFilters[Key],
@@ -120,7 +146,6 @@ export default function EmployerCandidatesPage() {
   const selectCandidateView = (view: CandidateView) => {
     setCandidateView(view);
     setFilters((current) => ({ ...current, role: "All" }));
-    setPipelineOpen(false);
   };
 
   const toggleStar = (candidateId: number, candidateName: string) => {
@@ -168,129 +193,13 @@ export default function EmployerCandidatesPage() {
       <PageHeading
         title="Applicant management"
         description="Review new applications first, save promising people, and use AI Match as supporting evidence."
-        action={
-          <Button
-            type="button"
-            variant="outline"
-            className="mt-3 bg-surface-1 hover:bg-surface-2"
-            onClick={() => setPipelineOpen(true)}
-          >
-            View candidate pipeline
-          </Button>
-        }
       />
-
-      {pipelineOpen ? (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-[1px]"
-            aria-label="Close candidate pipeline"
-            onClick={() => setPipelineOpen(false)}
-          />
-          <aside
-            role="dialog"
-            aria-modal="true"
-            aria-label="Candidate pipeline"
-            className="fixed inset-y-0 left-0 z-50 flex w-[min(22rem,calc(100vw-2rem))] flex-col border-r-2 border-border bg-surface-1 p-5 shadow-2xl"
-          >
-            <div className="flex items-start justify-between gap-4 border-b pb-5">
-              <div>
-                <p className="text-caption">Candidate pipeline</p>
-                <h2 className="mt-1 text-subheading">Choose a hiring stage</h2>
-                <p className="mt-1 text-meta">
-                  New applications are shown first.
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="shrink-0"
-                aria-label="Close candidate pipeline panel"
-                onClick={() => setPipelineOpen(false)}
-              >
-                <X aria-hidden />
-              </Button>
-            </div>
-
-            <nav
-              aria-label="Candidate pipeline stages"
-              className="mt-5 space-y-2"
-            >
-              <button
-                type="button"
-                aria-label="View all"
-                aria-current={candidateView === "All" ? "page" : undefined}
-                className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
-                  candidateView === "All"
-                    ? "border-primary bg-accent-soft text-foreground"
-                    : "border-border bg-surface-2 hover:bg-surface-tint"
-                }`}
-                onClick={() => selectCandidateView("All")}
-              >
-                <span>View all</span>
-                <span className="text-meta tabular-nums">{rows.length}</span>
-              </button>
-
-              {APPLICATION_STAGES.map((stage) => (
-                <button
-                  key={stage}
-                  type="button"
-                  aria-label={
-                    stage === "Screening" ? "Screening queue" : stage
-                  }
-                  aria-current={candidateView === stage ? "page" : undefined}
-                  className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
-                    candidateView === stage
-                      ? "border-primary bg-accent-soft text-foreground"
-                      : "border-border bg-surface-2 hover:bg-surface-tint"
-                  }`}
-                  onClick={() => {
-                    selectCandidateView(stage);
-                  }}
-                >
-                  <span>
-                    {stage === "Screening"
-                      ? "Screening queue"
-                      : stage}
-                  </span>
-                  <span className="text-meta tabular-nums">
-                    {filterRowsForCandidateView(rows, stage).length}
-                  </span>
-                </button>
-              ))}
-
-              <button
-                type="button"
-                aria-label="Rejected"
-                aria-current={
-                  candidateView === "Rejected" ? "page" : undefined
-                }
-                className={`press-feedback flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-body font-medium transition-colors ${
-                  candidateView === "Rejected"
-                    ? "border-primary bg-accent-soft text-foreground"
-                    : "border-border bg-surface-2 hover:bg-surface-tint"
-                }`}
-                onClick={() => {
-                  selectCandidateView("Rejected");
-                }}
-              >
-                <span>Rejected</span>
-                <span className="text-meta tabular-nums">
-                  {filterRowsForCandidateView(rows, "Rejected").length}
-                </span>
-              </button>
-            </nav>
-          </aside>
-        </>
-      ) : null}
 
       <Card
         data-slot="candidate-filter-panel"
         className="overflow-hidden rounded-tl-3xl rounded-tr-3xl border-2 shadow-none"
       >
-        <CardContent className="bg-surface-inset p-5 md:p-6">
+        <CardContent className="space-y-5 bg-surface-inset p-5 md:p-6">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             <div className="flex flex-col gap-1.5 md:col-span-2 xl:col-span-2">
               <label htmlFor="candidate-search" className="text-caption">
@@ -307,7 +216,7 @@ export default function EmployerCandidatesPage() {
                   onChange={(event) =>
                     updateFilter("query", event.target.value)
                   }
-                  placeholder="Search name, role, company, or skill"
+                  placeholder="Search name or role"
                   className="bg-surface-1 pl-9 shadow-none"
                 />
               </div>
@@ -332,6 +241,63 @@ export default function EmployerCandidatesPage() {
               onToggle={toggleSort}
               onClear={() => updateFilter("sort", [])}
             />
+          </div>
+
+          <div
+            role="group"
+            aria-label="Hiring pipeline"
+            className="space-y-2 border-t border-border pt-4"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-caption">Hiring Pipeline</p>
+              <p className="text-meta tabular-nums text-muted-foreground">
+                {filtered.length} shown
+              </p>
+            </div>
+            <div
+              role="tablist"
+              aria-label="Hiring pipeline stages"
+              className="flex flex-wrap gap-1.5"
+            >
+              {PIPELINE_VIEWS.map((view) => {
+                const isActive = candidateView === view;
+                return (
+                  <button
+                    key={view}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-label={
+                      view === "Screening" ? "Screening queue" : view
+                    }
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => selectCandidateView(view)}
+                    className={cn(
+                      "press-feedback inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-body font-medium transition-colors",
+                      isActive
+                        ? "border-primary bg-accent-soft text-foreground"
+                        : "border-border bg-surface-1 text-muted-foreground hover:bg-surface-tint hover:text-foreground",
+                    )}
+                  >
+                    <span>
+                      {view === "Screening"
+                        ? "Screening queue"
+                        : PIPELINE_VIEW_LABEL[view]}
+                    </span>
+                    <span
+                      className={cn(
+                        "rounded-full px-1.5 text-caption tabular-nums",
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-surface-2 text-muted-foreground",
+                      )}
+                    >
+                      {pipelineCounts[view]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </CardContent>
       </Card>

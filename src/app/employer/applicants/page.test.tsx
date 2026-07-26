@@ -30,6 +30,10 @@ function renderCandidatesPage() {
   );
 }
 
+function getPipelineTab(name: string) {
+  return screen.getByRole("tab", { name });
+}
+
 describe("EmployerCandidatesPage", () => {
   it("keeps discovery controls visible and renders candidate cards", () => {
     renderCandidatesPage();
@@ -38,9 +42,7 @@ describe("EmployerCandidatesPage", () => {
     expect(screen.getByLabelText("Applied role")).toBeTruthy();
     expect(screen.queryByLabelText("Hiring stage")).toBeNull();
     expect(screen.queryByLabelText("Candidate view")).toBeNull();
-    expect(
-      screen.getByRole("button", { name: "View candidate pipeline" }),
-    ).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Hiring pipeline" })).toBeTruthy();
     expect(screen.queryByLabelText("Verification")).toBeNull();
     const sortControl = screen.getByRole("button", {
       name: "Sort candidates",
@@ -66,35 +68,28 @@ describe("EmployerCandidatesPage", () => {
     expect(screen.getAllByText(/AI Match/i).length).toBeGreaterThan(0);
   });
 
-  it("places the pipeline entry in the page heading", () => {
+  it("renders the Hiring Pipeline as inline tab chips with Applied selected by default", () => {
     renderCandidatesPage();
-    const pageHeader = screen
-      .getByRole("heading", { name: "Candidate management" })
-      .closest("header");
+    const pipelineGroup = screen.getByRole("group", {
+      name: "Hiring pipeline",
+    });
 
-    expect(pageHeader).toBeTruthy();
-    const pipelineButton = within(pageHeader as HTMLElement).getByRole(
-      "button",
-      {
-        name: "View candidate pipeline",
-      },
-    );
-    expect(pipelineButton).toBeTruthy();
-    expect(pipelineButton.querySelector("svg")).toBeNull();
-    expect(pipelineButton.className).toContain("bg-surface-1");
-  });
-
-  it("defaults to applied candidates and shows their status on every card", () => {
-    renderCandidatesPage();
-    const appliedCount = getEmployerCandidateRows(1).filter(
-      (row) => !row.app.rejected && row.app.stage === "Applied",
-    ).length;
-    const cards = screen.getAllByRole("article");
-
-    expect(cards).toHaveLength(appliedCount);
-    for (const card of cards) {
-      const status = card.querySelector('[data-slot="candidate-status"]');
-      expect(status?.textContent).toBe("Applied");
+    expect(within(pipelineGroup).getByText("Hiring Pipeline")).toBeTruthy();
+    const appliedTab = within(pipelineGroup).getByRole("tab", {
+      name: /Applied/,
+    });
+    expect(appliedTab.getAttribute("aria-selected")).toBe("true");
+    for (const stage of [
+      "All",
+      "Screening queue",
+      "Interview",
+      "Offer",
+      "Hired",
+      "Rejected",
+    ]) {
+      expect(
+        within(pipelineGroup).getByRole("tab", { name: stage }),
+      ).toBeTruthy();
     }
   });
 
@@ -153,20 +148,37 @@ describe("EmployerCandidatesPage", () => {
     expect(screen.queryAllByRole("article")).toHaveLength(visibleRows.length);
   });
 
-  it("shows every pipeline record from View all", () => {
+  it("switches the candidate view when a pipeline tab is selected", () => {
     renderCandidatesPage();
-    fireEvent.click(
-      screen.getByRole("button", { name: "View candidate pipeline" }),
-    );
-    fireEvent.click(
-      within(
-        screen.getByRole("dialog", { name: "Candidate pipeline" }),
-      ).getByRole("button", { name: "View all" }),
-    );
 
+    expect(
+      getPipelineTab("Applied").getAttribute("aria-selected"),
+    ).toBe("true");
+
+    fireEvent.click(getPipelineTab("All"));
+    expect(getPipelineTab("All").getAttribute("aria-selected")).toBe("true");
+    expect(
+      getPipelineTab("Applied").getAttribute("aria-selected"),
+    ).toBe("false");
     expect(screen.getAllByRole("article")).toHaveLength(
       getEmployerCandidateRows(1).length,
     );
+
+    const offerCount = getEmployerCandidateRows(1).filter(
+      (row) => !row.app.rejected && row.app.stage === "Offer",
+    ).length;
+    fireEvent.click(getPipelineTab("Offer"));
+    expect(getPipelineTab("Offer").getAttribute("aria-selected")).toBe("true");
+    expect(screen.getAllByRole("article")).toHaveLength(offerCount);
+
+    const rejectedCount = getEmployerCandidateRows(1).filter(
+      (row) => row.app.rejected,
+    ).length;
+    fireEvent.click(getPipelineTab("Rejected"));
+    expect(getPipelineTab("Rejected").getAttribute("aria-selected")).toBe(
+      "true",
+    );
+    expect(screen.getAllByRole("article")).toHaveLength(rejectedCount);
   });
 
   it("adds six varied examples to the applied queue", () => {
@@ -186,14 +198,7 @@ describe("EmployerCandidatesPage", () => {
 
   it("keeps two of the added examples in screening after moving four out", () => {
     renderCandidatesPage();
-    fireEvent.click(
-      screen.getByRole("button", { name: "View candidate pipeline" }),
-    );
-    fireEvent.click(
-      within(
-        screen.getByRole("dialog", { name: "Candidate pipeline" }),
-      ).getByRole("button", { name: "Screening queue" }),
-    );
+    fireEvent.click(getPipelineTab("Screening queue"));
 
     for (const candidateName of ["Maya Chen", "Amara Williams"]) {
       expect(screen.getByText(candidateName)).toBeTruthy();
@@ -206,49 +211,6 @@ describe("EmployerCandidatesPage", () => {
     ]) {
       expect(screen.queryByText(movedCandidateName)).toBeNull();
     }
-  });
-
-  it("opens a left pipeline panel and switches stages without pending", () => {
-    renderCandidatesPage();
-    const offerCount = getEmployerCandidateRows(1).filter(
-      (row) => !row.app.rejected && row.app.stage === "Offer",
-    ).length;
-    const rejectedCount = getEmployerCandidateRows(1).filter(
-      (row) => row.app.rejected,
-    ).length;
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "View candidate pipeline" }),
-    );
-    const pipeline = screen.getByRole("dialog", {
-      name: "Candidate pipeline",
-    });
-    expect(pipeline.className).toContain("left-0");
-    expect(pipeline.className).toContain("border-r-2");
-    expect(within(pipeline).queryByText("Pending")).toBeNull();
-    expect(
-      within(pipeline).getByRole("button", { name: "View all" }),
-    ).toBeTruthy();
-
-    fireEvent.click(
-      within(pipeline).getByRole("button", { name: "Offer" }),
-    );
-
-    expect(
-      screen.queryByRole("dialog", { name: "Candidate pipeline" }),
-    ).toBeNull();
-    expect(screen.getAllByRole("article")).toHaveLength(offerCount);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "View candidate pipeline" }),
-    );
-    fireEvent.click(
-      within(
-        screen.getByRole("dialog", { name: "Candidate pipeline" }),
-      ).getByRole("button", { name: "Rejected" }),
-    );
-
-    expect(screen.getAllByRole("article")).toHaveLength(rejectedCount);
   });
 
   it("uses a restrained brand palette without decorative chart accents", () => {

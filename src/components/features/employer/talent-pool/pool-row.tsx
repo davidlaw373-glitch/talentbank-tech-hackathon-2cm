@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import type { Candidate } from "@/types/candidate";
+import { resolveTopSkills } from "@/types/candidate";
 import type {
   TalentPoolEntry,
   TalentPoolStatus,
@@ -20,22 +21,8 @@ import type {
 } from "@/types/talent-pool";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
-
-const STATUS_OPTIONS: TalentPoolStatus[] = [
-  "Active",
-  "Contacted",
-  "Re-engaging",
-  "Stale",
-];
 
 const TAG_OPTIONS: TalentPoolTag[] = [
   "Silver medalist",
@@ -101,16 +88,7 @@ export function TalentPoolRow({
   const [editingNotes, setEditingNotes] = useState(false);
   const [draftNotes, setDraftNotes] = useState(entry.notes);
   const currentStatusStyle = statusStyle(entry.status);
-
-  const updateStatus = (next: string) => {
-    const status = next as TalentPoolStatus;
-    onUpdate(entry.id, { status });
-    push({
-      title: `${candidate.name} marked as ${status}`,
-      description: "Pool status updated.",
-      tone: "info",
-    });
-  };
+  const topSkills = resolveTopSkills(candidate.skills, candidate.topSkills);
 
   const toggleTag = (tag: TalentPoolTag) => {
     const has = entry.tags.includes(tag);
@@ -220,20 +198,20 @@ export function TalentPoolRow({
               </span>
             </div>
             <div className="flex flex-wrap gap-1">
-              {candidate.topSkills.slice(0, 3).map((s) => (
+              {topSkills.slice(0, 3).map((s) => (
                 <Badge
-                  key={s}
+                  key={s.id}
                   variant="outline"
                   className="border-border/40 bg-surface-tint text-[10px] text-muted-foreground"
                 >
-                  {s}
+                  {s.name}
                 </Badge>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right: re-engagement score + status select */}
+        {/* Right: re-engagement score */}
         <div className="flex shrink-0 flex-col items-end gap-2">
           <div className="text-right">
             <p
@@ -260,20 +238,6 @@ export function TalentPoolRow({
             <small className="text-muted-foreground">
               Re-engagement score
             </small>
-          </div>
-          <div className="w-40">
-            <Select value={entry.status} onValueChange={updateStatus}>
-              <SelectTrigger aria-label="Change pool status">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </div>

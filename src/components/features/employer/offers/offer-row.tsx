@@ -83,7 +83,7 @@ export function OfferRow({
             </div>
           </div>
 
-          <div className="pointer-events-none relative z-10 flex shrink-0 flex-col items-start gap-2 sm:items-end">
+          <div className="pointer-events-none relative z-30 flex shrink-0 flex-col items-start gap-2 sm:items-end">
             <Badge variant={decisionVariant(offer.decision)}>
               {offer.decision}
             </Badge>

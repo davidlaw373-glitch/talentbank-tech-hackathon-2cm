@@ -8,10 +8,8 @@ import {
   type EmployerCandidateRow,
 } from "@/lib/data-helpers";
 import type { Candidate } from "@/types/candidate";
-import type {
-  TalentPoolEntry,
-  TalentPoolStatus,
-} from "@/types/talent-pool";
+import { resolveTopSkills } from "@/types/candidate";
+import type { TalentPoolEntry } from "@/types/talent-pool";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +32,6 @@ export default function EmployerTalentPoolPage() {
   const { push } = useToast();
   const { entries, add, remove, update, isInPool } = useTalentPool();
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<TalentPoolStatus | "All">("All");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [pendingBulk, setPendingBulk] = useState<number | null>(null);
 
@@ -66,7 +63,6 @@ export default function EmployerTalentPoolPage() {
           row !== null,
       )
       .filter(({ entry, candidate }) => {
-        if (status !== "All" && entry.status !== status) return false;
         if (!q) return true;
         // The job they were added for is captured in entry.sourceDetail;
         // there is no per-row `appliedFor` in the new shape.
@@ -79,7 +75,9 @@ export default function EmployerTalentPoolPage() {
           candidate.title,
           candidate.location,
           jobTitle,
-          ...candidate.topSkills,
+          ...resolveTopSkills(candidate.skills, candidate.topSkills).map(
+            (s) => s.name,
+          ),
           ...entry.tags,
         ]
           .join(" ")
@@ -87,7 +85,7 @@ export default function EmployerTalentPoolPage() {
         return haystack.includes(q);
       })
       .sort((a, b) => b.entry.reEngagementScore - a.entry.reEngagementScore);
-  }, [entries, status, query, candidateById, allRows]);
+  }, [entries, query, candidateById, allRows]);
 
   const addCandidate = (candidateId: number) => {
     const result = add({ candidateId });
@@ -160,8 +158,6 @@ export default function EmployerTalentPoolPage() {
       <PoolToolbar
         query={query}
         onQueryChange={setQuery}
-        status={status}
-        onStatusChange={setStatus}
         selectedCount={selected.size}
         onBulkOutreach={onBulkOutreach}
         onClearSelection={clearSelection}
