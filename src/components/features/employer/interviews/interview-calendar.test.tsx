@@ -1,10 +1,36 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { InterviewCalendar } from "./interview-calendar";
 
 describe("InterviewCalendar", () => {
+  it("uses compact calendar chrome without the removed title and Today action", () => {
+    render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
+
+    const calendarRegion = screen.getByRole("region", {
+      name: "Scheduled interview calendar",
+    });
+
+    expect(
+      within(calendarRegion).getByRole("button", {
+        name: "Previous month",
+      }),
+    ).toBeTruthy();
+    expect(
+      within(calendarRegion).getByRole("button", {
+        name: "Next month",
+      }),
+    ).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Today" })).toBeNull();
+    expect(
+      screen.queryByText(
+        "Browse confirmed interview dates, candidates, and panels.",
+      ),
+    ).toBeNull();
+    expect(screen.queryByText("Scheduled interviews")).toBeNull();
+  });
+
   it("shows scheduled candidate, role, and time on the matching date", () => {
     render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
 
