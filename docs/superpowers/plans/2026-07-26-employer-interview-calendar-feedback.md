@@ -13,6 +13,7 @@
 - Work on the current branch and preserve unrelated dirty workspace changes.
 - The calendar workspace includes the toolbar and calendar but excludes Selected date.
 - Neither desktop month arrow may overlap the calendar.
+- Month navigation preserves the selected day and clamps it to the target month.
 - The selected boundary appears immediately and does not transition `box-shadow`.
 - The Selected date section uses a fitting token background and the empty state uses `surface-1`.
 - Preserve calendar data, grid semantics, date selection, and mobile behavior.
@@ -34,17 +35,36 @@
 Add:
 
 ```tsx
-it("selects the first date of the next month without delaying its boundary", async () => {
+it("keeps the selected day when moving to the next month", async () => {
   const user = userEvent.setup();
   render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
 
   await user.click(screen.getByRole("button", { name: "Next month" }));
 
   const selectedDate = screen.getByRole("gridcell", {
-    name: "Saturday, August 1, 2026, 0 scheduled interviews",
+    name: "Wednesday, August 26, 2026, 0 scheduled interviews",
   });
   expect(selectedDate.getAttribute("aria-selected")).toBe("true");
-  expect(selectedDate.className).not.toContain("box-shadow");
+});
+```
+
+Add a second test that selects July 31, moves to August and then September, and
+asserts September 30 is selected:
+
+```tsx
+it("clamps the selected day when the target month is shorter", async () => {
+  const user = userEvent.setup();
+  render(<InterviewCalendar initialYear={2026} initialMonth={6} />);
+
+  await user.click(screen.getByRole("gridcell", {
+    name: "Friday, July 31, 2026, 1 scheduled interview",
+  }));
+  await user.click(screen.getByRole("button", { name: "Next month" }));
+  await user.click(screen.getByRole("button", { name: "Next month" }));
+
+  expect(screen.getByRole("gridcell", {
+    name: "Wednesday, September 30, 2026, 0 scheduled interviews",
+  }).getAttribute("aria-selected")).toBe("true");
 });
 ```
 
@@ -54,8 +74,8 @@ it("selects the first date of the next month without delaying its boundary", asy
 npx vitest run src/components/features/employer/interviews/interview-calendar.test.tsx
 ```
 
-Expected: FAIL because the selected date cell still contains
-`transition-[background-color,box-shadow]`.
+Expected: FAIL because month navigation currently selects August 1 rather than
+August 26.
 
 - [ ] **Step 3: Commit the red test**
 
@@ -72,7 +92,7 @@ git commit -m "test: cover immediate calendar selection boundary"
 
 **Interfaces:**
 - Consumes: existing toolbar, calendar region, calendar frame, and agenda
-- Produces: `.calendarWorkspace`, a three-column desktop `.calendarFrame`, and immediate selected boundaries
+- Produces: selected-day-preserving navigation, `.calendarWorkspace`, a three-column desktop `.calendarFrame`, and immediate selected boundaries
 
 - [ ] **Step 1: Group the toolbar and calendar**
 
@@ -90,7 +110,26 @@ Wrap the current header and calendar region in:
 
 Keep the Selected date section after this closing `div`.
 
-- [ ] **Step 2: Make the selected boundary immediate**
+- [ ] **Step 2: Preserve the selected day across month changes**
+
+Update `setMonth` to derive the selected day from `selectedDate`, clamp it to
+the target month's final day, and set the resulting key:
+
+```tsx
+const setMonth = (year: number, monthIndex: number) => {
+  const selectedDay = getKeyParts(selectedDate).day;
+  const lastDay = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+  const nextDay = Math.min(selectedDay, lastDay);
+
+  setViewYear(year);
+  setViewMonth(monthIndex);
+  setSelectedDate(
+    `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(nextDay).padStart(2, "0")}`,
+  );
+};
+```
+
+- [ ] **Step 3: Make the selected boundary immediate**
 
 Change the gridcell transition class from:
 
@@ -106,7 +145,7 @@ transition-colors
 
 Keep the selected `ring-2 ring-inset ring-primary` classes unchanged.
 
-- [ ] **Step 3: Move both desktop arrows outside the calendar**
+- [ ] **Step 4: Move both desktop arrows outside the calendar**
 
 Update the CSS module:
 
@@ -137,7 +176,7 @@ Update the CSS module:
 Retain the mobile rule that places the arrows above the calendar, updating its
 columns only where necessary to preserve the existing layout.
 
-- [ ] **Step 4: Revise Selected date and empty-state colors**
+- [ ] **Step 5: Revise Selected date and empty-state colors**
 
 Set the Selected date section to a token background such as:
 
@@ -151,7 +190,7 @@ Set the empty-state card to:
 className="border-border/60 bg-surface-1 shadow-sm"
 ```
 
-- [ ] **Step 5: Run the focused test and verify GREEN**
+- [ ] **Step 6: Run the focused test and verify GREEN**
 
 ```powershell
 npx vitest run src/components/features/employer/interviews/interview-calendar.test.tsx
@@ -159,7 +198,7 @@ npx vitest run src/components/features/employer/interviews/interview-calendar.te
 
 Expected: all component tests PASS.
 
-- [ ] **Step 6: Commit the implementation**
+- [ ] **Step 7: Commit the implementation**
 
 ```powershell
 git add -- src/components/features/employer/interviews/interview-calendar.tsx src/components/features/employer/interviews/interview-calendar.module.css
@@ -193,7 +232,7 @@ At approximately 1349×898 confirm:
 - Toolbar and calendar share one colored rounded workspace.
 - Selected date is outside the workspace.
 - Both arrows have positive gaps from the calendar border.
-- After next-month navigation, August 1 immediately has the selected boundary.
+- After next-month navigation, August 26 immediately has the selected boundary.
 - Empty state is white and Selected date uses the contrasting token background.
 - No horizontal overflow or console errors.
 

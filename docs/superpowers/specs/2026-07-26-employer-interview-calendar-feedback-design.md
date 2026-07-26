@@ -9,9 +9,13 @@ both month arrows fully outside the grid, and refine the selected-date colors.
 
 ## Root Cause
 
-Month navigation already updates `selectedDate` to the first day of the new
-month. Browser inspection confirms the new cell receives `aria-selected=true`.
-The apparent missing dark boundary is caused by transitioning `box-shadow`: the
+Month navigation currently resets `selectedDate` to the first day of the new
+month. Browser inspection confirms July 26 becomes August 1, so the boundary
+does not follow the user's date position. The selected day should be preserved
+when changing month or year: July 26 becomes August 26. If the target month has
+fewer days, clamp to its final day.
+
+The apparent missing boundary is amplified by transitioning `box-shadow`: the
 new selected cell begins with a near-zero ring and reaches the two-pixel primary
 ring about 200 ms later.
 
@@ -72,9 +76,11 @@ When interviews exist, the current detailed cards and hover behavior remain.
 
 ## Verification
 
-- Add a component regression test that navigates to the next month, confirms
-  August 1 is selected, and confirms the selected cell does not transition
-  `box-shadow`.
+- Add component regression tests that navigate from July 26 to August and
+  confirm August 26 remains selected, plus coverage for clamping a selected
+  date to a shorter target month.
+- Confirm in the browser that the selected boundary does not visually
+  transition from zero after navigation.
 - Existing month selection, event, and agenda tests continue to pass.
 - Run the focused component test, full test suite, TypeScript, lint, and build.
 - Browser-check desktop button gaps, immediate selected boundary, workspace
