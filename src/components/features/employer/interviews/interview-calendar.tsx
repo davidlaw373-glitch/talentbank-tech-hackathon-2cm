@@ -99,17 +99,8 @@ export function InterviewCalendar({
   const years = Array.from({ length: 11 }, (_, index) => today.year - 5 + index);
 
   const setMonth = (year: number, monthIndex: number) => {
-    const selectedDay = getKeyParts(selectedDate).day;
-    const lastDay = new Date(
-      Date.UTC(year, monthIndex + 1, 0),
-    ).getUTCDate();
-    const nextDay = Math.min(selectedDay, lastDay);
-
     setViewYear(year);
     setViewMonth(monthIndex);
-    setSelectedDate(
-      `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(nextDay).padStart(2, "0")}`,
-    );
   };
 
   const shiftMonth = (delta: number) => {
@@ -225,6 +216,19 @@ export function InterviewCalendar({
                 ))}
 
                 {days.map((day, index) => {
+                  if (!day.inCurrentMonth) {
+                    return (
+                      <span
+                        key={day.key}
+                        aria-hidden
+                        className={cn(
+                          "border-b border-r border-border/40 bg-surface-1",
+                          (index + 1) % 7 === 0 && "border-r-0",
+                        )}
+                      />
+                    );
+                  }
+
                   const events = scheduledByDate.get(day.key) ?? [];
                   const eventLabel = `${events.length} scheduled ${
                     events.length === 1 ? "interview" : "interviews"
@@ -240,20 +244,11 @@ export function InterviewCalendar({
                       aria-selected={selectedDate === day.key}
                       onClick={() => {
                         setSelectedDate(day.key);
-                        if (!day.inCurrentMonth) {
-                          const parts = getKeyParts(day.key);
-                          setViewYear(parts.year);
-                          setViewMonth(parts.monthIndex);
-                        }
                       }}
                       className={cn(
                         "group min-h-20 border-b border-r border-border/40 p-1.5 text-left transition-colors duration-200 hover:bg-accent-soft/40 focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:min-h-32 sm:p-2.5",
                         (index + 1) % 7 === 0 && "border-r-0",
-                        day.inCurrentMonth
-                          ? isWeekend
-                            ? "bg-surface-inset/45"
-                            : "bg-surface-1"
-                          : "bg-surface-inset text-muted-foreground",
+                        isWeekend ? "bg-surface-inset/45" : "bg-surface-1",
                         selectedDate === day.key &&
                           "bg-highlight-soft ring-2 ring-inset ring-primary hover:bg-highlight-soft",
                       )}
