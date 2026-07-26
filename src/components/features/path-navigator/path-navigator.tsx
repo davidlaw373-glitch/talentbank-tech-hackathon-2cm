@@ -40,6 +40,15 @@ import {
 
 const DEMO_CANDIDATE_ID = 1;
 
+// Cap the role pickers shown in the path-navigator sidebar: the candidate
+// can have many matched jobs, but the user journey here is "pick one to
+// study deeply", not "browse them all". Showing every match makes the
+// sidebar taller than the viewport and pushes the actual role panel
+// below the fold — especially on tablet widths where the picker stacks
+// above the panel as a single column. The full ranked list lives on the
+// Jobs page (`/candidate/jobs`), which is the right surface for browsing.
+const TOP_TARGET_ROLES = 8;
+
 // Derived once from real data — target roles are the candidate's actual
 // matched jobs, ranked by real match score.
 const VERIFIED_SKILLS = getVerifiedSkillSet(
@@ -51,6 +60,7 @@ const TARGET_ROLES = deriveTargetRoles({
   verifiedSkills: VERIFIED_SKILLS,
   marketSignals,
 });
+const DISPLAYED_ROLES = TARGET_ROLES.slice(0, TOP_TARGET_ROLES);
 
 function SummaryStat({
   label,
@@ -461,8 +471,8 @@ export function PathNavigator() {
   const [showRoadmap, setShowRoadmap] = useState(false);
 
   const selectedRole =
-    TARGET_ROLES.find((role) => role.jobId === selectedJobId) ??
-    TARGET_ROLES[0] ??
+    DISPLAYED_ROLES.find((role) => role.jobId === selectedJobId) ??
+    DISPLAYED_ROLES[0] ??
     null;
 
   const selectRole = (jobId: number) => {
@@ -511,7 +521,9 @@ export function PathNavigator() {
         </Card>
       ) : (
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-6">
-          {/* Target-role selector — sticky sidebar on lg+, full-width grid on mobile */}
+          {/* Target-role selector — sticky sidebar on lg+, full-width grid on mobile.
+              Capped to the top N roles by score so the choices don't dominate
+              the page on tablet widths; the full ranked list lives on /candidate/jobs. */}
           <aside
             aria-label="Choose a target role"
             className="w-full shrink-0 space-y-3 lg:sticky lg:top-4 lg:w-72 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1 xl:w-80"
@@ -522,7 +534,7 @@ export function PathNavigator() {
               aria-label="Target role"
               className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1"
             >
-              {TARGET_ROLES.map((role) => {
+              {DISPLAYED_ROLES.map((role) => {
                 const active = role.jobId === selectedRole.jobId;
                 return (
                   <button
@@ -556,6 +568,15 @@ export function PathNavigator() {
                 );
               })}
             </div>
+            {TARGET_ROLES.length > DISPLAYED_ROLES.length ? (
+              <Link
+                href="/candidate/jobs"
+                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              >
+                Showing top {DISPLAYED_ROLES.length} of {TARGET_ROLES.length} matches
+                <ArrowRight className="h-3 w-3" aria-hidden />
+              </Link>
+            ) : null}
           </aside>
 
           {/* Right column: stats + role panel */}

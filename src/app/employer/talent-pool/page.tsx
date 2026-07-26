@@ -162,8 +162,6 @@ export default function EmployerTalentPoolPage() {
         onQueryChange={setQuery}
         status={status}
         onStatusChange={setStatus}
-        matchCount={filtered.length}
-        totalCount={entries.length}
         selectedCount={selected.size}
         onBulkOutreach={onBulkOutreach}
         onClearSelection={clearSelection}

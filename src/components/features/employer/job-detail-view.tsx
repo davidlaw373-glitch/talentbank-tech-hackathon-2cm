@@ -142,7 +142,7 @@ export function JobDetailView({
           onClick={() => window.history.back()}
         >
           <ArrowLeft />
-          Back to jobs
+          Back
         </Button>
       </div>
 
@@ -386,7 +386,7 @@ export function JobDetailView({
               No applicants yet for this role.
             </p>
           ) : (
-            <div className={`relative ${styles.carousel}`}>
+            <div className={`relative sm:px-12 ${styles.carousel}`}>
               <ul
                 aria-label={`Applicants for ${activeJob.title}`}
                 className="flex gap-4 overflow-hidden"
@@ -408,58 +408,62 @@ export function JobDetailView({
                 ))}
               </ul>
 
-              <Button
-                type="button"
-                variant={applicantStart === 0 ? "outline" : "default"}
-                size="icon"
-                className={
-                  applicantStart === 0
-                    ? "bg-surface-1 shadow-lg"
-                    : "shadow-lg"
-                }
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "0.5rem",
-                  zIndex: 30,
-                  transform: "translateY(-50%)",
-                }}
-                aria-label="Previous candidates"
-                disabled={applicantStart === 0}
-                onClick={() =>
-                  setApplicantStart((current) => Math.max(0, current - 1))
-                }
-              >
-                <ArrowLeft />
-              </Button>
-              <Button
-                type="button"
-                variant={
-                  applicantStart >= maxApplicantStart ? "outline" : "default"
-                }
-                size="icon"
-                className={
-                  applicantStart >= maxApplicantStart
-                    ? "bg-surface-1 shadow-lg"
-                    : "shadow-lg"
-                }
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "0.5rem",
-                  zIndex: 30,
-                  transform: "translateY(-50%)",
-                }}
-                aria-label="Next candidates"
-                disabled={applicantStart >= maxApplicantStart}
-                onClick={() =>
-                  setApplicantStart((current) =>
-                    Math.min(maxApplicantStart, current + 1),
-                  )
-                }
-              >
-                <ArrowRight />
-              </Button>
+              {applicants.length > visibleApplicantCount ? (
+                <>
+                  <Button
+                    type="button"
+                    variant={applicantStart === 0 ? "outline" : "default"}
+                    size="icon"
+                    className={
+                      applicantStart === 0
+                        ? "bg-surface-1 shadow-lg"
+                        : "shadow-lg"
+                    }
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "0.5rem",
+                      zIndex: 30,
+                      transform: "translateY(-50%)",
+                    }}
+                    aria-label="Previous candidates"
+                    disabled={applicantStart === 0}
+                    onClick={() =>
+                      setApplicantStart((current) => Math.max(0, current - 1))
+                    }
+                  >
+                    <ArrowLeft />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={
+                      applicantStart >= maxApplicantStart ? "outline" : "default"
+                    }
+                    size="icon"
+                    className={
+                      applicantStart >= maxApplicantStart
+                        ? "bg-surface-1 shadow-lg"
+                        : "shadow-lg"
+                    }
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "0.5rem",
+                      zIndex: 30,
+                      transform: "translateY(-50%)",
+                    }}
+                    aria-label="Next candidates"
+                    disabled={applicantStart >= maxApplicantStart}
+                    onClick={() =>
+                      setApplicantStart((current) =>
+                        Math.min(maxApplicantStart, current + 1),
+                      )
+                    }
+                  >
+                    <ArrowRight />
+                  </Button>
+                </>
+              ) : null}
 
               <div
                 role="progressbar"

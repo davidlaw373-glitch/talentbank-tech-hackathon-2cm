@@ -31,8 +31,6 @@ export type PoolToolbarProps = {
   onQueryChange: (q: string) => void;
   status: TalentPoolStatus | "All";
   onStatusChange: (s: TalentPoolStatus | "All") => void;
-  matchCount: number;
-  totalCount: number;
   selectedCount: number;
   onBulkOutreach: () => void;
   onClearSelection: () => void;
@@ -43,8 +41,6 @@ export function PoolToolbar({
   onQueryChange,
   status,
   onStatusChange,
-  matchCount,
-  totalCount,
   selectedCount,
   onBulkOutreach,
   onClearSelection,
@@ -107,9 +103,6 @@ export function PoolToolbar({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Badge variant="outline" aria-live="polite">
-            {matchCount} of {totalCount}
-          </Badge>
           {selectedCount > 0 ? (
             <>
               <Badge variant="secondary">{selectedCount} selected</Badge>

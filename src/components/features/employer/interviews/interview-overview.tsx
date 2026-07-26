@@ -132,19 +132,17 @@ export function InterviewOverview() {
       >
         {summaries.map(({ label, value, icon: Icon }) => (
           <Card key={label}>
-            <CardContent className="flex items-center gap-3 p-5">
+            <CardContent className="space-y-3 p-5 sm:p-6">
               <span
                 aria-hidden
                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted"
               >
                 <Icon className="h-5 w-5" />
               </span>
-              <div>
-                <p className="text-stat-compact">
-                  {value}
-                </p>
-                <p className="text-sm font-medium">{label}</p>
-              </div>
+              <p className="text-stat-compact">
+                {value}
+              </p>
+              <p className="text-sm font-medium">{label}</p>
             </CardContent>
           </Card>
         ))}

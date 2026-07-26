@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   Briefcase,
-  Building2,
   CheckCircle2,
   ChevronRight,
   Clock,
@@ -16,7 +15,6 @@ import {
 } from "lucide-react";
 
 import {
-  employmentOutcomes,
   graduateRecords,
   skillDemand,
   universityDisputes,
@@ -341,70 +339,6 @@ export default function UniversityDashboardPage() {
               </Link>
             </li>
           ))}
-        </ul>
-      </section>
-
-      {/* Employment at a glance */}
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-subheading">Employment at a glance</h2>
-          <p className="text-sm text-muted-foreground">Outcomes by cohort year.</p>
-        </div>
-        <ul className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border/40 bg-card">
-          {employmentOutcomes.map((e) => {
-            const pct = Math.round((e.employed / e.total) * 100);
-            return (
-              <li key={e.id}>
-                <Link
-                  href="/university/analytics"
-                  aria-label={`Open ${e.cohort} in analytics`}
-                  className={cn(
-                    "group flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 transition-colors",
-                    "hover:bg-accent-soft focus-visible:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-5",
-                  )}
-                >
-                  <span
-                    aria-hidden
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted"
-                  >
-                    <Building2 className="h-5 w-5 text-muted-foreground" />
-                  </span>
-
-                  <div className="min-w-0 flex-1 basis-48">
-                    <p className="truncate text-base font-semibold">
-                      {e.cohort}
-                    </p>
-                    <p className="truncate text-sm text-muted-foreground">
-                      {e.employed} of {e.total} employed
-                    </p>
-                  </div>
-
-                  <div className="hidden min-w-0 flex-1 basis-48 md:block">
-                    <p className="text-eyebrow">
-                      Top employer · role
-                    </p>
-                    <p className="truncate text-sm">
-                      {e.topEmployer} · {e.topRole}
-                    </p>
-                  </div>
-
-                  <div className="w-20 shrink-0 text-right">
-                    <p className="text-eyebrow">
-                      Employed
-                    </p>
-                    <p className="text-sm font-semibold tabular-nums">
-                      {pct}%
-                    </p>
-                  </div>
-
-                  <ChevronRight
-                    aria-hidden
-                    className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5"
-                  />
-                </Link>
-              </li>
-            );
-          })}
         </ul>
       </section>
     </div>

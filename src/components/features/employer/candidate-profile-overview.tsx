@@ -57,7 +57,7 @@ export function CandidateProfileOverview({
         </Button>
         <ol
           aria-label={`Hiring progress for ${candidate.name}`}
-          className="mt-5 flex min-h-[28rem] flex-1 flex-col sm:min-h-[34rem] lg:min-h-0"
+          className="mt-5 flex flex-1 flex-col gap-1 lg:min-h-0"
         >
           {timeline.map((step, index) => {
             const isComplete = index < safeCurrentIndex;
@@ -119,7 +119,7 @@ export function CandidateProfileOverview({
                       "border-destructive bg-destructive text-destructive-foreground",
                     isCurrent &&
                       !status.rejected &&
-                      "border-primary bg-surface-1 text-foreground shadow-[0_0_0_4px_var(--accent-soft)]",
+                      "border-primary bg-surface-1 text-foreground animate-pulse-soft shadow-[0_0_0_4px_var(--accent-soft)]",
                     !isComplete &&
                       !isCurrent &&
                       "border-border bg-surface-1 text-muted-foreground",
@@ -132,7 +132,7 @@ export function CandidateProfileOverview({
                         : "upcoming"
                   }`}
                 >
-                  {!status.rejected && (isComplete || isCurrent) ? (
+                  {!status.rejected && isCurrent ? (
                     <span
                       data-slot="timeline-node-wave"
                       aria-hidden

@@ -23,7 +23,7 @@ const sentPending = rows.find(
 const declined = rows.find((row) => row.offer.decision === "Declined")!;
 
 describe("OfferRow", () => {
-  it("shows Send and View for an unsent pending offer", () => {
+  it("shows Send and Open details for an unsent pending offer", () => {
     render(
       <OfferRow
         row={unsentPending}
@@ -37,14 +37,14 @@ describe("OfferRow", () => {
       screen.getByRole("button", { name: /Send offer/ }),
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: /View offer/ }),
+      screen.getByRole("button", { name: /Open offer details/ }),
     ).toBeTruthy();
     expect(
       screen.queryByRole("button", { name: /Remind/ }),
     ).toBeNull();
   });
 
-  it("shows Remind and View for a sent pending offer", () => {
+  it("shows Remind and Open details for a sent pending offer", () => {
     render(
       <OfferRow
         row={sentPending}
@@ -58,7 +58,7 @@ describe("OfferRow", () => {
       screen.getByRole("button", { name: /Remind/ }),
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: /View offer/ }),
+      screen.getByRole("button", { name: /Open offer details/ }),
     ).toBeTruthy();
     expect(
       screen.queryByRole("button", { name: /Send offer/ }),
@@ -97,7 +97,7 @@ describe("OfferRow", () => {
       screen.queryByRole("button", { name: /Withdraw offer/ }),
     ).toBeNull();
     expect(
-      screen.getByRole("button", { name: /View offer/ }),
+      screen.getByRole("button", { name: /Open offer details/ }),
     ).toBeTruthy();
   });
 });

@@ -10,7 +10,7 @@
   gap: 0.75rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .filters {
     grid-template-columns: minmax(0, 1fr) 14rem 17rem;
     align-items: end;

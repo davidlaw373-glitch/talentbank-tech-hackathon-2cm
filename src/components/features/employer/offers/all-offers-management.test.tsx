@@ -60,7 +60,7 @@ describe("AllOffersManagement", () => {
       screen.getAllByRole("button", { name: /Withdraw offer/ }).length,
     ).toBe(2);
     expect(
-      screen.getAllByRole("button", { name: /View offer/ }).length,
+      screen.getAllByRole("button", { name: /Open offer details/ }).length,
     ).toBe(5);
   });
 

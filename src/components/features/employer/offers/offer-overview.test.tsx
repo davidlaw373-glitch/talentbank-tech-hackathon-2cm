@@ -96,7 +96,9 @@ describe("OfferOverview", () => {
     renderOverview();
 
     await user.click(
-      screen.getByRole("button", { name: "View offer for Aisha Khan" }),
+      screen.getByRole("button", {
+        name: "Open offer details for Aisha Khan",
+      }),
     );
 
     expect(

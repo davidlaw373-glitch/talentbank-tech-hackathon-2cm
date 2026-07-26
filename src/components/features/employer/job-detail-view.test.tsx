@@ -28,7 +28,7 @@ describe("JobDetailView", () => {
       </ToastProvider>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Back to jobs" }));
+    await user.click(screen.getByRole("button", { name: "Back" }));
     expect(back).toHaveBeenCalledOnce();
     back.mockRestore();
   });

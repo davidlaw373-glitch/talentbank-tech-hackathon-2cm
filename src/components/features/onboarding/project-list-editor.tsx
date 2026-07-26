@@ -91,7 +91,7 @@ export function ProjectListEditor({
                 <Input
                   value={project.name}
                   onChange={(e) => update(project.id, { name: e.target.value })}
-                  placeholder="e.g. Careeros"
+                  placeholder="e.g. CareerOS"
                 />
               </Field>
               <Field

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Eye, Send, Undo2 } from "lucide-react";
+import { Bell, Send, Undo2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,12 +49,21 @@ export function OfferRow({
     <li>
       <Card
         className={cn(
-          "lift-on-hover",
+          "relative lift-on-hover",
           showCompleteActions && "border-2 border-foreground",
         )}
       >
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-start gap-3">
+          {/* Whole card surface opens the offer details. The action buttons
+              below sit on top via z-30 so they stay independently clickable. */}
+          <button
+            type="button"
+            onClick={actions.onView}
+            aria-label={`Open offer details for ${candidate.name}`}
+            className="absolute inset-0 z-20 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          />
+
+          <div className="pointer-events-none relative z-10 flex min-w-0 items-start gap-3">
             <span
               aria-hidden
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-sm font-semibold"
@@ -74,11 +83,11 @@ export function OfferRow({
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+          <div className="pointer-events-none relative z-10 flex shrink-0 flex-col items-start gap-2 sm:items-end">
             <Badge variant={decisionVariant(offer.decision)}>
               {offer.decision}
             </Badge>
-            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <div className="pointer-events-auto relative z-30 flex flex-wrap items-center gap-2 sm:justify-end">
               {isPending && isUnsent && (
                 <Button
                   size="sm"
@@ -106,16 +115,6 @@ export function OfferRow({
                   {reminderCoolingDown ? "Reminded" : "Remind"}
                 </Button>
               )}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={actions.onView}
-                aria-label={`View offer for ${candidate.name}`}
-              >
-                <Eye />
-                View
-              </Button>
 
               {showCompleteActions && isPending && (
                 <Button

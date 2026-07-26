@@ -50,11 +50,11 @@ export function SetupBanner({ role }: SetupBannerProps) {
       <div className="flex items-start gap-3">
         <span
           aria-hidden
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-highlight-soft text-highlight-foreground"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-highlight-soft text-highlight-foreground sm:h-10 sm:w-10"
         >
-          <Sparkles className="h-4 w-4" aria-hidden />
+          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
         </span>
-        <div className="min-w-0 space-y-0.5">
+        <div className="min-w-0 space-y-0.5 sm:pr-48">
           <p className="text-caption font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Profile setup
           </p>

@@ -301,7 +301,7 @@ const ISSUES: Issue[] = [
     category: "Spelling",
     title: "Capitalise “Open Source” consistently",
     detail:
-      "Capitalisation is inconsistent across the resume. “Open-source” as an adjective is fine, but the leading capital “O” on the Careeros headline clashes with the rest of the document, which is sentence case.",
+      "Capitalisation is inconsistent across the resume. “Open-source” as an adjective is fine, but the leading capital “O” on the CareerOS headline clashes with the rest of the document, which is sentence case.",
     suggestion:
       "Open-source portfolio helper — generates a personalised career timeline from your contributions.",
     field: { kind: "project", projectId: 1 },
@@ -311,7 +311,7 @@ const ISSUES: Issue[] = [
     id: "project-careeros-metrics",
     severity: "warning",
     category: "Metrics",
-    title: "Add a result line for Careeros",
+    title: "Add a result line for CareerOS",
     detail:
       "The description tells reviewers what the project is, not what it achieved. Add one metric (stars, weekly active users, contributions) so reviewers can weigh the impact.",
     suggestion:
