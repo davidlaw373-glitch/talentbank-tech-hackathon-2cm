@@ -4,40 +4,72 @@
     "candidateId": 1,
     "jobId": 1,
     "score": 94,
-    "matchingSkills": ["React", "TypeScript", "Next.js", "Accessibility"],
-    "missingSkills": ["GraphQL"]
+    "matchingSkills": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "Accessibility"
+    ],
+    "missingSkills": [
+      "GraphQL"
+    ]
   },
   {
     "id": 2,
     "candidateId": 1,
     "jobId": 2,
     "score": 88,
-    "matchingSkills": ["React", "TypeScript", "Next.js", "Design systems"],
-    "missingSkills": ["WebRTC"]
+    "matchingSkills": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "Design systems"
+    ],
+    "missingSkills": [
+      "WebRTC"
+    ]
   },
   {
     "id": 3,
     "candidateId": 1,
     "jobId": 3,
     "score": 82,
-    "matchingSkills": ["TypeScript", "Next.js", "Design systems"],
-    "missingSkills": ["Kubernetes"]
+    "matchingSkills": [
+      "TypeScript",
+      "Next.js",
+      "Design systems"
+    ],
+    "missingSkills": [
+      "Kubernetes"
+    ]
   },
   {
     "id": 4,
     "candidateId": 1,
     "jobId": 4,
     "score": 71,
-    "matchingSkills": ["Python"],
-    "missingSkills": ["Snowflake", "dbt", "Airflow"]
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Snowflake",
+      "dbt",
+      "Airflow"
+    ]
   },
   {
     "id": 5,
     "candidateId": 1,
     "jobId": 5,
     "score": 68,
-    "matchingSkills": ["Accessibility", "Product discovery"],
-    "missingSkills": ["Swift", "SwiftUI"]
+    "matchingSkills": [
+      "Accessibility",
+      "Product discovery"
+    ],
+    "missingSkills": [
+      "Swift",
+      "SwiftUI"
+    ]
   },
   {
     "id": 6,
@@ -58,7 +90,11 @@
     "candidateId": 2,
     "jobId": 7,
     "score": 94,
-    "matchingSkills": ["React", "TypeScript", "Design systems"],
+    "matchingSkills": [
+      "React",
+      "TypeScript",
+      "Design systems"
+    ],
     "missingSkills": []
   },
   {
@@ -66,31 +102,55 @@
     "candidateId": 3,
     "jobId": 7,
     "score": 71,
-    "matchingSkills": ["Python", "PyTorch", "TypeScript"],
-    "missingSkills": ["React"]
+    "matchingSkills": [
+      "Python",
+      "PyTorch",
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "React"
+    ]
   },
   {
     "id": 9,
     "candidateId": 4,
     "jobId": 8,
     "score": 89,
-    "matchingSkills": ["Discovery research", "B2B SaaS", "Roadmaps"],
-    "missingSkills": ["Developer tools"]
+    "matchingSkills": [
+      "Discovery research",
+      "B2B SaaS",
+      "Roadmaps"
+    ],
+    "missingSkills": [
+      "Developer tools"
+    ]
   },
   {
     "id": 10,
     "candidateId": 5,
     "jobId": 7,
     "score": 62,
-    "matchingSkills": ["SQL", "Python"],
-    "missingSkills": ["React", "TypeScript", "Design systems"]
+    "matchingSkills": [
+      "SQL",
+      "Python"
+    ],
+    "missingSkills": [
+      "React",
+      "TypeScript",
+      "Design systems"
+    ]
   },
   {
     "id": 11,
     "candidateId": 6,
     "jobId": 9,
     "score": 91,
-    "matchingSkills": ["Figma", "Swift", "Motion design", "React"],
+    "matchingSkills": [
+      "Figma",
+      "Swift",
+      "Motion design",
+      "React"
+    ],
     "missingSkills": []
   },
   {
@@ -98,15 +158,29 @@
     "candidateId": 7,
     "jobId": 10,
     "score": 58,
-    "matchingSkills": ["Go", "PostgreSQL", "AWS", "Kubernetes"],
-    "missingSkills": ["Incident response", "Observability"]
+    "matchingSkills": [
+      "Go",
+      "PostgreSQL",
+      "AWS",
+      "Kubernetes"
+    ],
+    "missingSkills": [
+      "Incident response",
+      "Observability"
+    ]
   },
   {
     "id": 13,
     "candidateId": 501,
     "jobId": 6,
     "score": 96,
-    "matchingSkills": ["TypeScript", "React", "Next.js", "Accessibility", "Design systems"],
+    "matchingSkills": [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Accessibility",
+      "Design systems"
+    ],
     "missingSkills": []
   },
   {
@@ -114,7 +188,11 @@
     "candidateId": 502,
     "jobId": 7,
     "score": 89,
-    "matchingSkills": ["TypeScript", "React", "Design systems"],
+    "matchingSkills": [
+      "TypeScript",
+      "React",
+      "Design systems"
+    ],
     "missingSkills": []
   },
   {
@@ -122,7 +200,11 @@
     "candidateId": 503,
     "jobId": 8,
     "score": 92,
-    "matchingSkills": ["B2B SaaS", "Developer tools", "Discovery research"],
+    "matchingSkills": [
+      "B2B SaaS",
+      "Developer tools",
+      "Discovery research"
+    ],
     "missingSkills": []
   },
   {
@@ -130,7 +212,11 @@
     "candidateId": 504,
     "jobId": 9,
     "score": 88,
-    "matchingSkills": ["Figma", "React", "Prototyping"],
+    "matchingSkills": [
+      "Figma",
+      "React",
+      "Prototyping"
+    ],
     "missingSkills": []
   },
   {
@@ -138,7 +224,11 @@
     "candidateId": 505,
     "jobId": 10,
     "score": 94,
-    "matchingSkills": ["Kubernetes", "Incident response", "Observability"],
+    "matchingSkills": [
+      "Kubernetes",
+      "Incident response",
+      "Observability"
+    ],
     "missingSkills": []
   },
   {
@@ -146,15 +236,26 @@
     "candidateId": 506,
     "jobId": 6,
     "score": 84,
-    "matchingSkills": ["TypeScript", "React", "Next.js", "Accessibility"],
-    "missingSkills": ["Design systems"]
+    "matchingSkills": [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Accessibility"
+    ],
+    "missingSkills": [
+      "Design systems"
+    ]
   },
   {
     "id": 19,
     "candidateId": 507,
     "jobId": 11,
     "score": 87,
-    "matchingSkills": ["Curiosity", "Clear writing", "Customer research"],
+    "matchingSkills": [
+      "Curiosity",
+      "Clear writing",
+      "Customer research"
+    ],
     "missingSkills": []
   },
   {
@@ -162,7 +263,2690 @@
     "candidateId": 508,
     "jobId": 7,
     "score": 91,
-    "matchingSkills": ["TypeScript", "React", "Design systems"],
+    "matchingSkills": [
+      "TypeScript",
+      "React",
+      "Design systems"
+    ],
     "missingSkills": []
+  },
+  {
+    "id": 21,
+    "candidateId": 1,
+    "jobId": 7,
+    "score": 88,
+    "matchingSkills": [
+      "TypeScript",
+      "React",
+      "Design systems"
+    ],
+    "missingSkills": []
+  },
+  {
+    "id": 22,
+    "candidateId": 1,
+    "jobId": 8,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Developer tools",
+      "Discovery research"
+    ]
+  },
+  {
+    "id": 23,
+    "candidateId": 1,
+    "jobId": 9,
+    "score": 50,
+    "matchingSkills": [
+      "Figma"
+    ],
+    "missingSkills": [
+      "React",
+      "Prototyping"
+    ]
+  },
+  {
+    "id": 24,
+    "candidateId": 1,
+    "jobId": 10,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Kubernetes",
+      "Incident response",
+      "Observability"
+    ]
+  },
+  {
+    "id": 25,
+    "candidateId": 1,
+    "jobId": 11,
+    "score": 62,
+    "matchingSkills": [
+      "Curiosity",
+      "Clear writing"
+    ],
+    "missingSkills": []
+  },
+  {
+    "id": 26,
+    "candidateId": 1,
+    "jobId": 12,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Angular",
+      "Security",
+      "Python"
+    ]
+  },
+  {
+    "id": 27,
+    "candidateId": 1,
+    "jobId": 13,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Docker",
+      "Go",
+      "Scrum",
+      "React",
+      "Linux"
+    ]
+  },
+  {
+    "id": 28,
+    "candidateId": 1,
+    "jobId": 14,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "Test Automation",
+      "Docker",
+      "Next.js",
+      "gRPC"
+    ]
+  },
+  {
+    "id": 29,
+    "candidateId": 1,
+    "jobId": 15,
+    "score": 50,
+    "matchingSkills": [
+      "Angular"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "Docker",
+      "Agile",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 30,
+    "candidateId": 1,
+    "jobId": 16,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "gRPC",
+      "Data Engineering",
+      "Docker",
+      "Playwright"
+    ]
+  },
+  {
+    "id": 31,
+    "candidateId": 1,
+    "jobId": 17,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Flutter",
+      "Docker",
+      "AWS",
+      "PostgreSQL",
+      "GCP"
+    ]
+  },
+  {
+    "id": 32,
+    "candidateId": 1,
+    "jobId": 18,
+    "score": 50,
+    "matchingSkills": [
+      "Java"
+    ],
+    "missingSkills": [
+      "GCP",
+      "Data Engineering",
+      "MySQL"
+    ]
+  },
+  {
+    "id": 33,
+    "candidateId": 1,
+    "jobId": 19,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "JavaScript",
+      "Security",
+      "Jira",
+      "Cypress"
+    ]
+  },
+  {
+    "id": 34,
+    "candidateId": 1,
+    "jobId": 20,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "User Research",
+      "React",
+      "Next.js",
+      "React Native"
+    ]
+  },
+  {
+    "id": 35,
+    "candidateId": 1,
+    "jobId": 21,
+    "score": 62,
+    "matchingSkills": [
+      "PostgreSQL",
+      "Linux"
+    ],
+    "missingSkills": [
+      "Android",
+      "gRPC"
+    ]
+  },
+  {
+    "id": 36,
+    "candidateId": 1,
+    "jobId": 22,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "JavaScript",
+      "SAST",
+      "Django"
+    ]
+  },
+  {
+    "id": 37,
+    "candidateId": 1,
+    "jobId": 23,
+    "score": 62,
+    "matchingSkills": [
+      "Test Automation",
+      "Kubernetes"
+    ],
+    "missingSkills": [
+      "Terraform",
+      "Android"
+    ]
+  },
+  {
+    "id": 38,
+    "candidateId": 1,
+    "jobId": 24,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "QA",
+      "PyTorch",
+      "Scala"
+    ]
+  },
+  {
+    "id": 39,
+    "candidateId": 1,
+    "jobId": 25,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "Scrum",
+      "Next.js",
+      "Machine Learning",
+      "Accessibility"
+    ]
+  },
+  {
+    "id": 40,
+    "candidateId": 1,
+    "jobId": 26,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "JavaScript",
+      "Data Engineering",
+      "Playwright",
+      "Jira"
+    ]
+  },
+  {
+    "id": 41,
+    "candidateId": 1,
+    "jobId": 27,
+    "score": 50,
+    "matchingSkills": [
+      "NLP"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "AWS",
+      "Terraform",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 42,
+    "candidateId": 1,
+    "jobId": 28,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "PyTorch",
+      "Sketch",
+      "Scrum"
+    ]
+  },
+  {
+    "id": 43,
+    "candidateId": 1,
+    "jobId": 29,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Kotlin",
+      "SAST",
+      "UI/UX",
+      "PyTorch",
+      "Jira"
+    ]
+  },
+  {
+    "id": 44,
+    "candidateId": 1,
+    "jobId": 30,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Angular",
+      "FastAPI",
+      "Flutter"
+    ]
+  },
+  {
+    "id": 45,
+    "candidateId": 1,
+    "jobId": 31,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Agile",
+      "User Research",
+      "Flutter",
+      "Django"
+    ]
+  },
+  {
+    "id": 46,
+    "candidateId": 1,
+    "jobId": 32,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Android",
+      "Java",
+      "NLP",
+      "Kotlin",
+      "GCP"
+    ]
+  },
+  {
+    "id": 47,
+    "candidateId": 1,
+    "jobId": 33,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Product Discovery",
+      "JavaScript",
+      "Next.js",
+      "REST API"
+    ]
+  },
+  {
+    "id": 48,
+    "candidateId": 1,
+    "jobId": 34,
+    "score": 50,
+    "matchingSkills": [
+      "PostgreSQL"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "Django",
+      "NLP"
+    ]
+  },
+  {
+    "id": 49,
+    "candidateId": 1,
+    "jobId": 35,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "REST API",
+      "Java",
+      "Jira",
+      "Penetration Testing"
+    ]
+  },
+  {
+    "id": 50,
+    "candidateId": 1,
+    "jobId": 36,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Swift",
+      "NLP",
+      "Design Systems",
+      "Go"
+    ]
+  },
+  {
+    "id": 51,
+    "candidateId": 1,
+    "jobId": 37,
+    "score": 62,
+    "matchingSkills": [
+      "MySQL",
+      "Go"
+    ],
+    "missingSkills": [
+      "Data Engineering",
+      "Git",
+      "MongoDB"
+    ]
+  },
+  {
+    "id": 52,
+    "candidateId": 1,
+    "jobId": 38,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "MySQL",
+      "UI/UX",
+      "NLP",
+      "Linux"
+    ]
+  },
+  {
+    "id": 53,
+    "candidateId": 1,
+    "jobId": 39,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "Cypress",
+      "GraphQL"
+    ]
+  },
+  {
+    "id": 54,
+    "candidateId": 1,
+    "jobId": 40,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Elasticsearch",
+      "Machine Learning",
+      "Data Engineering",
+      "Java"
+    ]
+  },
+  {
+    "id": 55,
+    "candidateId": 1,
+    "jobId": 41,
+    "score": 58,
+    "matchingSkills": [
+      "JavaScript"
+    ],
+    "missingSkills": [
+      "AWS",
+      "Flutter",
+      "Product Discovery",
+      "Agile",
+      "iOS"
+    ]
+  },
+  {
+    "id": 56,
+    "candidateId": 1,
+    "jobId": 42,
+    "score": 50,
+    "matchingSkills": [
+      "Kubernetes"
+    ],
+    "missingSkills": [
+      "Penetration Testing",
+      "Rust"
+    ]
+  },
+  {
+    "id": 57,
+    "candidateId": 1,
+    "jobId": 43,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "GraphQL",
+      "Agile",
+      "GCP"
+    ]
+  },
+  {
+    "id": 58,
+    "candidateId": 1,
+    "jobId": 44,
+    "score": 74,
+    "matchingSkills": [
+      "Next.js"
+    ],
+    "missingSkills": [
+      "Kubernetes",
+      "Docker",
+      "Vue.js",
+      "Scala"
+    ]
+  },
+  {
+    "id": 59,
+    "candidateId": 1,
+    "jobId": 45,
+    "score": 50,
+    "matchingSkills": [
+      "Product Discovery"
+    ],
+    "missingSkills": [
+      "Test Automation",
+      "Git"
+    ]
+  },
+  {
+    "id": 60,
+    "candidateId": 1,
+    "jobId": 46,
+    "score": 50,
+    "matchingSkills": [
+      "GraphQL"
+    ],
+    "missingSkills": [
+      "Kubernetes",
+      "QA"
+    ]
+  },
+  {
+    "id": 61,
+    "candidateId": 1,
+    "jobId": 47,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Agile",
+      "Jira",
+      "Accessibility",
+      "Azure",
+      "FastAPI"
+    ]
+  },
+  {
+    "id": 62,
+    "candidateId": 1,
+    "jobId": 48,
+    "score": 50,
+    "matchingSkills": [
+      "FastAPI"
+    ],
+    "missingSkills": [
+      "Kubernetes",
+      "Figma"
+    ]
+  },
+  {
+    "id": 63,
+    "candidateId": 1,
+    "jobId": 49,
+    "score": 50,
+    "matchingSkills": [
+      "Cypress"
+    ],
+    "missingSkills": [
+      "Elasticsearch",
+      "TypeScript"
+    ]
+  },
+  {
+    "id": 64,
+    "candidateId": 1,
+    "jobId": 50,
+    "score": 50,
+    "matchingSkills": [
+      "Elasticsearch"
+    ],
+    "missingSkills": [
+      "Penetration Testing",
+      "GraphQL",
+      "MongoDB",
+      "React Native"
+    ]
+  },
+  {
+    "id": 65,
+    "candidateId": 1,
+    "jobId": 51,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "GraphQL",
+      "Design Systems",
+      "Python",
+      "TypeScript"
+    ]
+  },
+  {
+    "id": 66,
+    "candidateId": 1,
+    "jobId": 52,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Data Engineering",
+      "Python",
+      "Agile"
+    ]
+  },
+  {
+    "id": 67,
+    "candidateId": 1,
+    "jobId": 53,
+    "score": 50,
+    "matchingSkills": [
+      "Elasticsearch"
+    ],
+    "missingSkills": [
+      "MySQL",
+      "NLP",
+      "Figma",
+      "AWS"
+    ]
+  },
+  {
+    "id": 68,
+    "candidateId": 1,
+    "jobId": 54,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "JavaScript",
+      "React",
+      "Product Discovery",
+      "Security",
+      "Python"
+    ]
+  },
+  {
+    "id": 69,
+    "candidateId": 1,
+    "jobId": 55,
+    "score": 50,
+    "matchingSkills": [
+      "FastAPI"
+    ],
+    "missingSkills": [
+      "React",
+      "Java",
+      "Agile",
+      "Design Systems"
+    ]
+  },
+  {
+    "id": 70,
+    "candidateId": 1,
+    "jobId": 56,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "PyTorch",
+      "Flutter",
+      "GraphQL",
+      "Next.js",
+      "React"
+    ]
+  },
+  {
+    "id": 71,
+    "candidateId": 1,
+    "jobId": 57,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Kubernetes",
+      "MongoDB",
+      "Penetration Testing",
+      "Selenium"
+    ]
+  },
+  {
+    "id": 72,
+    "candidateId": 1,
+    "jobId": 58,
+    "score": 50,
+    "matchingSkills": [
+      "Angular"
+    ],
+    "missingSkills": [
+      "Design Systems",
+      "Terraform",
+      "Linux"
+    ]
+  },
+  {
+    "id": 73,
+    "candidateId": 1,
+    "jobId": 59,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "React Native",
+      "Python",
+      "Scrum",
+      "Jira"
+    ]
+  },
+  {
+    "id": 74,
+    "candidateId": 1,
+    "jobId": 60,
+    "score": 50,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Git",
+      "Kubernetes",
+      "Machine Learning",
+      "Go"
+    ]
+  },
+  {
+    "id": 75,
+    "candidateId": 1,
+    "jobId": 61,
+    "score": 62,
+    "matchingSkills": [
+      "Flutter",
+      "Docker"
+    ],
+    "missingSkills": [
+      "PostgreSQL"
+    ]
+  },
+  {
+    "id": 76,
+    "candidateId": 1,
+    "jobId": 62,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "SAST",
+      "Git"
+    ]
+  },
+  {
+    "id": 77,
+    "candidateId": 1,
+    "jobId": 63,
+    "score": 50,
+    "matchingSkills": [
+      "FastAPI"
+    ],
+    "missingSkills": [
+      "Kotlin",
+      "Test Automation",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 78,
+    "candidateId": 1,
+    "jobId": 64,
+    "score": 50,
+    "matchingSkills": [
+      "AWS"
+    ],
+    "missingSkills": [
+      "Linux",
+      "Kubernetes",
+      "Product Discovery",
+      "Accessibility"
+    ]
+  },
+  {
+    "id": 79,
+    "candidateId": 1,
+    "jobId": 65,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "UI/UX",
+      "Next.js",
+      "React Native"
+    ]
+  },
+  {
+    "id": 80,
+    "candidateId": 1,
+    "jobId": 66,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Linux",
+      "React",
+      "GraphQL"
+    ]
+  },
+  {
+    "id": 81,
+    "candidateId": 1,
+    "jobId": 67,
+    "score": 50,
+    "matchingSkills": [
+      "Linux"
+    ],
+    "missingSkills": [
+      "Selenium",
+      "gRPC",
+      "CI/CD"
+    ]
+  },
+  {
+    "id": 82,
+    "candidateId": 1,
+    "jobId": 68,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "React",
+      "Security",
+      "QA",
+      "FastAPI",
+      "SAST"
+    ]
+  },
+  {
+    "id": 83,
+    "candidateId": 1,
+    "jobId": 69,
+    "score": 50,
+    "matchingSkills": [
+      "NLP"
+    ],
+    "missingSkills": [
+      "React Native",
+      "Python",
+      "Angular"
+    ]
+  },
+  {
+    "id": 84,
+    "candidateId": 1,
+    "jobId": 70,
+    "score": 50,
+    "matchingSkills": [
+      "Scrum"
+    ],
+    "missingSkills": [
+      "Android",
+      "Cypress"
+    ]
+  },
+  {
+    "id": 85,
+    "candidateId": 1,
+    "jobId": 71,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Swift",
+      "QA",
+      "TypeScript"
+    ]
+  },
+  {
+    "id": 86,
+    "candidateId": 1,
+    "jobId": 72,
+    "score": 50,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Next.js",
+      "User Research"
+    ]
+  },
+  {
+    "id": 87,
+    "candidateId": 1,
+    "jobId": 73,
+    "score": 62,
+    "matchingSkills": [
+      "JavaScript",
+      "Playwright"
+    ],
+    "missingSkills": [
+      "Python"
+    ]
+  },
+  {
+    "id": 88,
+    "candidateId": 1,
+    "jobId": 74,
+    "score": 50,
+    "matchingSkills": [
+      "Flutter"
+    ],
+    "missingSkills": [
+      "SQL",
+      "Terraform"
+    ]
+  },
+  {
+    "id": 89,
+    "candidateId": 1,
+    "jobId": 75,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Scala",
+      "TensorFlow",
+      "Accessibility",
+      "CI/CD",
+      "Java"
+    ]
+  },
+  {
+    "id": 90,
+    "candidateId": 1,
+    "jobId": 76,
+    "score": 58,
+    "matchingSkills": [
+      "JavaScript"
+    ],
+    "missingSkills": [
+      "Selenium",
+      "Docker",
+      "iOS"
+    ]
+  },
+  {
+    "id": 91,
+    "candidateId": 1,
+    "jobId": 77,
+    "score": 50,
+    "matchingSkills": [
+      "GCP"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "Sketch"
+    ]
+  },
+  {
+    "id": 92,
+    "candidateId": 1,
+    "jobId": 78,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "GCP",
+      "Go",
+      "REST API"
+    ]
+  },
+  {
+    "id": 93,
+    "candidateId": 1,
+    "jobId": 79,
+    "score": 50,
+    "matchingSkills": [
+      "Cypress"
+    ],
+    "missingSkills": [
+      "TensorFlow",
+      "Kubernetes"
+    ]
+  },
+  {
+    "id": 94,
+    "candidateId": 1,
+    "jobId": 80,
+    "score": 50,
+    "matchingSkills": [
+      "Design Systems"
+    ],
+    "missingSkills": [
+      "Sketch",
+      "SQL"
+    ]
+  },
+  {
+    "id": 95,
+    "candidateId": 1,
+    "jobId": 81,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "OWASP",
+      "Django",
+      "CI/CD",
+      "iOS"
+    ]
+  },
+  {
+    "id": 96,
+    "candidateId": 1,
+    "jobId": 82,
+    "score": 50,
+    "matchingSkills": [
+      "Java"
+    ],
+    "missingSkills": [
+      "Agile",
+      "GraphQL",
+      "TensorFlow"
+    ]
+  },
+  {
+    "id": 97,
+    "candidateId": 1,
+    "jobId": 83,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Git",
+      "Accessibility",
+      "React Native",
+      "NLP"
+    ]
+  },
+  {
+    "id": 98,
+    "candidateId": 1,
+    "jobId": 84,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Elasticsearch",
+      "OWASP",
+      "NLP",
+      "FastAPI",
+      "TensorFlow"
+    ]
+  },
+  {
+    "id": 99,
+    "candidateId": 1,
+    "jobId": 85,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "GCP",
+      "Scala",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 100,
+    "candidateId": 1,
+    "jobId": 86,
+    "score": 50,
+    "matchingSkills": [
+      "Android"
+    ],
+    "missingSkills": [
+      "AWS",
+      "gRPC"
+    ]
+  },
+  {
+    "id": 101,
+    "candidateId": 1,
+    "jobId": 87,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Rust",
+      "TypeScript",
+      "Accessibility"
+    ]
+  },
+  {
+    "id": 102,
+    "candidateId": 1,
+    "jobId": 88,
+    "score": 62,
+    "matchingSkills": [
+      "TensorFlow",
+      "Java"
+    ],
+    "missingSkills": [
+      "TypeScript"
+    ]
+  },
+  {
+    "id": 103,
+    "candidateId": 1,
+    "jobId": 89,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Kotlin",
+      "PostgreSQL",
+      "Linux"
+    ]
+  },
+  {
+    "id": 104,
+    "candidateId": 1,
+    "jobId": 90,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Selenium",
+      "GraphQL",
+      "Playwright",
+      "UI/UX"
+    ]
+  },
+  {
+    "id": 105,
+    "candidateId": 1,
+    "jobId": 91,
+    "score": 50,
+    "matchingSkills": [
+      "React"
+    ],
+    "missingSkills": [
+      "Docker",
+      "Angular"
+    ]
+  },
+  {
+    "id": 106,
+    "candidateId": 1,
+    "jobId": 92,
+    "score": 50,
+    "matchingSkills": [
+      "Terraform"
+    ],
+    "missingSkills": [
+      "UI/UX",
+      "Android",
+      "Product Discovery"
+    ]
+  },
+  {
+    "id": 107,
+    "candidateId": 1,
+    "jobId": 93,
+    "score": 50,
+    "matchingSkills": [
+      "Penetration Testing"
+    ],
+    "missingSkills": [
+      "Kotlin",
+      "Linux"
+    ]
+  },
+  {
+    "id": 108,
+    "candidateId": 1,
+    "jobId": 94,
+    "score": 62,
+    "matchingSkills": [
+      "GCP",
+      "Security"
+    ],
+    "missingSkills": [
+      "Data Engineering",
+      "Docker",
+      "Playwright"
+    ]
+  },
+  {
+    "id": 109,
+    "candidateId": 1,
+    "jobId": 95,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Accessibility",
+      "Kotlin",
+      "iOS",
+      "Flutter",
+      "Linux"
+    ]
+  },
+  {
+    "id": 110,
+    "candidateId": 1,
+    "jobId": 96,
+    "score": 62,
+    "matchingSkills": [
+      "Machine Learning",
+      "Swift"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "NLP"
+    ]
+  },
+  {
+    "id": 111,
+    "candidateId": 1,
+    "jobId": 97,
+    "score": 62,
+    "matchingSkills": [
+      "Scrum",
+      "iOS"
+    ],
+    "missingSkills": [
+      "Vue.js"
+    ]
+  },
+  {
+    "id": 112,
+    "candidateId": 1,
+    "jobId": 98,
+    "score": 62,
+    "matchingSkills": [
+      "PostgreSQL",
+      "OWASP"
+    ],
+    "missingSkills": [
+      "Selenium"
+    ]
+  },
+  {
+    "id": 113,
+    "candidateId": 1,
+    "jobId": 99,
+    "score": 50,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Design Systems",
+      "Rust",
+      "SAST"
+    ]
+  },
+  {
+    "id": 114,
+    "candidateId": 1,
+    "jobId": 100,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "React",
+      "Test Automation",
+      "iOS"
+    ]
+  },
+  {
+    "id": 115,
+    "candidateId": 1,
+    "jobId": 101,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Kotlin",
+      "JavaScript",
+      "Terraform",
+      "SQL",
+      "Java"
+    ]
+  },
+  {
+    "id": 116,
+    "candidateId": 1,
+    "jobId": 102,
+    "score": 50,
+    "matchingSkills": [
+      "Rust"
+    ],
+    "missingSkills": [
+      "Scala",
+      "Redis",
+      "Jira"
+    ]
+  },
+  {
+    "id": 117,
+    "candidateId": 1,
+    "jobId": 103,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Rust",
+      "Product Discovery",
+      "QA",
+      "Sketch"
+    ]
+  },
+  {
+    "id": 118,
+    "candidateId": 1,
+    "jobId": 104,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "QA",
+      "Next.js"
+    ]
+  },
+  {
+    "id": 119,
+    "candidateId": 1,
+    "jobId": 105,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "SQL",
+      "Java",
+      "iOS",
+      "PostgreSQL",
+      "QA"
+    ]
+  },
+  {
+    "id": 120,
+    "candidateId": 1,
+    "jobId": 106,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "React",
+      "Linux",
+      "GraphQL",
+      "Product Discovery"
+    ]
+  },
+  {
+    "id": 121,
+    "candidateId": 1,
+    "jobId": 107,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Azure",
+      "SAST",
+      "Product Discovery",
+      "Redis"
+    ]
+  },
+  {
+    "id": 122,
+    "candidateId": 1,
+    "jobId": 108,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Terraform",
+      "Next.js",
+      "gRPC",
+      "Design Systems"
+    ]
+  },
+  {
+    "id": 123,
+    "candidateId": 1,
+    "jobId": 109,
+    "score": 62,
+    "matchingSkills": [
+      "MySQL",
+      "Playwright"
+    ],
+    "missingSkills": [
+      "FastAPI"
+    ]
+  },
+  {
+    "id": 124,
+    "candidateId": 1,
+    "jobId": 110,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Agile",
+      "Django",
+      "MongoDB",
+      "AWS",
+      "Sketch"
+    ]
+  },
+  {
+    "id": 125,
+    "candidateId": 1,
+    "jobId": 111,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "REST API",
+      "Java",
+      "Playwright",
+      "Vue.js",
+      "Terraform"
+    ]
+  },
+  {
+    "id": 126,
+    "candidateId": 1,
+    "jobId": 112,
+    "score": 50,
+    "matchingSkills": [
+      "Terraform"
+    ],
+    "missingSkills": [
+      "Java",
+      "Django",
+      "Android"
+    ]
+  },
+  {
+    "id": 127,
+    "candidateId": 1,
+    "jobId": 113,
+    "score": 50,
+    "matchingSkills": [
+      "Java"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "Vue.js"
+    ]
+  },
+  {
+    "id": 128,
+    "candidateId": 1,
+    "jobId": 114,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "REST API",
+      "MySQL",
+      "Elasticsearch",
+      "Vue.js",
+      "Jira"
+    ]
+  },
+  {
+    "id": 129,
+    "candidateId": 1,
+    "jobId": 115,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Python",
+      "Swift",
+      "MySQL"
+    ]
+  },
+  {
+    "id": 130,
+    "candidateId": 1,
+    "jobId": 116,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Flutter",
+      "SQL",
+      "Cypress",
+      "Elasticsearch",
+      "Android"
+    ]
+  },
+  {
+    "id": 131,
+    "candidateId": 1,
+    "jobId": 117,
+    "score": 50,
+    "matchingSkills": [
+      "Jira"
+    ],
+    "missingSkills": [
+      "Cypress",
+      "Linux"
+    ]
+  },
+  {
+    "id": 132,
+    "candidateId": 1,
+    "jobId": 118,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Agile",
+      "Security",
+      "REST API"
+    ]
+  },
+  {
+    "id": 133,
+    "candidateId": 1,
+    "jobId": 119,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Docker",
+      "Figma",
+      "PyTorch",
+      "MongoDB"
+    ]
+  },
+  {
+    "id": 134,
+    "candidateId": 1,
+    "jobId": 120,
+    "score": 50,
+    "matchingSkills": [
+      "AWS"
+    ],
+    "missingSkills": [
+      "MongoDB",
+      "Django",
+      "Cypress",
+      "React"
+    ]
+  },
+  {
+    "id": 135,
+    "candidateId": 1,
+    "jobId": 121,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Django",
+      "TypeScript",
+      "MySQL",
+      "Vue.js",
+      "Docker"
+    ]
+  },
+  {
+    "id": 136,
+    "candidateId": 1,
+    "jobId": 122,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "REST API",
+      "Product Discovery",
+      "OWASP",
+      "Go"
+    ]
+  },
+  {
+    "id": 137,
+    "candidateId": 1,
+    "jobId": 123,
+    "score": 50,
+    "matchingSkills": [
+      "iOS"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "Flutter",
+      "Next.js",
+      "Azure"
+    ]
+  },
+  {
+    "id": 138,
+    "candidateId": 1,
+    "jobId": 124,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Android",
+      "MySQL",
+      "Cypress",
+      "PostgreSQL",
+      "Rust"
+    ]
+  },
+  {
+    "id": 139,
+    "candidateId": 1,
+    "jobId": 125,
+    "score": 62,
+    "matchingSkills": [
+      "Accessibility",
+      "REST API"
+    ],
+    "missingSkills": [
+      "TypeScript"
+    ]
+  },
+  {
+    "id": 140,
+    "candidateId": 1,
+    "jobId": 126,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Cypress",
+      "Security",
+      "CI/CD",
+      "Git",
+      "Rust"
+    ]
+  },
+  {
+    "id": 141,
+    "candidateId": 1,
+    "jobId": 127,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Rust",
+      "QA",
+      "TypeScript",
+      "Security",
+      "Kotlin"
+    ]
+  },
+  {
+    "id": 142,
+    "candidateId": 1,
+    "jobId": 128,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "Java",
+      "Redis",
+      "SQL",
+      "Jira"
+    ]
+  },
+  {
+    "id": 143,
+    "candidateId": 1,
+    "jobId": 129,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "QA",
+      "Redis",
+      "SQL",
+      "Next.js",
+      "User Research"
+    ]
+  },
+  {
+    "id": 144,
+    "candidateId": 1,
+    "jobId": 130,
+    "score": 62,
+    "matchingSkills": [
+      "Cypress",
+      "PyTorch"
+    ],
+    "missingSkills": [
+      "Django"
+    ]
+  },
+  {
+    "id": 145,
+    "candidateId": 1,
+    "jobId": 131,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "Python",
+      "Agile"
+    ]
+  },
+  {
+    "id": 146,
+    "candidateId": 1,
+    "jobId": 132,
+    "score": 50,
+    "matchingSkills": [
+      "Cypress"
+    ],
+    "missingSkills": [
+      "TypeScript",
+      "Jira",
+      "GraphQL",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 147,
+    "candidateId": 1,
+    "jobId": 133,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "Figma",
+      "Sketch"
+    ]
+  },
+  {
+    "id": 148,
+    "candidateId": 1,
+    "jobId": 134,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Go",
+      "JavaScript",
+      "Terraform"
+    ]
+  },
+  {
+    "id": 149,
+    "candidateId": 1,
+    "jobId": 135,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Python",
+      "CI/CD",
+      "Product Discovery",
+      "Django",
+      "AWS"
+    ]
+  },
+  {
+    "id": 150,
+    "candidateId": 1,
+    "jobId": 136,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Terraform",
+      "GCP",
+      "MySQL",
+      "PostgreSQL",
+      "Test Automation"
+    ]
+  },
+  {
+    "id": 151,
+    "candidateId": 1,
+    "jobId": 137,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Next.js",
+      "GraphQL",
+      "AWS",
+      "Java",
+      "Elasticsearch"
+    ]
+  },
+  {
+    "id": 152,
+    "candidateId": 1,
+    "jobId": 138,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Cypress",
+      "Vue.js",
+      "Linux",
+      "Django"
+    ]
+  },
+  {
+    "id": 153,
+    "candidateId": 1,
+    "jobId": 139,
+    "score": 62,
+    "matchingSkills": [
+      "TensorFlow",
+      "Azure"
+    ],
+    "missingSkills": [
+      "React",
+      "TypeScript",
+      "Rust"
+    ]
+  },
+  {
+    "id": 154,
+    "candidateId": 1,
+    "jobId": 140,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Android",
+      "TypeScript",
+      "QA",
+      "Django"
+    ]
+  },
+  {
+    "id": 155,
+    "candidateId": 1,
+    "jobId": 141,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "PostgreSQL",
+      "React",
+      "Swift",
+      "Product Discovery",
+      "Data Engineering"
+    ]
+  },
+  {
+    "id": 156,
+    "candidateId": 1,
+    "jobId": 142,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Terraform",
+      "CI/CD",
+      "PostgreSQL"
+    ]
+  },
+  {
+    "id": 157,
+    "candidateId": 1,
+    "jobId": 143,
+    "score": 50,
+    "matchingSkills": [
+      "Elasticsearch"
+    ],
+    "missingSkills": [
+      "Git",
+      "Security",
+      "NLP"
+    ]
+  },
+  {
+    "id": 158,
+    "candidateId": 1,
+    "jobId": 144,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Security",
+      "React",
+      "FastAPI",
+      "Selenium"
+    ]
+  },
+  {
+    "id": 159,
+    "candidateId": 1,
+    "jobId": 145,
+    "score": 50,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Scrum",
+      "Rust",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 160,
+    "candidateId": 1,
+    "jobId": 146,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Django",
+      "Azure",
+      "Scala",
+      "UI/UX"
+    ]
+  },
+  {
+    "id": 161,
+    "candidateId": 1,
+    "jobId": 147,
+    "score": 50,
+    "matchingSkills": [
+      "Linux"
+    ],
+    "missingSkills": [
+      "iOS",
+      "Kotlin",
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": 162,
+    "candidateId": 1,
+    "jobId": 148,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Scrum",
+      "OWASP",
+      "Azure"
+    ]
+  },
+  {
+    "id": 163,
+    "candidateId": 1,
+    "jobId": 149,
+    "score": 58,
+    "matchingSkills": [
+      "JavaScript"
+    ],
+    "missingSkills": [
+      "Rust",
+      "FastAPI",
+      "Azure"
+    ]
+  },
+  {
+    "id": 164,
+    "candidateId": 1,
+    "jobId": 150,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Design Systems",
+      "Docker",
+      "NLP",
+      "MySQL",
+      "Test Automation"
+    ]
+  },
+  {
+    "id": 165,
+    "candidateId": 1,
+    "jobId": 151,
+    "score": 50,
+    "matchingSkills": [
+      "Angular"
+    ],
+    "missingSkills": [
+      "Rust",
+      "Scrum",
+      "MySQL",
+      "Design Systems"
+    ]
+  },
+  {
+    "id": 166,
+    "candidateId": 1,
+    "jobId": 152,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Next.js",
+      "iOS",
+      "User Research"
+    ]
+  },
+  {
+    "id": 167,
+    "candidateId": 1,
+    "jobId": 153,
+    "score": 50,
+    "matchingSkills": [
+      "Terraform"
+    ],
+    "missingSkills": [
+      "Angular",
+      "Penetration Testing",
+      "gRPC"
+    ]
+  },
+  {
+    "id": 168,
+    "candidateId": 1,
+    "jobId": 154,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Git",
+      "Next.js",
+      "Cypress",
+      "MySQL"
+    ]
+  },
+  {
+    "id": 169,
+    "candidateId": 1,
+    "jobId": 155,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "SQL",
+      "NLP",
+      "Git",
+      "PostgreSQL",
+      "Vue.js"
+    ]
+  },
+  {
+    "id": 170,
+    "candidateId": 1,
+    "jobId": 156,
+    "score": 62,
+    "matchingSkills": [
+      "SQL",
+      "Elasticsearch"
+    ],
+    "missingSkills": [
+      "Selenium"
+    ]
+  },
+  {
+    "id": 171,
+    "candidateId": 1,
+    "jobId": 157,
+    "score": 50,
+    "matchingSkills": [
+      "Terraform"
+    ],
+    "missingSkills": [
+      "MySQL",
+      "User Research",
+      "Redis",
+      "GCP"
+    ]
+  },
+  {
+    "id": 172,
+    "candidateId": 1,
+    "jobId": 158,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Next.js",
+      "Azure",
+      "Linux"
+    ]
+  },
+  {
+    "id": 173,
+    "candidateId": 1,
+    "jobId": 159,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Product Discovery",
+      "Django",
+      "Linux"
+    ]
+  },
+  {
+    "id": 174,
+    "candidateId": 1,
+    "jobId": 160,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "React",
+      "PyTorch",
+      "FastAPI",
+      "GCP",
+      "NLP"
+    ]
+  },
+  {
+    "id": 175,
+    "candidateId": 1,
+    "jobId": 161,
+    "score": 50,
+    "matchingSkills": [
+      "GraphQL"
+    ],
+    "missingSkills": [
+      "Playwright",
+      "Test Automation"
+    ]
+  },
+  {
+    "id": 176,
+    "candidateId": 1,
+    "jobId": 162,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "GCP",
+      "Next.js",
+      "TensorFlow"
+    ]
+  },
+  {
+    "id": 177,
+    "candidateId": 1,
+    "jobId": 163,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Python",
+      "Terraform",
+      "Docker",
+      "Azure"
+    ]
+  },
+  {
+    "id": 178,
+    "candidateId": 1,
+    "jobId": 164,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "OWASP",
+      "REST API",
+      "QA",
+      "Vue.js"
+    ]
+  },
+  {
+    "id": 179,
+    "candidateId": 1,
+    "jobId": 165,
+    "score": 50,
+    "matchingSkills": [
+      "Redis"
+    ],
+    "missingSkills": [
+      "Test Automation",
+      "Agile",
+      "iOS",
+      "AWS"
+    ]
+  },
+  {
+    "id": 180,
+    "candidateId": 1,
+    "jobId": 166,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "gRPC",
+      "PostgreSQL",
+      "Android",
+      "Design Systems",
+      "TypeScript"
+    ]
+  },
+  {
+    "id": 181,
+    "candidateId": 1,
+    "jobId": 167,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Design Systems",
+      "Agile",
+      "Scrum"
+    ]
+  },
+  {
+    "id": 182,
+    "candidateId": 1,
+    "jobId": 168,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "QA",
+      "Python",
+      "Elasticsearch"
+    ]
+  },
+  {
+    "id": 183,
+    "candidateId": 1,
+    "jobId": 169,
+    "score": 62,
+    "matchingSkills": [
+      "Scrum",
+      "Python"
+    ],
+    "missingSkills": [
+      "Vue.js"
+    ]
+  },
+  {
+    "id": 184,
+    "candidateId": 1,
+    "jobId": 170,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Django",
+      "Vue.js",
+      "Android",
+      "NLP",
+      "GCP"
+    ]
+  },
+  {
+    "id": 185,
+    "candidateId": 1,
+    "jobId": 171,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Kubernetes",
+      "Angular",
+      "Scrum",
+      "Data Engineering"
+    ]
+  },
+  {
+    "id": 186,
+    "candidateId": 1,
+    "jobId": 172,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Go",
+      "User Research",
+      "QA",
+      "NLP",
+      "Python"
+    ]
+  },
+  {
+    "id": 187,
+    "candidateId": 1,
+    "jobId": 173,
+    "score": 50,
+    "matchingSkills": [
+      "Next.js"
+    ],
+    "missingSkills": [
+      "JavaScript",
+      "React Native"
+    ]
+  },
+  {
+    "id": 188,
+    "candidateId": 1,
+    "jobId": 174,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Swift",
+      "React",
+      "QA",
+      "Selenium"
+    ]
+  },
+  {
+    "id": 189,
+    "candidateId": 1,
+    "jobId": 175,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "User Research",
+      "gRPC",
+      "Elasticsearch"
+    ]
+  },
+  {
+    "id": 190,
+    "candidateId": 1,
+    "jobId": 176,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "MySQL",
+      "Next.js",
+      "Redis",
+      "Penetration Testing"
+    ]
+  },
+  {
+    "id": 191,
+    "candidateId": 1,
+    "jobId": 177,
+    "score": 50,
+    "matchingSkills": [
+      "Figma"
+    ],
+    "missingSkills": [
+      "Django",
+      "Git",
+      "Swift"
+    ]
+  },
+  {
+    "id": 192,
+    "candidateId": 1,
+    "jobId": 178,
+    "score": 50,
+    "matchingSkills": [
+      "Redis"
+    ],
+    "missingSkills": [
+      "Angular",
+      "Docker",
+      "Cypress"
+    ]
+  },
+  {
+    "id": 193,
+    "candidateId": 1,
+    "jobId": 179,
+    "score": 50,
+    "matchingSkills": [
+      "GraphQL"
+    ],
+    "missingSkills": [
+      "Test Automation",
+      "PyTorch",
+      "AWS"
+    ]
+  },
+  {
+    "id": 194,
+    "candidateId": 1,
+    "jobId": 180,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Vue.js",
+      "MySQL",
+      "GCP"
+    ]
+  },
+  {
+    "id": 195,
+    "candidateId": 1,
+    "jobId": 181,
+    "score": 50,
+    "matchingSkills": [
+      "REST API"
+    ],
+    "missingSkills": [
+      "Rust",
+      "Selenium",
+      "Go"
+    ]
+  },
+  {
+    "id": 196,
+    "candidateId": 1,
+    "jobId": 182,
+    "score": 50,
+    "matchingSkills": [
+      "Java"
+    ],
+    "missingSkills": [
+      "Test Automation",
+      "Sketch",
+      "CI/CD"
+    ]
+  },
+  {
+    "id": 197,
+    "candidateId": 1,
+    "jobId": 183,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Accessibility",
+      "Scala",
+      "Angular",
+      "NLP"
+    ]
+  },
+  {
+    "id": 198,
+    "candidateId": 1,
+    "jobId": 184,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Elasticsearch",
+      "Docker",
+      "Penetration Testing",
+      "Flutter"
+    ]
+  },
+  {
+    "id": 199,
+    "candidateId": 1,
+    "jobId": 185,
+    "score": 55,
+    "matchingSkills": [
+      "B2B SaaS"
+    ],
+    "missingSkills": [
+      "Product Discovery",
+      "React",
+      "Django",
+      "Java"
+    ]
+  },
+  {
+    "id": 200,
+    "candidateId": 1,
+    "jobId": 186,
+    "score": 62,
+    "matchingSkills": [
+      "Android",
+      "Agile"
+    ],
+    "missingSkills": [
+      "REST API"
+    ]
+  },
+  {
+    "id": 201,
+    "candidateId": 1,
+    "jobId": 187,
+    "score": 62,
+    "matchingSkills": [
+      "Angular",
+      "UI/UX"
+    ],
+    "missingSkills": [
+      "Scala",
+      "Machine Learning",
+      "GraphQL"
+    ]
+  },
+  {
+    "id": 202,
+    "candidateId": 1,
+    "jobId": 188,
+    "score": 38,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "SAST",
+      "Python",
+      "Product Discovery",
+      "Next.js",
+      "Security"
+    ]
+  },
+  {
+    "id": 203,
+    "candidateId": 1,
+    "jobId": 189,
+    "score": 50,
+    "matchingSkills": [
+      "Figma"
+    ],
+    "missingSkills": [
+      "Test Automation",
+      "Accessibility",
+      "Angular",
+      "React"
+    ]
+  },
+  {
+    "id": 204,
+    "candidateId": 1,
+    "jobId": 190,
+    "score": 45,
+    "matchingSkills": [
+      "TypeScript"
+    ],
+    "missingSkills": [
+      "Kotlin",
+      "gRPC",
+      "iOS",
+      "SQL",
+      "Python"
+    ]
+  },
+  {
+    "id": 205,
+    "candidateId": 1,
+    "jobId": 191,
+    "score": 42,
+    "matchingSkills": [
+      "Python"
+    ],
+    "missingSkills": [
+      "Swift",
+      "REST API",
+      "Figma",
+      "Product Discovery",
+      "MongoDB"
+    ]
+  },
+  {
+    "id": 206,
+    "candidateId": 1,
+    "jobId": 192,
+    "score": 35,
+    "matchingSkills": [],
+    "missingSkills": [
+      "Vue.js",
+      "Next.js",
+      "React Native",
+      "Selenium",
+      "Security"
+    ]
   }
 ]

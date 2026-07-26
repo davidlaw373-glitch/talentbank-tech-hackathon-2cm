@@ -43,6 +43,7 @@ function matchTone(score: number) {
 type SortKey = "match" | "recent";
 
 const DEMO_CANDIDATE_ID = 1;
+const PAGE_SIZE = 10;
 
 export function JobDiscovery() {
   const { push } = useToast();
@@ -50,6 +51,11 @@ export function JobDiscovery() {
   const [mode, setMode] = useState("all");
   const [sort, setSort] = useState<SortKey>("match");
   const [savedJobIds, setSavedJobIds] = useState<Set<number>>(new Set());
+  const [displayedCount, setDisplayedCount] = useState(PAGE_SIZE);
+
+  const handleViewMore = () => {
+    setDisplayedCount((prev) => prev + PAGE_SIZE);
+  };
 
   const toggleSaved = (jobId: number) => {
     const isSaved = savedJobIds.has(jobId);
@@ -89,6 +95,9 @@ export function JobDiscovery() {
     }
     return list;
   }, [query, mode, sort]);
+
+  const visibleJobs = filteredJobs.slice(0, displayedCount);
+  const hasMore = filteredJobs.length > displayedCount;
 
   return (
     <div className="space-y-6">
@@ -170,6 +179,11 @@ export function JobDiscovery() {
               {filteredJobs.length} role
               {filteredJobs.length === 1 ? "" : "s"} match
             </h2>
+            {visibleJobs.length !== filteredJobs.length && (
+              <p className="text-sm text-muted-foreground">
+                Showing {visibleJobs.length} of {filteredJobs.length}.
+              </p>
+            )}
             <p className="text-sm text-muted-foreground">
               Ranked by AI match score for your profile.
             </p>
@@ -194,8 +208,9 @@ export function JobDiscovery() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
-            {filteredJobs.map(({ job, score, employer }) => {
+          <>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {visibleJobs.map(({ job, score, employer }) => {
               const displayScore = score?.score ?? 0;
               const tone = matchTone(displayScore);
               return (
@@ -295,7 +310,15 @@ export function JobDiscovery() {
                 </Link>
               );
             })}
-          </div>
+            </div>
+            {hasMore && (
+              <div className="flex justify-center pt-4">
+                <Button variant="outline" onClick={handleViewMore}>
+                  View more jobs
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>
