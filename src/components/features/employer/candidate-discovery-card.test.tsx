@@ -29,7 +29,6 @@ vi.mock("@/components/ui/confirm-dialog", () => ({
 
 import {
   getEmployerCandidateRows,
-  getMatchScoreByPair,
 } from "@/lib/data-helpers";
 import { CandidateDiscoveryCard } from "./candidate-discovery-card";
 
@@ -41,7 +40,6 @@ if (!row) {
   throw new Error("Aisha Khan fixture is required for candidate card tests.");
 }
 
-const match = getMatchScoreByPair(row.candidate.id, row.job.id);
 const unverifiedRow = getEmployerCandidateRows(1).find(
   (candidateRow) => candidateRow.verification === "None",
 );
@@ -64,7 +62,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -99,7 +96,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -124,7 +120,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={onToggleStar}
       />,
@@ -147,7 +142,6 @@ describe("CandidateDiscoveryCard", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         showRecentSignal={false}
         showStar={false}
       />,
@@ -176,10 +170,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={rejectedRow}
-        match={getMatchScoreByPair(
-          rejectedRow.candidate.id,
-          rejectedRow.job.id,
-        )}
         starred={false}
         onToggleStar={vi.fn()}
         onRestoreToApplied={onRestoreToApplied}
@@ -215,7 +205,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -244,7 +233,6 @@ describe("CandidateDiscoveryCard", () => {
     const { rerender } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -258,10 +246,6 @@ describe("CandidateDiscoveryCard", () => {
     rerender(
       <CandidateDiscoveryCard
         row={rejectedRow}
-        match={getMatchScoreByPair(
-          rejectedRow.candidate.id,
-          rejectedRow.job.id,
-        )}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -276,7 +260,6 @@ describe("CandidateDiscoveryCard", () => {
     const { rerender } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -297,10 +280,6 @@ describe("CandidateDiscoveryCard", () => {
     rerender(
       <CandidateDiscoveryCard
         row={unverifiedRow}
-        match={getMatchScoreByPair(
-          unverifiedRow.candidate.id,
-          unverifiedRow.job.id,
-        )}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -315,10 +294,6 @@ describe("CandidateDiscoveryCard", () => {
     rerender(
       <CandidateDiscoveryCard
         row={pendingRow}
-        match={getMatchScoreByPair(
-          pendingRow.candidate.id,
-          pendingRow.job.id,
-        )}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -337,7 +312,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -362,7 +336,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -385,7 +358,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -456,7 +428,6 @@ describe("CandidateDiscoveryCard", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -478,7 +449,6 @@ describe("CandidateDiscoveryCard", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -505,7 +475,6 @@ describe("CandidateDiscoveryCard", () => {
     render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -536,7 +505,6 @@ describe("CandidateDiscoveryCard", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -559,7 +527,6 @@ describe("CandidateDiscoveryCard", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,
@@ -578,7 +545,6 @@ describe("CandidateDiscoveryCard", () => {
     const { container } = render(
       <CandidateDiscoveryCard
         row={row}
-        match={match}
         starred={false}
         onToggleStar={vi.fn()}
       />,

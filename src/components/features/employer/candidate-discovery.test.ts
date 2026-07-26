@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import type { EmployerCandidateRow } from "@/lib/data-helpers";
-import type { JobCandidateMatchScore } from "@/types/match-score";
 import {
   buildCandidateInsight,
   filterCandidateRows,
@@ -38,8 +37,8 @@ function makeRow(
       summary: "Product-minded engineer with strong delivery signals.",
       profileCompletion: 90,
       verificationStatus: "Verified",
-      skills: [overrides.skill ?? "React"],
-      topSkills: [overrides.skill ?? "React"],
+      skills: [{ id: 1, name: overrides.skill ?? "React", status: "Verified" }],
+      topSkills: [1],
       experience: [
         {
           id: 1,
@@ -313,41 +312,28 @@ describe("candidate evidence", () => {
     ).toBe("No impact summary provided yet.");
   });
 
-  it("builds grounded AI reasons and exposes a skill gap", () => {
+  it("builds grounded AI reasons from real candidate/job data", () => {
+    // makeRow(1) creates a candidate with skills=["React"] and job.mustHave=["React"]
     const row = makeRow(1);
-    const match: JobCandidateMatchScore = {
-      id: 1,
-      candidateId: 1,
-      jobId: 1,
-      score: 94,
-      matchingSkills: ["React", "TypeScript"],
-      missingSkills: ["GraphQL"],
-    };
-
-    const insight = buildCandidateInsight(row, match);
+    const insight = buildCandidateInsight(row);
 
     expect(insight.reasons).toHaveLength(3);
     expect(insight.reasons[0]).toContain("Current scope");
     expect(insight.reasons[1]).toContain("Demonstrated impact");
     expect(insight.reasons[2]).toContain("Must-have coverage");
     expect(insight.reasons.join(" ")).not.toContain("university-verified");
-    expect(insight.caution).toContain("GraphQL");
-    expect(insight.skills).toEqual(["React", "TypeScript"]);
-  });
-
-  it("uses a positive caution when no gaps are recorded", () => {
-    const row = makeRow(1);
-    const insight = buildCandidateInsight(row, {
-      id: 1,
-      candidateId: 1,
-      jobId: 1,
-      score: 94,
-      matchingSkills: ["React"],
-      missingSkills: [],
-    });
-
     expect(insight.caution).toBe(
       "Confirm ownership depth and decision-making scope in the first interview.",
     );
+    expect(insight.skills).toEqual(["React"]);
+  });
+
+  it("shows skill gaps when candidate is missing some must-haves", () => {
+    // Override the candidate to have no matching skills for the job's mustHave
+    const row = makeRow(1, { skill: "Python" }); // job.mustHave still = ["React"]
+    const insight = buildCandidateInsight(row);
+
+    expect(insight.skills).toEqual([]);
+    expect(insight.caution).toContain("React");
   });
 });

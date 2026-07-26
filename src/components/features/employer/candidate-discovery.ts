@@ -1,6 +1,5 @@
 import type { EmployerCandidateRow } from "@/lib/data-helpers";
 import type { ApplicationStage } from "@/types/application";
-import type { JobCandidateMatchScore } from "@/types/match-score";
 
 export type CandidateStageFilter = ApplicationStage | "All" | "Rejected";
 export type CandidateView = ApplicationStage | "Rejected" | "All";
@@ -58,7 +57,9 @@ export function filterCandidateRows(
           experience.company,
           experience.role,
         ]),
-        ...row.candidate.skills,
+        ...row.candidate.skills.map((s) =>
+          typeof s === "string" ? s : s.name,
+        ),
       ]
         .join(" ")
         .toLocaleLowerCase();
@@ -94,20 +95,26 @@ export function filterCandidateRows(
 
 export function buildCandidateInsight(
   row: EmployerCandidateRow,
-  match: JobCandidateMatchScore | undefined,
 ): CandidateInsight {
-  const matchingSkills = match?.matchingSkills.slice(0, 3) ?? [];
+  const candidateSkillsSet = new Set(
+    row.candidate.skills.map((s) => s.name.toLocaleLowerCase()),
+  );
+  const mustHave = row.job.mustHave ?? [];
+  const matchingSkills = mustHave.filter((skill) =>
+    candidateSkillsSet.has(skill.toLocaleLowerCase()),
+  );
+  const missingSkills = mustHave.filter(
+    (skill) => !candidateSkillsSet.has(skill.toLocaleLowerCase()),
+  );
   const latestExperience = row.candidate.experience[0];
   const evidencedSkills = new Set(
-    [...row.candidate.skills.map((s) => s.name), ...(match?.matchingSkills ?? [])].map((skill) =>
-      skill.toLocaleLowerCase(),
-    ),
+    row.candidate.skills.map((s) => s.name.toLocaleLowerCase()),
   );
-  const coveredMustHaves = row.job.mustHave.filter((skill) =>
+  const coveredMustHaves = mustHave.filter((skill) =>
     evidencedSkills.has(skill.toLocaleLowerCase()),
   );
-  const coverageSummary = row.job.mustHave.length
-    ? `${coveredMustHaves.length}/${row.job.mustHave.length}${
+  const coverageSummary = mustHave.length
+    ? `${coveredMustHaves.length}/${mustHave.length}${
         coveredMustHaves.length
           ? ` (${coveredMustHaves.slice(0, 3).join(", ")})`
           : ""
@@ -131,11 +138,11 @@ export function buildCandidateInsight(
           ? "Worth a closer review"
           : "Review role gaps before saving",
     reasons,
-    caution: match?.missingSkills.length
-      ? `Validate hands-on depth in ${match.missingSkills
+    caution: missingSkills.length
+      ? `Validate hands-on depth in ${missingSkills
           .slice(0, 2)
           .join(" and ")} with a recent production example.`
       : "Confirm ownership depth and decision-making scope in the first interview.",
-    skills: matchingSkills,
+    skills: matchingSkills.slice(0, 3),
   };
 }

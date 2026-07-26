@@ -40,7 +40,6 @@ import {
   type JobEditorValues,
 } from "@/components/features/employer/job-editor-dialog";
 import { CandidateDiscoveryCard } from "@/components/features/employer/candidate-discovery-card";
-import { getMatchScoreByPair } from "@/lib/data-helpers";
 import styles from "./job-detail-view.module.css";
 
 function statusVariant(status: JobStatus) {
@@ -399,7 +398,6 @@ export function JobDetailView({
                   >
                     <CandidateDiscoveryCard
                       row={r}
-                      match={getMatchScoreByPair(r.candidate.id, r.job.id)}
                       enableInsightFlip={false}
                       linkWholeCard
                       showMatchScore={false}

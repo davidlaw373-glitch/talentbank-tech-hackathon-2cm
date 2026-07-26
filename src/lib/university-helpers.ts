@@ -348,57 +348,26 @@ export type CohortComparisonRow = {
   topEmployer: string;
   topRole: string;
   medianTimeToHire: number;
-  avgGpa: string;
 };
 
-/** Parse a "3.78 / 4.00" GPA string to a 0-100 scale. */
-function gpaToPct(gpa: string): number | null {
-  const match = gpa.match(/([\d.]+)\s*\/\s*([\d.]+)/);
-  if (!match) return null;
-  const numerator = Number(match[1]);
-  const denominator = Number(match[2]);
-  if (!denominator) return null;
-  return Math.round((numerator / denominator) * 100);
-}
-
 /**
- * Per-cohort comparison table — combines cohort-outcomes.json with
- * credential-level GPA data so admins can see if quality is rising.
+ * Per-cohort comparison table — summarizes cohort-outcomes.json into
+ * side-by-side metrics across graduating classes.
  */
 export function getCohortComparison(
   universityId: number = DEMO_UNIVERSITY_ID,
 ): CohortComparisonRow[] {
-  const outcomes = getCohortOutcomesForUniversity(universityId);
-  const credentials = getCredentialsForUniversity(universityId).filter(
-    (c) => c.type === "Education" && c.graduationYear !== undefined,
-  );
-
-  return outcomes
-    .map((outcome) => {
-      const year = Number(outcome.cohort.match(/\d{4}/)?.[0] ?? 0);
-      const cohortCreds = credentials.filter(
-        (c) => c.graduationYear === year,
-      );
-      const gpaValues = cohortCreds
-        .map((c) => (c.gpa ? gpaToPct(c.gpa) : null))
-        .filter((v): v is number => v !== null);
-      const avgGpa = gpaValues.length
-        ? `${Math.round(
-            gpaValues.reduce((sum, v) => sum + v, 0) / gpaValues.length,
-          )}%`
-        : "—";
-      return {
-        cohort: outcome.cohort,
-        total: outcome.total,
-        employed: outcome.employed,
-        employmentRate: Math.round((outcome.employed / outcome.total) * 100),
-        avgSalary: outcome.avgSalary,
-        topEmployer: outcome.topEmployer,
-        topRole: outcome.topRole,
-        medianTimeToHire: getUniversityProfile(universityId).medianTimeToHire,
-        avgGpa,
-      };
-    })
+  return getCohortOutcomesForUniversity(universityId)
+    .map((outcome) => ({
+      cohort: outcome.cohort,
+      total: outcome.total,
+      employed: outcome.employed,
+      employmentRate: Math.round((outcome.employed / outcome.total) * 100),
+      avgSalary: outcome.avgSalary,
+      topEmployer: outcome.topEmployer,
+      topRole: outcome.topRole,
+      medianTimeToHire: getUniversityProfile(universityId).medianTimeToHire,
+    }))
     .sort((a, b) => a.cohort.localeCompare(b.cohort));
 }
 

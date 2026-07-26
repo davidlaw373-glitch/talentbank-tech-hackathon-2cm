@@ -157,9 +157,6 @@ function CohortComparisonTable({
             <th scope="col" className="py-3 pr-4 font-medium">
               Median time to hire
             </th>
-            <th scope="col" className="py-3 pl-4 font-medium">
-              Avg GPA
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -196,7 +193,6 @@ function CohortComparisonTable({
               <td className="py-3 pr-4 text-sm tabular-nums">
                 {row.medianTimeToHire} mo
               </td>
-              <td className="py-3 pl-4 text-sm tabular-nums">{row.avgGpa}</td>
             </tr>
           ))}
         </tbody>
@@ -342,20 +338,17 @@ export function AnalyticsAdvanced() {
     <div className="space-y-8">
       {/* Skill gap analysis */}
       <Card className="lift-on-hover">
-        <CardHeader className="flex-row items-start justify-between space-y-0">
-          <div>
-            <CardTitle>
-              <h2 className="flex items-center gap-2">
-                <Scale className="h-4 w-4" aria-hidden />
-                Skill gap analysis
-              </h2>
-            </CardTitle>
-            <CardDescription>
-              Where in-demand skills diverge from what graduates currently
-              hold. Use this to plan next term&apos;s syllabus changes.
-            </CardDescription>
-          </div>
-          <Badge variant="outline">Syllabus planning</Badge>
+        <CardHeader>
+          <CardTitle>
+            <h2 className="flex items-center gap-2">
+              <Scale className="h-4 w-4" aria-hidden />
+              Skill gap analysis
+            </h2>
+          </CardTitle>
+          <CardDescription>
+            Where in-demand skills diverge from what graduates currently
+            hold. Use this to plan next term&apos;s syllabus changes.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <SkillGapTable rows={gapRows} />
@@ -457,12 +450,6 @@ export function AnalyticsAdvanced() {
           </CardContent>
         </Card>
       </section>
-
-      <p className="text-sm text-muted-foreground">
-        All metrics are derived from your cohort outcomes, verified
-        credentials, and live market signals. Numbers update as faculty
-        approves records and employers post new openings.
-      </p>
     </div>
   );
 }
